@@ -110,10 +110,46 @@ router
  */
 router
   .group(() => {
-    router.post('/newsletters', [controllers.Api, 'subscribeNewsletter'])
-    router.post('/reviews', [controllers.Api, 'createReview']).use(middleware.auth())
-    router.post('/affiliate-links', [controllers.Api, 'createAffiliateLink']).use(middleware.auth())
-    router.post('/affiliate-redirect', [controllers.Api, 'affiliateRedirect'])
-    router.post('/orders', [controllers.Api, 'createOrder']).use(middleware.auth())
+    // Public endpoints
+    router.get('/products', [controllers.Products, 'index'])
+    router.get('/products/:id', [controllers.Products, 'show'])
+    router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
+    router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
+    router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
+    router.get('/reviews', [controllers.Reviews, 'index'])
+
+    // Authenticated endpoints
+    router
+      .group(() => {
+        // Products (vendor)
+        router.post('/products', [controllers.Products, 'store'])
+        router.put('/products/:id', [controllers.Products, 'update'])
+        router.delete('/products/:id', [controllers.Products, 'destroy'])
+
+        // Orders
+        router.get('/orders', [controllers.Orders, 'index'])
+        router.get('/orders/:id', [controllers.Orders, 'show'])
+        router.post('/orders', [controllers.Orders, 'processOrder'])
+
+        // Affiliate Links
+        router.get('/affiliate-links', [controllers.AffiliateLinks, 'index'])
+        router.post('/affiliate-links', [controllers.AffiliateLinks, 'store'])
+        router.put('/affiliate-links/:id', [controllers.AffiliateLinks, 'update'])
+        router.delete('/affiliate-links/:id', [controllers.AffiliateLinks, 'destroy'])
+
+        // Reviews
+        router.post('/reviews', [controllers.Reviews, 'store'])
+
+        // Admin endpoints
+        router
+          .group(() => {
+            router.get('/stats', [controllers.Admin, 'getPlatformStats'])
+            router.put('/products/:id/approve', [controllers.Products, 'approve'])
+            router.put('/orders/:id', [controllers.Orders, 'updateStatus'])
+            router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
+          })
+          .use(middleware.role(['admin']))
+      })
+      .use(middleware.auth())
   })
   .prefix('/api')
