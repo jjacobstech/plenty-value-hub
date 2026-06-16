@@ -28,7 +28,7 @@ export const forgotPasswordValidator = vine.create({
 })
 
 export const resetPasswordValidator = vine.create({
-  token: vine.string().notEmpty(),
+  token: vine.string().minLength(1),
   password: vine.string().minLength(8).maxLength(32).confirmed({ confirmationField: 'passwordConfirmation' }),
   passwordConfirmation: vine.string().minLength(8).maxLength(32),
 })
