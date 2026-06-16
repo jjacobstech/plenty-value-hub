@@ -44,6 +44,11 @@ export default class NewAccountController {
   async registerStep3({ request, response, session }: HttpContext) {
     const data = await request.validateUsing(registerStep3Validator)
 
+    const existingUser = await User.findBy('email', data.email)
+    if (existingUser) {
+      return response.status(400).json({ error: 'Email already registered' })
+    }
+
     const role = session.get('signup_role', 'consumer')
     const kyc = session.get('signup_kyc', {})
 

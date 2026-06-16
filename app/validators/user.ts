@@ -14,7 +14,7 @@ export const registerStep2Validator = vine.create({
 
 export const registerStep3Validator = vine.create({
   fullName: vine.string().trim().minLength(2).maxLength(255),
-  email: vine.string().email().maxLength(254).unique({ table: 'users', column: 'email' }),
+  email: vine.string().email().maxLength(254),
   password: vine.string().minLength(8).maxLength(32).confirmed({ confirmationField: 'passwordConfirmation' }),
   passwordConfirmation: vine.string().minLength(8).maxLength(32),
 })
@@ -40,7 +40,7 @@ export const loginValidator = vine.create({
 
 export const signupValidator = vine.create({
   fullName: vine.string().nullable(),
-  email: vine.string().email().maxLength(254).unique({ table: 'users', column: 'email' }),
+  email: vine.string().email().maxLength(254),
   password: vine.string().minLength(8).maxLength(32).confirmed({
     confirmationField: 'passwordConfirmation',
   }),

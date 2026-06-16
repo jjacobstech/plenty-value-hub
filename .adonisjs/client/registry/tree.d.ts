@@ -4,7 +4,11 @@ import type { routes } from './index.ts'
 export interface ApiDefinition {
   home: typeof routes['home']
   marketplace: typeof routes['marketplace']
-  reviews: typeof routes['reviews']
+  reviews: typeof routes['reviews'] & {
+    index: typeof routes['reviews.index']
+    store: typeof routes['reviews.store']
+    approve: typeof routes['reviews.approve']
+  }
   product: {
     detail: typeof routes['product.detail']
   }
@@ -50,6 +54,7 @@ export interface ApiDefinition {
     products: typeof routes['admin.products']
     orders: typeof routes['admin.orders']
     analytics: typeof routes['admin.analytics']
+    getPlatformStats: typeof routes['admin.get_platform_stats']
   }
   vendor: {
     dashboard: typeof routes['vendor.dashboard']
@@ -59,11 +64,29 @@ export interface ApiDefinition {
     analytics: typeof routes['vendor.analytics']
     profile: typeof routes['vendor.profile']
   }
-  api: {
-    subscribeNewsletter: typeof routes['api.subscribe_newsletter']
-    createReview: typeof routes['api.create_review']
-    createAffiliateLink: typeof routes['api.create_affiliate_link']
-    affiliateRedirect: typeof routes['api.affiliate_redirect']
-    createOrder: typeof routes['api.create_order']
+  products: {
+    index: typeof routes['products.index']
+    show: typeof routes['products.show']
+    store: typeof routes['products.store']
+    update: typeof routes['products.update']
+    destroy: typeof routes['products.destroy']
+    approve: typeof routes['products.approve']
+  }
+  newsletters: {
+    subscribe: typeof routes['newsletters.subscribe']
+    unsubscribe: typeof routes['newsletters.unsubscribe']
+  }
+  affiliateLinks: {
+    trackClick: typeof routes['affiliate_links.track_click']
+    index: typeof routes['affiliate_links.index']
+    store: typeof routes['affiliate_links.store']
+    update: typeof routes['affiliate_links.update']
+    destroy: typeof routes['affiliate_links.destroy']
+  }
+  orders: {
+    index: typeof routes['orders.index']
+    show: typeof routes['orders.show']
+    processOrder: typeof routes['orders.process_order']
+    updateStatus: typeof routes['orders.update_status']
   }
 }

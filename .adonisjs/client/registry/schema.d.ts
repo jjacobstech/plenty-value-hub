@@ -475,64 +475,256 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['affiliateProfile']>>>
     }
   }
-  'api.subscribe_newsletter': {
-    methods: ["POST"]
-    pattern: '/api/newsletters'
+  'products.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/products'
     types: {
       body: {}
       paramsTuple: []
       params: {}
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api_controller').default['subscribeNewsletter']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/api_controller').default['subscribeNewsletter']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['index']>>>
     }
   }
-  'api.create_review': {
+  'products.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/products/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['show']>>>
+    }
+  }
+  'newsletters.subscribe': {
     methods: ["POST"]
+    pattern: '/api/newsletters/subscribe'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/newsletter').subscribeNewsletterValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/newsletter').subscribeNewsletterValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/newsletters_controller').default['subscribe']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/newsletters_controller').default['subscribe']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'newsletters.unsubscribe': {
+    methods: ["POST"]
+    pattern: '/api/newsletters/unsubscribe'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/newsletter').unsubscribeValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/newsletter').unsubscribeValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/newsletters_controller').default['unsubscribe']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/newsletters_controller').default['unsubscribe']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'affiliate_links.track_click': {
+    methods: ["POST"]
+    pattern: '/api/affiliate-links/track-click'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/affiliate_link').trackClickValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/affiliate_link').trackClickValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['trackClick']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['trackClick']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'reviews.index': {
+    methods: ["GET","HEAD"]
     pattern: '/api/reviews'
     types: {
       body: {}
       paramsTuple: []
       params: {}
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api_controller').default['createReview']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/api_controller').default['createReview']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['index']>>>
     }
   }
-  'api.create_affiliate_link': {
+  'products.store': {
     methods: ["POST"]
-    pattern: '/api/affiliate-links'
+    pattern: '/api/products'
     types: {
-      body: {}
+      body: ExtractBody<InferInput<(typeof import('#validators/product').createProductValidator)>>
       paramsTuple: []
       params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api_controller').default['createAffiliateLink']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/api_controller').default['createAffiliateLink']>>>
+      query: ExtractQuery<InferInput<(typeof import('#validators/product').createProductValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
-  'api.affiliate_redirect': {
-    methods: ["POST"]
-    pattern: '/api/affiliate-redirect'
+  'products.update': {
+    methods: ["PUT"]
+    pattern: '/api/products/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/product').updateProductValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/product').updateProductValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'products.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/products/:id'
     types: {
       body: {}
-      paramsTuple: []
-      params: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api_controller').default['affiliateRedirect']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/api_controller').default['affiliateRedirect']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['destroy']>>>
     }
   }
-  'api.create_order': {
-    methods: ["POST"]
+  'orders.index': {
+    methods: ["GET","HEAD"]
     pattern: '/api/orders'
     types: {
       body: {}
       paramsTuple: []
       params: {}
       query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/api_controller').default['createOrder']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/api_controller').default['createOrder']>>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['index']>>>
+    }
+  }
+  'orders.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/orders/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['show']>>>
+    }
+  }
+  'orders.process_order': {
+    methods: ["POST"]
+    pattern: '/api/orders'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/order').processOrderValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/order').processOrderValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['processOrder']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['processOrder']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'affiliate_links.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/affiliate-links'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['index']>>>
+    }
+  }
+  'affiliate_links.store': {
+    methods: ["POST"]
+    pattern: '/api/affiliate-links'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/affiliate_link').createAffiliateLinkValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/affiliate_link').createAffiliateLinkValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'affiliate_links.update': {
+    methods: ["PUT"]
+    pattern: '/api/affiliate-links/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/affiliate_link').updateAffiliateLinkValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/affiliate_link').updateAffiliateLinkValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'affiliate_links.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/affiliate-links/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/affiliate_links_controller').default['destroy']>>>
+    }
+  }
+  'reviews.store': {
+    methods: ["POST"]
+    pattern: '/api/reviews'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/review').createReviewValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/review').createReviewValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin.get_platform_stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['getPlatformStats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['getPlatformStats']>>>
+    }
+  }
+  'products.approve': {
+    methods: ["PUT"]
+    pattern: '/api/products/:id/approve'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/products_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['approve']>>>
+    }
+  }
+  'orders.update_status': {
+    methods: ["PUT"]
+    pattern: '/api/orders/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['updateStatus']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['updateStatus']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'reviews.approve': {
+    methods: ["POST"]
+    pattern: '/api/reviews/:id/approve'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/review').updateReviewValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/review').updateReviewValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
 }

@@ -43,11 +43,27 @@ export type ScannedRoutes = {
     'affiliate.earnings': { paramsTuple?: []; params?: {} }
     'affiliate.performance': { paramsTuple?: []; params?: {} }
     'affiliate.profile': { paramsTuple?: []; params?: {} }
-    'api.subscribe_newsletter': { paramsTuple?: []; params?: {} }
-    'api.create_review': { paramsTuple?: []; params?: {} }
-    'api.create_affiliate_link': { paramsTuple?: []; params?: {} }
-    'api.affiliate_redirect': { paramsTuple?: []; params?: {} }
-    'api.create_order': { paramsTuple?: []; params?: {} }
+    'products.index': { paramsTuple?: []; params?: {} }
+    'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'newsletters.subscribe': { paramsTuple?: []; params?: {} }
+    'newsletters.unsubscribe': { paramsTuple?: []; params?: {} }
+    'affiliate_links.track_click': { paramsTuple?: []; params?: {} }
+    'reviews.index': { paramsTuple?: []; params?: {} }
+    'products.store': { paramsTuple?: []; params?: {} }
+    'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.index': { paramsTuple?: []; params?: {} }
+    'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.process_order': { paramsTuple?: []; params?: {} }
+    'affiliate_links.index': { paramsTuple?: []; params?: {} }
+    'affiliate_links.store': { paramsTuple?: []; params?: {} }
+    'affiliate_links.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliate_links.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reviews.store': { paramsTuple?: []; params?: {} }
+    'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
+    'products.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.update_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reviews.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   GET: {
     'home': { paramsTuple?: []; params?: {} }
@@ -80,6 +96,13 @@ export type ScannedRoutes = {
     'affiliate.earnings': { paramsTuple?: []; params?: {} }
     'affiliate.performance': { paramsTuple?: []; params?: {} }
     'affiliate.profile': { paramsTuple?: []; params?: {} }
+    'products.index': { paramsTuple?: []; params?: {} }
+    'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reviews.index': { paramsTuple?: []; params?: {} }
+    'orders.index': { paramsTuple?: []; params?: {} }
+    'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliate_links.index': { paramsTuple?: []; params?: {} }
+    'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'home': { paramsTuple?: []; params?: {} }
@@ -112,6 +135,13 @@ export type ScannedRoutes = {
     'affiliate.earnings': { paramsTuple?: []; params?: {} }
     'affiliate.performance': { paramsTuple?: []; params?: {} }
     'affiliate.profile': { paramsTuple?: []; params?: {} }
+    'products.index': { paramsTuple?: []; params?: {} }
+    'products.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'reviews.index': { paramsTuple?: []; params?: {} }
+    'orders.index': { paramsTuple?: []; params?: {} }
+    'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliate_links.index': { paramsTuple?: []; params?: {} }
+    'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'new_account.register_step_1': { paramsTuple?: []; params?: {} }
@@ -123,11 +153,24 @@ export type ScannedRoutes = {
     'new_account.forgot_password': { paramsTuple?: []; params?: {} }
     'new_account.reset_password': { paramsTuple?: []; params?: {} }
     'logout': { paramsTuple?: []; params?: {} }
-    'api.subscribe_newsletter': { paramsTuple?: []; params?: {} }
-    'api.create_review': { paramsTuple?: []; params?: {} }
-    'api.create_affiliate_link': { paramsTuple?: []; params?: {} }
-    'api.affiliate_redirect': { paramsTuple?: []; params?: {} }
-    'api.create_order': { paramsTuple?: []; params?: {} }
+    'newsletters.subscribe': { paramsTuple?: []; params?: {} }
+    'newsletters.unsubscribe': { paramsTuple?: []; params?: {} }
+    'affiliate_links.track_click': { paramsTuple?: []; params?: {} }
+    'products.store': { paramsTuple?: []; params?: {} }
+    'orders.process_order': { paramsTuple?: []; params?: {} }
+    'affiliate_links.store': { paramsTuple?: []; params?: {} }
+    'reviews.store': { paramsTuple?: []; params?: {} }
+    'reviews.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  PUT: {
+    'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliate_links.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'products.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'orders.update_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+  }
+  DELETE: {
+    'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliate_links.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {
