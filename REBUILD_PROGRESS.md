@@ -92,62 +92,28 @@
   - **Actual effort:** 4 hours
 
 #### Core Controllers Implementation
-- **ProductsController**
-  - `index()` — list approved products (public) or vendor's products
-  - `show()` — single product detail
-  - `store()` — create product (vendor only, status='pending')
-  - `update()` — update product (vendor owner or admin)
-  - `destroy()` — delete product (vendor owner or admin)
-  - `approve()` — admin action to change status to 'approved'
-  - **Estimated effort:** 2 hours
-
-- **OrdersController**
-  - `processOrder()` — **CRITICAL** business logic from claude.md §7.1
-    - Validate product exists and approved
-    - Calculate revenue split using `RevenueService`
-    - Generate order number using `OrderNumberService`
-    - Create Order record
-    - Update AffiliateLink stats (if affiliate_link_id provided)
-    - Update Product counters (total_sales, total_revenue, gravity_score)
-    - Send order confirmation email
-  - `index()` — list orders (vendor sees own, affiliate sees attributed, admin sees all)
-  - `show()` — single order detail
-  - **Estimated effort:** 2 hours
-
-- **AffiliateLinksController**
-  - `index()` — list current user's links
-  - `store()` — create link for product (generates `link_code` with nanoid)
-  - `update()` — pause/resume link
-  - `destroy()` — delete link
-  - `trackClick()` — **PUBLIC** endpoint, increment clicks, return product_id for redirect
-  - **Estimated effort:** 1.5 hours
-
-- **ReviewsController**
-  - `index()` — list approved reviews for product
-  - `store()` — submit review (authenticated)
-  - `approve()` — admin approve/reject review
-  - **Estimated effort:** 1 hour
-
-- **NewsletterController**
-  - `subscribe()` — **PUBLIC** endpoint, handle duplicate/reactivation, send confirmation email
-  - `unsubscribe()` — set status to unsubscribed
-  - **Estimated effort:** 1 hour
-
-- **AdminController**
-  - `getPlatformStats()` — aggregate KPIs (gmv, revenue, stats by category, top products, etc.)
-  - `updateOrder()` — change order status with refund reversal logic
-  - **Estimated effort:** 2 hours
+- **Status:** ✅ COMPLETE
+- **Completed:**
+  - ✅ **ProductsController** (187 lines) — index, show, store, update, destroy, approve
+  - ✅ **OrdersController** (235 lines) — processOrder (critical business logic), index, show, updateStatus
+  - ✅ **AffiliateLinksController** (138 lines) — index, store, update, destroy, trackClick (public)
+  - ✅ **ReviewsController** (102 lines) — index, store, approve
+  - ✅ **NewsletterController** (67 lines) — subscribe, unsubscribe
+  - ✅ **AdminController** (129 lines) — getPlatformStats with full aggregation
+  - ✅ All validators (Product, Order, AffiliateLink, Review, Newsletter)
+  - ✅ Email templates (order_confirmation, refund_notification)
+  - ✅ Routes wired up with auth/role middleware
+  - **Actual effort:** 8 hours
 
 #### Routes Configuration
-- **Status:** Not started
-- **Work:** Replace `start/routes.ts` with full tree per plan:
-  - Public routes (home, marketplace, product/:id, reviews, /ref/:code, newsletter)
-  - Auth routes (signup multi-step, login, forgot-password, reset-password)
-  - Authenticated routes (orders, emails/welcome)
-  - Affiliate routes (dashboard, products, links, performance, earnings, profile)
-  - Vendor routes (dashboard, products CRUD, analytics, earnings, profile)
-  - Admin routes (dashboard, users, products approve, orders, analytics)
-  - **Estimated effort:** 1.5 hours
+- **Status:** ✅ COMPLETE
+- **Completed:**
+  - ✅ Auth routes (signup multi-step, login, forgot-password, reset-password)
+  - ✅ API routes (public endpoints)
+  - ✅ Authenticated routes (products, orders, affiliate-links, reviews, newsletter)
+  - ✅ Role-based routes (admin stats, approve products/reviews, update orders)
+  - ✅ Middleware wiring (auth, role checking)
+  - **Actual effort:** 0.5 hours (integrated into controllers work)
 
 #### Inertia Pages (20 pages total)
 
@@ -239,41 +205,67 @@
 |---|---|---|
 | ✅ Tailwind v4 migration | 0.5h | 0.5h |
 | ✅ Auth system (multi-step + OTP) | 4h | 4.5h |
-| **6 Core controllers** (full implementation) | 10h | 14.5h |
-| **Routes configuration** (update for controllers) | 1h | 15.5h |
-| **20 Inertia pages** | 14h | 29.5h |
-| **Validators** (entity validators) | 1h | 30.5h |
-| **Additional email templates** | 0.5h | 31h |
-| **Testing & manual QA** | 5h | 36h |
-| **Total estimated remaining** | **~32 hours** | |
+| ✅ 6 Core controllers (full implementation) | 8h | 12.5h |
+| ✅ Routes configuration | 0.5h | 13h |
+| **20 Inertia pages** | 14h | 27h |
+| **Testing & manual QA** | 5h | 32h |
+| **Total completed** | **13 hours** | |
+| **Total estimated remaining** | **~19 hours** | |
 
 ---
 
 ## How to Continue
 
-1. **Core Controllers** (Next Priority) — 10 hours
-   - Priority A (Simplest first):
-     - `ProductsController.index()`, `show()` — GET endpoints
-     - `ProductsController.store()` — vendor creates product
-     - `AffiliateLinksController.trackClick()` — public endpoint, critical for affiliate tracking
-   - Priority B (Business Logic):
-     - `OrdersController.processOrder()` — most complex, uses RevenueService
-     - `AffiliateLinksController` full CRUD
-     - `ReviewsController` full implementation
-   - Priority C (Admin/Newsletter):
-     - `AdminController.getPlatformStats()`
-     - `NewsletterController` endpoints
-   
-2. **Routes** — Once controllers done, wire them in start/routes.ts
+### ✅ Phase 1-3 Complete
+- Tailwind v4 migration
+- Multi-step auth with OTP
+- All 6 core controllers with full business logic
+- All API routes wired up
 
-3. **Pages** — Port from existing React app (plenty-value-hub/src/pages/) or write fresh Inertia components
-   - Start with Priority 1 pages (auth, home) — mostly UI
-   - Then Priority 2-5 dashboards
+### Phase 4: Inertia Pages (14 hours)
 
-4. **Testing** — E2E test critical journeys:
-   - Vendor: signup → product listing → product approval
-   - Affiliate: signup → generate link → track click
-   - Order flow: product purchase → revenue split
+**Priority 1 — Auth & Home (2 hours)** _(page components, not backend routes)_
+- `auth/login.tsx` — form submission to /auth/login
+- `auth/signup.tsx` — multi-step form (role → KYC → credentials → OTP)
+- `auth/forgot-password.tsx` — email form
+- `auth/reset-password.tsx` — token + new password form
+- `Home.tsx` — hero, featured products, CTAs
+
+**Priority 2 — Public Pages (3 hours)**
+- `Marketplace.tsx` — product grid, filters, pagination
+- `ProductDetail.tsx` — single product, affiliate link copy, purchase flow
+- `Reviews.tsx` — expert review listings
+- `ForPartners.tsx` — vendor/affiliate signup CTAs
+- `PrivacyPolicy.tsx` — legal page
+
+**Priority 3 — Affiliate Dashboard (4 hours)**
+- `affiliate/Dashboard.tsx` — KPI cards, click chart, recent activity
+- `affiliate/Products.tsx` — browse + generate links
+- `affiliate/Links.tsx` — manage links, pause/resume
+- `affiliate/Performance.tsx` — detailed analytics
+- `affiliate/Earnings.tsx` — commission history
+- `affiliate/Profile.tsx` — account settings
+
+**Priority 4 — Vendor Dashboard (3 hours)**
+- `vendor/Dashboard.tsx` — revenue, order stats, product performance
+- `vendor/Products.tsx` — CRUD products, status tracker
+- `vendor/Analytics.tsx` — revenue charts, top products
+- `vendor/Earnings.tsx` — payout history
+- `vendor/Profile.tsx` — account settings
+
+**Priority 5 — Admin Dashboard (2 hours)**
+- `admin/Dashboard.tsx` — GMV, platform KPIs
+- `admin/Products.tsx` — approval queue
+- `admin/Orders.tsx` — status updates
+- `admin/Users.tsx` — user management
+- `admin/Analytics.tsx` — full platform analytics
+
+### Phase 5: Testing & QA (5 hours)
+- Manual test auth flows (vendor KYC path, affiliate fast path)
+- Manual test product submission → approval flow
+- Manual test affiliate link tracking → order
+- Manual test refund reversal logic
+- E2E test cross-user workflows
 
 ---
 
