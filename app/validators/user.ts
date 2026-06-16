@@ -18,13 +18,8 @@ export const registerStep2Validator = vine.create({
 export const registerStep3Validator = vine.create({
   fullName: vine.string().trim().minLength(2).maxLength(255),
   email: email().unique({ table: 'users', column: 'email' }),
-  password: password(),
+  password: password().confirmed({ confirmationField: 'passwordConfirmation' }),
   passwordConfirmation: password(),
-}).validateAs(async (value) => {
-  if (value.password !== value.passwordConfirmation) {
-    throw new Error('Passwords do not match')
-  }
-  return value
 })
 
 export const verifyOtpValidator = vine.create({
@@ -37,13 +32,8 @@ export const forgotPasswordValidator = vine.create({
 
 export const resetPasswordValidator = vine.create({
   token: vine.string().notEmpty(),
-  password: password(),
+  password: password().confirmed({ confirmationField: 'passwordConfirmation' }),
   passwordConfirmation: password(),
-}).validateAs(async (value) => {
-  if (value.password !== value.passwordConfirmation) {
-    throw new Error('Passwords do not match')
-  }
-  return value
 })
 
 export const loginValidator = vine.create({
