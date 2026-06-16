@@ -31,7 +31,7 @@ export const createProductValidator = vine.create({
   isFeatured: vine.boolean().optional(),
   recurringBilling: vine.boolean().optional(),
   billingCycle: vine.enum(['one_time', 'monthly', 'yearly'] as const).optional(),
-  affiliateResources: vine.object().optional(),
+  affiliateResources: vine.any().optional(),
 })
 
 export const updateProductValidator = vine.create({
@@ -65,5 +65,5 @@ export const updateProductValidator = vine.create({
   isFeatured: vine.boolean().optional(),
   recurringBilling: vine.boolean().optional(),
   billingCycle: vine.enum(['one_time', 'monthly', 'yearly'] as const).optional(),
-  affiliateResources: vine.object().optional(),
+  affiliateResources: vine.any().optional(),
 })

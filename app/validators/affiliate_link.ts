@@ -11,5 +11,5 @@ export const updateAffiliateLinkValidator = vine.create({
 })
 
 export const trackClickValidator = vine.create({
-  linkCode: vine.string().trim().notEmpty(),
+  linkCode: vine.string().trim().minLength(1),
 })
