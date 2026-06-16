@@ -4,6 +4,15 @@
  */
 
 export const controllers = {
+  Admin: () => import('#controllers/admin_controller'),
+  AffiliateLinks: () => import('#controllers/affiliate_links_controller'),
+  Api: () => import('#controllers/api_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
+  Newsletters: () => import('#controllers/newsletters_controller'),
+  Oauth: () => import('#controllers/oauth_controller'),
+  Orders: () => import('#controllers/orders_controller'),
+  Pages: () => import('#controllers/pages_controller'),
+  Products: () => import('#controllers/products_controller'),
+  Reviews: () => import('#controllers/reviews_controller'),
   Session: () => import('#controllers/session_controller'),
 }

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Email - Plenty Value</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .header { background: #001845; color: white; padding: 40px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; }
+    .content { padding: 40px; color: #333; }
+    .content p { margin: 0 0 20px 0; line-height: 1.6; }
+    .otp-code { font-size: 32px; font-weight: bold; color: #81C14B; text-align: center; letter-spacing: 4px; margin: 30px 0; }
+    .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Plenty Value</h1>
+    </div>
+    <div class="content">
+      <p>Hi {{ user.fullName }},</p>
+      <p>Thank you for registering with Plenty Value! To verify your email address, please use the code below:</p>
+      <div class="otp-code">{{ otpCode }}</div>
+      <p>This code will expire in 10 minutes.</p>
+      <p>If you didn't request this code, please ignore this email.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 Plenty Value. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>

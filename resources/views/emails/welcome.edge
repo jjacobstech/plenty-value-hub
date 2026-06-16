@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Plenty Value</title>
+  <style>
+    body { font-family: Segoe UI, Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 20px; }
+    .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    .header { background: #001845; color: white; padding: 40px 20px; text-align: center; }
+    .header h1 { margin: 0; font-size: 28px; }
+    .content { padding: 40px; color: #333; }
+    .content p { margin: 0 0 20px 0; line-height: 1.6; }
+    .cta-button { display: inline-block; background: #81C14B; color: white; padding: 12px 30px; border-radius: 4px; text-decoration: none; font-weight: bold; margin: 20px 0; }
+    .footer { background: #f9f9f9; padding: 20px; text-align: center; color: #666; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Plenty Value</h1>
+    </div>
+    <div class="content">
+      <p>Hey {{ user.fullName }}! 👋</p>
+      <p>Welcome to Plenty Value! We're excited to have you on board.</p>
+      @if(user.role === 'vendor')
+        <p>You're all set to start selling. Head to your vendor dashboard to list your first product and start earning.</p>
+        <a href="{{ env('APP_URL') }}/vendor" class="cta-button">Go to Vendor Dashboard</a>
+      @elseif(user.role === 'affiliate')
+        <p>You're ready to start promoting. Browse our marketplace and create your first affiliate link to start earning commissions.</p>
+        <a href="{{ env('APP_URL') }}/affiliate" class="cta-button">Start Promoting</a>
+      @else
+        <p>Explore our marketplace and discover amazing products from trusted vendors.</p>
+        <a href="{{ env('APP_URL') }}/marketplace" class="cta-button">Browse Marketplace</a>
+      @endif
+      <p>Happy selling and earning!</p>
+    </div>
+    <div class="footer">
+      <p>&copy; 2026 Plenty Value. All rights reserved.</p>
+    </div>
+  </div>
+</body>
+</html>
