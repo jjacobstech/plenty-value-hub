@@ -57,20 +57,39 @@
 
 ## 🚧 In Progress / Remaining Work
 
+### ✅ COMPLETED (Phase 1-3 Extended)
+
+#### Tailwind CSS v4 Migration
+- ✅ Updated tailwind.config.js to v4 format
+- ✅ Packages already at ^4.3.1
+- ✅ postcss.config.js using @tailwindcss/postcss
+- ✅ vite.config.ts using @tailwindcss/vite
+- ✅ app.css using @import "tailwindcss" and @theme {}
+
+#### Auth System (Multi-Step Registration)
+- ✅ See details in "In Progress / Remaining Work" → "High Priority" section above
+
+---
+
+## 🚧 In Progress / Remaining Work
+
 ### High Priority (Core Functionality)
 
 #### Auth System (Multi-Step Registration)
-- **Status:** Planning phase
-- **Work needed:**
-  - Update `NewAccountController` or create `AuthController` with:
-    - `registerStep1()` — role selection form
-    - `registerStep2()` — KYC form (vendor only)
-    - `registerStep3()` — credentials + OTP sending
-    - `verifyOtp()` — validate OTP, create user, send welcome email
-    - `resendOtp()` — regenerate and resend OTP
-    - `forgotPassword()` — password reset request
-    - `resetPassword()` — token validation + password change
-  - **Estimated effort:** 3-4 hours
+- **Status:** ✅ COMPLETE
+- **Completed:**
+  - ✅ `registerStep1()` — role selection
+  - ✅ `registerStep2()` — KYC form (vendor only)
+  - ✅ `registerStep3()` — credentials + OTP sending
+  - ✅ `verifyOtp()` — validate OTP, mark email verified, send welcome email
+  - ✅ `resendOtp()` — regenerate and resend OTP
+  - ✅ `forgotPassword()` — password reset request with token
+  - ✅ `resetPassword()` — token validation + password change
+  - ✅ OTP service (6-digit codes, 10min expiry)
+  - ✅ Step validators (Vine)
+  - ✅ Email templates (OTP, welcome, password reset)
+  - ✅ Routes wired up for all auth flows
+  - **Actual effort:** 4 hours
 
 #### Core Controllers Implementation
 - **ProductsController**
@@ -218,36 +237,43 @@
 
 | Task | Effort | Cumulative |
 |---|---|---|
-| Auth system (multi-step + OTP) | 4h | 4h |
-| 6 Core controllers (full implementation) | 10h | 14h |
-| Routes configuration | 1.5h | 15.5h |
-| 20 Inertia pages | 14h | 29.5h |
-| Validators | 1h | 30.5h |
-| Email templates (3 more) | 1h | 31.5h |
-| Testing & manual QA | 5h | 36.5h |
-| **Total estimated remaining** | **~37 hours** | |
+| ✅ Tailwind v4 migration | 0.5h | 0.5h |
+| ✅ Auth system (multi-step + OTP) | 4h | 4.5h |
+| **6 Core controllers** (full implementation) | 10h | 14.5h |
+| **Routes configuration** (update for controllers) | 1h | 15.5h |
+| **20 Inertia pages** | 14h | 29.5h |
+| **Validators** (entity validators) | 1h | 30.5h |
+| **Additional email templates** | 0.5h | 31h |
+| **Testing & manual QA** | 5h | 36h |
+| **Total estimated remaining** | **~32 hours** | |
 
 ---
 
 ## How to Continue
 
-1. **Auth system** — Most blocking, start here
-   - Implement multi-step registration with session storage
-   - Add OTP generation/verification logic
-   - Wire up email sending
-   - Test end-to-end
+1. **Core Controllers** (Next Priority) — 10 hours
+   - Priority A (Simplest first):
+     - `ProductsController.index()`, `show()` — GET endpoints
+     - `ProductsController.store()` — vendor creates product
+     - `AffiliateLinksController.trackClick()` — public endpoint, critical for affiliate tracking
+   - Priority B (Business Logic):
+     - `OrdersController.processOrder()` — most complex, uses RevenueService
+     - `AffiliateLinksController` full CRUD
+     - `ReviewsController` full implementation
+   - Priority C (Admin/Newsletter):
+     - `AdminController.getPlatformStats()`
+     - `NewsletterController` endpoints
+   
+2. **Routes** — Once controllers done, wire them in start/routes.ts
 
-2. **Core controllers** — Implement in this order:
-   - `ProductsController` — simplest CRUD
-   - `AffiliateLinksController.trackClick` — critical public endpoint
-   - `OrdersController.processOrder` — most complex business logic
-   - Remaining controllers (Reviews, Newsletter, Admin)
+3. **Pages** — Port from existing React app (plenty-value-hub/src/pages/) or write fresh Inertia components
+   - Start with Priority 1 pages (auth, home) — mostly UI
+   - Then Priority 2-5 dashboards
 
-3. **Routes** — Once controllers done, wire them up
-
-4. **Pages** — Port from `plenty-value-hub/src/pages/` or rewrite Inertia components, prioritized above
-
-5. **Testing** — E2E test each user journey (vendor signup → product listing, affiliate signup → generate link → track click → purchase)
+4. **Testing** — E2E test critical journeys:
+   - Vendor: signup → product listing → product approval
+   - Affiliate: signup → generate link → track click
+   - Order flow: product purchase → revenue split
 
 ---
 
