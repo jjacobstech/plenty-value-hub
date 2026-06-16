@@ -23,7 +23,7 @@ export const registerStep3Validator = vine.create({
 })
 
 export const verifyOtpValidator = vine.create({
-  otpCode: vine.string().length(6).regex(/^\d+$/),
+  otpCode: vine.string().minLength(6).maxLength(6).regex(/^\d+$/),
 })
 
 export const forgotPasswordValidator = vine.create({
