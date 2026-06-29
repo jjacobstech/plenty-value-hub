@@ -11,6 +11,24 @@ export default class UserTransformer extends BaseTransformer<User> {
       'createdAt',
       'updatedAt',
       'initials',
+      // Shared profile fields
+      'profilePicture',
+      'bio',
+      'website',
+      'instagram',
+      'twitter',
+      'youtube',
+      'location',
+      'phone',
+      // Affiliate-specific
+      'niche',
+      'marketingChannels',
+      // Vendor-specific
+      'businessName',
+      'businessDescription',
+      'businessLogo',
+      'coverBanner',
+      'productCategories',
     ])
   }
 }

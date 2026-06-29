@@ -1,47 +1,70 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatUSD as formatNGN } from '@/lib/currency';
 import { format } from 'date-fns';
 import { Wallet, Clock, CheckCircle2, Download, Banknote } from 'lucide-react';
 import { toast } from 'sonner';
-
-function SummaryCard({ title, value, icon: Icon, bgClass, textClass }) {
-  return (
-    <Card>
-      <CardContent className={`p-5 ${bgClass} rounded-xl`}>
-        <div className="flex items-center justify-between">
-          <div>
-            <p className={`text-sm font-medium ${textClass} opacity-80`}>{title}</p>
-            <p className={`text-2xl font-bold mt-1 ${textClass}`}>{value}</p>
-          </div>
-          <Icon className={`w-8 h-8 ${textClass} opacity-40`} />
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 type VendorEarningsProps = {
-  earnings: any
+  user: any
+  orders: any[]
 }
 
-
 export default function VendorEarnings(props: VendorEarningsProps) {
-  const { earnings } = props
-  const [user, setUser] = useState(null);
-  useEffect(() => { [].then(setUser); }, []);
+  const { orders } = props
 
+  const completedRevenue = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.vendorPayout || 0), 0);
+  const pendingRevenue = orders.filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.vendorPayout || 0), 0);
+  const totalCommissions = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.commissionAmount || 0), 0);
 
-  const completedRevenue = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.vendor_payout || 0), 0);
-  const pendingRevenue = orders.filter(o => o.status === 'pending').reduce((sum, o) => sum + (o.vendor_payout || 0), 0);
-  const totalCommissions = orders.filter(o => o.status === 'completed').reduce((sum, o) => sum + (o.commission_amount || 0), 0);
+  const exportToPDF = () => {
+    const doc = new jsPDF()
+    const exportDate = format(new Date(), 'MMMM d, yyyy')
 
-  const statusStyles = {
+    doc.setFontSize(18)
+    doc.setTextColor(0, 24, 69)
+    doc.text('Vendor Earnings Report', 14, 20)
+
+    doc.setFontSize(10)
+    doc.setTextColor(100)
+    doc.text(`Exported: ${exportDate}`, 14, 28)
+
+    doc.setFontSize(11)
+    doc.setTextColor(30)
+    doc.text('Summary', 14, 40)
+    doc.setFontSize(10)
+    doc.setTextColor(80)
+    doc.text(`Total Earned (Confirmed): ${formatNGN(completedRevenue)}`, 14, 48)
+    doc.text(`Pending Revenue: ${formatNGN(pendingRevenue)}`, 14, 55)
+    doc.text(`Affiliate Commissions Paid: ${formatNGN(totalCommissions)}`, 14, 62)
+
+    autoTable(doc, {
+      startY: 72,
+      head: [['Product', 'Date', 'Sale Amount', 'Platform Fee', 'Affiliate Comm.', 'Your Payout', 'Status']],
+      body: orders.map(o => [
+        o.productName,
+        format(new Date(o.createdAt), 'MMM d, yyyy'),
+        formatNGN(o.amount),
+        formatNGN(o.platformFee),
+        formatNGN(o.commissionAmount),
+        formatNGN(o.vendorPayout),
+        o.status,
+      ]),
+      headStyles: { fillColor: [0, 24, 69] },
+      alternateRowStyles: { fillColor: [245, 250, 245] },
+      styles: { fontSize: 8 },
+    })
+
+    doc.save(`vendor-earnings-${format(new Date(), 'yyyy-MM-dd')}.pdf`)
+    toast.success('PDF exported successfully!')
+  }
+
+  const statusStyles: Record<string, string> = {
     completed: 'bg-green-100 text-green-700',
     pending: 'bg-amber-100 text-amber-700',
     refunded: 'bg-red-100 text-red-700',
@@ -49,14 +72,15 @@ export default function VendorEarnings(props: VendorEarningsProps) {
   };
 
   return (
+    <DashboardLayout role="vendor">
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold">Earnings & Payouts</h1>
           <p className="text-muted-foreground text-sm">Track your revenue and withdrawal history</p>
         </div>
-        <Button variant="outline" className="gap-2" onClick={() => toast.info('Export coming soon')}>
-          <Download className="w-4 h-4" /> Export
+        <Button variant="outline" className="gap-2" onClick={exportToPDF}>
+          <Download className="w-4 h-4" /> Export PDF
         </Button>
       </div>
 
@@ -93,7 +117,6 @@ export default function VendorEarnings(props: VendorEarningsProps) {
         </Card>
       </div>
 
-      {/* Payout Methods Info */}
       <Card className="border-[#81C14B]/30 bg-[#81C14B]/5">
         <CardContent className="p-5">
           <h3 className="font-semibold text-sm mb-2">💰 Payout Methods (USD)</h3>
@@ -112,7 +135,7 @@ export default function VendorEarnings(props: VendorEarningsProps) {
         <CardHeader>
           <CardTitle className="text-base font-semibold">Transaction History</CardTitle>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {orders.length > 0 ? (
             <Table>
               <TableHeader>
@@ -129,14 +152,14 @@ export default function VendorEarnings(props: VendorEarningsProps) {
               <TableBody>
                 {orders.map(o => (
                   <TableRow key={o.id}>
-                    <TableCell className="font-medium">{o.product_name}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">{format(new Date(o.created_date), 'MMM d, yyyy')}</TableCell>
+                    <TableCell className="font-medium">{o.productName}</TableCell>
+                    <TableCell className="text-muted-foreground text-sm">{format(new Date(o.createdAt), 'MMM d, yyyy')}</TableCell>
                     <TableCell>{formatNGN(o.amount)}</TableCell>
-                    <TableCell className="text-muted-foreground">{formatNGN(o.platform_fee)}</TableCell>
-                    <TableCell className="text-purple-600">{formatNGN(o.commission_amount)}</TableCell>
-                    <TableCell className="font-semibold text-green-600">{formatNGN(o.vendor_payout)}</TableCell>
+                    <TableCell className="text-muted-foreground">{formatNGN(o.platformFee)}</TableCell>
+                    <TableCell className="text-purple-600">{formatNGN(o.commissionAmount)}</TableCell>
+                    <TableCell className="font-semibold text-green-600">{formatNGN(o.vendorPayout)}</TableCell>
                     <TableCell>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[o.status] || 'bg-slate-100 text-slate-600'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[o.status] ?? 'bg-slate-100 text-slate-600'}`}>
                         {o.status}
                       </span>
                     </TableCell>
@@ -150,7 +173,6 @@ export default function VendorEarnings(props: VendorEarningsProps) {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }
-
-

@@ -1,17 +1,17 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatUSD as formatNGN } from '@/lib/currency';
-import { format, subDays, startOfMonth } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend, AreaChart, Area, LineChart, Line
+  PieChart, Pie, Cell, Legend, AreaChart, Area
 } from 'recharts';
-import { Package, ShoppingBag, TrendingUp, BarChart3, Users } from 'lucide-react';
+import { Package, ShoppingBag, TrendingUp, Users } from 'lucide-react';
 
 const COLORS = ['#F4A300', '#81C14B', '#715AFF', '#001845', '#e11d48', '#0891b2'];
 
-function KpiCard({ title, value, icon: Icon, color = '#F4A300' }) {
+function KpiCard({ title, value, icon: Icon, color = '#F4A300' }: any) {
   return (
     <Card>
       <CardContent className="p-5">
@@ -29,54 +29,47 @@ function KpiCard({ title, value, icon: Icon, color = '#F4A300' }) {
   );
 }
 
-
 type VendorAnalyticsProps = {
-  analytics: any
+  user: any
+  orders: any[]
+  products: any[]
 }
 
-
 export default function VendorAnalytics(props: VendorAnalyticsProps) {
-  const { analytics } = props
-  const [user, setUser] = useState(null);
-  useEffect(() => { [].then(setUser); }, []);
+  const { orders, products } = props
 
-
-
-  
   const completedOrders = orders.filter(o => o.status === 'completed');
-  const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.vendor_payout || 0), 0);
+  const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.vendorPayout || 0), 0);
   const totalOrders = completedOrders.length;
-  const affiliateSales = completedOrders.filter(o => o.affiliate_id).length;
-  const activeAffiliates = new Set(completedOrders.filter(o => o.affiliate_id).map(o => o.affiliate_id)).size;
+  const affiliateSales = completedOrders.filter(o => o.affiliateId).length;
+  const activeAffiliates = new Set(completedOrders.filter(o => o.affiliateId).map(o => o.affiliateId)).size;
 
-  // 30-day revenue trend
   const last30 = Array.from({ length: 30 }, (_, i) => {
     const day = subDays(new Date(), 29 - i);
     const dayStr = format(day, 'MMM d');
     const dayRevenue = completedOrders
-      .filter(o => format(new Date(o.created_date), 'MMM d') === dayStr)
-      .reduce((sum, o) => sum + (o.vendor_payout || 0), 0);
+      .filter(o => format(new Date(o.createdAt), 'MMM d') === dayStr)
+      .reduce((sum, o) => sum + (o.vendorPayout || 0), 0);
     return { day: dayStr, revenue: dayRevenue };
   });
 
-  // Revenue by product (pie)
-  const productSales = {};
+  const productSales: Record<string, any> = {};
   completedOrders.forEach(o => {
-    const key = o.product_name || 'Unknown';
+    const key = o.productName || 'Unknown';
     if (!productSales[key]) productSales[key] = { name: key, value: 0, orders: 0 };
-    productSales[key].value += o.vendor_payout || 0;
+    productSales[key].value += o.vendorPayout || 0;
     productSales[key].orders++;
   });
-  const pieData = Object.values(productSales).sort((a, b) => b.value - a.value).slice(0, 6);
+  const pieData = Object.values(productSales).sort((a: any, b: any) => b.value - a.value).slice(0, 6);
 
-  // Product bar chart
   const productBar = products.slice(0, 8).map(p => ({
     name: (p.name || '').substring(0, 12),
-    sales: p.total_sales || 0,
-    revenue: p.total_revenue || 0,
+    sales: p.totalSales || 0,
+    revenue: p.totalRevenue || 0,
   }));
 
   return (
+    <DashboardLayout role="vendor">
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Sales Analytics</h1>
@@ -90,7 +83,6 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
         <KpiCard title="Active Affiliates" value={activeAffiliates} icon={Users} color="#001845" />
       </div>
 
-      {/* 30-day Revenue Trend */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold">30-Day Revenue Trend</CardTitle>
@@ -117,7 +109,6 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
       </Card>
 
       <div className="grid lg:grid-cols-2 gap-4">
-        {/* Revenue by Product Pie */}
         {pieData.length > 0 && (
           <Card>
             <CardHeader className="pb-2">
@@ -127,7 +118,7 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
-                    <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${(percent * 100).toFixed(0)}%`}>
+                    <Pie data={pieData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ percent }) => `${(percent * 100).toFixed(0)}%`}>
                       {pieData.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
                     </Pie>
                     <Tooltip formatter={v => formatNGN(v)} />
@@ -139,7 +130,6 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
           </Card>
         )}
 
-        {/* Product Sales Bar */}
         {productBar.length > 0 && (
           <Card>
             <CardHeader className="pb-2">
@@ -162,7 +152,6 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
         )}
       </div>
 
-      {/* KPI Summary */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base font-semibold">Performance Metrics</CardTitle>
@@ -189,7 +178,6 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }
-
-

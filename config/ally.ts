@@ -1,17 +1,16 @@
 import env from '#start/env'
-import type { AllyConfig } from '@adonisjs/ally'
+import { defineConfig, services } from '@adonisjs/ally'
 
-const allyConfig = {
-  default: 'google',
-
-  drivers: {
-    google: {
-      driver: 'google',
-      clientId: env.get('GOOGLE_CLIENT_ID'),
-      clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
-      redirectUrl: `${env.get('APP_URL')}/auth/google/callback`,
-    },
-  },
-} as AllyConfig
+const allyConfig = defineConfig({
+  google: services.google({
+    clientId: env.get('GOOGLE_CLIENT_ID'),
+    clientSecret: env.get('GOOGLE_CLIENT_SECRET'),
+    callbackUrl: `${env.get('APP_URL')}/auth/google/callback`,
+  }),
+})
 
 export default allyConfig
+
+declare module '@adonisjs/ally/types' {
+  interface SocialProviders extends InferSocialProviders<typeof allyConfig> {}
+}

@@ -2,6 +2,11 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
+  drive: {
+    fs: {
+      serve: typeof routes['drive.fs.serve']
+    }
+  }
   home: typeof routes['home']
   marketplace: typeof routes['marketplace']
   reviews: typeof routes['reviews'] & {
@@ -27,6 +32,7 @@ export interface ApiDefinition {
   privacy: typeof routes['privacy']
   register: typeof routes['register']
   newAccount: {
+    store: typeof routes['new_account.store']
     registerStep1: typeof routes['new_account.register_step_1']
     registerStep2: typeof routes['new_account.register_step_2']
     registerStep3: typeof routes['new_account.register_step_3']
@@ -55,6 +61,7 @@ export interface ApiDefinition {
     orders: typeof routes['admin.orders']
     analytics: typeof routes['admin.analytics']
     getPlatformStats: typeof routes['admin.get_platform_stats']
+    updateUser: typeof routes['admin.update_user']
   }
   vendor: {
     dashboard: typeof routes['vendor.dashboard']
@@ -88,5 +95,10 @@ export interface ApiDefinition {
     show: typeof routes['orders.show']
     processOrder: typeof routes['orders.process_order']
     updateStatus: typeof routes['orders.update_status']
+  }
+  profile: {
+    updateAffiliate: typeof routes['profile.update_affiliate']
+    updateVendor: typeof routes['profile.update_vendor']
+    uploadImage: typeof routes['profile.upload_image']
   }
 }

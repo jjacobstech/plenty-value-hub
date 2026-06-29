@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -37,14 +37,13 @@ function KpiCard({ title, value, sub, icon: Icon, color = 'primary' }) {
 
 
 type AffiliateDashboardProps = {
-  links: any[], earnings: any
+  user: any
+  links: any[]
+  orders: any[]
 }
 
-
 export default function AffiliateDashboard(props: AffiliateDashboardProps) {
-  const { links, earnings } = props
-  const [user, setUser] = useState(null);
-  useEffect(() => { [].then(setUser); }, []);
+  const { user, links, orders } = props
 
 
 
@@ -69,6 +68,7 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
   const topLinks = [...links].sort((a, b) => (b.commission_earned || 0) - (a.commission_earned || 0)).slice(0, 5);
 
   return (
+    <DashboardLayout role="affiliate">
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -78,7 +78,7 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
             Affiliate Dashboard
           </h1>
           <p className="text-muted-foreground text-sm mt-0.5">
-            Welcome back{user?.full_name ? `, ${user.full_name}` : ''}! Keep growing your income.
+            Welcome back{user?.fullName ? `, ${user.fullName}` : ''}! Keep growing your income.
           </p>
         </div>
         <Link href="/affiliate/products">
@@ -191,7 +191,7 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
           <CardHeader className="pb-2">
             <CardTitle className="text-base font-semibold">My Affiliate Links</CardTitle>
           </CardHeader>
-          <CardContent className="p-0">
+          <CardContent className="p-0 overflow-x-auto">
             {links.length > 0 ? (
               <Table>
                 <TableHeader>
@@ -227,7 +227,6 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
         </Card>
       </div>
     </div>
+    </DashboardLayout>
   );
 }
-
-

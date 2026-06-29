@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { formatUSD as formatNGN } from '@/lib/currency';
 import { format, subDays } from 'date-fns';
@@ -33,14 +33,13 @@ function KpiCard({ title, value, sub, icon: Icon, color = '#715AFF' }) {
 
 
 type AffiliatePerformanceProps = {
+  user: any
+  links: any[]
   performance: any
 }
 
-
 export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
-  const { performance } = props
-  const [user, setUser] = useState(null);
-  useEffect(() => { [].then(setUser); }, []);
+  const { links, performance } = props
 
 
 
@@ -76,6 +75,7 @@ export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
   const pieData = Object.entries(catMap).map(([name, value]) => ({ name, value })).slice(0, 5);
 
   return (
+    <DashboardLayout role="affiliate">
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Performance Analytics</h1>
@@ -191,7 +191,6 @@ export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
         </Card>
       )}
     </div>
+    </DashboardLayout>
   );
 }
-
-

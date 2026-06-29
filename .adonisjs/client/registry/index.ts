@@ -6,6 +6,12 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
+  'drive.fs.serve': {
+    methods: ["GET","HEAD"],
+    pattern: '/uploads/*',
+    tokens: [{"old":"/uploads/*","type":0,"val":"uploads","end":""},{"old":"/uploads/*","type":2,"val":"*","end":""}],
+    types: placeholder as Registry['drive.fs.serve']['types'],
+  },
   'home': {
     methods: ["GET","HEAD"],
     pattern: '/',
@@ -53,6 +59,12 @@ const routes = {
     pattern: '/auth/signup',
     tokens: [{"old":"/auth/signup","type":0,"val":"auth","end":""},{"old":"/auth/signup","type":0,"val":"signup","end":""}],
     types: placeholder as Registry['register']['types'],
+  },
+  'new_account.store': {
+    methods: ["POST"],
+    pattern: '/auth/signup',
+    tokens: [{"old":"/auth/signup","type":0,"val":"auth","end":""},{"old":"/auth/signup","type":0,"val":"signup","end":""}],
+    types: placeholder as Registry['new_account.store']['types'],
   },
   'new_account.register_step_1': {
     methods: ["POST"],
@@ -342,6 +354,24 @@ const routes = {
     tokens: [{"old":"/api/reviews","type":0,"val":"api","end":""},{"old":"/api/reviews","type":0,"val":"reviews","end":""}],
     types: placeholder as Registry['reviews.store']['types'],
   },
+  'profile.update_affiliate': {
+    methods: ["PUT"],
+    pattern: '/api/profile/affiliate',
+    tokens: [{"old":"/api/profile/affiliate","type":0,"val":"api","end":""},{"old":"/api/profile/affiliate","type":0,"val":"profile","end":""},{"old":"/api/profile/affiliate","type":0,"val":"affiliate","end":""}],
+    types: placeholder as Registry['profile.update_affiliate']['types'],
+  },
+  'profile.update_vendor': {
+    methods: ["PUT"],
+    pattern: '/api/profile/vendor',
+    tokens: [{"old":"/api/profile/vendor","type":0,"val":"api","end":""},{"old":"/api/profile/vendor","type":0,"val":"profile","end":""},{"old":"/api/profile/vendor","type":0,"val":"vendor","end":""}],
+    types: placeholder as Registry['profile.update_vendor']['types'],
+  },
+  'profile.upload_image': {
+    methods: ["POST"],
+    pattern: '/api/profile/upload-image',
+    tokens: [{"old":"/api/profile/upload-image","type":0,"val":"api","end":""},{"old":"/api/profile/upload-image","type":0,"val":"profile","end":""},{"old":"/api/profile/upload-image","type":0,"val":"upload-image","end":""}],
+    types: placeholder as Registry['profile.upload_image']['types'],
+  },
   'admin.get_platform_stats': {
     methods: ["GET","HEAD"],
     pattern: '/api/stats',
@@ -359,6 +389,12 @@ const routes = {
     pattern: '/api/orders/:id',
     tokens: [{"old":"/api/orders/:id","type":0,"val":"api","end":""},{"old":"/api/orders/:id","type":0,"val":"orders","end":""},{"old":"/api/orders/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['orders.update_status']['types'],
+  },
+  'admin.update_user': {
+    methods: ["PUT"],
+    pattern: '/api/users/:id',
+    tokens: [{"old":"/api/users/:id","type":0,"val":"api","end":""},{"old":"/api/users/:id","type":0,"val":"users","end":""},{"old":"/api/users/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['admin.update_user']['types'],
   },
   'reviews.approve': {
     methods: ["POST"],

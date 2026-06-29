@@ -9,7 +9,7 @@ export default class extends BaseSchema {
       table.string('full_name').nullable()
       table.string('email', 254).notNullable().unique()
       table.string('password').notNullable()
-      table.enum('role', ['admin', 'vendor', 'affiliate', 'consumer']).defaultTo('consumer')
+      table.enum('role', ['admin', 'vendor', 'affiliate']).notNullable()
       table.timestamp('email_verified_at').nullable()
       table.string('otp_code', 6).nullable()
       table.timestamp('otp_expires_at').nullable()

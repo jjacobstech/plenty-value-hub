@@ -1,0 +1,55 @@
+{
+  "name": "AffiliateLink",
+  "type": "object",
+  "properties": {
+    "affiliate_id": {
+      "type": "string",
+      "description": "User ID of the affiliate"
+    },
+    "product_id": {
+      "type": "string"
+    },
+    "product_name": {
+      "type": "string"
+    },
+    "link_code": {
+      "type": "string",
+      "description": "Unique tracking code"
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0
+    },
+    "conversions": {
+      "type": "number",
+      "default": 0
+    },
+    "revenue": {
+      "type": "number",
+      "default": 0
+    },
+    "commission_earned": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "paused",
+        "expired"
+      ],
+      "default": "active"
+    },
+    "sub_id": {
+      "type": "string"
+    },
+    "campaign_name": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "affiliate_id",
+    "product_id"
+  ]
+}

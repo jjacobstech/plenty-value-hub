@@ -13,6 +13,7 @@ export const controllers = {
   Orders: () => import('#controllers/orders_controller'),
   Pages: () => import('#controllers/pages_controller'),
   Products: () => import('#controllers/products_controller'),
+  Profile: () => import('#controllers/profile_controller'),
   Reviews: () => import('#controllers/reviews_controller'),
   Session: () => import('#controllers/session_controller'),
 }

@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
@@ -17,9 +17,7 @@ type AffiliateLinksProps = {
 
 export default function AffiliateLinks(props: AffiliateLinksProps) {
   const { links } = props
-  const [user, setUser] = useState(null);
   const [copiedId, setCopiedId] = useState(null);
-  useEffect(() => { [].then(setUser); }, []);
 
 
   const handleCopy = (link) => {
@@ -35,8 +33,9 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
   const totalEarned = links.reduce((sum, l) => sum + (l.commission_earned || 0), 0);
 
   return (
+    <DashboardLayout role="affiliate">
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">
             <Link2 className="w-6 h-6 text-[#715AFF]" />
@@ -44,7 +43,7 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
           </h1>
           <p className="text-muted-foreground text-sm">Manage and share your tracking links</p>
         </div>
-        <Link href="/affiliate/products">
+        <Link href="/affiliate/products" className="self-start sm:self-auto">
           <Button style={{ backgroundColor: '#81C14B' }} className="text-white hover:opacity-90">
             + Get New Link
           </Button>
@@ -52,7 +51,7 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
       </div>
 
       {/* Summary row */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
             <p className="text-2xl font-bold">{totalClicks.toLocaleString()}</p>
@@ -74,7 +73,7 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           {links.length > 0 ? (
             <Table>
               <TableHeader>
@@ -128,7 +127,6 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }
-
-

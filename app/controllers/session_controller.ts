@@ -5,7 +5,7 @@ function dashboardForRole(role: string) {
   if (role === 'admin') return '/admin'
   if (role === 'vendor') return '/vendor'
   if (role === 'affiliate') return '/affiliate'
-  return '/'
+  return '/marketplace'
 }
 
 export default class SessionController {

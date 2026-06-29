@@ -5,7 +5,7 @@ import BrandLogo from '@/components/shared/BrandLogo';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import { apiClient } from '@/api/http-client';
+import api from '@/api/http-client';
 
 const FOOTER_IMAGE = 'https://media.base44.com/images/public/6a235579fdf4cce1a3f803a3/e59786943_generated_image.png';
 
@@ -39,8 +39,8 @@ export default function Footer() {
     if (!email || subscribing) return;
     setSubscribing(true);
     try {
-      const res = await apiClient.post('/newsletters', { email, source: 'footer' });
-      if (res?.already_subscribed) {
+      const res = await api.post('/newsletters', { email, source: 'footer' });
+      if (res?.data?.already_subscribed) {
         toast.success("You're already subscribed! Check your inbox for our latest edition.");
       } else {
         toast.success("Subscribed! Check your inbox for a confirmation email.");
@@ -87,7 +87,7 @@ export default function Footer() {
           {/* Brand — 2 cols */}
           <div className="sm:col-span-2">
             <div className="mb-5">
-              <BrandLogo size={36} darkBg={true} linkTo="/" />
+              <BrandLogo size={35} className="bg-white p-2 rounded-md" darkBg={true} linkTo="/" />
             </div>
             <p className="text-sm leading-relaxed mb-5" style={{ color: 'rgba(255,255,255,0.55)' }}>
               Africa's leading affiliate marketplace and product review platform — connecting consumers, vendors, and affiliates.

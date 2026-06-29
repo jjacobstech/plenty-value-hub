@@ -3,41 +3,42 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
-import { Search, Shield, CheckCircle } from 'lucide-react';
+import { Search, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import api from '@/api/http-client';
 
 type AdminUsersProps = {
   users: any[]
 }
 
-
 export default function AdminUsers(props: AdminUsersProps) {
-  const { users } = props
+  const [users, setUsers] = useState(props.users)
   const [search, setSearch] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
 
-  
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => apiClient.put(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-users']);
-      toast.success('User updated');
-    },
-  });
+  const updateRole = async (id: number, role: string) => {
+    try {
+      await api.put(`/api/users/${id}`, { role })
+      setUsers(prev => prev.map(u => u.id === id ? { ...u, role } : u))
+      toast.success('User updated')
+    } catch {
+      toast.error('Failed to update user')
+    }
+  }
 
   const filtered = users.filter(u => {
-    const matchSearch = !search || u.full_name?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase());
+    const matchSearch = !search || u.fullName?.toLowerCase().includes(search.toLowerCase()) || u.email?.toLowerCase().includes(search.toLowerCase());
     const matchRole = roleFilter === 'all' || u.role === roleFilter;
     return matchSearch && matchRole;
   });
 
-  const roleColors = { admin: 'destructive', vendor: 'default', affiliate: 'secondary', consumer: 'outline' };
+  const roleColors: Record<string, string> = { admin: 'destructive', vendor: 'default', affiliate: 'secondary', consumer: 'outline' };
 
   return (
+    <DashboardLayout role="admin">
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Users</h1>
@@ -62,7 +63,7 @@ export default function AdminUsers(props: AdminUsersProps) {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -77,19 +78,19 @@ export default function AdminUsers(props: AdminUsersProps) {
             <TableBody>
               {filtered.map(user => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.full_name || '—'}</TableCell>
+                  <TableCell className="font-medium">{user.fullName || '—'}</TableCell>
                   <TableCell className="text-muted-foreground">{user.email}</TableCell>
                   <TableCell>
-                    <Badge variant={roleColors[user.role] || 'outline'} className="text-xs capitalize">{user.role || 'consumer'}</Badge>
+                    <Badge variant={roleColors[user.role] as any ?? 'outline'} className="text-xs capitalize">{user.role || 'consumer'}</Badge>
                   </TableCell>
                   <TableCell>
-                    {user.is_verified ? <CheckCircle className="w-4 h-4 text-green-600" /> : <span className="text-muted-foreground text-xs">No</span>}
+                    {user.emailVerifiedAt ? <CheckCircle className="w-4 h-4 text-green-600" /> : <span className="text-muted-foreground text-xs">No</span>}
                   </TableCell>
                   <TableCell className="text-muted-foreground text-sm">
-                    {user.created_date ? format(new Date(user.created_date), 'MMM d, yyyy') : '—'}
+                    {user.createdAt ? format(new Date(user.createdAt), 'MMM d, yyyy') : '—'}
                   </TableCell>
                   <TableCell>
-                    <Select value={user.role || 'consumer'} onValueChange={v => updateMutation.mutate({ id: user.id, data: { role: v } })}>
+                    <Select value={user.role || 'consumer'} onValueChange={v => updateRole(user.id, v)}>
                       <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="consumer">Consumer</SelectItem>
@@ -106,7 +107,6 @@ export default function AdminUsers(props: AdminUsersProps) {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }
-
-

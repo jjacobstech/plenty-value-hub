@@ -3,45 +3,43 @@ import React, { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { formatUSD as formatNGN } from '@/lib/currency';
+import api from '@/api/http-client';
 
 type AdminOrdersProps = {
   orders: any[]
 }
 
-
 export default function AdminOrders(props: AdminOrdersProps) {
-  const { orders } = props
+  const [orders, setOrders] = useState(props.orders)
   const [statusFilter, setStatusFilter] = useState('all');
 
-  
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => [],
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-orders']);
-      toast.success('Order updated');
-    },
-    onError: (err) => {
-      toast.error(err.response?.data?.error || 'Failed to update order');
-    },
-  });
+  const updateStatus = async (id: number, status: string) => {
+    try {
+      await api.put(`/api/orders/${id}`, { status })
+      setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o))
+      toast.success('Order updated')
+    } catch {
+      toast.error('Failed to update order')
+    }
+  }
 
   const filtered = statusFilter === 'all' ? orders : orders.filter(o => o.status === statusFilter);
-  const statusColors = { pending: 'secondary', completed: 'default', refunded: 'destructive', cancelled: 'outline' };
+  const statusColors: Record<string, string> = { pending: 'secondary', completed: 'default', refunded: 'destructive', cancelled: 'outline' };
 
   return (
+    <DashboardLayout role="admin">
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold">Orders</h1>
           <p className="text-muted-foreground">Manage marketplace transactions</p>
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectTrigger className="w-full sm:w-40"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
             <SelectItem value="pending">Pending</SelectItem>
@@ -52,7 +50,7 @@ export default function AdminOrders(props: AdminOrdersProps) {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -69,17 +67,17 @@ export default function AdminOrders(props: AdminOrdersProps) {
             <TableBody>
               {filtered.map(o => (
                 <TableRow key={o.id}>
-                  <TableCell className="font-mono text-xs">{o.order_number || o.id?.slice(-8)}</TableCell>
-                  <TableCell className="font-medium">{o.product_name}</TableCell>
-                  <TableCell className="text-muted-foreground text-sm">{format(new Date(o.created_date), 'MMM d, yyyy')}</TableCell>
+                  <TableCell className="font-mono text-xs">{o.orderNumber || String(o.id).slice(-8)}</TableCell>
+                  <TableCell className="font-medium">{o.productName}</TableCell>
+                  <TableCell className="text-muted-foreground text-sm">{format(new Date(o.createdAt), 'MMM d, yyyy')}</TableCell>
                   <TableCell>{formatNGN(o.amount)}</TableCell>
-                  <TableCell className="text-green-600">{formatNGN(o.commission_amount)}</TableCell>
-                  <TableCell>{formatNGN(o.platform_fee)}</TableCell>
+                  <TableCell className="text-green-600">{formatNGN(o.commissionAmount)}</TableCell>
+                  <TableCell>{formatNGN(o.platformFee)}</TableCell>
                   <TableCell>
-                    <Badge variant={statusColors[o.status] || 'secondary'} className="text-xs capitalize">{o.status}</Badge>
+                    <Badge variant={statusColors[o.status] as any ?? 'secondary'} className="text-xs capitalize">{o.status}</Badge>
                   </TableCell>
                   <TableCell>
-                    <Select value={o.status} onValueChange={v => updateMutation.mutate({ id: o.id, data: { status: v } })}>
+                    <Select value={o.status} onValueChange={v => updateStatus(o.id, v)}>
                       <SelectTrigger className="w-28 h-8 text-xs"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="pending">Pending</SelectItem>
@@ -99,7 +97,6 @@ export default function AdminOrders(props: AdminOrdersProps) {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }
-
-

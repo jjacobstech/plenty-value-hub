@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Search, Link2, TrendingUp, Star, Copy, Check, Zap, ShoppingBag } from 'lucide-react';
 import { formatUSD as formatNGN } from '@/lib/currency';
 import { toast } from 'sonner';
+import api from '@/api/http-client';
 
 const CATEGORIES = [
   { label: 'All Categories', value: 'all' },
@@ -31,47 +32,43 @@ const CAT_LABELS = {
 };
 
 type AffiliateProductsProps = {
+  user: any
   products: any[]
 }
 
-
 export default function AffiliateProducts(props: AffiliateProductsProps) {
-  const { products } = props
-  const [user, setUser] = useState(null);
+  const { user, products } = props
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [sortBy, setSortBy] = useState('commission');
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
 
-  useEffect(() => { [].then(setUser); }, []);
-
-
-  const createLinkMutation = useMutation({
-    mutationFn: (product) => apiClient.post({
-      affiliate_id: user.id,
-      product_id: product.id,
-      product_name: product.name,
-      link_code: `${user.id?.slice(-6)}-${product.id?.slice(-6)}-${Date.now().toString(36)}`,
-    }),
-    onSuccess: (data, product) => {
-      queryClient.invalidateQueries(['affiliate-links']);
-      toast.success('Affiliate link created! Ready to share.');
-      setSelectedProduct({ ...product, link: data });
-    },
-  });
+  const handlePromote = async (product: any) => {
+    setIsCreating(true)
+    try {
+      const { data } = await api.post('/api/affiliate-links', { productId: product.id })
+      toast.success('Affiliate link created! Ready to share.')
+      setSelectedProduct({ ...product, link: data })
+    } catch {
+      toast.error('Failed to create affiliate link')
+    } finally {
+      setIsCreating(false)
+    }
+  };
 
   const filtered = useMemo(() => {
     let result = [...products];
     if (search) {
       const q = search.toLowerCase();
-      result = result.filter(p => p.name?.toLowerCase().includes(q) || p.vendor_name?.toLowerCase().includes(q));
+      result = result.filter(p => p.name?.toLowerCase().includes(q) || p.vendorName?.toLowerCase().includes(q));
     }
     if (category !== 'all') result = result.filter(p => p.category === category);
-    if (sortBy === 'commission') result.sort((a, b) => (b.commission_rate || 0) - (a.commission_rate || 0));
-    if (sortBy === 'gravity') result.sort((a, b) => (b.gravity_score || 0) - (a.gravity_score || 0));
+    if (sortBy === 'commission') result.sort((a, b) => (b.commissionRate || 0) - (a.commissionRate || 0));
+    if (sortBy === 'gravity') result.sort((a, b) => (b.gravityScore || 0) - (a.gravityScore || 0));
     if (sortBy === 'price') result.sort((a, b) => b.price - a.price);
-    if (sortBy === 'earnings') result.sort((a, b) => (b.avg_earnings_per_sale || 0) - (a.avg_earnings_per_sale || 0));
+    if (sortBy === 'earnings') result.sort((a, b) => (b.avgEarningsPerSale || 0) - (a.avgEarningsPerSale || 0));
     return result;
   }, [products, search, category, sortBy]);
 
@@ -83,11 +80,12 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
   };
 
   const commissionAmount = (product) => {
-    if (!product.price || !product.commission_rate) return 0;
-    return (product.price * product.commission_rate) / 100;
+    if (!product.price || !product.commissionRate) return 0;
+    return (product.price * product.commissionRate) / 100;
   };
 
   return (
+    <DashboardLayout role="affiliate">
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -129,8 +127,8 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4 flex-1 min-w-0">
                   <div className="w-16 h-16 rounded-xl bg-muted shrink-0 overflow-hidden border">
-                    {product.image_url ? (
-                      <img src={product.image_url} alt="" className="w-full h-full object-cover" />
+                    {product.imageUrl && /^https?:\/\//.test(product.imageUrl) ? (
+                      <img src={product.imageUrl} alt="" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-[#81C14B]/10">
                         <span className="font-display text-[#81C14B]/60 text-xl font-bold">{product.name?.[0]}</span>
@@ -140,14 +138,14 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <p className="font-semibold">{product.name}</p>
-                      {product.is_featured && (
+                      {product.isFeatured && (
                         <span className="text-xs bg-[#81C14B]/10 text-[#81C14B] px-2 py-0.5 rounded-full font-medium">Featured</span>
                       )}
-                      {product.recurring_billing && (
+                      {product.recurringBilling && (
                         <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">Recurring</span>
                       )}
                     </div>
-                    <p className="text-sm text-muted-foreground">{product.vendor_name || 'Vendor'} · {CAT_LABELS[product.category] || product.category}</p>
+                    <p className="text-sm text-muted-foreground">{product.vendorName || 'Vendor'} · {CAT_LABELS[product.category] || product.category}</p>
                     <p className="text-sm font-semibold mt-0.5">{formatNGN(product.price)}</p>
                   </div>
                 </div>
@@ -155,7 +153,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                 <div className="flex items-center gap-5 flex-wrap">
                   <div className="text-center">
                     <p className="text-xs text-muted-foreground">Commission</p>
-                    <p className="font-bold text-[#81C14B] text-lg">{product.commission_rate}%</p>
+                    <p className="font-bold text-[#81C14B] text-lg">{product.commissionRate}%</p>
                   </div>
                   <div className="text-center hidden sm:block">
                     <p className="text-xs text-muted-foreground">You Earn</p>
@@ -163,7 +161,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                   </div>
                   <div className="text-center hidden sm:block">
                     <p className="text-xs text-muted-foreground">Gravity</p>
-                    <p className="font-bold">{product.gravity_score || 0}</p>
+                    <p className="font-bold">{product.gravityScore || 0}</p>
                   </div>
                   {product.rating && (
                     <div className="text-center hidden md:block">
@@ -178,8 +176,8 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                     style={{ backgroundColor: '#001845' }}
                     className="text-white hover:opacity-90"
                     size="sm"
-                    onClick={() => createLinkMutation.mutate(product)}
-                    disabled={createLinkMutation.isPending || !user}
+                    onClick={() => handlePromote(product)}
+                    disabled={isCreating || !user}
                   >
                     <Link2 className="w-4 h-4 mr-1.5" /> Promote
                   </Button>
@@ -236,6 +234,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
         </DialogContent>
       </Dialog>
     </div>
+    </DashboardLayout>
   );
 }
 

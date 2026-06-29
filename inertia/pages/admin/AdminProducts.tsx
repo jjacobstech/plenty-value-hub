@@ -8,8 +8,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Input } from '@/components/ui/input';
 import { Search, CheckCircle, XCircle, Star } from 'lucide-react';
 import { toast } from 'sonner';
+import api from '@/api/http-client';
 
-const CATEGORY_LABELS = {
+const CATEGORY_LABELS: Record<string, string> = {
   health_fitness: 'Health', business_investing: 'Business', software_saas: 'Software',
   ecommerce: 'E-Commerce', education: 'Education', fashion: 'Fashion', beauty: 'Beauty',
   home_garden: 'Home', technology: 'Tech', finance: 'Finance', digital_services: 'Digital',
@@ -20,20 +21,20 @@ type AdminProductsProps = {
   products: any[]
 }
 
-
 export default function AdminProducts(props: AdminProductsProps) {
-  const { products } = props
+  const [products, setProducts] = useState(props.products)
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
-  
-  const updateMutation = useMutation({
-    mutationFn: ({ id, data }) => apiClient.put(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['admin-all-products']);
-      toast.success('Product updated');
-    },
-  });
+  const updateProduct = async (id: number, data: Record<string, any>) => {
+    try {
+      const { data: updated } = await api.put(`/api/products/${id}`, data)
+      setProducts(prev => prev.map(p => p.id === id ? updated : p))
+      toast.success('Product updated')
+    } catch {
+      toast.error('Failed to update product')
+    }
+  }
 
   const filtered = products.filter(p => {
     const matchSearch = !search || p.name?.toLowerCase().includes(search.toLowerCase());
@@ -41,9 +42,10 @@ export default function AdminProducts(props: AdminProductsProps) {
     return matchSearch && matchStatus;
   });
 
-  const statusColors = { pending: 'secondary', approved: 'default', rejected: 'destructive', archived: 'outline' };
+  const statusColors: Record<string, string> = { pending: 'secondary', approved: 'default', rejected: 'destructive', archived: 'outline' };
 
   return (
+    <DashboardLayout role="admin">
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold">Products</h1>
@@ -67,7 +69,7 @@ export default function AdminProducts(props: AdminProductsProps) {
       </div>
 
       <Card>
-        <CardContent className="p-0">
+        <CardContent className="p-0 overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
@@ -85,29 +87,29 @@ export default function AdminProducts(props: AdminProductsProps) {
               {filtered.map(p => (
                 <TableRow key={p.id}>
                   <TableCell className="font-medium max-w-[200px] truncate">{p.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{p.vendor_name || '—'}</TableCell>
+                  <TableCell className="text-muted-foreground">{p.vendorName || '—'}</TableCell>
                   <TableCell><Badge variant="outline" className="text-xs">{CATEGORY_LABELS[p.category] || p.category}</Badge></TableCell>
                   <TableCell>${p.price?.toFixed(2)}</TableCell>
-                  <TableCell>{p.commission_rate}%</TableCell>
+                  <TableCell>{p.commissionRate}%</TableCell>
                   <TableCell>
-                    <Badge variant={statusColors[p.status] || 'secondary'} className="text-xs capitalize">{p.status}</Badge>
+                    <Badge variant={statusColors[p.status] as any ?? 'secondary'} className="text-xs capitalize">{p.status}</Badge>
                   </TableCell>
                   <TableCell>
                     <Button
                       variant="ghost" size="icon"
-                      onClick={() => updateMutation.mutate({ id: p.id, data: { is_featured: !p.is_featured } })}
+                      onClick={() => updateProduct(p.id, { is_featured: !p.isFeatured })}
                     >
-                      <Star className={`w-4 h-4 ${p.is_featured ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
+                      <Star className={`w-4 h-4 ${p.isFeatured ? 'fill-primary text-primary' : 'text-muted-foreground'}`} />
                     </Button>
                   </TableCell>
                   <TableCell>
                     <div className="flex gap-1">
                       <Button size="sm" variant="ghost" className="text-green-600 h-8 px-2"
-                        onClick={() => updateMutation.mutate({ id: p.id, data: { status: 'approved' } })}>
+                        onClick={() => updateProduct(p.id, { status: 'approved' })}>
                         <CheckCircle className="w-4 h-4" />
                       </Button>
                       <Button size="sm" variant="ghost" className="text-destructive h-8 px-2"
-                        onClick={() => updateMutation.mutate({ id: p.id, data: { status: 'rejected' } })}>
+                        onClick={() => updateProduct(p.id, { status: 'rejected' })}>
                         <XCircle className="w-4 h-4" />
                       </Button>
                     </div>
@@ -119,7 +121,6 @@ export default function AdminProducts(props: AdminProductsProps) {
         </CardContent>
       </Card>
     </div>
+    </DashboardLayout>
   );
 }
-
-

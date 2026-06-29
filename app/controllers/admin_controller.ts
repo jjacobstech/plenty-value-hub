@@ -92,9 +92,7 @@ export default class AdminController {
 
     const activeSubscribers = subscribers.filter((s) => s.status === 'active')
 
-    return response.json({
-      success: true,
-      stats: {
+    return response.json({ success: true, stats: {
         orders: {
           total: orders.length,
           completed: completedOrders.length,
@@ -127,5 +125,17 @@ export default class AdminController {
         revenueByCategory,
       },
     })
+  }
+
+  async updateUser({ params, request, response, auth }: HttpContext) {
+    const currentUser = auth.use('web').user!
+    if (currentUser.role !== 'admin') {
+      return response.status(403).json({ error: 'Forbidden' })
+    }
+    const user = await User.findOrFail(params.id)
+    const { role } = request.only(['role'])
+    user.role = role
+    await user.save()
+    return response.json(user)
   }
 }

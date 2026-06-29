@@ -17,7 +17,7 @@ import mail from '@adonisjs/mail/services/main'
 function dashboardForRole(role: string) {
   if (role === 'vendor') return '/vendor'
   if (role === 'affiliate') return '/affiliate'
-  return '/'
+  return '/marketplace'
 }
 
 export default class NewAccountController {
@@ -157,8 +157,8 @@ export default class NewAccountController {
   async login({ request, response, auth }: HttpContext) {
     const { email, password } = await request.validateUsing(loginValidator)
 
-    await auth.use('web').attempt(email, password)
-    const user = auth.use('web').user!
+    const user = await User.verifyCredentials(email, password)
+    await auth.use('web').login(user)
 
     return response.json({
       success: true,
@@ -219,7 +219,7 @@ export default class NewAccountController {
   }
 
   async store({ request, response, auth }: HttpContext) {
-    const { role, ...payload } = await request.validateUsing(signupValidator)
+    const { role, passwordConfirmation: _, ...payload } = await request.validateUsing(signupValidator)
     const user = await User.create({ ...payload, role: role ?? 'consumer' })
     await auth.use('web').login(user)
     return response.redirect(dashboardForRole(user.role))

@@ -29,6 +29,7 @@ router
   .group(() => {
     // Sign up flow
     router.get('/signup', [controllers.NewAccount, 'create']).as('register')
+    router.post('/signup', [controllers.NewAccount, 'store'])
     router.post('/signup/step1', [controllers.NewAccount, 'registerStep1'])
     router.post('/signup/step2', [controllers.NewAccount, 'registerStep2'])
     router.post('/signup/step3', [controllers.NewAccount, 'registerStep3'])
@@ -140,12 +141,18 @@ router
         // Reviews
         router.post('/reviews', [controllers.Reviews, 'store'])
 
+        // Profile updates
+        router.put('/profile/affiliate', [controllers.Profile, 'updateAffiliate'])
+        router.put('/profile/vendor', [controllers.Profile, 'updateVendor'])
+        router.post('/profile/upload-image', [controllers.Profile, 'uploadImage'])
+
         // Admin endpoints
         router
           .group(() => {
             router.get('/stats', [controllers.Admin, 'getPlatformStats'])
             router.put('/products/:id/approve', [controllers.Products, 'approve'])
             router.put('/orders/:id', [controllers.Orders, 'updateStatus'])
+            router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
           })
           .use(middleware.role(['admin']))

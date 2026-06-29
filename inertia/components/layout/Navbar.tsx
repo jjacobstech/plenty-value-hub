@@ -23,11 +23,10 @@ export default function Navbar({ user, onLogout }) {
 
   const getDashboardLink = () => {
     if (!user) return null;
-    const role = user.role || 'consumer';
-    if (role === 'admin') return '/admin';
-    if (role === 'vendor') return '/vendor';
-    if (role === 'affiliate') return '/affiliate';
-    return '/marketplace';
+    if (user.role === 'admin') return '/admin';
+    if (user.role === 'vendor') return '/vendor';
+    if (user.role === 'affiliate') return '/affiliate';
+    return null;
   };
 
   const isActive = (path) => url === path || url?.startsWith(path + '/');
@@ -100,7 +99,7 @@ export default function Navbar({ user, onLogout }) {
                     <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: '#001845' }}>
                       <User className="w-4 h-4 text-white" />
                     </div>
-                    <span className="font-medium">{user.full_name || 'Account'}</span>
+                    <span className="font-medium">{user.fullName || user.email}</span>
                     <ChevronDown className="w-3.5 h-3.5" />
                   </Button>
                 </DropdownMenuTrigger>

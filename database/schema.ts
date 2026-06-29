@@ -17,7 +17,7 @@ export class AffiliateLinkSchema extends BaseModel {
   @column()
   declare clicks: number | null
   @column()
-  declare commissionEarned: number | null
+  declare commissionEarned: string | null
   @column()
   declare conversions: number | null
   @column.dateTime({ autoCreate: true })
@@ -31,7 +31,7 @@ export class AffiliateLinkSchema extends BaseModel {
   @column()
   declare productName: string | null
   @column()
-  declare revenue: number | null
+  declare revenue: string | null
   @column()
   declare status: string | null
   @column()
@@ -69,13 +69,13 @@ export class OrderSchema extends BaseModel {
   @column()
   declare affiliateLinkId: number | null
   @column()
-  declare amount: number
+  declare amount: string
   @column()
   declare buyerEmail: string | null
   @column()
   declare buyerId: number | null
   @column()
-  declare commissionAmount: number | null
+  declare commissionAmount: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -87,7 +87,7 @@ export class OrderSchema extends BaseModel {
   @column()
   declare paymentMethod: string | null
   @column()
-  declare platformFee: number | null
+  declare platformFee: string | null
   @column()
   declare productId: number | null
   @column()
@@ -99,7 +99,7 @@ export class OrderSchema extends BaseModel {
   @column()
   declare vendorId: number | null
   @column()
-  declare vendorPayout: number | null
+  declare vendorPayout: string | null
 }
 
 export class ProductSchema extends BaseModel {
@@ -108,15 +108,15 @@ export class ProductSchema extends BaseModel {
   @column()
   declare affiliateResources: any | null
   @column()
-  declare avgEarningsPerSale: number | null
+  declare avgEarningsPerSale: string | null
   @column()
   declare billingCycle: string | null
   @column()
   declare category: string
   @column()
-  declare commissionRate: number
+  declare commissionRate: string
   @column()
-  declare conversionRate: number | null
+  declare conversionRate: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
@@ -134,19 +134,19 @@ export class ProductSchema extends BaseModel {
   @column()
   declare name: string
   @column()
-  declare price: number
+  declare price: string
   @column()
   declare productType: string
   @column()
-  declare rating: number | null
+  declare rating: string | null
   @column()
   declare recurringBilling: boolean | null
   @column()
-  declare refundRate: number | null
+  declare refundRate: string | null
   @column()
   declare reviewCount: number | null
   @column()
-  declare salePrice: number | null
+  declare salePrice: string | null
   @column()
   declare shortDescription: string | null
   @column()
@@ -156,7 +156,7 @@ export class ProductSchema extends BaseModel {
   @column()
   declare tags: any | null
   @column()
-  declare totalRevenue: number | null
+  declare totalRevenue: string | null
   @column()
   declare totalSales: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
@@ -201,18 +201,66 @@ export class ReviewSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'fullName', 'id', 'password', 'updatedAt'] as const
+  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'website', 'youtube'] as const
   $columns = UserSchema.$columns
+  @column()
+  declare bio: string | null
+  @column()
+  declare businessDescription: string | null
+  @column()
+  declare businessLogo: string | null
+  @column()
+  declare businessName: string | null
+  @column()
+  declare businessType: string | null
+  @column()
+  declare country: string | null
+  @column()
+  declare coverBanner: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
   declare email: string
+  @column.dateTime()
+  declare emailVerifiedAt: DateTime | null
   @column()
   declare fullName: string | null
+  @column()
+  declare heardAbout: string | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare instagram: string | null
+  @column()
+  declare location: string | null
+  @column()
+  declare marketingChannels: string | null
+  @column()
+  declare niche: string | null
+  @column()
+  declare otpCode: string | null
+  @column.dateTime()
+  declare otpExpiresAt: DateTime | null
   @column({ serializeAs: null })
   declare password: string
+  @column()
+  declare phone: string | null
+  @column()
+  declare productCategories: string | null
+  @column()
+  declare profilePicture: string | null
+  @column()
+  declare resetToken: string | null
+  @column.dateTime()
+  declare resetTokenExpiresAt: DateTime | null
+  @column()
+  declare role: string
+  @column()
+  declare twitter: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare website: string | null
+  @column()
+  declare youtube: string | null
 }

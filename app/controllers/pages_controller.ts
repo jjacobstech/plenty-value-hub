@@ -4,6 +4,7 @@ import Review from '#models/review'
 import Order from '#models/order'
 import AffiliateLink from '#models/affiliate_link'
 import NewsletterSubscriber from '#models/newsletter_subscriber'
+import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class PagesController {
@@ -115,36 +116,41 @@ export default class PagesController {
   }
 
   async vendorEarnings({ inertia, auth }: HttpContext) {
-    const earnings = await Order.query()
+    const orders = await Order.query()
       .join('products', 'orders.product_id', 'products.id')
       .where('products.vendor_id', auth.user!.id)
-      .sum('orders.vendor_commission as total_earnings')
-    return inertia.render('vendor/VendorEarnings', { user: auth.user, earnings })
+      .select('orders.*')
+      .orderBy('orders.created_at', 'desc')
+    return inertia.render('vendor/VendorEarnings', { user: auth.user, orders })
   }
 
   async vendorAnalytics({ inertia, auth }: HttpContext) {
-    const analytics = await Order.query()
+    const orders = await Order.query()
       .join('products', 'orders.product_id', 'products.id')
       .where('products.vendor_id', auth.user!.id)
-      .select('orders.created_at')
-      .count('*', 'count')
-    return inertia.render('vendor/VendorAnalytics', { user: auth.user, analytics })
+      .select('orders.*')
+      .orderBy('orders.created_at', 'desc')
+    const products = await Product.query().where('vendor_id', auth.user!.id)
+    return inertia.render('vendor/VendorAnalytics', { user: auth.user, orders, products })
   }
 
   async vendorProfile({ inertia, auth }: HttpContext) {
-    return inertia.render('vendor/VendorProfile', { user: auth.user })
+    const user = await User.query()
+      .where('id', auth.user!.id)
+      .firstOrFail()
+    return inertia.render('vendor/VendorProfile', { user: user.serialize() })
   }
 
   // Affiliate pages
   async affiliateDashboard({ inertia, auth }: HttpContext) {
     const links = await AffiliateLink.query().where('affiliate_id', auth.user!.id)
-    const earnings = await Order.query()
+    const orders = await Order.query()
       .where('affiliate_id', auth.user!.id)
-      .sum('affiliate_commission as total_earnings')
+      .orderBy('created_at', 'desc')
     return inertia.render('affiliate/AffiliateDashboard', {
       user: auth.user,
       links,
-      earnings
+      orders,
     })
   }
 
@@ -159,21 +165,28 @@ export default class PagesController {
   }
 
   async affiliateEarnings({ inertia, auth }: HttpContext) {
-    const earnings = await Order.query()
+    const orders = await Order.query()
       .where('affiliate_id', auth.user!.id)
-      .sum('affiliate_commission as total_earnings')
-    return inertia.render('affiliate/AffiliateEarnings', { user: auth.user, earnings })
+      .orderBy('created_at', 'desc')
+    const links = await AffiliateLink.query().where('affiliate_id', auth.user!.id)
+    return inertia.render('affiliate/AffiliateEarnings', { user: auth.user, orders, links })
   }
 
   async affiliatePerformance({ inertia, auth }: HttpContext) {
+    const links = await AffiliateLink.query().where('affiliate_id', auth.user!.id)
     const performance = await Order.query()
       .where('affiliate_id', auth.user!.id)
-      .select('created_at')
-      .count('*', 'count')
-    return inertia.render('affiliate/AffiliatePerformance', { user: auth.user, performance })
+      .select(db.raw('DATE(created_at) as date'))
+      .count('* as count')
+      .groupByRaw('DATE(created_at)')
+      .orderBy('date', 'asc')
+    return inertia.render('affiliate/AffiliatePerformance', { user: auth.user, links, performance })
   }
 
   async affiliateProfile({ inertia, auth }: HttpContext) {
-    return inertia.render('affiliate/AffiliateProfile', { user: auth.user })
+    const user = await User.query()
+      .where('id', auth.user!.id)
+      .firstOrFail()
+    return inertia.render('affiliate/AffiliateProfile', { user: user.serialize() })
   }
 }

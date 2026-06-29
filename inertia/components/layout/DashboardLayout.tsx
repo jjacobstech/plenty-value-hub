@@ -43,9 +43,9 @@ function Sidebar({ role, collapsed, onToggle }) {
       "h-full bg-secondary text-secondary-foreground flex flex-col transition-all duration-300",
       collapsed ? "w-16" : "w-60"
     )}>
-      <div className="p-4 flex items-center justify-between border-b border-slate-700/50">
+      <div className="p-3 flex items-center justify-center border-b border-slate-700/50">
         {!collapsed &&
-        <BrandLogo size={32} darkBg={true} />
+          <BrandLogo size={32} className='bg-white p-1 rounded-md' darkBg={true} linkTo="/" />
         }
         <Button variant="ghost" size="icon" onClick={onToggle} className="text-slate-400 hover:text-white shrink-0">
           <ChevronLeft className={cn("w-4 h-4 transition-transform", collapsed && "rotate-180")} />
@@ -61,7 +61,7 @@ function Sidebar({ role, collapsed, onToggle }) {
               url === item.path && "bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary",
               collapsed && "justify-center px-2"
             )}>
-            
+
               <item.icon className="w-4.5 h-4.5 shrink-0" />
               {!collapsed && <span className="text-sm font-medium">{item.label}</span>}
             </Button>

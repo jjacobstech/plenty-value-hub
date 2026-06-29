@@ -47,3 +47,26 @@ export const signupValidator = vine.create({
   passwordConfirmation: vine.string().minLength(8).maxLength(32),
   role: vine.enum(['vendor', 'affiliate', 'consumer'] as const).optional(),
 })
+
+export const affiliateProfileValidator = vine.create({
+  bio: vine.string().trim().maxLength(500).optional(),
+  phone: vine.string().trim().maxLength(20).optional(),
+  website: vine.string().trim().maxLength(255).optional(),
+  instagram: vine.string().trim().maxLength(100).optional(),
+  twitter: vine.string().trim().maxLength(100).optional(),
+  youtube: vine.string().trim().maxLength(255).optional(),
+  location: vine.string().trim().maxLength(100).optional(),
+  niche: vine.string().trim().maxLength(100).optional(),
+  marketingChannels: vine.string().trim().maxLength(255).optional(),
+})
+
+export const vendorProfileValidator = vine.create({
+  businessName: vine.string().trim().maxLength(255).optional(),
+  businessDescription: vine.string().trim().maxLength(1000).optional(),
+  phone: vine.string().trim().maxLength(20).optional(),
+  website: vine.string().trim().maxLength(255).optional(),
+  instagram: vine.string().trim().maxLength(100).optional(),
+  twitter: vine.string().trim().maxLength(100).optional(),
+  location: vine.string().trim().maxLength(100).optional(),
+  productCategories: vine.string().trim().maxLength(500).optional(),
+})
