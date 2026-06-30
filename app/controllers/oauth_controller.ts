@@ -1,5 +1,7 @@
 import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
+import { randomBytes } from 'node:crypto'
 
 function dashboardForRole(role: string) {
   if (role === 'admin') return '/admin'
@@ -62,9 +64,13 @@ export default class OauthController {
         user = await User.create({
           email: googleUser.email,
           fullName: googleUser.name || undefined,
-          password: Math.random().toString(36).slice(-15),
+          password: randomBytes(32).toString('hex'),
           role,
+          emailVerifiedAt: DateTime.now(),
         })
+      } else if (!user.emailVerifiedAt) {
+        user.emailVerifiedAt = DateTime.now()
+        await user.save()
       }
 
       session.forget('oauth_source')

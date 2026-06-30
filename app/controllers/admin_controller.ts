@@ -4,7 +4,7 @@ import Product from '#models/product'
 import AffiliateLink from '#models/affiliate_link'
 import NewsletterSubscriber from '#models/newsletter_subscriber'
 import type { HttpContext } from '@adonisjs/core/http'
-import Decimal from 'decimal.js'
+import { Decimal } from 'decimal.js'
 
 export default class AdminController {
   async getPlatformStats({ auth, response }: HttpContext) {
@@ -60,14 +60,14 @@ export default class AdminController {
     const affiliateEarnings: Record<number, number> = {}
     completedOrders.forEach((o) => {
       if (o.affiliateId) {
-        affiliateEarnings[o.affiliateId] = (affiliateEarnings[o.affiliateId] || 0)
-          + new Decimal(o.commissionAmount || 0).toNumber()
+        affiliateEarnings[o.affiliateId] =
+          (affiliateEarnings[o.affiliateId] || 0) + new Decimal(o.commissionAmount || 0).toNumber()
       }
     })
 
     const topAffiliates = Object.entries(affiliateEarnings)
       .map(([affiliateId, earned]) => ({
-        affiliateId: parseInt(affiliateId),
+        affiliateId: Number.parseInt(affiliateId),
         earned,
       }))
       .sort((a, b) => b.earned - a.earned)
@@ -77,8 +77,8 @@ export default class AdminController {
     completedOrders.forEach((o) => {
       const product = products.find((p) => p.id === o.productId)
       if (product) {
-        revenueByCategory[product.category] = (revenueByCategory[product.category] || 0)
-          + new Decimal(o.amount).toNumber()
+        revenueByCategory[product.category] =
+          (revenueByCategory[product.category] || 0) + new Decimal(o.amount).toNumber()
       }
     })
 
@@ -92,12 +92,14 @@ export default class AdminController {
 
     const activeSubscribers = subscribers.filter((s) => s.status === 'active')
 
-    return response.json({ success: true, stats: {
+    return response.json({
+      success: true,
+      stats: {
         orders: {
           total: orders.length,
           completed: completedOrders.length,
           refunded: refundedOrders.length,
-          refundRate: parseFloat(refundRate as string),
+          refundRate: Number.parseFloat(refundRate as string),
         },
         financials: {
           gmv,

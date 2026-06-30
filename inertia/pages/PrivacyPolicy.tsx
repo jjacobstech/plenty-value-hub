@@ -1,12 +1,13 @@
-import React from 'react';
-import { Link } from '@inertiajs/react';
-import PublicLayout from '@/components/layout/PublicLayout';
+import React from 'react'
+import { Link } from '@adonisjs/inertia/react'
+import PublicLayout from '@/components/layout/PublicLayout'
 
 const sections = [
   {
     number: '1',
     title: 'Information We Collect',
-    intro: 'We collect information that you provide directly to us, as well as information gathered automatically when you use our Services.',
+    intro:
+      'We collect information that you provide directly to us, as well as information gathered automatically when you use our Services.',
     subsections: [
       {
         title: '1.1 Information You Provide',
@@ -46,7 +47,8 @@ const sections = [
   {
     number: '3',
     title: 'Sharing Your Information',
-    intro: 'We do not sell your personal information. We may share your data only in the following circumstances:',
+    intro:
+      'We do not sell your personal information. We may share your data only in the following circumstances:',
     subsections: [
       {
         title: '3.1 Affiliate and Brand Partners',
@@ -74,18 +76,21 @@ const sections = [
   {
     number: '5',
     title: 'Cookies and Tracking Technologies',
-    intro: 'Plenty Value uses cookies and similar technologies to enhance your experience on our platform. These include:',
+    intro:
+      'Plenty Value uses cookies and similar technologies to enhance your experience on our platform. These include:',
     items: [
       'Essential Cookies: Necessary for the operation of our website and Services.',
       'Analytics Cookies: Help us understand how visitors interact with our platform (e.g., Google Analytics).',
       'Marketing Cookies: Used to deliver relevant advertisements and track affiliate referrals.',
     ],
-    footer: 'You may control cookie preferences through your browser settings. Please note that disabling certain cookies may affect the functionality of our Services. By continuing to use our platform, you consent to our use of cookies in accordance with this policy.',
+    footer:
+      'You may control cookie preferences through your browser settings. Please note that disabling certain cookies may affect the functionality of our Services. By continuing to use our platform, you consent to our use of cookies in accordance with this policy.',
   },
   {
     number: '6',
     title: 'Your Rights and Choices',
-    intro: 'Depending on your jurisdiction, you may have the following rights regarding your personal information:',
+    intro:
+      'Depending on your jurisdiction, you may have the following rights regarding your personal information:',
     items: [
       'Access: Request a copy of the personal data we hold about you.',
       'Correction: Request correction of inaccurate or incomplete information.',
@@ -94,7 +99,8 @@ const sections = [
       'Data Portability: Request that we provide your data in a structured, machine-readable format where technically feasible.',
       'Restriction: Request that we restrict the processing of your data under certain circumstances.',
     ],
-    footer: 'To exercise any of these rights, please contact us at the details provided in Section 11. We will respond to all verified requests within 30 days.',
+    footer:
+      'To exercise any of these rights, please contact us at the details provided in Section 11. We will respond to all verified requests within 30 days.',
   },
   {
     number: '7',
@@ -116,7 +122,7 @@ const sections = [
     title: 'Changes to This Privacy Policy',
     body: 'We reserve the right to update this Privacy Policy at any time. When we make material changes, we will notify subscribers via email and update the "Effective Date" at the top of this document. Your continued use of our Services following the posting of changes constitutes your acceptance of the revised policy.',
   },
-];
+]
 
 function PrivacyPolicy() {
   return (
@@ -124,31 +130,56 @@ function PrivacyPolicy() {
       {/* Header */}
       <div style={{ backgroundColor: '#001845' }} className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-sm font-medium mb-3" style={{ color: '#81C14B' }}>Legal</p>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">Privacy Policy</h1>
-          <p className="text-slate-400 text-sm">Effective Date: June 7, 2025 &nbsp;·&nbsp; Last Updated: June 7, 2025</p>
+          <p className="text-sm font-medium mb-3" style={{ color: '#81C14B' }}>
+            Legal
+          </p>
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-4">
+            Privacy Policy
+          </h1>
+          <p className="text-slate-400 text-sm">
+            Effective Date: June 7, 2025 &nbsp;·&nbsp; Last Updated: June 7, 2025
+          </p>
         </div>
       </div>
 
       {/* Intro */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <p className="text-muted-foreground leading-relaxed text-base border-l-4 pl-5 py-1" style={{ borderColor: '#81C14B' }}>
-          Welcome to Plenty Value. We are committed to protecting your personal information and your right to privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you visit our website, subscribe to our newsletter, or interact with our digital marketplace (collectively, the "Services"). Please read this policy carefully. If you do not agree with its terms, please discontinue use of our Services.
+        <p
+          className="text-muted-foreground leading-relaxed text-base border-l-4 pl-5 py-1"
+          style={{ borderColor: '#81C14B' }}
+        >
+          Welcome to Plenty Value. We are committed to protecting your personal information and your
+          right to privacy. This Privacy Policy explains how we collect, use, disclose, and
+          safeguard your information when you visit our website, subscribe to our newsletter, or
+          interact with our digital marketplace (collectively, the "Services"). Please read this
+          policy carefully. If you do not agree with its terms, please discontinue use of our
+          Services.
         </p>
 
         {/* Table of contents */}
         <nav className="mt-10 mb-12 p-6 rounded-xl border bg-muted/40">
-          <p className="font-semibold text-sm uppercase tracking-widest mb-4" style={{ color: '#81C14B' }}>Contents</p>
+          <p
+            className="font-semibold text-sm uppercase tracking-widest mb-4"
+            style={{ color: '#81C14B' }}
+          >
+            Contents
+          </p>
           <ol className="space-y-1.5">
             {sections.map((s) => (
               <li key={s.number}>
-                <a href={`#section-${s.number}`} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <a
+                  href={`#section-${s.number}`}
+                  className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
                   {s.number}. {s.title}
                 </a>
               </li>
             ))}
             <li>
-              <a href="#section-11" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <a
+                href="#section-11"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+              >
                 11. Contact Us
               </a>
             </li>
@@ -160,7 +191,10 @@ function PrivacyPolicy() {
           {sections.map((s) => (
             <section key={s.number} id={`section-${s.number}`}>
               <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-3">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white text-sm font-bold shrink-0" style={{ backgroundColor: '#001845' }}>
+                <span
+                  className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white text-sm font-bold shrink-0"
+                  style={{ backgroundColor: '#001845' }}
+                >
                   {s.number}
                 </span>
                 {s.title}
@@ -172,8 +206,14 @@ function PrivacyPolicy() {
               {s.items && (
                 <ul className="space-y-2 mb-4">
                   {s.items.map((item, i) => (
-                    <li key={i} className="flex items-start gap-2.5 text-muted-foreground text-sm leading-relaxed">
-                      <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: '#81C14B' }} />
+                    <li
+                      key={i}
+                      className="flex items-start gap-2.5 text-muted-foreground text-sm leading-relaxed"
+                    >
+                      <span
+                        className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: '#81C14B' }}
+                      />
                       {item}
                     </li>
                   ))}
@@ -185,12 +225,20 @@ function PrivacyPolicy() {
                   {s.subsections.map((sub, i) => (
                     <div key={i} className="pl-5 border-l-2" style={{ borderColor: '#81C14B20' }}>
                       <h3 className="font-semibold text-foreground mb-2">{sub.title}</h3>
-                      {sub.body && <p className="text-muted-foreground text-sm leading-relaxed">{sub.body}</p>}
+                      {sub.body && (
+                        <p className="text-muted-foreground text-sm leading-relaxed">{sub.body}</p>
+                      )}
                       {sub.items && (
                         <ul className="space-y-1.5 mt-2">
                           {sub.items.map((item, j) => (
-                            <li key={j} className="flex items-start gap-2.5 text-muted-foreground text-sm leading-relaxed">
-                              <span className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: '#81C14B' }} />
+                            <li
+                              key={j}
+                              className="flex items-start gap-2.5 text-muted-foreground text-sm leading-relaxed"
+                            >
+                              <span
+                                className="mt-1.5 w-1.5 h-1.5 rounded-full shrink-0"
+                                style={{ backgroundColor: '#81C14B' }}
+                              />
                               {item}
                             </li>
                           ))}
@@ -201,51 +249,73 @@ function PrivacyPolicy() {
                 </div>
               )}
 
-              {s.footer && <p className="text-muted-foreground leading-relaxed text-sm mt-4">{s.footer}</p>}
+              {s.footer && (
+                <p className="text-muted-foreground leading-relaxed text-sm mt-4">{s.footer}</p>
+              )}
             </section>
           ))}
 
           {/* Section 11: Contact Us */}
           <section id="section-11">
             <h2 className="font-display text-xl font-bold mb-4 flex items-center gap-3">
-              <span className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white text-sm font-bold shrink-0" style={{ backgroundColor: '#001845' }}>
+              <span
+                className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-white text-sm font-bold shrink-0"
+                style={{ backgroundColor: '#001845' }}
+              >
                 11
               </span>
               Contact Us
             </h2>
             <p className="text-muted-foreground leading-relaxed mb-5">
-              If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
+              If you have any questions, concerns, or requests regarding this Privacy Policy or our
+              data practices, please contact us:
             </p>
             <div className="p-6 rounded-xl border bg-muted/40 space-y-2">
               <p className="font-semibold text-foreground">Plenty Value</p>
               <p className="text-muted-foreground text-sm">
                 Email:{' '}
-                <a href="mailto:newsletter@plentyvalue.com" className="font-medium hover:underline" style={{ color: '#81C14B' }}>
+                <a
+                  href="mailto:newsletter@plentyvalue.com"
+                  className="font-medium hover:underline"
+                  style={{ color: '#81C14B' }}
+                >
                   newsletter@plentyvalue.com
                 </a>
               </p>
               <p className="text-muted-foreground text-sm">
                 Website:{' '}
-                <a href="https://www.plentyvalue.com" target="_blank" rel="noopener noreferrer" className="hover:underline" style={{ color: '#81C14B' }}>
+                <a
+                  href="https://www.plentyvalue.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:underline"
+                  style={{ color: '#81C14B' }}
+                >
                   www.plentyvalue.com
                 </a>
               </p>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed mt-4">
-              We are committed to resolving any complaints about our collection or use of your personal information. We will respond to all inquiries in a timely and transparent manner.
+              We are committed to resolving any complaints about our collection or use of your
+              personal information. We will respond to all inquiries in a timely and transparent
+              manner.
             </p>
           </section>
         </div>
 
         {/* Back to home */}
         <div className="mt-16 pt-8 border-t">
-          <Link href="/" className="text-sm font-medium hover:underline" style={{ color: '#81C14B' }}>
+          <Link
+            href="/"
+            className="text-sm font-medium hover:underline"
+            style={{ color: '#81C14B' }}
+          >
             ← Back to Home
           </Link>
         </div>
       </div>
     </div>
-  );
+  )
 }
 
 export default PrivacyPolicy

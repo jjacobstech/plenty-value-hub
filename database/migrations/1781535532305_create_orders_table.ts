@@ -13,7 +13,12 @@ export default class extends BaseSchema {
       table.string('buyer_email').nullable()
       table.integer('vendor_id').unsigned().references('id').inTable('users')
       table.integer('affiliate_id').unsigned().references('id').inTable('users').nullable()
-      table.integer('affiliate_link_id').unsigned().references('id').inTable('affiliate_links').nullable()
+      table
+        .integer('affiliate_link_id')
+        .unsigned()
+        .references('id')
+        .inTable('affiliate_links')
+        .nullable()
       table.decimal('amount', 10, 2).notNullable()
       table.decimal('commission_amount', 10, 2).nullable()
       table.decimal('platform_fee', 10, 2).nullable()

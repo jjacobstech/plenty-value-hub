@@ -1,35 +1,36 @@
-import React, { useState } from 'react';
-import { Link, usePage } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { Menu, User, ChevronDown, ShoppingBag, TrendingUp } from 'lucide-react';
-import BrandLogo from '@/components/shared/BrandLogo';
+import React, { useState } from 'react'
+import { Link } from '@adonisjs/inertia/react'
+import { usePage } from '@inertiajs/react'
+import { Button } from '@/components/ui/button'
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
+import { Menu, User, ChevronDown, ShoppingBag, TrendingUp } from 'lucide-react'
+import BrandLogo from '@/components/shared/BrandLogo'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-} from '@/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu'
 
 export default function Navbar({ user, onLogout }) {
-  const [open, setOpen] = useState(false);
-  const { url } = usePage();
+  const [open, setOpen] = useState(false)
+  const { url } = usePage()
 
   const navLinks = [
     { label: 'Marketplace', path: '/marketplace' },
     { label: 'Reviews', path: '/reviews' },
-  ];
+  ]
 
   const getDashboardLink = () => {
-    if (!user) return null;
-    if (user.role === 'admin') return '/admin';
-    if (user.role === 'vendor') return '/vendor';
-    if (user.role === 'affiliate') return '/affiliate';
-    return null;
-  };
+    if (!user) return null
+    if (user.role === 'admin') return '/admin'
+    if (user.role === 'vendor') return '/vendor'
+    if (user.role === 'affiliate') return '/affiliate'
+    return null
+  }
 
-  const isActive = (path) => url === path || url?.startsWith(path + '/');
+  const isActive = (path) => url === path || url?.startsWith(path + '/')
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-border/50">
@@ -40,7 +41,7 @@ export default function Navbar({ user, onLogout }) {
 
           {/* Desktop Nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(link => (
+            {navLinks.map((link) => (
               <Link key={link.path} href={link.path}>
                 <Button
                   variant="ghost"
@@ -65,24 +66,40 @@ export default function Navbar({ user, onLogout }) {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="center" className="w-60 p-2">
                 <DropdownMenuItem asChild>
-                  <Link href="/for-partners#vendor" className="flex items-start gap-3 p-2 rounded-lg">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: '#001845' }}>
+                  <Link
+                    href="/for-partners#vendor"
+                    className="flex items-start gap-3 p-2 rounded-lg"
+                  >
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ backgroundColor: '#001845' }}
+                    >
                       <ShoppingBag className="w-4 h-4 text-white" />
                     </div>
                     <div>
                       <p className="font-semibold text-sm">Become a Vendor</p>
-                      <p className="text-xs text-muted-foreground">Sell products & grow your brand</p>
+                      <p className="text-xs text-muted-foreground">
+                        Sell products & grow your brand
+                      </p>
                     </div>
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
-                  <Link href="/for-partners#affiliate" className="flex items-start gap-3 p-2 rounded-lg">
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: '#81C14B' }}>
+                  <Link
+                    href="/for-partners#affiliate"
+                    className="flex items-start gap-3 p-2 rounded-lg"
+                  >
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ backgroundColor: '#81C14B' }}
+                    >
                       <TrendingUp className="w-4 h-4 text-white" />
                     </div>
                     <div>
                       <p className="font-semibold text-sm">Become an Affiliate</p>
-                      <p className="text-xs text-muted-foreground">Promote products & earn commissions</p>
+                      <p className="text-xs text-muted-foreground">
+                        Promote products & earn commissions
+                      </p>
                     </div>
                   </Link>
                 </DropdownMenuItem>
@@ -96,7 +113,10 @@ export default function Navbar({ user, onLogout }) {
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="gap-2">
-                    <div className="w-7 h-7 rounded-full flex items-center justify-center" style={{ backgroundColor: '#001845' }}>
+                    <div
+                      className="w-7 h-7 rounded-full flex items-center justify-center"
+                      style={{ backgroundColor: '#001845' }}
+                    >
                       <User className="w-4 h-4 text-white" />
                     </div>
                     <span className="font-medium">{user.fullName || user.email}</span>
@@ -118,10 +138,16 @@ export default function Navbar({ user, onLogout }) {
             ) : (
               <div className="flex items-center gap-2">
                 <Link href="/auth/login">
-                  <Button variant="ghost" size="sm" className="font-medium">Log In</Button>
+                  <Button variant="ghost" size="sm" className="font-medium">
+                    Log In
+                  </Button>
                 </Link>
                 <Link href="/auth/signup">
-                  <Button size="sm" className="font-semibold text-white" style={{ backgroundColor: '#001845' }}>
+                  <Button
+                    size="sm"
+                    className="font-semibold text-white"
+                    style={{ backgroundColor: '#001845' }}
+                  >
                     Get Started
                   </Button>
                 </Link>
@@ -138,7 +164,7 @@ export default function Navbar({ user, onLogout }) {
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
               <div className="flex flex-col gap-1 mt-8">
-                {navLinks.map(link => (
+                {navLinks.map((link) => (
                   <Link key={link.path} href={link.path} onClick={() => setOpen(false)}>
                     <Button
                       variant="ghost"
@@ -149,15 +175,27 @@ export default function Navbar({ user, onLogout }) {
                   </Link>
                 ))}
                 <div className="border-t pt-3 mt-2">
-                  <p className="px-3 text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2">For Partners</p>
+                  <p className="px-3 text-xs text-muted-foreground font-semibold uppercase tracking-wider mb-2">
+                    For Partners
+                  </p>
                   <Link href="/for-partners" onClick={() => setOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full justify-start text-sm gap-2">
-                      <ShoppingBag className="w-4 h-4" style={{ color: '#001845' }} /> Become a Vendor
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-sm gap-2"
+                    >
+                      <ShoppingBag className="w-4 h-4" style={{ color: '#001845' }} /> Become a
+                      Vendor
                     </Button>
                   </Link>
                   <Link href="/for-partners" onClick={() => setOpen(false)}>
-                    <Button variant="ghost" size="sm" className="w-full justify-start text-sm gap-2">
-                      <TrendingUp className="w-4 h-4" style={{ color: '#81C14B' }} /> Become an Affiliate
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-sm gap-2"
+                    >
+                      <TrendingUp className="w-4 h-4" style={{ color: '#81C14B' }} /> Become an
+                      Affiliate
                     </Button>
                   </Link>
                 </div>
@@ -166,20 +204,31 @@ export default function Navbar({ user, onLogout }) {
                     <>
                       {getDashboardLink() && (
                         <Link href={getDashboardLink()} onClick={() => setOpen(false)}>
-                          <Button variant="ghost" className="w-full justify-start">Dashboard</Button>
+                          <Button variant="ghost" className="w-full justify-start">
+                            Dashboard
+                          </Button>
                         </Link>
                       )}
-                      <Button variant="ghost" className="w-full justify-start text-destructive" onClick={onLogout}>
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-destructive"
+                        onClick={onLogout}
+                      >
                         Log Out
                       </Button>
                     </>
                   ) : (
                     <>
                       <Link href="/auth/login" onClick={() => setOpen(false)}>
-                        <Button variant="ghost" className="w-full justify-start">Log In</Button>
+                        <Button variant="ghost" className="w-full justify-start">
+                          Log In
+                        </Button>
                       </Link>
                       <Link href="/auth/signup" onClick={() => setOpen(false)}>
-                        <Button className="w-full mt-2 font-semibold text-white" style={{ backgroundColor: '#001845' }}>
+                        <Button
+                          className="w-full mt-2 font-semibold text-white"
+                          style={{ backgroundColor: '#001845' }}
+                        >
                           Get Started
                         </Button>
                       </Link>
@@ -192,5 +241,5 @@ export default function Navbar({ user, onLogout }) {
         </div>
       </div>
     </nav>
-  );
+  )
 }

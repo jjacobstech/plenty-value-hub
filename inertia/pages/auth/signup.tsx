@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import type { FormEvent } from 'react'
-import { Link, useForm } from '@inertiajs/react'
+import { Link } from '@adonisjs/inertia/react'
+import { useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'

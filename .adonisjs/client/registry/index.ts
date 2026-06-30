@@ -108,6 +108,12 @@ const routes = {
     tokens: [{"old":"/auth/login","type":0,"val":"auth","end":""},{"old":"/auth/login","type":0,"val":"login","end":""}],
     types: placeholder as Registry['new_account.login']['types'],
   },
+  'verify.email': {
+    methods: ["GET","HEAD"],
+    pattern: '/auth/verify-email',
+    tokens: [{"old":"/auth/verify-email","type":0,"val":"auth","end":""},{"old":"/auth/verify-email","type":0,"val":"verify-email","end":""}],
+    types: placeholder as Registry['verify.email']['types'],
+  },
   'forgot.password': {
     methods: ["GET","HEAD"],
     pattern: '/auth/forgot-password',
@@ -149,6 +155,30 @@ const routes = {
     pattern: '/logout',
     tokens: [{"old":"/logout","type":0,"val":"logout","end":""}],
     types: placeholder as Registry['logout']['types'],
+  },
+  'admin.auth.login': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/auth/login',
+    tokens: [{"old":"/admin/auth/login","type":0,"val":"admin","end":""},{"old":"/admin/auth/login","type":0,"val":"auth","end":""},{"old":"/admin/auth/login","type":0,"val":"login","end":""}],
+    types: placeholder as Registry['admin.auth.login']['types'],
+  },
+  'admin.auth.setup.google': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/auth/setup/google',
+    tokens: [{"old":"/admin/auth/setup/google","type":0,"val":"admin","end":""},{"old":"/admin/auth/setup/google","type":0,"val":"auth","end":""},{"old":"/admin/auth/setup/google","type":0,"val":"setup","end":""},{"old":"/admin/auth/setup/google","type":0,"val":"google","end":""}],
+    types: placeholder as Registry['admin.auth.setup.google']['types'],
+  },
+  'admin.auth.login.google': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/auth/login/google',
+    tokens: [{"old":"/admin/auth/login/google","type":0,"val":"admin","end":""},{"old":"/admin/auth/login/google","type":0,"val":"auth","end":""},{"old":"/admin/auth/login/google","type":0,"val":"login","end":""},{"old":"/admin/auth/login/google","type":0,"val":"google","end":""}],
+    types: placeholder as Registry['admin.auth.login.google']['types'],
+  },
+  'admin.auth.callback': {
+    methods: ["GET","HEAD"],
+    pattern: '/admin/auth/google/callback',
+    tokens: [{"old":"/admin/auth/google/callback","type":0,"val":"admin","end":""},{"old":"/admin/auth/google/callback","type":0,"val":"auth","end":""},{"old":"/admin/auth/google/callback","type":0,"val":"google","end":""},{"old":"/admin/auth/google/callback","type":0,"val":"callback","end":""}],
+    types: placeholder as Registry['admin.auth.callback']['types'],
   },
   'admin.dashboard': {
     methods: ["GET","HEAD"],

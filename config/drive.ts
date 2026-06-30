@@ -1,6 +1,6 @@
 import env from '#start/env'
 import { defineConfig, services } from '@adonisjs/drive'
-import type { InferDriveDisks } from '@adonisjs/drive'
+import type { InferDriveDisks } from '@adonisjs/drive/types'
 
 const driveConfig = defineConfig({
   default: 's3',
@@ -15,7 +15,7 @@ const driveConfig = defineConfig({
     s3: services.s3({
       credentials: {
         accessKeyId: env.get('S3_ACCESS_KEY'),
-        secretAccessKey: env.get('S3_SECRET_KEY'),
+        secretAccessKey: env.get('S3_SECRET_KEY').release(),
       },
       region: env.get('S3_REGION'),
       bucket: env.get('S3_BUCKET'),

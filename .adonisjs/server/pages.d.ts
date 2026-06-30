@@ -14,6 +14,7 @@ declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {
     'admin/AdminAnalytics': ExtractProps<(typeof import('../../inertia/pages/admin/AdminAnalytics.tsx'))['default']>
     'admin/AdminDashboard': ExtractProps<(typeof import('../../inertia/pages/admin/AdminDashboard.tsx'))['default']>
+    'admin/AdminLogin': ExtractProps<(typeof import('../../inertia/pages/admin/AdminLogin.tsx'))['default']>
     'admin/AdminOrders': ExtractProps<(typeof import('../../inertia/pages/admin/AdminOrders.tsx'))['default']>
     'admin/AdminProducts': ExtractProps<(typeof import('../../inertia/pages/admin/AdminProducts.tsx'))['default']>
     'admin/AdminUsers': ExtractProps<(typeof import('../../inertia/pages/admin/AdminUsers.tsx'))['default']>
@@ -43,5 +44,6 @@ declare module '@adonisjs/inertia/types' {
     'vendor/VendorProducts': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProducts.tsx'))['default']>
     'vendor/VendorProfile': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProfile.tsx'))['default']>
     'VendorKYC': ExtractProps<(typeof import('../../inertia/pages/VendorKYC.tsx'))['default']>
+    'auth/VerifyEmail': ExtractProps<(typeof import('../../inertia/pages/auth/VerifyEmail.tsx'))['default']>
   }
 }

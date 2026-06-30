@@ -6,11 +6,7 @@ const AuthContext = createContext<any>(null)
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const { auth } = usePage().props as any
 
-  return (
-    <AuthContext.Provider value={auth}>
-      {children}
-    </AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>
 }
 
 export const useAuth = () => {

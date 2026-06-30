@@ -15,7 +15,11 @@ export const registerStep2Validator = vine.create({
 export const registerStep3Validator = vine.create({
   fullName: vine.string().trim().minLength(2).maxLength(255),
   email: vine.string().email().maxLength(254),
-  password: vine.string().minLength(8).maxLength(32).confirmed({ confirmationField: 'passwordConfirmation' }),
+  password: vine
+    .string()
+    .minLength(8)
+    .maxLength(32)
+    .confirmed({ confirmationField: 'passwordConfirmation' }),
   passwordConfirmation: vine.string().minLength(8).maxLength(32),
 })
 
@@ -29,7 +33,11 @@ export const forgotPasswordValidator = vine.create({
 
 export const resetPasswordValidator = vine.create({
   token: vine.string().minLength(1),
-  password: vine.string().minLength(8).maxLength(32).confirmed({ confirmationField: 'passwordConfirmation' }),
+  password: vine
+    .string()
+    .minLength(8)
+    .maxLength(32)
+    .confirmed({ confirmationField: 'passwordConfirmation' }),
   passwordConfirmation: vine.string().minLength(8).maxLength(32),
 })
 

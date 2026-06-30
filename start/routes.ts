@@ -40,6 +40,9 @@ router
     router.get('/login', [controllers.Session, 'create']).as('login')
     router.post('/login', [controllers.NewAccount, 'login'])
 
+    // Email verification (OTP)
+    router.get('/verify-email', [controllers.Pages, 'verifyEmail']).as('verify.email')
+
     // Password reset
     router.get('/forgot-password', [controllers.Pages, 'forgotPassword']).as('forgot.password')
     router.post('/forgot-password', [controllers.NewAccount, 'forgotPassword'])
@@ -48,7 +51,9 @@ router
 
     // OAuth routes
     router.get('/google', [controllers.Oauth, 'redirectToGoogle']).as('google.redirect')
-    router.get('/google/callback', [controllers.Oauth, 'handleGoogleCallback']).as('google.callback')
+    router
+      .get('/google/callback', [controllers.Oauth, 'handleGoogleCallback'])
+      .as('google.callback')
   })
   .prefix('/auth')
   .use(middleware.guest())
@@ -63,7 +68,35 @@ router
   .use(middleware.auth())
 
 /**
- * Admin routes
+ * Admin auth routes (separate from main auth — no guest middleware)
+ */
+router
+  .group(() => {
+    router.get('/login', [controllers.AdminAuth, 'loginPage']).as('admin.auth.login')
+
+    // First-time setup — blocked by singleAdmin middleware if an admin already exists
+    router
+      .get('/setup/google', [controllers.AdminAuth, 'redirectToGoogleSetup'])
+      .as('admin.auth.setup.google')
+      .use(middleware.singleAdmin())
+
+    // Returning admin login via Google
+    router
+      .get('/login/google', [controllers.AdminAuth, 'redirectToGoogleLogin'])
+      .as('admin.auth.login.google')
+
+    // Callback for the googleAdmin Ally provider (separate from user OAuth)
+    router
+      .get('/google/callback', [controllers.AdminAuth, 'handleGoogleCallback'])
+      .as('admin.auth.callback')
+  })
+  .prefix('/admin/auth')
+
+// Convenience alias: /admin/login → /admin/auth/login
+router.get('/admin/login', ({ response }) => response.redirect('/admin/auth/login'))
+
+/**
+ * Admin routes — use adminAuth so unauthenticated requests redirect to /admin/auth/login
  */
 router
   .group(() => {
@@ -74,7 +107,8 @@ router
     router.get('/analytics', [controllers.Pages, 'adminAnalytics']).as('admin.analytics')
   })
   .prefix('/admin')
-  .use(middleware.auth(), middleware.role(['admin']))
+  .use(middleware.adminAuth())
+  .use(middleware.role(['admin']))
 
 /**
  * Vendor routes
@@ -89,7 +123,8 @@ router
     router.get('/profile', [controllers.Pages, 'vendorProfile']).as('vendor.profile')
   })
   .prefix('/vendor')
-  .use(middleware.auth(), middleware.role(['vendor']))
+  .use(middleware.auth())
+  .use(middleware.role(['vendor']))
 
 /**
  * Affiliate routes
@@ -100,11 +135,14 @@ router
     router.get('/products', [controllers.Pages, 'affiliateProducts']).as('affiliate.products')
     router.get('/links', [controllers.Pages, 'affiliateLinks']).as('affiliate.links')
     router.get('/earnings', [controllers.Pages, 'affiliateEarnings']).as('affiliate.earnings')
-    router.get('/performance', [controllers.Pages, 'affiliatePerformance']).as('affiliate.performance')
+    router
+      .get('/performance', [controllers.Pages, 'affiliatePerformance'])
+      .as('affiliate.performance')
     router.get('/profile', [controllers.Pages, 'affiliateProfile']).as('affiliate.profile')
   })
   .prefix('/affiliate')
-  .use(middleware.auth(), middleware.role(['affiliate']))
+  .use(middleware.auth())
+  .use(middleware.role(['affiliate']))
 
 /**
  * API routes for client-side mutations

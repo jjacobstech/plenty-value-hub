@@ -1,16 +1,17 @@
 import { AffiliateLinkSchema } from '#database/schema'
 import { belongsTo, hasMany } from '@adonisjs/lucid/orm'
-import type User from '#models/user'
-import type Product from '#models/product'
-import type Order from '#models/order'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
+import User from '#models/user'
+import Product from '#models/product'
+import Order from '#models/order'
 
 export default class AffiliateLink extends AffiliateLinkSchema {
   @belongsTo(() => User, { foreignKey: 'affiliateId' })
-  declare affiliate: User
+  declare affiliate: BelongsTo<typeof User>
 
   @belongsTo(() => Product, { foreignKey: 'productId' })
-  declare product: Product
+  declare product: BelongsTo<typeof Product>
 
   @hasMany(() => Order, { foreignKey: 'affiliateLinkId' })
-  declare orders: Order[]
+  declare orders: HasMany<typeof Order>
 }

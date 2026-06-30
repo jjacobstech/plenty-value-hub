@@ -18,25 +18,24 @@ export default class ApiController {
 
       return response.ok({ success: true, subscriber })
     } catch (error) {
-      return response.badRequest({ success: false, error: error.message })
+      return response.badRequest({ success: false, error: (error as Error).message })
     }
   }
 
   // Create review
-  async createReview({ request, response, auth }: HttpContext) {
+  async createReview({ request, response }: HttpContext) {
     try {
       const { productId, rating, content } = request.only(['productId', 'rating', 'content'])
 
       const review = await Review.create({
         productId,
-        userId: auth.user!.id,
         rating,
         content,
       })
 
       return response.ok({ success: true, review })
     } catch (error) {
-      return response.badRequest({ success: false, error: error.message })
+      return response.badRequest({ success: false, error: (error as Error).message })
     }
   }
 
@@ -52,45 +51,48 @@ export default class ApiController {
 
       return response.ok({ success: true, link })
     } catch (error) {
-      return response.badRequest({ success: false, error: error.message })
+      return response.badRequest({ success: false, error: (error as Error).message })
     }
   }
 
   // Track affiliate redirect and get product
   async affiliateRedirect({ request, response }: HttpContext) {
     try {
-      const { link_code } = request.only(['link_code'])
+      const { link_code: linkCode } = request.only(['link_code'])
 
       // Find affiliate link by code
-      const link = await AffiliateLink.query().where('code', link_code).first()
+      const link = await AffiliateLink.query().where('code', linkCode).first()
 
       if (!link) {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         return response.notFound({ product_id: null })
       }
 
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       return response.ok({ product_id: link.productId })
     } catch (error) {
-      return response.internalServerError({ error: error.message })
+      return response.internalServerError({ error: (error as Error).message })
     }
   }
 
   // Process order
   async createOrder({ request, response, auth }: HttpContext) {
     try {
-      const { product_id, affiliate_link_code } = request.only(['product_id', 'affiliate_link_code'])
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      const { product_id: productId } = request.only(['product_id', 'affiliate_link_code'])
 
-      const product = await Product.findOrFail(product_id)
+      const product = await Product.findOrFail(productId)
 
       const order = await Order.create({
-        userId: auth.user!.id,
-        productId: product_id,
-        total: product.price,
+        buyerId: auth.user!.id,
+        productId,
+        amount: product.price,
         status: 'completed',
       })
 
       return response.ok({ success: true, order })
     } catch (error) {
-      return response.badRequest({ success: false, error: error.message })
+      return response.badRequest({ success: false, error: (error as Error).message })
     }
   }
 }

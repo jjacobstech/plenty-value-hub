@@ -87,10 +87,9 @@ export default class ReviewsController {
           .where('productId', review.productId)
           .where('status', 'approved')
 
-        const avgRating =
-          allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
+        const avgRating = allReviews.reduce((sum, r) => sum + r.rating, 0) / allReviews.length
 
-        product.rating = Math.round(avgRating * 100) / 100
+        product.rating = String(Math.round(avgRating * 100) / 100)
         await product.save()
       }
     }

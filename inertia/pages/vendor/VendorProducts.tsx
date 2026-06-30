@@ -1,17 +1,30 @@
-import DashboardLayout from '@/components/layout/DashboardLayout';
-import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Pencil, Trash2, Package } from 'lucide-react';
-import { formatUSD as formatNGN } from '@/lib/currency';
-import { toast } from 'sonner';
-import api from '@/api/http-client';
+import DashboardLayout from '@/components/layout/DashboardLayout'
+import React, { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Plus, Pencil, Trash2, Package } from 'lucide-react'
+import { formatUSD as formatNGN } from '@/lib/currency'
+import { toast } from 'sonner'
+import api from '@/api/http-client'
 
 const CATEGORIES = [
   { label: 'Health & Fitness', value: 'health_fitness' },
@@ -28,20 +41,28 @@ const CATEGORIES = [
   { label: 'Finance', value: 'finance' },
   { label: 'Productivity', value: 'productivity' },
   { label: 'Digital Services', value: 'digital_services' },
-];
+]
 
 const defaultForm = {
-  name: '', description: '', short_description: '', category: 'technology',
-  product_type: 'digital', price: '', sale_price: '', commission_rate: '30',
-  image_url: '', recurring_billing: false, billing_cycle: 'one_time',
-};
+  name: '',
+  description: '',
+  short_description: '',
+  category: 'technology',
+  product_type: 'digital',
+  price: '',
+  sale_price: '',
+  commission_rate: '30',
+  image_url: '',
+  recurring_billing: false,
+  billing_cycle: 'one_time',
+}
 
 const statusStyles: Record<string, string> = {
   pending: 'bg-amber-100 text-amber-700',
   approved: 'bg-green-100 text-green-700',
   rejected: 'bg-red-100 text-red-700',
   archived: 'bg-slate-100 text-slate-500',
-};
+}
 
 type VendorProductsProps = {
   user: any
@@ -51,10 +72,10 @@ type VendorProductsProps = {
 export default function VendorProducts(props: VendorProductsProps) {
   const { user, products: initialProducts } = props
   const [products, setProducts] = useState(initialProducts)
-  const [showForm, setShowForm] = useState(false);
-  const [editId, setEditId] = useState<number | null>(null);
-  const [form, setForm] = useState(defaultForm);
-  const [saving, setSaving] = useState(false);
+  const [showForm, setShowForm] = useState(false)
+  const [editId, setEditId] = useState<number | null>(null)
+  const [form, setForm] = useState(defaultForm)
+  const [saving, setSaving] = useState(false)
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -62,21 +83,19 @@ export default function VendorProducts(props: VendorProductsProps) {
     try {
       const payload = {
         ...form,
-        price: parseFloat(form.price),
-        sale_price: form.sale_price ? parseFloat(form.sale_price) : null,
-        commission_rate: parseFloat(form.commission_rate),
+        price: Number.parseFloat(form.price),
+        sale_price: form.sale_price ? Number.parseFloat(form.sale_price) : null,
+        commission_rate: Number.parseFloat(form.commission_rate),
         vendor_id: user.id,
         vendor_name: user.fullName || 'Vendor',
       }
       const url = editId ? `/api/products/${editId}` : '/api/products'
-      const { data: saved } = editId
-        ? await api.put(url, payload)
-        : await api.post(url, payload)
+      const { data: saved } = editId ? await api.put(url, payload) : await api.post(url, payload)
       if (editId) {
-        setProducts(prev => prev.map(p => p.id === editId ? saved : p))
+        setProducts((prev) => prev.map((p) => (p.id === editId ? saved : p)))
         toast.success('Product updated successfully')
       } else {
-        setProducts(prev => [...prev, saved])
+        setProducts((prev) => [...prev, saved])
         toast.success('Product submitted for review')
       }
       setShowForm(false)
@@ -92,7 +111,7 @@ export default function VendorProducts(props: VendorProductsProps) {
   const handleDelete = async (id: number) => {
     try {
       await api.delete(`/api/products/${id}`)
-      setProducts(prev => prev.filter(p => p.id !== id))
+      setProducts((prev) => prev.filter((p) => p.id !== id))
       toast.success('Product deleted')
     } catch {
       toast.error('Failed to delete product')
@@ -100,7 +119,7 @@ export default function VendorProducts(props: VendorProductsProps) {
   }
 
   const handleEdit = (product: any) => {
-    setEditId(product.id);
+    setEditId(product.id)
     setForm({
       name: product.name || '',
       description: product.description || '',
@@ -113,196 +132,288 @@ export default function VendorProducts(props: VendorProductsProps) {
       image_url: product.imageUrl || '',
       recurring_billing: product.recurringBilling || false,
       billing_cycle: product.billingCycle || 'one_time',
-    });
-    setShowForm(true);
-  };
+    })
+    setShowForm(true)
+  }
 
-  const approvedCount = products.filter(p => p.status === 'approved').length;
-  const pendingCount = products.filter(p => p.status === 'pending').length;
+  const approvedCount = products.filter((p) => p.status === 'approved').length
+  const pendingCount = products.filter((p) => p.status === 'pending').length
 
   return (
     <DashboardLayout role="vendor">
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Package className="w-6 h-6 text-[#81C14B]" />
-            My Products
-          </h1>
-          <p className="text-muted-foreground text-sm">{approvedCount} active · {pendingCount} pending review</p>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold flex items-center gap-2">
+              <Package className="w-6 h-6 text-[#81C14B]" />
+              My Products
+            </h1>
+            <p className="text-muted-foreground text-sm">
+              {approvedCount} active · {pendingCount} pending review
+            </p>
+          </div>
+          <Button
+            onClick={() => {
+              setShowForm(true)
+              setEditId(null)
+              setForm(defaultForm)
+            }}
+            style={{ backgroundColor: '#001845' }}
+            className="text-white hover:opacity-90 self-start sm:self-auto"
+          >
+            <Plus className="w-4 h-4 mr-2" /> Add Product
+          </Button>
         </div>
-        <Button
-          onClick={() => { setShowForm(true); setEditId(null); setForm(defaultForm); }}
-          style={{ backgroundColor: '#001845' }}
-          className="text-white hover:opacity-90 self-start sm:self-auto"
-        >
-          <Plus className="w-4 h-4 mr-2" /> Add Product
-        </Button>
-      </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {[
-          { label: 'Total Products', value: products.length, color: 'text-[#001845]' },
-          { label: 'Approved', value: approvedCount, color: 'text-green-600' },
-          { label: 'Pending Review', value: pendingCount, color: 'text-amber-600' },
-        ].map((s, i) => (
-          <Card key={i}>
-            <CardContent className="p-4 text-center">
-              <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
-              <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          {[
+            { label: 'Total Products', value: products.length, color: 'text-[#001845]' },
+            { label: 'Approved', value: approvedCount, color: 'text-green-600' },
+            { label: 'Pending Review', value: pendingCount, color: 'text-amber-600' },
+          ].map((s, i) => (
+            <Card key={i}>
+              <CardContent className="p-4 text-center">
+                <p className={`text-2xl font-bold ${s.color}`}>{s.value}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{s.label}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
 
-      <Dialog open={showForm} onOpenChange={setShowForm}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>{editId ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSave} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="col-span-2">
-                <Label>Product Name *</Label>
-                <Input value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} required placeholder="Enter product name" />
+        <Dialog open={showForm} onOpenChange={setShowForm}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>{editId ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <Label>Product Name *</Label>
+                  <Input
+                    value={form.name}
+                    onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    required
+                    placeholder="Enter product name"
+                  />
+                </div>
+                <div>
+                  <Label>Category</Label>
+                  <Select
+                    value={form.category}
+                    onValueChange={(v) => setForm({ ...form, category: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {CATEGORIES.map((c) => (
+                        <SelectItem key={c.value} value={c.value}>
+                          {c.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Product Type</Label>
+                  <Select
+                    value={form.product_type}
+                    onValueChange={(v) => setForm({ ...form, product_type: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="digital">Digital</SelectItem>
+                      <SelectItem value="physical">Physical</SelectItem>
+                      <SelectItem value="service">Service</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Price (USD) *</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={form.price}
+                    onChange={(e) => setForm({ ...form, price: e.target.value })}
+                    required
+                    placeholder="e.g. 29.99"
+                  />
+                </div>
+                <div>
+                  <Label>Sale Price (USD)</Label>
+                  <Input
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={form.sale_price}
+                    onChange={(e) => setForm({ ...form, sale_price: e.target.value })}
+                    placeholder="Optional"
+                  />
+                </div>
+                <div>
+                  <Label>Commission Rate (%)</Label>
+                  <Input
+                    type="number"
+                    min="1"
+                    max="75"
+                    value={form.commission_rate}
+                    onChange={(e) => setForm({ ...form, commission_rate: e.target.value })}
+                    required
+                  />
+                  {form.price && form.commission_rate && (
+                    <p className="text-xs text-green-600 mt-1">
+                      Affiliates earn:{' '}
+                      {formatNGN(
+                        ((Number.parseFloat(form.price) || 0) *
+                          (Number.parseFloat(form.commission_rate) || 0)) /
+                          100
+                      )}{' '}
+                      per sale
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label>Product Image URL</Label>
+                  <Input
+                    value={form.image_url}
+                    onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                    placeholder="https://..."
+                  />
+                </div>
+                <div>
+                  <Label>Billing</Label>
+                  <Select
+                    value={form.billing_cycle}
+                    onValueChange={(v) => setForm({ ...form, billing_cycle: v })}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="one_time">One-time</SelectItem>
+                      <SelectItem value="monthly">Monthly</SelectItem>
+                      <SelectItem value="yearly">Yearly</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="col-span-2">
+                  <Label>Short Description</Label>
+                  <Input
+                    value={form.short_description}
+                    onChange={(e) => setForm({ ...form, short_description: e.target.value })}
+                    placeholder="Brief product tagline"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label>Full Description</Label>
+                  <Textarea
+                    rows={4}
+                    value={form.description}
+                    onChange={(e) => setForm({ ...form, description: e.target.value })}
+                    placeholder="Detailed product description..."
+                  />
+                </div>
               </div>
-              <div>
-                <Label>Category</Label>
-                <Select value={form.category} onValueChange={v => setForm({ ...form, category: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {CATEGORIES.map(c => <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setShowForm(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={saving}
+                  style={{ backgroundColor: '#001845' }}
+                  className="text-white"
+                >
+                  {saving ? 'Saving...' : editId ? 'Update Product' : 'Submit for Approval'}
+                </Button>
               </div>
-              <div>
-                <Label>Product Type</Label>
-                <Select value={form.product_type} onValueChange={v => setForm({ ...form, product_type: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="digital">Digital</SelectItem>
-                    <SelectItem value="physical">Physical</SelectItem>
-                    <SelectItem value="service">Service</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Price (USD) *</Label>
-                <Input type="number" step="0.01" min="0" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required placeholder="e.g. 29.99" />
-              </div>
-              <div>
-                <Label>Sale Price (USD)</Label>
-                <Input type="number" step="0.01" min="0" value={form.sale_price} onChange={e => setForm({ ...form, sale_price: e.target.value })} placeholder="Optional" />
-              </div>
-              <div>
-                <Label>Commission Rate (%)</Label>
-                <Input type="number" min="1" max="75" value={form.commission_rate} onChange={e => setForm({ ...form, commission_rate: e.target.value })} required />
-                {form.price && form.commission_rate && (
-                  <p className="text-xs text-green-600 mt-1">
-                    Affiliates earn: {formatNGN((parseFloat(form.price) || 0) * (parseFloat(form.commission_rate) || 0) / 100)} per sale
-                  </p>
-                )}
-              </div>
-              <div>
-                <Label>Product Image URL</Label>
-                <Input value={form.image_url} onChange={e => setForm({ ...form, image_url: e.target.value })} placeholder="https://..." />
-              </div>
-              <div>
-                <Label>Billing</Label>
-                <Select value={form.billing_cycle} onValueChange={v => setForm({ ...form, billing_cycle: v })}>
-                  <SelectTrigger><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="one_time">One-time</SelectItem>
-                    <SelectItem value="monthly">Monthly</SelectItem>
-                    <SelectItem value="yearly">Yearly</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="col-span-2">
-                <Label>Short Description</Label>
-                <Input value={form.short_description} onChange={e => setForm({ ...form, short_description: e.target.value })} placeholder="Brief product tagline" />
-              </div>
-              <div className="col-span-2">
-                <Label>Full Description</Label>
-                <Textarea rows={4} value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Detailed product description..." />
-              </div>
-            </div>
-            <div className="flex justify-end gap-3 pt-2">
-              <Button type="button" variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
-              <Button type="submit" disabled={saving} style={{ backgroundColor: '#001845' }} className="text-white">
-                {saving ? 'Saving...' : editId ? 'Update Product' : 'Submit for Approval'}
-              </Button>
-            </div>
-          </form>
-        </DialogContent>
-      </Dialog>
+            </form>
+          </DialogContent>
+        </Dialog>
 
-      <Card>
-        <CardContent className="p-0 overflow-x-auto">
-          {products.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>Price ($)</TableHead>
-                  <TableHead>Commission</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Sales</TableHead>
-                  <TableHead>Revenue ($)</TableHead>
-                  <TableHead></TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {products.map(p => (
-                  <TableRow key={p.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        {p.imageUrl && (
-                          <img src={p.imageUrl} alt="" className="w-8 h-8 rounded-lg object-cover" />
-                        )}
-                        <div>
-                          <p className="font-medium text-sm">{p.name}</p>
-                          <p className="text-xs text-muted-foreground capitalize">{p.productType}</p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-semibold">{formatNGN(p.price)}</TableCell>
-                    <TableCell>
-                      <span className="text-green-600 font-semibold">{p.commissionRate}%</span>
-                    </TableCell>
-                    <TableCell>
-                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[p.status] ?? 'bg-slate-100 text-slate-600'}`}>
-                        {p.status}
-                      </span>
-                    </TableCell>
-                    <TableCell>{p.totalSales || 0}</TableCell>
-                    <TableCell>{formatNGN(p.totalRevenue)}</TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button variant="ghost" size="icon" onClick={() => handleEdit(p)}>
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>
-                          <Trash2 className="w-4 h-4 text-destructive" />
-                        </Button>
-                      </div>
-                    </TableCell>
+        <Card>
+          <CardContent className="p-0 overflow-x-auto">
+            {products.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Product</TableHead>
+                    <TableHead>Price ($)</TableHead>
+                    <TableHead>Commission</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Sales</TableHead>
+                    <TableHead>Revenue ($)</TableHead>
+                    <TableHead />
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center py-16">
-              <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-muted-foreground mb-3">No products yet. Add your first listing!</p>
-              <Button onClick={() => setShowForm(true)} style={{ backgroundColor: '#001845' }} className="text-white">
-                <Plus className="w-4 h-4 mr-2" /> Add First Product
-              </Button>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+                </TableHeader>
+                <TableBody>
+                  {products.map((p) => (
+                    <TableRow key={p.id}>
+                      <TableCell>
+                        <div className="flex items-center gap-3">
+                          {p.imageUrl && (
+                            <img
+                              src={p.imageUrl}
+                              alt=""
+                              className="w-8 h-8 rounded-lg object-cover"
+                            />
+                          )}
+                          <div>
+                            <p className="font-medium text-sm">{p.name}</p>
+                            <p className="text-xs text-muted-foreground capitalize">
+                              {p.productType}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-semibold">{formatNGN(p.price)}</TableCell>
+                      <TableCell>
+                        <span className="text-green-600 font-semibold">{p.commissionRate}%</span>
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusStyles[p.status] ?? 'bg-slate-100 text-slate-600'}`}
+                        >
+                          {p.status}
+                        </span>
+                      </TableCell>
+                      <TableCell>{p.totalSales || 0}</TableCell>
+                      <TableCell>{formatNGN(p.totalRevenue)}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button variant="ghost" size="icon" onClick={() => handleEdit(p)}>
+                            <Pencil className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" onClick={() => handleDelete(p.id)}>
+                            <Trash2 className="w-4 h-4 text-destructive" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="text-center py-16">
+                <Package className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-muted-foreground mb-3">
+                  No products yet. Add your first listing!
+                </p>
+                <Button
+                  onClick={() => setShowForm(true)}
+                  style={{ backgroundColor: '#001845' }}
+                  className="text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" /> Add First Product
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </DashboardLayout>
-  );
+  )
 }

@@ -43,6 +43,9 @@ export interface ApiDefinition {
     resetPassword: typeof routes['new_account.reset_password']
   }
   login: typeof routes['login']
+  verify: {
+    email: typeof routes['verify.email']
+  }
   forgot: {
     password: typeof routes['forgot.password']
   }
@@ -55,6 +58,15 @@ export interface ApiDefinition {
   }
   logout: typeof routes['logout']
   admin: {
+    auth: {
+      login: typeof routes['admin.auth.login'] & {
+        google: typeof routes['admin.auth.login.google']
+      }
+      setup: {
+        google: typeof routes['admin.auth.setup.google']
+      }
+      callback: typeof routes['admin.auth.callback']
+    }
     dashboard: typeof routes['admin.dashboard']
     users: typeof routes['admin.users']
     products: typeof routes['admin.products']

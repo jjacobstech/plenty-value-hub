@@ -30,7 +30,10 @@ export default class PagesController {
   }
 
   async reviews({ inertia }: HttpContext) {
-    const reviews = await Review.query().where('status', 'approved').orderBy('created_at', 'desc').limit(50)
+    const reviews = await Review.query()
+      .where('status', 'approved')
+      .orderBy('created_at', 'desc')
+      .limit(50)
     return inertia.render('Reviews', { reviews })
   }
 
@@ -53,6 +56,14 @@ export default class PagesController {
   }
 
   // Auth pages
+  async verifyEmail({ inertia, session, response }: HttpContext) {
+    const email = session.get('pending_verification_email') as string | undefined
+    if (!email) {
+      return response.redirect('/auth/signup')
+    }
+    return inertia.render('auth/VerifyEmail', { email })
+  }
+
   async forgotPassword({ inertia }: HttpContext) {
     return inertia.render('auth/forgot-password', {})
   }
@@ -63,34 +74,50 @@ export default class PagesController {
 
   // Admin pages
   async adminDashboard({ inertia, auth }: HttpContext) {
-    const userCount = await User.query().count('*', 'total')
-    const productCount = await Product.query().count('*', 'total')
-    const orderCount = await Order.query().count('*', 'total')
+    const [users, products, orders, subscriberCount] = await Promise.all([
+      User.all(),
+      Product.all(),
+      Order.query().orderBy('created_at', 'desc').limit(500),
+      NewsletterSubscriber.query().count('* as total').first(),
+    ])
     return inertia.render('admin/AdminDashboard', {
       user: auth.user,
-      stats: { users: userCount, products: productCount, orders: orderCount }
+      users,
+      products,
+      orders,
+      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
     })
   }
 
   async adminUsers({ inertia, auth }: HttpContext) {
-    const users = await User.query().select('*').paginate(1, 20)
+    const users = await User.query().orderBy('created_at', 'desc').limit(200)
     return inertia.render('admin/AdminUsers', { user: auth.user, users })
   }
 
   async adminProducts({ inertia, auth }: HttpContext) {
-    const products = await Product.query().paginate(1, 20)
+    const products = await Product.query().orderBy('created_at', 'desc').limit(200)
     return inertia.render('admin/AdminProducts', { user: auth.user, products })
   }
 
   async adminOrders({ inertia, auth }: HttpContext) {
-    const orders = await Order.query().paginate(1, 20)
+    const orders = await Order.query().orderBy('created_at', 'desc').limit(200)
     return inertia.render('admin/AdminOrders', { user: auth.user, orders })
   }
 
   async adminAnalytics({ inertia, auth }: HttpContext) {
-    const totalRevenue = await Order.query().sum('total as total')
-    const totalOrders = await Order.query().count('*', 'total')
-    return inertia.render('admin/AdminAnalytics', { user: auth.user, analytics: { totalRevenue, totalOrders } })
+    const [users, products, orders, links] = await Promise.all([
+      User.all(),
+      Product.all(),
+      Order.query().orderBy('created_at', 'desc').limit(500),
+      AffiliateLink.all(),
+    ])
+    return inertia.render('admin/AdminAnalytics', {
+      user: auth.user,
+      users,
+      products,
+      orders,
+      links,
+    })
   }
 
   // Vendor pages
@@ -102,7 +129,7 @@ export default class PagesController {
     return inertia.render('vendor/VendorDashboard', {
       user: auth.user,
       products: vendorProducts,
-      orders: vendorOrders
+      orders: vendorOrders,
     })
   }
 
@@ -135,9 +162,7 @@ export default class PagesController {
   }
 
   async vendorProfile({ inertia, auth }: HttpContext) {
-    const user = await User.query()
-      .where('id', auth.user!.id)
-      .firstOrFail()
+    const user = await User.query().where('id', auth.user!.id).firstOrFail()
     return inertia.render('vendor/VendorProfile', { user: user.serialize() })
   }
 
@@ -184,9 +209,7 @@ export default class PagesController {
   }
 
   async affiliateProfile({ inertia, auth }: HttpContext) {
-    const user = await User.query()
-      .where('id', auth.user!.id)
-      .firstOrFail()
+    const user = await User.query().where('id', auth.user!.id).firstOrFail()
     return inertia.render('affiliate/AffiliateProfile', { user: user.serialize() })
   }
 }

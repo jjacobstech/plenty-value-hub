@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 function getCsrfToken() {
-  const match = document.cookie.split('; ').find(r => r.startsWith('XSRF-TOKEN='))
+  const match = document.cookie.split('; ').find((r) => r.startsWith('XSRF-TOKEN='))
   return match ? decodeURIComponent(match.split('=')[1]) : ''
 }
 

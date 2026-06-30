@@ -21,6 +21,7 @@ export type ScannedRoutes = {
     'new_account.resend_otp': { paramsTuple?: []; params?: {} }
     'login': { paramsTuple?: []; params?: {} }
     'new_account.login': { paramsTuple?: []; params?: {} }
+    'verify.email': { paramsTuple?: []; params?: {} }
     'forgot.password': { paramsTuple?: []; params?: {} }
     'new_account.forgot_password': { paramsTuple?: []; params?: {} }
     'reset.password': { paramsTuple?: []; params?: {} }
@@ -28,6 +29,10 @@ export type ScannedRoutes = {
     'google.redirect': { paramsTuple?: []; params?: {} }
     'google.callback': { paramsTuple?: []; params?: {} }
     'logout': { paramsTuple?: []; params?: {} }
+    'admin.auth.login': { paramsTuple?: []; params?: {} }
+    'admin.auth.setup.google': { paramsTuple?: []; params?: {} }
+    'admin.auth.login.google': { paramsTuple?: []; params?: {} }
+    'admin.auth.callback': { paramsTuple?: []; params?: {} }
     'admin.dashboard': { paramsTuple?: []; params?: {} }
     'admin.users': { paramsTuple?: []; params?: {} }
     'admin.products': { paramsTuple?: []; params?: {} }
@@ -82,10 +87,15 @@ export type ScannedRoutes = {
     'privacy': { paramsTuple?: []; params?: {} }
     'register': { paramsTuple?: []; params?: {} }
     'login': { paramsTuple?: []; params?: {} }
+    'verify.email': { paramsTuple?: []; params?: {} }
     'forgot.password': { paramsTuple?: []; params?: {} }
     'reset.password': { paramsTuple?: []; params?: {} }
     'google.redirect': { paramsTuple?: []; params?: {} }
     'google.callback': { paramsTuple?: []; params?: {} }
+    'admin.auth.login': { paramsTuple?: []; params?: {} }
+    'admin.auth.setup.google': { paramsTuple?: []; params?: {} }
+    'admin.auth.login.google': { paramsTuple?: []; params?: {} }
+    'admin.auth.callback': { paramsTuple?: []; params?: {} }
     'admin.dashboard': { paramsTuple?: []; params?: {} }
     'admin.users': { paramsTuple?: []; params?: {} }
     'admin.products': { paramsTuple?: []; params?: {} }
@@ -122,10 +132,15 @@ export type ScannedRoutes = {
     'privacy': { paramsTuple?: []; params?: {} }
     'register': { paramsTuple?: []; params?: {} }
     'login': { paramsTuple?: []; params?: {} }
+    'verify.email': { paramsTuple?: []; params?: {} }
     'forgot.password': { paramsTuple?: []; params?: {} }
     'reset.password': { paramsTuple?: []; params?: {} }
     'google.redirect': { paramsTuple?: []; params?: {} }
     'google.callback': { paramsTuple?: []; params?: {} }
+    'admin.auth.login': { paramsTuple?: []; params?: {} }
+    'admin.auth.setup.google': { paramsTuple?: []; params?: {} }
+    'admin.auth.login.google': { paramsTuple?: []; params?: {} }
+    'admin.auth.callback': { paramsTuple?: []; params?: {} }
     'admin.dashboard': { paramsTuple?: []; params?: {} }
     'admin.users': { paramsTuple?: []; params?: {} }
     'admin.products': { paramsTuple?: []; params?: {} }

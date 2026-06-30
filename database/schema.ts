@@ -8,7 +8,22 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AffiliateLinkSchema extends BaseModel {
-  static $columns = ['affiliateId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt'] as const
+  static $columns = [
+    'affiliateId',
+    'campaignName',
+    'clicks',
+    'commissionEarned',
+    'conversions',
+    'createdAt',
+    'id',
+    'linkCode',
+    'productId',
+    'productName',
+    'revenue',
+    'status',
+    'subId',
+    'updatedAt',
+  ] as const
   $columns = AffiliateLinkSchema.$columns
   @column()
   declare affiliateId: number
@@ -41,7 +56,16 @@ export class AffiliateLinkSchema extends BaseModel {
 }
 
 export class NewsletterSubscriberSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'id', 'interests', 'name', 'source', 'status', 'updatedAt'] as const
+  static $columns = [
+    'createdAt',
+    'email',
+    'id',
+    'interests',
+    'name',
+    'source',
+    'status',
+    'updatedAt',
+  ] as const
   $columns = NewsletterSubscriberSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -62,7 +86,26 @@ export class NewsletterSubscriberSchema extends BaseModel {
 }
 
 export class OrderSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'status', 'updatedAt', 'vendorId', 'vendorPayout'] as const
+  static $columns = [
+    'affiliateId',
+    'affiliateLinkId',
+    'amount',
+    'buyerEmail',
+    'buyerId',
+    'commissionAmount',
+    'createdAt',
+    'currency',
+    'id',
+    'orderNumber',
+    'paymentMethod',
+    'platformFee',
+    'productId',
+    'productName',
+    'status',
+    'updatedAt',
+    'vendorId',
+    'vendorPayout',
+  ] as const
   $columns = OrderSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -103,7 +146,38 @@ export class OrderSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'updatedAt', 'vendorId', 'vendorName'] as const
+  static $columns = [
+    'affiliateResources',
+    'avgEarningsPerSale',
+    'billingCycle',
+    'category',
+    'commissionRate',
+    'conversionRate',
+    'createdAt',
+    'description',
+    'galleryUrls',
+    'gravityScore',
+    'id',
+    'imageUrl',
+    'isFeatured',
+    'name',
+    'price',
+    'productType',
+    'rating',
+    'recurringBilling',
+    'refundRate',
+    'reviewCount',
+    'salePrice',
+    'shortDescription',
+    'slug',
+    'status',
+    'tags',
+    'totalRevenue',
+    'totalSales',
+    'updatedAt',
+    'vendorId',
+    'vendorName',
+  ] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -168,7 +242,22 @@ export class ProductSchema extends BaseModel {
 }
 
 export class ReviewSchema extends BaseModel {
-  static $columns = ['cons', 'content', 'createdAt', 'helpfulCount', 'id', 'isVerifiedPurchase', 'productId', 'productName', 'pros', 'rating', 'reviewerName', 'status', 'title', 'updatedAt'] as const
+  static $columns = [
+    'cons',
+    'content',
+    'createdAt',
+    'helpfulCount',
+    'id',
+    'isVerifiedPurchase',
+    'productId',
+    'productName',
+    'pros',
+    'rating',
+    'reviewerName',
+    'status',
+    'title',
+    'updatedAt',
+  ] as const
   $columns = ReviewSchema.$columns
   @column()
   declare cons: any | null
@@ -201,7 +290,38 @@ export class ReviewSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'website', 'youtube'] as const
+  static $columns = [
+    'bio',
+    'businessDescription',
+    'businessLogo',
+    'businessName',
+    'businessType',
+    'country',
+    'coverBanner',
+    'createdAt',
+    'email',
+    'emailVerifiedAt',
+    'fullName',
+    'heardAbout',
+    'id',
+    'instagram',
+    'location',
+    'marketingChannels',
+    'niche',
+    'otpCode',
+    'otpExpiresAt',
+    'password',
+    'phone',
+    'productCategories',
+    'profilePicture',
+    'resetToken',
+    'resetTokenExpiresAt',
+    'role',
+    'twitter',
+    'updatedAt',
+    'website',
+    'youtube',
+  ] as const
   $columns = UserSchema.$columns
   @column()
   declare bio: string | null

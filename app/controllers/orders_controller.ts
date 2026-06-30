@@ -3,10 +3,10 @@ import Product from '#models/product'
 import AffiliateLink from '#models/affiliate_link'
 import { processOrderValidator, updateOrderValidator } from '#validators/order'
 import { RevenueService } from '#services/revenue_service'
-import { OrderNumberService } from '#services/order_number_service'
+import { generateOrderNumber } from '#services/order_number_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import mail from '@adonisjs/mail/services/main'
-import Decimal from 'decimal.js'
+import { Decimal } from 'decimal.js'
 
 export default class OrdersController {
   async index({ auth, response, request }: HttpContext) {
@@ -72,19 +72,22 @@ export default class OrdersController {
       return response.status(400).json({ error: 'Product is not approved for purchase' })
     }
 
-    const salePrice = product.salePrice && new Decimal(product.salePrice).lessThan(product.price)
-      ? product.salePrice
-      : product.price
+    const productPrice = Number.parseFloat(product.price)
+    const salePrice =
+      product.salePrice && new Decimal(product.salePrice).lessThan(product.price)
+        ? Number.parseFloat(product.salePrice)
+        : productPrice
 
-    const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculateSplit(
+    const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
+      productPrice,
       salePrice,
-      product.commissionRate,
-      payload.affiliateLinkCode ? true : false
+      Number.parseFloat(product.commissionRate),
+      !!payload.affiliateLinkCode
     )
 
-    const orderNumber = OrderNumberService.generate()
+    const orderNumber = generateOrderNumber()
 
-    let affiliateLink: typeof AffiliateLink | null = null
+    let affiliateLink: AffiliateLink | null = null
     let affiliateId: number | null = null
 
     if (payload.affiliateLinkCode) {
@@ -104,10 +107,10 @@ export default class OrdersController {
       vendorId: product.vendorId,
       affiliateId,
       affiliateLinkId: affiliateLink?.id || null,
-      amount: salePrice,
-      commissionAmount,
-      platformFee,
-      vendorPayout,
+      amount: salePrice.toFixed(2),
+      commissionAmount: commissionAmount.toFixed(2),
+      platformFee: platformFee.toFixed(2),
+      vendorPayout: vendorPayout.toFixed(2),
       status: 'completed',
       currency: 'USD',
     })
@@ -115,18 +118,21 @@ export default class OrdersController {
     if (affiliateLink) {
       affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
       affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-        .plus(new Decimal(salePrice))
-        .toNumber()
+        .plus(salePrice)
+        .toDecimalPlaces(2)
+        .toString()
       affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-        .plus(new Decimal(commissionAmount))
-        .toNumber()
+        .plus(commissionAmount)
+        .toDecimalPlaces(2)
+        .toString()
       await affiliateLink.save()
     }
 
     product.totalSales = (product.totalSales || 0) + 1
     product.totalRevenue = new Decimal(product.totalRevenue || 0)
-      .plus(new Decimal(salePrice))
-      .toNumber()
+      .plus(salePrice)
+      .toDecimalPlaces(2)
+      .toString()
     product.gravityScore = Math.min(100, (product.gravityScore || 0) + 1)
     await product.save()
 
@@ -186,11 +192,13 @@ export default class OrdersController {
         if (affiliateLink) {
           affiliateLink.conversions = Math.max(0, (affiliateLink.conversions || 0) - 1)
           affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-            .minus(new Decimal(order.amount))
-            .toNumber()
+            .minus(order.amount)
+            .toDecimalPlaces(2)
+            .toString()
           affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-            .minus(new Decimal(order.commissionAmount))
-            .toNumber()
+            .minus(order.commissionAmount || 0)
+            .toDecimalPlaces(2)
+            .toString()
           await affiliateLink.save()
         }
       }
@@ -199,16 +207,16 @@ export default class OrdersController {
       if (product) {
         product.totalSales = Math.max(0, (product.totalSales || 0) - 1)
         product.totalRevenue = new Decimal(product.totalRevenue || 0)
-          .minus(new Decimal(order.amount))
-          .toNumber()
+          .minus(order.amount)
+          .toDecimalPlaces(2)
+          .toString()
         await product.save()
       }
     }
 
     if (['completed', 'refunded'].includes(payload.status)) {
-      const emailTemplate = payload.status === 'completed'
-        ? 'emails/order_confirmation'
-        : 'emails/refund_notification'
+      const emailTemplate =
+        payload.status === 'completed' ? 'emails/order_confirmation' : 'emails/refund_notification'
 
       await mail.send((message) => {
         message

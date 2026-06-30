@@ -25,13 +25,13 @@
       <p>Welcome to Plenty Value! We're excited to have you on board.</p>
       @if(user.role === 'vendor')
         <p>You're all set to start selling. Head to your vendor dashboard to list your first product and start earning.</p>
-        <a href="{{ env('APP_URL') }}/vendor" class="cta-button">Go to Vendor Dashboard</a>
+        <a href="{{ appUrl }}/vendor" class="cta-button">Go to Vendor Dashboard</a>
       @elseif(user.role === 'affiliate')
         <p>You're ready to start promoting. Browse our marketplace and create your first affiliate link to start earning commissions.</p>
-        <a href="{{ env('APP_URL') }}/affiliate" class="cta-button">Start Promoting</a>
+        <a href="{{ appUrl }}/affiliate" class="cta-button">Start Promoting</a>
       @else
         <p>Explore our marketplace and discover amazing products from trusted vendors.</p>
-        <a href="{{ env('APP_URL') }}/marketplace" class="cta-button">Browse Marketplace</a>
+        <a href="{{ appUrl }}/marketplace" class="cta-button">Browse Marketplace</a>
       @endif
       <p>Happy selling and earning!</p>
     </div>

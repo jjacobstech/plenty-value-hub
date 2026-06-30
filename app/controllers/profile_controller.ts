@@ -24,8 +24,15 @@ export default class ProfileController {
     const body = request.body() as Record<string, any>
 
     const updates = pickPresent(body, [
-      'bio', 'phone', 'website', 'instagram', 'twitter',
-      'youtube', 'location', 'niche', 'marketingChannels',
+      'bio',
+      'phone',
+      'website',
+      'instagram',
+      'twitter',
+      'youtube',
+      'location',
+      'niche',
+      'marketingChannels',
     ])
 
     user.merge(updates)
@@ -39,8 +46,14 @@ export default class ProfileController {
     const body = request.body() as Record<string, any>
 
     const updates = pickPresent(body, [
-      'businessName', 'businessDescription', 'phone', 'website',
-      'instagram', 'twitter', 'location', 'productCategories',
+      'businessName',
+      'businessDescription',
+      'phone',
+      'website',
+      'instagram',
+      'twitter',
+      'location',
+      'productCategories',
     ])
 
     user.merge(updates)

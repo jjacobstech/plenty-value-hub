@@ -7,7 +7,7 @@ import { DateTime } from 'luxon'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   @column()
-  declare role: 'admin' | 'vendor' | 'affiliate'
+  declare role: 'admin' | 'vendor' | 'affiliate' | 'consumer'
 
   @column.dateTime()
   declare emailVerifiedAt: DateTime | null

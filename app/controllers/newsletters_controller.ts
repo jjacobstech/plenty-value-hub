@@ -33,7 +33,7 @@ export default class NewslettersController {
     await mail.send((message) => {
       message
         .to(subscriber.email)
-        .subject('You\'re subscribed to Plenty Value Newsletter! 🎉')
+        .subject("You're subscribed to Plenty Value Newsletter! 🎉")
         .htmlView('emails/newsletter_confirmation', {
           subscriber: subscriber.serialize(),
         })

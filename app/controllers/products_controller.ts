@@ -16,7 +16,8 @@ export default class ProductsController {
     if (category) query = query.where('category', category)
     if (productType) query = query.where('product_type', productType)
     if (search) {
-      query = query.where('name', 'like', `%${search}%`)
+      query = query
+        .where('name', 'like', `%${search}%`)
         .orWhere('short_description', 'like', `%${search}%`)
     }
 
@@ -42,8 +43,8 @@ export default class ProductsController {
     const product = await Product.query()
       .where('id', params.id)
       .where('status', 'approved')
-      .preload('vendor')
-      .preload('reviews', (query) => query.where('status', 'approved'))
+      .preload('vendor' as never)
+      .preload('reviews' as never, (query: any) => query.where('status', 'approved'))
       .first()
 
     if (!product) {
@@ -66,13 +67,13 @@ export default class ProductsController {
     const payload = await request.validateUsing(createProductValidator)
 
     const product = await Product.create({
-      ...payload,
+      ...(payload as any),
       vendorId: user.id,
       vendorName: user.fullName || user.email,
       status: 'pending',
       gravityScore: 0,
       totalSales: 0,
-      totalRevenue: 0,
+      totalRevenue: '0',
       reviewCount: 0,
     })
 
@@ -97,7 +98,7 @@ export default class ProductsController {
 
     const payload = await request.validateUsing(updateProductValidator)
 
-    product.merge(payload)
+    product.merge(payload as any)
     await product.save()
 
     return response.json({

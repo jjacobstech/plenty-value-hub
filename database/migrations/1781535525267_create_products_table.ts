@@ -10,22 +10,24 @@ export default class extends BaseSchema {
       table.string('slug').nullable().unique()
       table.text('description').nullable()
       table.string('short_description').nullable()
-      table.enum('category', [
-        'health_fitness',
-        'business_investing',
-        'software_saas',
-        'ecommerce',
-        'education',
-        'fashion',
-        'beauty',
-        'home_garden',
-        'technology',
-        'finance',
-        'digital_services',
-        'ai_tools',
-        'productivity',
-        'lifestyle',
-      ]).notNullable()
+      table
+        .enum('category', [
+          'health_fitness',
+          'business_investing',
+          'software_saas',
+          'ecommerce',
+          'education',
+          'fashion',
+          'beauty',
+          'home_garden',
+          'technology',
+          'finance',
+          'digital_services',
+          'ai_tools',
+          'productivity',
+          'lifestyle',
+        ])
+        .notNullable()
       table.enum('product_type', ['digital', 'physical', 'service']).notNullable()
       table.decimal('price', 10, 2).notNullable()
       table.decimal('sale_price', 10, 2).nullable()

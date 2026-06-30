@@ -1,9 +1,9 @@
-import React from 'react';
-import { Link } from '@inertiajs/react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Star, TrendingUp } from 'lucide-react';
-import { formatUSD } from '@/lib/currency';
+import React from 'react'
+import { Link } from '@adonisjs/inertia/react'
+import { Card, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Star, TrendingUp } from 'lucide-react'
+import { formatUSD } from '@/lib/currency'
 
 const CATEGORY_LABELS = {
   health_fitness: 'Health & Fitness',
@@ -20,7 +20,7 @@ const CATEGORY_LABELS = {
   ai_tools: 'AI Tools',
   productivity: 'Productivity',
   lifestyle: 'Lifestyle',
-};
+}
 
 export default function ProductCard({ product, showCommission = false }) {
   return (
@@ -28,21 +28,27 @@ export default function ProductCard({ product, showCommission = false }) {
       <Card className="group overflow-hidden border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 h-full">
         <div className="aspect-[4/3] bg-muted relative overflow-hidden">
           {product.image_url ? (
-            <img 
-              src={product.image_url} 
-              alt={product.name} 
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-              <span className="text-4xl font-display font-bold text-primary/20">{product.name?.[0]}</span>
+              <span className="text-4xl font-display font-bold text-primary/20">
+                {product.name?.[0]}
+              </span>
             </div>
           )}
           {product.is_featured && (
-            <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs">Featured</Badge>
+            <Badge className="absolute top-3 left-3 bg-primary text-primary-foreground text-xs">
+              Featured
+            </Badge>
           )}
           {product.sale_price && product.sale_price < product.price && (
-            <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-xs">Sale</Badge>
+            <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-xs">
+              Sale
+            </Badge>
           )}
         </div>
         <CardContent className="p-4 space-y-2">
@@ -65,7 +71,9 @@ export default function ProductCard({ product, showCommission = false }) {
               {product.sale_price && product.sale_price < product.price ? (
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-lg">{formatUSD(product.sale_price)}</span>
-                  <span className="text-sm text-muted-foreground line-through">{formatUSD(product.price)}</span>
+                  <span className="text-sm text-muted-foreground line-through">
+                    {formatUSD(product.price)}
+                  </span>
                 </div>
               ) : (
                 <span className="font-bold text-lg">{formatUSD(product.price)}</span>
@@ -81,5 +89,5 @@ export default function ProductCard({ product, showCommission = false }) {
         </CardContent>
       </Card>
     </Link>
-  );
+  )
 }

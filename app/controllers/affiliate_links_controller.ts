@@ -14,9 +14,7 @@ export default class AffiliateLinksController {
     const page = request.input('page', 1)
     const limit = request.input('limit', 20)
 
-    const links = await AffiliateLink.query()
-      .where('affiliateId', user.id)
-      .paginate(page, limit)
+    const links = await AffiliateLink.query().where('affiliateId', user.id).paginate(page, limit)
 
     return response.json({
       success: true,
@@ -60,8 +58,8 @@ export default class AffiliateLinksController {
       status: 'active',
       clicks: 0,
       conversions: 0,
-      revenue: 0,
-      commissionEarned: 0,
+      revenue: '0',
+      commissionEarned: '0',
     })
 
     return response.status(201).json({

@@ -211,6 +211,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['login']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'verify.email': {
+    methods: ["GET","HEAD"]
+    pattern: '/auth/verify-email'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['verifyEmail']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['verifyEmail']>>>
+    }
+  }
   'forgot.password': {
     methods: ["GET","HEAD"]
     pattern: '/auth/forgot-password'
@@ -293,6 +305,54 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/session_controller').default['destroy']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['destroy']>>>
+    }
+  }
+  'admin.auth.login': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/auth/login'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['loginPage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['loginPage']>>>
+    }
+  }
+  'admin.auth.setup.google': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/auth/setup/google'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['redirectToGoogleSetup']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['redirectToGoogleSetup']>>>
+    }
+  }
+  'admin.auth.login.google': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/auth/login/google'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['redirectToGoogleLogin']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['redirectToGoogleLogin']>>>
+    }
+  }
+  'admin.auth.callback': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/auth/google/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['handleGoogleCallback']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_auth_controller').default['handleGoogleCallback']>>>
     }
   }
   'admin.dashboard': {
