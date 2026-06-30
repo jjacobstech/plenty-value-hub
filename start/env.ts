@@ -56,4 +56,15 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_PASSWORD: Env.schema.string(),
   DB_DATABASE: Env.schema.string(),
 
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring object storage (Garage / S3)
+  |----------------------------------------------------------
+  */
+  S3_ACCESS_KEY: Env.schema.string(),
+  S3_SECRET_KEY: Env.schema.secret(),
+  S3_BUCKET: Env.schema.string(),
+  S3_REGION: Env.schema.string(),
+  S3_ENDPOINT: Env.schema.string({ format: 'url', tld: false }),
+
 })
