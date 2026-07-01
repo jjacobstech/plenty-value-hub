@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react'
+import SEO from '@/components/SEO'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -107,6 +108,10 @@ export default function Marketplace({ products = [] }: MarketplaceProps) {
 
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Marketplace — Browse Digital Products"
+        description="Explore hundreds of digital products from verified vendors across health, business, software, AI tools, and more. Find products to buy or promote as an affiliate."
+      />
       {/* Header */}
       <div className="border-b" style={{ backgroundColor: '#001845' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">

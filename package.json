@@ -8,7 +8,7 @@
     "node": ">=24.0.0"
   },
   "scripts": {
-    "start": "node --dns-result-order=ipv4first bin/server.js",
+    "start": "node --dns-result-order=ipv4first build/bin/server.js",
     "build": "node ace build",
     "dev": "node --dns-result-order=ipv4first ace serve --hmr",
     "test": "node ace test",
@@ -80,6 +80,7 @@
     "@adonisjs/cors": "^3.0.0",
     "@adonisjs/drive": "^4.0.0",
     "@adonisjs/inertia": "^4.2.0",
+    "@adonisjs/limiter": "^3.0.1",
     "@adonisjs/lucid": "^22.4.2",
     "@adonisjs/mail": "^10.3.0",
     "@adonisjs/session": "^8.1.0",
@@ -99,7 +100,6 @@
     "@tuyau/core": "^1.2.2",
     "@vinejs/vine": "^4.4.0",
     "axios": "^1.18.1",
-    "better-sqlite3": "^12.10.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",

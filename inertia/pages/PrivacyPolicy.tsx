@@ -1,4 +1,5 @@
 import React from 'react'
+import SEO from '@/components/SEO'
 import { Link } from '@adonisjs/inertia/react'
 import PublicLayout from '@/components/layout/PublicLayout'
 
@@ -127,6 +128,11 @@ const sections = [
 function PrivacyPolicy() {
   return (
     <div className="bg-background min-h-screen">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how Plenty Value collects, uses, and protects your personal information. Your privacy matters to us."
+        noIndex
+      />
       {/* Header */}
       <div style={{ backgroundColor: '#001845' }} className="py-16 md:py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">

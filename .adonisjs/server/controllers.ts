@@ -16,5 +16,6 @@ export const controllers = {
   Products: () => import('#controllers/products_controller'),
   Profile: () => import('#controllers/profile_controller'),
   Reviews: () => import('#controllers/reviews_controller'),
+  Seo: () => import('#controllers/seo_controller'),
   Session: () => import('#controllers/session_controller'),
 }

@@ -19,6 +19,30 @@ export interface Registry {
       errorResponse: unknown
     }
   }
+  'seo.sitemap': {
+    methods: ["GET","HEAD"]
+    pattern: '/sitemap.xml'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/seo_controller').default['sitemap']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/seo_controller').default['sitemap']>>>
+    }
+  }
+  'seo.robots': {
+    methods: ["GET","HEAD"]
+    pattern: '/robots.txt'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/seo_controller').default['robots']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/seo_controller').default['robots']>>>
+    }
+  }
   'home': {
     methods: ["GET","HEAD"]
     pattern: '/'

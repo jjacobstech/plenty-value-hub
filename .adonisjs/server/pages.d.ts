@@ -29,6 +29,7 @@ declare module '@adonisjs/inertia/types' {
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>
     'auth/reset-password': ExtractProps<(typeof import('../../inertia/pages/auth/reset-password.tsx'))['default']>
     'auth/signup': ExtractProps<(typeof import('../../inertia/pages/auth/signup.tsx'))['default']>
+    'auth/VerifyEmail': ExtractProps<(typeof import('../../inertia/pages/auth/VerifyEmail.tsx'))['default']>
     'errors/not_found': ExtractProps<(typeof import('../../inertia/pages/errors/not_found.tsx'))['default']>
     'errors/server_error': ExtractProps<(typeof import('../../inertia/pages/errors/server_error.tsx'))['default']>
     'ForPartners': ExtractProps<(typeof import('../../inertia/pages/ForPartners.tsx'))['default']>
@@ -44,6 +45,5 @@ declare module '@adonisjs/inertia/types' {
     'vendor/VendorProducts': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProducts.tsx'))['default']>
     'vendor/VendorProfile': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProfile.tsx'))['default']>
     'VendorKYC': ExtractProps<(typeof import('../../inertia/pages/VendorKYC.tsx'))['default']>
-    'auth/VerifyEmail': ExtractProps<(typeof import('../../inertia/pages/auth/VerifyEmail.tsx'))['default']>
   }
 }

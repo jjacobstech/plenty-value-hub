@@ -9,7 +9,7 @@ const shieldConfig = defineConfig({
     /**
      * Enable the Content-Security-Policy header.
      */
-    enabled: false,
+    enabled: true,
 
     /**
      * Per-resource CSP directives.
@@ -46,7 +46,7 @@ const shieldConfig = defineConfig({
     /**
      * HTTP methods protected by CSRF validation.
      */
-    methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
+    methods: ['GET','POST', 'PUT', 'PATCH', 'DELETE'],
   },
 
   /**

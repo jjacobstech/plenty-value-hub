@@ -1,4 +1,5 @@
 import React from 'react'
+import SEO from '@/components/SEO'
 import { Link } from '@adonisjs/inertia/react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -162,6 +163,10 @@ function StepItem({ num, title, desc, color }) {
 function ForPartners() {
   return (
     <div>
+      <SEO
+        title="For Partners — Become a Vendor or Affiliate"
+        description="Join Plenty Value as a vendor to sell your digital products to thousands of buyers, or as an affiliate to earn up to 50% commission promoting products you love."
+      />
       {/* Hero */}
       <section className="py-20 md:py-28" style={{ backgroundColor: '#001845' }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm uninstall *)",
+      "Bash(sudo -n find /etc/postgresql -name \"postgresql.conf\")",
+      "Bash(sudo -n find /var/lib/postgresql -name \"postgresql.conf\")",
+      "Read(//etc/postgresql/**)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('adonisjs', d.get\\('exports', {}\\)\\), indent=2\\)\\)\")"
+    ]
+  }
+}

@@ -12,6 +12,18 @@ const routes = {
     tokens: [{"old":"/uploads/*","type":0,"val":"uploads","end":""},{"old":"/uploads/*","type":2,"val":"*","end":""}],
     types: placeholder as Registry['drive.fs.serve']['types'],
   },
+  'seo.sitemap': {
+    methods: ["GET","HEAD"],
+    pattern: '/sitemap.xml',
+    tokens: [{"old":"/sitemap.xml","type":0,"val":"sitemap.xml","end":""}],
+    types: placeholder as Registry['seo.sitemap']['types'],
+  },
+  'seo.robots': {
+    methods: ["GET","HEAD"],
+    pattern: '/robots.txt',
+    tokens: [{"old":"/robots.txt","type":0,"val":"robots.txt","end":""}],
+    types: placeholder as Registry['seo.robots']['types'],
+  },
   'home': {
     methods: ["GET","HEAD"],
     pattern: '/',

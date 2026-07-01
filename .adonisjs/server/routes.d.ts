@@ -5,6 +5,8 @@ type ParamValue = string | number | bigint | boolean
 export type ScannedRoutes = {
   ALL: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'seo.sitemap': { paramsTuple?: []; params?: {} }
+    'seo.robots': { paramsTuple?: []; params?: {} }
     'home': { paramsTuple?: []; params?: {} }
     'marketplace': { paramsTuple?: []; params?: {} }
     'reviews': { paramsTuple?: []; params?: {} }
@@ -78,6 +80,8 @@ export type ScannedRoutes = {
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'seo.sitemap': { paramsTuple?: []; params?: {} }
+    'seo.robots': { paramsTuple?: []; params?: {} }
     'home': { paramsTuple?: []; params?: {} }
     'marketplace': { paramsTuple?: []; params?: {} }
     'reviews': { paramsTuple?: []; params?: {} }
@@ -123,6 +127,8 @@ export type ScannedRoutes = {
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
+    'seo.sitemap': { paramsTuple?: []; params?: {} }
+    'seo.robots': { paramsTuple?: []; params?: {} }
     'home': { paramsTuple?: []; params?: {} }
     'marketplace': { paramsTuple?: []; params?: {} }
     'reviews': { paramsTuple?: []; params?: {} }

@@ -1,4 +1,5 @@
 import React from 'react'
+import SEO from '@/components/SEO'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Star, BookOpen, Target, Award, MailOpen, TrendingUp, Users, Shield } from 'lucide-react'
@@ -37,6 +38,10 @@ type ReviewsProps = {
 export default function Reviews({ reviews = [] }: ReviewsProps) {
   return (
     <div className="min-h-screen">
+      <SEO
+        title="Customer Reviews & Testimonials"
+        description="Read genuine reviews from buyers and affiliates on Plenty Value. See what real users say about our digital products and affiliate programme."
+      />
       {/* Hero */}
       <section style={{ backgroundColor: '#001845' }} className="text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">

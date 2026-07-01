@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import SEO from '@/components/SEO'
 import { Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
@@ -123,8 +124,44 @@ export default function ProductDetail({ product, reviews = [] }: ProductDetailPr
     )
   }
 
+  const productDescription =
+    product.short_description || product.description || `Buy ${product.name} on Plenty Value.`
+
+  const productStructuredData = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.name,
+    description: productDescription,
+    image: product.image_url || undefined,
+    brand: product.vendor_name
+      ? { '@type': 'Brand', name: product.vendor_name }
+      : undefined,
+    offers: {
+      '@type': 'Offer',
+      price: product.sale_price || product.price,
+      priceCurrency: 'USD',
+      availability: 'https://schema.org/InStock',
+      url: typeof window !== 'undefined' ? window.location.href : '',
+    },
+    aggregateRating:
+      product.rating && product.review_count
+        ? {
+            '@type': 'AggregateRating',
+            ratingValue: product.rating,
+            reviewCount: product.review_count,
+          }
+        : undefined,
+  }
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <SEO
+        title={product.name}
+        description={productDescription}
+        image={product.image_url || undefined}
+        type="product"
+        structuredData={productStructuredData}
+      />
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
         <Link href="/marketplace" className="hover:text-primary">

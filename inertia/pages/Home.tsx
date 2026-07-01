@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import SEO from '@/components/SEO'
 import { Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
@@ -166,6 +167,18 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
 
   return (
     <div>
+      <SEO
+        title="Affiliate & Vendor Marketplace"
+        description="Discover top digital products, join as a vendor to sell, or become an affiliate and earn up to 50% commission on Plenty Value."
+        structuredData={{
+          '@context': 'https://schema.org',
+          '@type': 'WebSite',
+          name: 'Plenty Value',
+          description:
+            'A marketplace connecting vendors selling digital products with affiliates who promote them.',
+          url: typeof window !== 'undefined' ? window.location.origin : '',
+        }}
+      />
       {/* ── Hero ── */}
       <section
         className="relative overflow-hidden min-h-[88vh] flex items-center"

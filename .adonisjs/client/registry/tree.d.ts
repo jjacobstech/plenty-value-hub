@@ -7,6 +7,10 @@ export interface ApiDefinition {
       serve: typeof routes['drive.fs.serve']
     }
   }
+  seo: {
+    sitemap: typeof routes['seo.sitemap']
+    robots: typeof routes['seo.robots']
+  }
   home: typeof routes['home']
   marketplace: typeof routes['marketplace']
   reviews: typeof routes['reviews'] & {

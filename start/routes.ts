@@ -8,8 +8,15 @@
 */
 
 import { middleware } from '#start/kernel'
+import { authThrottle, signupThrottle, adminThrottle } from '#start/limiter'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
+
+/**
+ * SEO
+ */
+router.get('/sitemap.xml', [controllers.Seo, 'sitemap'])
+router.get('/robots.txt', [controllers.Seo, 'robots'])
 
 /**
  * Public pages
@@ -27,27 +34,35 @@ router.get('/privacy', [controllers.Pages, 'privacyPolicy']).as('privacy')
  */
 router
   .group(() => {
-    // Sign up flow
+    // Sign up flow — stricter per-IP throttle to slow account creation
     router.get('/signup', [controllers.NewAccount, 'create']).as('register')
-    router.post('/signup', [controllers.NewAccount, 'store'])
-    router.post('/signup/step1', [controllers.NewAccount, 'registerStep1'])
-    router.post('/signup/step2', [controllers.NewAccount, 'registerStep2'])
-    router.post('/signup/step3', [controllers.NewAccount, 'registerStep3'])
-    router.post('/signup/verify-otp', [controllers.NewAccount, 'verifyOtp'])
-    router.post('/signup/resend-otp', [controllers.NewAccount, 'resendOtp'])
+    router.post('/signup', [controllers.NewAccount, 'store']).use(signupThrottle)
+    router.post('/signup/step1', [controllers.NewAccount, 'registerStep1']).use(signupThrottle)
+    router.post('/signup/step2', [controllers.NewAccount, 'registerStep2']).use(signupThrottle)
+    router.post('/signup/step3', [controllers.NewAccount, 'registerStep3']).use(signupThrottle)
+    router
+      .post('/signup/verify-otp', [controllers.NewAccount, 'verifyOtp'])
+      .use(authThrottle)
+    router
+      .post('/signup/resend-otp', [controllers.NewAccount, 'resendOtp'])
+      .use(authThrottle)
 
-    // Login
+    // Login — throttled per IP
     router.get('/login', [controllers.Session, 'create']).as('login')
-    router.post('/login', [controllers.NewAccount, 'login'])
+    router.post('/login', [controllers.NewAccount, 'login']).use(authThrottle)
 
     // Email verification (OTP)
     router.get('/verify-email', [controllers.Pages, 'verifyEmail']).as('verify.email')
 
-    // Password reset
+    // Password reset — throttled per IP
     router.get('/forgot-password', [controllers.Pages, 'forgotPassword']).as('forgot.password')
-    router.post('/forgot-password', [controllers.NewAccount, 'forgotPassword'])
+    router
+      .post('/forgot-password', [controllers.NewAccount, 'forgotPassword'])
+      .use(authThrottle)
     router.get('/reset-password', [controllers.Pages, 'resetPassword']).as('reset.password')
-    router.post('/reset-password', [controllers.NewAccount, 'resetPassword'])
+    router
+      .post('/reset-password', [controllers.NewAccount, 'resetPassword'])
+      .use(authThrottle)
 
     // OAuth routes
     router.get('/google', [controllers.Oauth, 'redirectToGoogle']).as('google.redirect')
@@ -84,6 +99,7 @@ router
     router
       .get('/login/google', [controllers.AdminAuth, 'redirectToGoogleLogin'])
       .as('admin.auth.login.google')
+      .use(authThrottle)
 
     // Callback for the googleAdmin Ally provider (separate from user OAuth)
     router
@@ -194,6 +210,7 @@ router
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
           })
           .use(middleware.role(['admin']))
+          .use(adminThrottle)
       })
       .use(middleware.auth())
   })
