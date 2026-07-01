@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node --dns-result-order=ipv4first build/bin/server.js",
-    "build": "node ace build",
+    "build": "vite build && node ace build",
     "dev": "node --dns-result-order=ipv4first ace serve --hmr",
     "test": "node ace test",
     "lint": "eslint .",

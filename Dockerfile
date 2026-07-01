@@ -32,4 +32,4 @@ USER node
 
 EXPOSE 3000
 
-CMD ["node", "--dns-result-order=ipv4first", "bin/server.js"]
+CMD ["node", "--dns-result-order=ipv4first", "build/bin/server.js"]
