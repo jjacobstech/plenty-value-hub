@@ -14,7 +14,14 @@ const shieldConfig = defineConfig({
     /**
      * Per-resource CSP directives.
      */
-    directives: {},
+    directives: {
+    defaultSrc: ["'self'"],
+    scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+    styleSrc: ["'self'", "'unsafe-inline'"],
+    imgSrc: ["'self'", 'data:', 'https:'],
+    fontSrc: ["'self'", 'data:'],
+    connectSrc: ["'self'"],
+  },
 
     /**
      * Report violations without blocking resources.
@@ -46,7 +53,7 @@ const shieldConfig = defineConfig({
     /**
      * HTTP methods protected by CSRF validation.
      */
-    methods: ['GET','POST', 'PUT', 'PATCH', 'DELETE'],
+    methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
   },
 
   /**
@@ -78,6 +85,8 @@ const shieldConfig = defineConfig({
      * HSTS policy duration remembered by browsers.
      */
     maxAge: '180 days',
+
+    includeSubDomains: true,
   },
 
   /**
