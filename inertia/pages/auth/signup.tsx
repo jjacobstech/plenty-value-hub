@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { useForm } from '@inertiajs/react'
@@ -97,6 +97,14 @@ export default function Signup() {
     setData('role', type)
     setStep('form')
   }
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const account = params.get('account')
+    if (account === 'vendor' || account === 'affiliate') {
+      handleTypeSelect(account)
+    }
+  }, [])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()

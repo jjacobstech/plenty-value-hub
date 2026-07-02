@@ -242,7 +242,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                   Explore Marketplace <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
-              <Link href="/register">
+              <Link href="/auth/signup?account=affiliate">
                 <Button
                   size="lg"
                   variant="outline"
@@ -427,7 +427,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                 ))}
               </div>
               <div className="text-center mt-8">
-                <Link href="/register">
+                <Link href="/auth/signup?account=vendor">
                   <Button
                     className="font-semibold px-8 text-white"
                     style={{ backgroundColor: '#001845' }}
@@ -475,7 +475,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                 ))}
               </div>
               <div className="text-center mt-8">
-                <Link href="/register">
+                <Link href="/auth/signup?account=affiliate">
                   <Button
                     className="font-semibold px-8 text-white"
                     style={{ backgroundColor: '#81C14B' }}
