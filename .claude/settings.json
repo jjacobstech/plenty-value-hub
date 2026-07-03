@@ -6,7 +6,11 @@
       "Bash(sudo -n find /var/lib/postgresql -name \"postgresql.conf\")",
       "Read(//etc/postgresql/**)",
       "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('adonisjs', d.get\\('exports', {}\\)\\), indent=2\\)\\)\")",
-      "Bash(python3 -c ' *)"
+      "Bash(python3 -c ' *)",
+      "Bash(ls /home/jacobs-joshua/Documents/plenty-value-hub/ && echo \"---\" && ls /home/jacobs-joshua/Documents/)",
+      "Read(//home/jacobs-joshua/Documents/**)",
+      "Bash(python3 -c \"import json,sys; data=json.load\\(sys.stdin\\); [print\\(item['text'][:500] if item['type']=='text' else ''\\) for item in data]\")",
+      "Bash(curl -L \"https://media.base44.com/images/public/6a28952a913beeab7a9b7a70/3e3ab06cc_ab6877fd-0ad3-41a2-a9aa-11080b42b55e.png\" -o /home/jacobs-joshua/Documents/plenty-value-hub/public/hero-banner.png)"
     ]
   }
 }

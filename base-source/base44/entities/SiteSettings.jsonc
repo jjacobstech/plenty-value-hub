@@ -1,0 +1,22 @@
+{
+  "name": "SiteSettings",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Setting key identifier (e.g. 'hero_banner')"
+    },
+    "value": {
+      "type": "string",
+      "description": "Setting value (e.g. image URL)"
+    },
+    "label": {
+      "type": "string",
+      "description": "Human-readable label"
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ]
+}

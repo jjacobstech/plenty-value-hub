@@ -13,10 +13,10 @@ import {
   EyeOff,
   ShoppingBag,
   TrendingUp,
-  Users,
   CheckCircle,
 } from 'lucide-react'
 import GoogleIcon from '@/components/GoogleIcon'
+import BrandLogo from '@/components/shared/BrandLogo'
 
 const ACCOUNT_TYPES = [
   {
@@ -25,9 +25,8 @@ const ACCOUNT_TYPES = [
     title: 'Vendor Account',
     subtitle: 'Sell products',
     perks: ['List & manage products', 'Access vendor dashboard', 'Tap into affiliate network'],
-    bgColor: 'hsl(220, 100%, 13%)',
-    bgClass: 'bg-primary/10',
-    textClass: 'text-primary',
+    color: '#001845',
+    bg: '#001845',
   },
   {
     value: 'affiliate',
@@ -35,9 +34,8 @@ const ACCOUNT_TYPES = [
     title: 'Affiliate Account',
     subtitle: 'Promote & earn',
     perks: ['Generate referral links', 'Track commissions', 'Earn up to 50% commission'],
-    bgColor: 'hsl(92, 47%, 52%)',
-    bgClass: 'bg-secondary/10',
-    textClass: 'text-secondary',
+    color: '#81C14B',
+    bg: '#81C14B',
   },
 ]
 
@@ -116,55 +114,65 @@ export default function Signup() {
   // ── Account Type Selection ──
   if (step === 'type') {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-12 bg-background">
-        <div className="w-full max-w-2xl px-0 sm:px-0">
+      <div
+        className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
+        style={{ backgroundColor: '#f8fafc' }}
+      >
+        <div className="w-full max-w-2xl">
+          <div className="flex justify-center mb-8">
+            <div className="bg-white rounded-2xl shadow-md p-3">
+              <BrandLogo size={40} linkTo="/" />
+            </div>
+          </div>
           <div className="text-center mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-primary">
+            <h1 className="text-3xl font-bold tracking-tight" style={{ color: '#001845' }}>
               Create your account
             </h1>
             <p className="text-muted-foreground mt-2">Choose how you'd like to join Plenty Value</p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4 sm:gap-5">
+          <div className="grid sm:grid-cols-2 gap-5">
             {ACCOUNT_TYPES.map((type) => (
               <button
                 key={type.value}
                 onClick={() => handleTypeSelect(type.value)}
-                className="group text-left bg-white/50 rounded-xl sm:rounded-2xl shadow-md border-2 border-transparent p-4 sm:p-6 transition-all duration-300 hover:shadow-xl hover:scale-[1.03] transform-gpu will-change-transform"
-                onMouseEnter={(e) => (e.currentTarget.style.borderColor = type.bgColor)}
+                className="group text-left bg-white rounded-2xl shadow-md border-2 border-transparent p-7 transition-all duration-200 hover:shadow-xl"
+                onMouseEnter={(e) => (e.currentTarget.style.borderColor = type.color)}
                 onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'transparent')}
               >
                 <div
-                  className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 transform-gpu will-change-transform ${type.bgClass}`}
+                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform group-hover:scale-110"
+                  style={{ backgroundColor: type.bg + '18' }}
                 >
-                  <type.icon
-                    className="w-7 h-7"
-                    style={{
-                      color: type.bgColor,
-                    }}
-                  />
+                  <type.icon className="w-7 h-7" style={{ color: type.color }} />
                 </div>
-                <h3 className="font-bold text-lg mb-1 text-primary">{type.title}</h3>
-                <p className="text-sm text-muted-foreground mb-4">{type.subtitle}</p>
-                <ul className="space-y-1.5">
+                <h3 className="font-bold text-xl mb-1" style={{ color: '#001845' }}>
+                  {type.title}
+                </h3>
+                <p className="text-sm text-muted-foreground mb-5">{type.subtitle}</p>
+                <ul className="space-y-2">
                   {type.perks.map((perk, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs text-muted-foreground">
-                      <CheckCircle
-                        className="w-3.5 h-3.5 shrink-0"
-                        style={{ color: type.bgColor }}
-                      />
+                    <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: type.color }} />
                       {perk}
                     </li>
                   ))}
                 </ul>
-                <div className="mt-5 text-sm font-semibold" style={{ color: type.bgColor }}>
-                  Get started →
+                <div
+                  className="mt-6 flex items-center gap-2 text-sm font-semibold"
+                  style={{ color: type.color }}
+                >
+                  Get started <span>→</span>
                 </div>
               </button>
             ))}
           </div>
           <p className="text-center text-sm text-muted-foreground mt-6">
             Already have an account?{' '}
-            <Link href="/auth/login" className="font-medium text-primary hover:underline">
+            <Link
+              href="/auth/login"
+              className="font-medium hover:underline"
+              style={{ color: '#001845' }}
+            >
               Log in
             </Link>
           </p>
@@ -175,36 +183,47 @@ export default function Signup() {
 
   // ── Registration Form ──
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-3 sm:px-4 py-6 sm:py-12 bg-background">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center px-4 py-12"
+      style={{ backgroundColor: '#f8fafc' }}
+    >
       <div className="w-full max-w-md">
+        <div className="flex justify-center mb-6">
+          <div className="bg-white rounded-2xl shadow-md p-3">
+            <BrandLogo size={36} linkTo="/" />
+          </div>
+        </div>
+
         {/* Account type indicator */}
         {selected && (
-          <button
+          <div
+            className="flex items-center gap-3 bg-white rounded-xl border p-3 mb-5 shadow-sm cursor-pointer"
             onClick={() => setStep('type')}
-            className="w-full flex items-center gap-3 bg-white rounded-xl border p-3 mb-5 shadow-sm hover:bg-muted/30 transition-colors"
           >
             <div
               className="w-9 h-9 rounded-xl flex items-center justify-center"
-              style={{ backgroundColor: selected.bgColor + '18' }}
+              style={{ backgroundColor: selected.bg + '18' }}
             >
-              <selected.icon className="w-5 h-5" style={{ color: selected.bgColor }} />
+              <selected.icon className="w-5 h-5" style={{ color: selected.color }} />
             </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-semibold text-primary">{selected.title}</p>
+            <div className="flex-1">
+              <p className="text-sm font-semibold" style={{ color: '#001845' }}>
+                {selected.title}
+              </p>
               <p className="text-xs text-muted-foreground">Click to change account type</p>
             </div>
             <span className="text-xs text-muted-foreground">← Change</span>
-          </button>
+          </div>
         )}
 
-        <div className="text-center mb-4 sm:mb-6">
-          <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-primary">
+        <div className="text-center mb-6">
+          <h1 className="text-2xl font-bold tracking-tight" style={{ color: '#001845' }}>
             Create your account
           </h1>
-          <p className="text-muted-foreground mt-1 text-xs sm:text-sm">Sign up to get started</p>
+          <p className="text-muted-foreground mt-1 text-sm">Sign up to get started</p>
         </div>
 
-        <div className="bg-white rounded-xl sm:rounded-2xl shadow-sm border border-border p-4 sm:p-8">
+        <div className="bg-white rounded-2xl shadow-sm border border-border p-8">
           {Object.values(errors).some(Boolean) && (
             <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
               {Object.values(errors).find(Boolean)}
@@ -283,7 +302,8 @@ export default function Signup() {
 
             <Button
               type="submit"
-              className="w-full h-12 font-medium text-white bg-primary hover:bg-primary/90"
+              className="w-full h-12 font-medium text-white"
+              style={{ backgroundColor: selected?.color || '#001845' }}
               disabled={processing}
             >
               {processing ? (
@@ -300,7 +320,11 @@ export default function Signup() {
 
         <p className="text-center text-sm text-muted-foreground mt-6">
           Already have an account?{' '}
-          <Link href="/auth/login" className="font-medium text-primary hover:underline">
+          <Link
+            href="/auth/login"
+            className="font-medium hover:underline"
+            style={{ color: '#001845' }}
+          >
             Log in
           </Link>
         </p>

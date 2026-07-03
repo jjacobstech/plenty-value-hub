@@ -1,0 +1,30 @@
+{
+  "name": "EmailCampaign",
+  "type": "object",
+  "properties": {
+    "name": { "type": "string" },
+    "subject": { "type": "string" },
+    "content": { "type": "string" },
+    "campaign_type": {
+      "type": "string",
+      "enum": ["product_promo", "announcement", "buying_guide", "review", "offer"],
+      "default": "product_promo"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "scheduled", "sent", "paused"],
+      "default": "draft"
+    },
+    "audience_segment": { "type": "string" },
+    "scheduled_at": { "type": "string", "format": "date-time" },
+    "sent_at": { "type": "string", "format": "date-time" },
+    "recipients_count": { "type": "number", "default": 0 },
+    "delivered_count": { "type": "number", "default": 0 },
+    "open_count": { "type": "number", "default": 0 },
+    "click_count": { "type": "number", "default": 0 },
+    "conversion_count": { "type": "number", "default": 0 },
+    "revenue_generated": { "type": "number", "default": 0 },
+    "unsubscribe_count": { "type": "number", "default": 0 }
+  },
+  "required": ["name", "subject"]
+}

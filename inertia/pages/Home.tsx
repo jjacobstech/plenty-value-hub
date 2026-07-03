@@ -186,11 +186,12 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
       >
         <div className="absolute inset-0">
           <img
-            src="https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?w=1600&q=85&fit=crop"
-            alt="African woman entrepreneur shopping"
+            src="/hero-banner.png"
+            alt="Plenty Value hero banner"
             className="w-full h-full object-cover object-center"
+            style={{ filter: 'blur(2px)', transform: 'scale(1.04)' }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#001845]/92 via-[#001845]/72 to-[#001845]/30" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#001845]/90 via-[#001845]/65 to-[#001845]/25" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-36 relative w-full">
@@ -280,7 +281,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
       </section>
 
       {/* ── Browse Categories ── */}
-      <section className="py-16 md:py-20">
+      <section className="py-16 md:py-20" style={{ backgroundColor: '#ffffff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-end justify-between mb-10">
             <div>
@@ -350,7 +351,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
       )}
 
       {/* ── How It Works (Tabbed) ── */}
-      <section className="py-16 md:py-24" style={{ backgroundColor: '#f8fafc' }}>
+      <section className="py-16 md:py-24" style={{ backgroundColor: '#ffffff' }}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <Badge
@@ -401,7 +402,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                 {VENDOR_STEPS.map((step, i) => (
                   <Card
                     key={i}
-                    className="border-0 shadow-sm hover:shadow-md transition-all duration-200"
+                    className="border-0 shadow hover:shadow-lg transition-all duration-200 bg-slate-50"
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center gap-3 mb-4">
@@ -449,7 +450,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                 {AFFILIATE_STEPS.map((step, i) => (
                   <Card
                     key={i}
-                    className="border-0 shadow-sm hover:shadow-md transition-all duration-200"
+                    className="border-0 shadow hover:shadow-lg transition-all duration-200 bg-slate-50"
                   >
                     <CardContent className="p-6">
                       <div className="flex items-center gap-3 mb-4">
@@ -569,7 +570,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
       </section>
 
       {/* ── Newsletter Value Section ── */}
-      <section className="py-16 md:py-24" style={{ backgroundColor: '#001845' }}>
+      <section className="py-16 md:py-24" style={{ backgroundColor: '#ffffff' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
@@ -579,10 +580,10 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
               >
                 11,000+ Active Subscribers
               </Badge>
-              <h2 className="font-display text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" style={{ color: '#001845' }}>
                 Helping Subscribers Make Smarter Buying Decisions
               </h2>
-              <p className="text-slate-300 mb-8 leading-relaxed">
+              <p className="text-muted-foreground mb-8 leading-relaxed">
                 Expert product reviews, buying guides, and consumer insights — delivered directly to
                 your inbox. Compare products before you buy and never waste money on the wrong
                 purchase again.
@@ -596,7 +597,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                     >
                       <b.icon className="w-4 h-4" style={{ color: '#81C14B' }} />
                     </div>
-                    <span className="text-slate-200 text-sm">{b.text}</span>
+                    <span className="text-muted-foreground text-sm">{b.text}</span>
                   </div>
                 ))}
               </div>
@@ -606,7 +607,8 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                   placeholder="Enter your email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="bg-white/10 border-white/20 text-white placeholder:text-slate-400 focus:border-[#81C14B] h-12"
+                  className="h-12"
+                  style={{ backgroundColor: '#f8fafc' }}
                 />
                 <Button
                   onClick={handleSubscribe}
@@ -616,7 +618,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                   Subscribe Free
                 </Button>
               </div>
-              <p className="text-xs text-slate-400 mt-3">
+              <p className="text-xs text-muted-foreground mt-3">
                 Join 11,000+ subscribers. No spam, ever.
               </p>
             </div>
@@ -627,13 +629,13 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
                 className="rounded-2xl w-full object-cover h-[460px] opacity-90"
               />
               {/* Social proof card */}
-              <div className="absolute top-6 -right-6 bg-white rounded-2xl shadow-xl p-4 max-w-[200px]">
+              <div className="absolute top-6 -right-6 bg-white rounded-2xl shadow-xl p-4 max-w-[200px] border border-border">
                 <div className="flex items-center gap-2 mb-2">
                   {[1, 2, 3, 4, 5].map((s) => (
                     <Star key={s} className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground font-medium">
+                <p className="text-xs font-medium" style={{ color: '#001845' }}>
                   "Best product newsletter in Africa"
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">— Verified Subscriber</p>
