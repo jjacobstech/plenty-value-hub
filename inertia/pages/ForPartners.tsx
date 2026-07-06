@@ -186,7 +186,7 @@ function ForPartners() {
             commissions, Plenty Value gives you the tools, audience, and support to succeed.
           </p>
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
-            <Link href="/register">
+            <Link href="/auth/signup?account=vendor">
               <Button
                 size="lg"
                 className="text-base px-8 font-semibold"
@@ -195,7 +195,7 @@ function ForPartners() {
                 Become a Vendor <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href="/auth/signup?account=affiliate">
               <Button
                 size="lg"
                 variant="outline"
@@ -269,7 +269,7 @@ function ForPartners() {
               <p className="text-xs text-slate-400 mb-6">
                 KYC helps us maintain marketplace quality and build buyer trust.
               </p>
-              <Link href="/register">
+              <Link href="/auth/signup?account=vendor">
                 <Button
                   className="w-full font-semibold"
                   style={{ backgroundColor: '#81C14B', color: '#fff' }}
@@ -336,7 +336,7 @@ function ForPartners() {
                   </div>
                 ))}
               </div>
-              <Link href="/register">
+              <Link href="/auth/signup?account=affiliate">
                 <Button
                   className="w-full font-semibold bg-white hover:bg-white/90"
                   style={{ color: '#81C14B' }}
@@ -369,7 +369,7 @@ function ForPartners() {
             Join thousands of vendors and affiliates already growing on Plenty Value.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register">
+            <Link href="/auth/signup?account=vendor">
               <Button
                 size="lg"
                 className="px-10 font-semibold text-white"
@@ -378,7 +378,7 @@ function ForPartners() {
                 Create Vendor Account
               </Button>
             </Link>
-            <Link href="/register">
+            <Link href="/auth/signup?account=affiliate">
               <Button
                 size="lg"
                 className="px-10 font-semibold text-white"

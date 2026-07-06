@@ -53,7 +53,7 @@ export default function Footer() {
     if (!email || subscribing) return
     setSubscribing(true)
     try {
-      const res = await api.post('/newsletters', { email, source: 'footer' })
+      const res = await api.post('/api/newsletters/subscribe', { email, source: 'footer' })
       if (res?.data?.already_subscribed) {
         toast.success("You're already subscribed! Check your inbox for our latest edition.")
       } else {
@@ -96,8 +96,7 @@ export default function Footer() {
               Vendors, affiliates, and buyers — all thriving together.
             </p>
             <div className="flex gap-3 mt-5">
-              <Link
-                href="/register"
+              <Link href="/auth/signup"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ backgroundColor: '#81C14B' }}
               >

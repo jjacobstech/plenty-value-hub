@@ -155,7 +155,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
   const handleSubscribe = async () => {
     if (!email) return
     try {
-      await apiClient.post('/newsletters', { email, source: 'homepage' })
+      await apiClient.post('/api/newsletters/subscribe', { email, source: 'homepage' })
       toast.success("Welcome! You're now subscribed.")
       setEmail('')
     } catch (error) {
