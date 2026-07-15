@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Mail, ArrowLeft, Loader2 } from 'lucide-react'
 import AuthLayout from '@/components/AuthLayout'
+import { apiClient } from '@/api/http-client'
 
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -15,6 +16,7 @@ export default function ForgotPassword() {
     e.preventDefault()
     setLoading(true)
     try {
+      await apiClient.post('/auth/forgot-password', { email })
     } catch {
       // Always show success regardless
     } finally {

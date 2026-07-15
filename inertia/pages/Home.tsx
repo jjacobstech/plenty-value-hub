@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import SEO from '@/components/SEO'
 import { Link } from '@adonisjs/inertia/react'
-import { usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
@@ -146,9 +145,14 @@ const NEWSLETTER_BENEFITS = [
 type HomeProps = {
   featuredProducts: any[]
   trendingProducts: any[]
+  heroBannerImage?: string
 }
 
-export default function Home({ featuredProducts = [], trendingProducts = [] }: HomeProps) {
+export default function Home({
+  featuredProducts = [],
+  trendingProducts = [],
+  heroBannerImage = '/hero-banner.png',
+}: HomeProps) {
   const [email, setEmail] = useState('')
   const [activeTab, setActiveTab] = useState('vendors')
 
@@ -173,10 +177,10 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
         structuredData={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',
-          name: 'Plenty Value',
-          description:
+          'name': 'Plenty Value',
+          'description':
             'A marketplace connecting vendors selling digital products with affiliates who promote them.',
-          url: typeof window !== 'undefined' ? window.location.origin : '',
+          'url': typeof window !== 'undefined' ? window.location.origin : '',
         }}
       />
       {/* ── Hero ── */}
@@ -186,7 +190,7 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
       >
         <div className="absolute inset-0">
           <img
-            src="/hero-banner.png"
+            src={heroBannerImage}
             alt="Plenty Value hero banner"
             className="w-full h-full object-cover object-center"
             style={{ filter: 'blur(2px)', transform: 'scale(1.04)' }}
@@ -580,7 +584,10 @@ export default function Home({ featuredProducts = [], trendingProducts = [] }: H
               >
                 11,000+ Active Subscribers
               </Badge>
-              <h2 className="font-display text-3xl md:text-4xl font-bold mb-4" style={{ color: '#001845' }}>
+              <h2
+                className="font-display text-3xl md:text-4xl font-bold mb-4"
+                style={{ color: '#001845' }}
+              >
                 Helping Subscribers Make Smarter Buying Decisions
               </h2>
               <p className="text-muted-foreground mb-8 leading-relaxed">

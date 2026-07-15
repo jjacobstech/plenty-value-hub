@@ -13,10 +13,17 @@ type ExtractProps<T> =
 declare module '@adonisjs/inertia/types' {
   export interface InertiaPages {
     'admin/AdminAnalytics': ExtractProps<(typeof import('../../inertia/pages/admin/AdminAnalytics.tsx'))['default']>
+    'admin/AdminBlog': ExtractProps<(typeof import('../../inertia/pages/admin/AdminBlog.tsx'))['default']>
+    'admin/AdminConversions': ExtractProps<(typeof import('../../inertia/pages/admin/AdminConversions.tsx'))['default']>
     'admin/AdminDashboard': ExtractProps<(typeof import('../../inertia/pages/admin/AdminDashboard.tsx'))['default']>
+    'admin/AdminEmailCampaigns': ExtractProps<(typeof import('../../inertia/pages/admin/AdminEmailCampaigns.tsx'))['default']>
+    'admin/AdminHeroBanner': ExtractProps<(typeof import('../../inertia/pages/admin/AdminHeroBanner.tsx'))['default']>
     'admin/AdminLogin': ExtractProps<(typeof import('../../inertia/pages/admin/AdminLogin.tsx'))['default']>
+    'admin/AdminNewsletter': ExtractProps<(typeof import('../../inertia/pages/admin/AdminNewsletter.tsx'))['default']>
+    'admin/AdminNewsletterList': ExtractProps<(typeof import('../../inertia/pages/admin/AdminNewsletterList.tsx'))['default']>
     'admin/AdminOrders': ExtractProps<(typeof import('../../inertia/pages/admin/AdminOrders.tsx'))['default']>
     'admin/AdminProducts': ExtractProps<(typeof import('../../inertia/pages/admin/AdminProducts.tsx'))['default']>
+    'admin/AdminSubscribers': ExtractProps<(typeof import('../../inertia/pages/admin/AdminSubscribers.tsx'))['default']>
     'admin/AdminUsers': ExtractProps<(typeof import('../../inertia/pages/admin/AdminUsers.tsx'))['default']>
     'affiliate/AffiliateDashboard': ExtractProps<(typeof import('../../inertia/pages/affiliate/AffiliateDashboard.tsx'))['default']>
     'affiliate/AffiliateEarnings': ExtractProps<(typeof import('../../inertia/pages/affiliate/AffiliateEarnings.tsx'))['default']>
@@ -32,11 +39,15 @@ declare module '@adonisjs/inertia/types' {
     'auth/VerifyEmail': ExtractProps<(typeof import('../../inertia/pages/auth/VerifyEmail.tsx'))['default']>
     'errors/not_found': ExtractProps<(typeof import('../../inertia/pages/errors/not_found.tsx'))['default']>
     'errors/server_error': ExtractProps<(typeof import('../../inertia/pages/errors/server_error.tsx'))['default']>
+    'ForgotPassword': ExtractProps<(typeof import('../../inertia/pages/ForgotPassword.tsx'))['default']>
     'ForPartners': ExtractProps<(typeof import('../../inertia/pages/ForPartners.tsx'))['default']>
     'Home': ExtractProps<(typeof import('../../inertia/pages/Home.tsx'))['default']>
+    'Login': ExtractProps<(typeof import('../../inertia/pages/Login.tsx'))['default']>
     'Marketplace': ExtractProps<(typeof import('../../inertia/pages/Marketplace.tsx'))['default']>
     'PrivacyPolicy': ExtractProps<(typeof import('../../inertia/pages/PrivacyPolicy.tsx'))['default']>
     'ProductDetail': ExtractProps<(typeof import('../../inertia/pages/ProductDetail.tsx'))['default']>
+    'Register': ExtractProps<(typeof import('../../inertia/pages/Register.tsx'))['default']>
+    'ResetPassword': ExtractProps<(typeof import('../../inertia/pages/ResetPassword.tsx'))['default']>
     'Reviews': ExtractProps<(typeof import('../../inertia/pages/Reviews.tsx'))['default']>
     'vendor/VendorAnalytics': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorAnalytics.tsx'))['default']>
     'vendor/VendorDashboard': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorDashboard.tsx'))['default']>

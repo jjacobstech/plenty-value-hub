@@ -127,6 +127,66 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['privacyPolicy']>>>
     }
   }
+  'legacy.login': {
+    methods: ["GET","HEAD"]
+    pattern: '/login'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/session_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/session_controller').default['create']>>>
+    }
+  }
+  'legacy.register': {
+    methods: ["GET","HEAD"]
+    pattern: '/register'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/new_account_controller').default['create']>>>
+    }
+  }
+  'legacy.forgot.password': {
+    methods: ["GET","HEAD"]
+    pattern: '/forgot-password'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['forgotPassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['forgotPassword']>>>
+    }
+  }
+  'legacy.reset.password': {
+    methods: ["GET","HEAD"]
+    pattern: '/reset-password'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['resetPassword']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['resetPassword']>>>
+    }
+  }
+  'legacy.verify.email': {
+    methods: ["GET","HEAD"]
+    pattern: '/verify-email'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['verifyEmail']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['verifyEmail']>>>
+    }
+  }
   'register': {
     methods: ["GET","HEAD"]
     pattern: '/auth/signup'
@@ -437,6 +497,90 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminAnalytics']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminAnalytics']>>>
+    }
+  }
+  'admin.subscribers': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/subscribers'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminSubscribers']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminSubscribers']>>>
+    }
+  }
+  'admin.blog': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/blog'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminBlog']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminBlog']>>>
+    }
+  }
+  'admin.newsletters': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/newsletters'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminNewsletterList']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminNewsletterList']>>>
+    }
+  }
+  'admin.newsletter': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/newsletter'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminNewsletter']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminNewsletter']>>>
+    }
+  }
+  'admin.email.campaigns': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/email-campaigns'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminEmailCampaigns']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminEmailCampaigns']>>>
+    }
+  }
+  'admin.conversions': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/conversions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminConversions']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminConversions']>>>
+    }
+  }
+  'admin.hero.banner': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/hero-banner'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminHeroBanner']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminHeroBanner']>>>
     }
   }
   'vendor.dashboard': {
@@ -881,6 +1025,198 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/review').updateReviewValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['approve']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'blog_posts.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/blog-posts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['index']>>>
+    }
+  }
+  'blog_posts.store': {
+    methods: ["POST"]
+    pattern: '/api/blog-posts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['store']>>>
+    }
+  }
+  'blog_posts.update': {
+    methods: ["PUT"]
+    pattern: '/api/blog-posts/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['update']>>>
+    }
+  }
+  'blog_posts.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/blog-posts/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/blog_posts_controller').default['destroy']>>>
+    }
+  }
+  'newsletter_admin.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/newsletters'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['index']>>>
+    }
+  }
+  'newsletter_admin.store': {
+    methods: ["POST"]
+    pattern: '/api/newsletters'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['store']>>>
+    }
+  }
+  'newsletter_admin.update': {
+    methods: ["PUT"]
+    pattern: '/api/newsletters/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['update']>>>
+    }
+  }
+  'newsletter_admin.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/newsletters/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/newsletter_admin_controller').default['destroy']>>>
+    }
+  }
+  'email_campaigns.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/email-campaigns'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['index']>>>
+    }
+  }
+  'email_campaigns.store': {
+    methods: ["POST"]
+    pattern: '/api/email-campaigns'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['store']>>>
+    }
+  }
+  'email_campaigns.update': {
+    methods: ["PUT"]
+    pattern: '/api/email-campaigns/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['update']>>>
+    }
+  }
+  'email_campaigns.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/email-campaigns/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/email_campaigns_controller').default['destroy']>>>
+    }
+  }
+  'site_settings.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/site-settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['index']>>>
+    }
+  }
+  'site_settings.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/site-settings/:key'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { key: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['show']>>>
+    }
+  }
+  'site_settings.upsert': {
+    methods: ["POST"]
+    pattern: '/api/site-settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['upsert']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['upsert']>>>
+    }
+  }
+  'site_settings.upload_image': {
+    methods: ["POST"]
+    pattern: '/api/site-settings/upload-image'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['uploadImage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['uploadImage']>>>
     }
   }
 }

@@ -44,7 +44,10 @@ export default function Layout({ children }: { children: ReactElement<Data.Share
               {children.props.user ? (
                 <>
                   <span>{children.props.user.initials}</span>
-                  <button type="button" onClick={() => router.post('/logout')}> Logout </button>
+                  <button type="button" onClick={() => router.post('/logout')}>
+                    {' '}
+                    Logout{' '}
+                  </button>
                 </>
               ) : (
                 <>

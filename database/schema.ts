@@ -8,7 +8,22 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AffiliateLinkSchema extends BaseModel {
-  static $columns = ['affiliateId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt'] as const
+  static $columns = [
+    'affiliateId',
+    'campaignName',
+    'clicks',
+    'commissionEarned',
+    'conversions',
+    'createdAt',
+    'id',
+    'linkCode',
+    'productId',
+    'productName',
+    'revenue',
+    'status',
+    'subId',
+    'updatedAt',
+  ] as const
   $columns = AffiliateLinkSchema.$columns
   @column()
   declare affiliateId: number
@@ -40,8 +55,125 @@ export class AffiliateLinkSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class BlogPostSchema extends BaseModel {
+  static $columns = [
+    'authorName',
+    'category',
+    'content',
+    'createdAt',
+    'excerpt',
+    'featuredImageUrl',
+    'id',
+    'publishedAt',
+    'readTimeMinutes',
+    'seoDescription',
+    'seoTitle',
+    'slug',
+    'status',
+    'tags',
+    'title',
+    'updatedAt',
+    'viewCount',
+  ] as const
+  $columns = BlogPostSchema.$columns
+  @column()
+  declare authorName: string | null
+  @column()
+  declare category: string | null
+  @column()
+  declare content: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare excerpt: string | null
+  @column()
+  declare featuredImageUrl: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime()
+  declare publishedAt: DateTime | null
+  @column()
+  declare readTimeMinutes: number | null
+  @column()
+  declare seoDescription: string | null
+  @column()
+  declare seoTitle: string | null
+  @column()
+  declare slug: string | null
+  @column()
+  declare status: string | null
+  @column()
+  declare tags: any | null
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare viewCount: number | null
+}
+
+export class EmailCampaignSchema extends BaseModel {
+  static $columns = [
+    'audienceSegment',
+    'campaignType',
+    'clickCount',
+    'content',
+    'conversionCount',
+    'createdAt',
+    'id',
+    'name',
+    'openCount',
+    'recipientsCount',
+    'revenueGenerated',
+    'sentAt',
+    'status',
+    'subject',
+    'updatedAt',
+  ] as const
+  $columns = EmailCampaignSchema.$columns
+  @column()
+  declare audienceSegment: string | null
+  @column()
+  declare campaignType: string | null
+  @column()
+  declare clickCount: number | null
+  @column()
+  declare content: string | null
+  @column()
+  declare conversionCount: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare name: string
+  @column()
+  declare openCount: number | null
+  @column()
+  declare recipientsCount: number | null
+  @column()
+  declare revenueGenerated: string | null
+  @column.dateTime()
+  declare sentAt: DateTime | null
+  @column()
+  declare status: string | null
+  @column()
+  declare subject: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class NewsletterSubscriberSchema extends BaseModel {
-  static $columns = ['createdAt', 'email', 'id', 'interests', 'name', 'source', 'status', 'updatedAt'] as const
+  static $columns = [
+    'createdAt',
+    'email',
+    'id',
+    'interests',
+    'name',
+    'source',
+    'status',
+    'updatedAt',
+  ] as const
   $columns = NewsletterSubscriberSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -61,8 +193,69 @@ export class NewsletterSubscriberSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class NewsletterSchema extends BaseModel {
+  static $columns = [
+    'category',
+    'clickCount',
+    'content',
+    'createdAt',
+    'id',
+    'openCount',
+    'recipientsCount',
+    'revenueGenerated',
+    'sentAt',
+    'status',
+    'subject',
+    'updatedAt',
+  ] as const
+  $columns = NewsletterSchema.$columns
+  @column()
+  declare category: string | null
+  @column()
+  declare clickCount: number | null
+  @column()
+  declare content: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare openCount: number | null
+  @column()
+  declare recipientsCount: number | null
+  @column()
+  declare revenueGenerated: string | null
+  @column.dateTime()
+  declare sentAt: DateTime | null
+  @column()
+  declare status: string | null
+  @column()
+  declare subject: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class OrderSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'status', 'updatedAt', 'vendorId', 'vendorPayout'] as const
+  static $columns = [
+    'affiliateId',
+    'affiliateLinkId',
+    'amount',
+    'buyerEmail',
+    'buyerId',
+    'commissionAmount',
+    'createdAt',
+    'currency',
+    'id',
+    'orderNumber',
+    'paymentMethod',
+    'platformFee',
+    'productId',
+    'productName',
+    'status',
+    'updatedAt',
+    'vendorId',
+    'vendorPayout',
+  ] as const
   $columns = OrderSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -103,7 +296,38 @@ export class OrderSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'updatedAt', 'vendorId', 'vendorName'] as const
+  static $columns = [
+    'affiliateResources',
+    'avgEarningsPerSale',
+    'billingCycle',
+    'category',
+    'commissionRate',
+    'conversionRate',
+    'createdAt',
+    'description',
+    'galleryUrls',
+    'gravityScore',
+    'id',
+    'imageUrl',
+    'isFeatured',
+    'name',
+    'price',
+    'productType',
+    'rating',
+    'recurringBilling',
+    'refundRate',
+    'reviewCount',
+    'salePrice',
+    'shortDescription',
+    'slug',
+    'status',
+    'tags',
+    'totalRevenue',
+    'totalSales',
+    'updatedAt',
+    'vendorId',
+    'vendorName',
+  ] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -179,7 +403,22 @@ export class RateLimitSchema extends BaseModel {
 }
 
 export class ReviewSchema extends BaseModel {
-  static $columns = ['cons', 'content', 'createdAt', 'helpfulCount', 'id', 'isVerifiedPurchase', 'productId', 'productName', 'pros', 'rating', 'reviewerName', 'status', 'title', 'updatedAt'] as const
+  static $columns = [
+    'cons',
+    'content',
+    'createdAt',
+    'helpfulCount',
+    'id',
+    'isVerifiedPurchase',
+    'productId',
+    'productName',
+    'pros',
+    'rating',
+    'reviewerName',
+    'status',
+    'title',
+    'updatedAt',
+  ] as const
   $columns = ReviewSchema.$columns
   @column()
   declare cons: any | null
@@ -211,8 +450,56 @@ export class ReviewSchema extends BaseModel {
   declare updatedAt: DateTime | null
 }
 
+export class SiteSettingSchema extends BaseModel {
+  static $columns = ['createdAt', 'id', 'key', 'label', 'updatedAt', 'value'] as const
+  $columns = SiteSettingSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare key: string
+  @column()
+  declare label: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare value: string | null
+}
+
 export class UserSchema extends BaseModel {
-  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'website', 'youtube'] as const
+  static $columns = [
+    'bio',
+    'businessDescription',
+    'businessLogo',
+    'businessName',
+    'businessType',
+    'country',
+    'coverBanner',
+    'createdAt',
+    'email',
+    'emailVerifiedAt',
+    'fullName',
+    'heardAbout',
+    'id',
+    'instagram',
+    'location',
+    'marketingChannels',
+    'niche',
+    'otpCode',
+    'otpExpiresAt',
+    'password',
+    'phone',
+    'productCategories',
+    'profilePicture',
+    'resetToken',
+    'resetTokenExpiresAt',
+    'role',
+    'twitter',
+    'updatedAt',
+    'website',
+    'youtube',
+  ] as const
   $columns = UserSchema.$columns
   @column()
   declare bio: string | null

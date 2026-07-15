@@ -23,7 +23,9 @@ export default function AdminLogin({ adminExists }: AdminLoginProps) {
   const { url } = usePage()
   const params = new URLSearchParams(url.split('?')[1] ?? '')
   const errorKey = params.get('error')
-  const errorMessage = errorKey ? (ERROR_MESSAGES[errorKey] ?? 'An unexpected error occurred.') : null
+  const errorMessage = errorKey
+    ? (ERROR_MESSAGES[errorKey] ?? 'An unexpected error occurred.')
+    : null
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#001845] px-4">
@@ -71,7 +73,10 @@ export default function AdminLogin({ adminExists }: AdminLoginProps) {
             href={adminExists ? '/admin/auth/login/google' : '/admin/auth/setup/google'}
             className="block"
           >
-            <Button className="w-full h-11 gap-3 font-semibold" style={{ backgroundColor: '#001845', color: '#fff' }}>
+            <Button
+              className="w-full h-11 gap-3 font-semibold"
+              style={{ backgroundColor: '#001845', color: '#fff' }}
+            >
               <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none">
                 <path
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"

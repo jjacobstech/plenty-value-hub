@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* ───────────────────────────────────────────────
    Tailwind v4 theme — maps CSS vars to utilities
@@ -54,9 +54,9 @@
 
   /* Explicit brand shortcuts */
   --color-brand-navy: #001845;
-  --color-brand-green: #81C14B;
-  --color-brand-purple: #715AFF;
-  --color-brand-orange: #F4A300;
+  --color-brand-green: #81c14b;
+  --color-brand-purple: #715aff;
+  --color-brand-orange: #f4a300;
 
   /* Border radius */
   --radius-lg: var(--radius);
@@ -68,12 +68,20 @@
   --animate-accordion-up: accordion-up 0.2s ease-out;
 
   @keyframes accordion-down {
-    from { height: 0 }
-    to { height: var(--radix-accordion-content-height) }
+    from {
+      height: 0;
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+    }
   }
   @keyframes accordion-up {
-    from { height: var(--radix-accordion-content-height) }
-    to { height: 0 }
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+    to {
+      height: 0;
+    }
   }
 }
 

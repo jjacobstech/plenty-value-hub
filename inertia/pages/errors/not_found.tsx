@@ -1,9 +1,9 @@
-import { Link, usePage } from "@inertiajs/react";
-import { motion } from "framer-motion";
+import { Link, usePage } from '@inertiajs/react'
+import { motion } from 'framer-motion'
 
 export default function NotFound() {
-  const { url } = usePage();
-  const pageName = url.substring(1);
+  const { url } = usePage()
+  const pageName = url.substring(1)
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center px-6 overflow-hidden relative">
@@ -14,12 +14,12 @@ export default function NotFound() {
       <motion.div
         className="absolute top-1/4 left-[15%] w-64 h-64 rounded-full bg-gradient-to-br from-slate-50 to-slate-100 blur-3xl opacity-60"
         animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
-        transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
         className="absolute bottom-1/4 right-[15%] w-80 h-80 rounded-full bg-gradient-to-br from-stone-50 to-stone-100 blur-3xl opacity-60"
         animate={{ y: [0, 15, 0], x: [0, -10, 0] }}
-        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       <div className="relative z-10 max-w-lg w-full text-center">
@@ -55,7 +55,8 @@ export default function NotFound() {
           <p className="text-slate-500 text-base leading-relaxed max-w-sm mx-auto">
             {pageName ? (
               <>
-                The page <span className="font-medium text-slate-600">/{pageName}</span> doesn't exist or has been moved.
+                The page <span className="font-medium text-slate-600">/{pageName}</span> doesn't
+                exist or has been moved.
               </>
             ) : (
               "The page you're looking for doesn't exist or has been moved."
@@ -95,5 +96,5 @@ export default function NotFound() {
         Error 404
       </motion.div>
     </div>
-  );
+  )
 }

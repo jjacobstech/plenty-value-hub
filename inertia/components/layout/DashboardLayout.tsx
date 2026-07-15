@@ -30,6 +30,21 @@ type Role = 'vendor' | 'affiliate' | 'admin'
 
 type MenuItem = { icon: React.ElementType; label: string; path: string }
 
+const getPathname = (url: string) => url.split(/[?#]/)[0] || '/'
+
+const isActivePath = (currentUrl: string, targetPath: string) => {
+  const pathname = getPathname(currentUrl)
+  if (pathname === targetPath) return true
+  return targetPath !== '/' && pathname.startsWith(`${targetPath}/`)
+}
+
+const getActivePath = (currentUrl: string, items: MenuItem[]) => {
+  const pathname = getPathname(currentUrl)
+  return [...items]
+    .filter((item) => isActivePath(pathname, item.path))
+    .sort((a, b) => b.path.length - a.path.length)[0]?.path
+}
+
 const menuItems: Record<Role, MenuItem[]> = {
   vendor: [
     { icon: Home, label: 'Overview', path: '/vendor' },
@@ -75,10 +90,14 @@ function Sidebar({
 }) {
   const { url } = usePage()
   const items = menuItems[role] || []
+  const activePath = getActivePath(url, items)
 
   return (
     <div
-      className={cn('h-full flex flex-col transition-all duration-300', collapsed ? 'w-16' : 'w-60')}
+      className={cn(
+        'h-full flex flex-col transition-all duration-300',
+        collapsed ? 'w-16' : 'w-60'
+      )}
       style={{ background: '#001845', color: '#E8EDF5', minWidth: collapsed ? '4rem' : '15rem' }}
     >
       <div
@@ -97,9 +116,12 @@ function Sidebar({
         </Button>
       </div>
 
-      <div className="flex-1 py-4 space-y-0.5 px-2 overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
+      <div
+        className="flex-1 py-4 space-y-0.5 px-2 overflow-y-auto"
+        style={{ scrollbarWidth: 'none' }}
+      >
         {items.map((item) => {
-          const isActive = url === item.path || url?.startsWith(item.path + '/')
+          const isActive = activePath === item.path
           return (
             <Link key={item.path} href={item.path}>
               <div

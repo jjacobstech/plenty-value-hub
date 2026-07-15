@@ -5,6 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Lock, Loader2, AlertTriangle } from 'lucide-react'
 import AuthLayout from '@/components/AuthLayout'
+import { apiClient } from '@/api/http-client'
 
 type ResetPasswordProps = {
   token?: string

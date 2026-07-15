@@ -14,6 +14,11 @@ export type ScannedRoutes = {
     'affiliate.redirect': { paramsTuple: [ParamValue]; params: {'link_code': ParamValue} }
     'for.partners': { paramsTuple?: []; params?: {} }
     'privacy': { paramsTuple?: []; params?: {} }
+    'legacy.login': { paramsTuple?: []; params?: {} }
+    'legacy.register': { paramsTuple?: []; params?: {} }
+    'legacy.forgot.password': { paramsTuple?: []; params?: {} }
+    'legacy.reset.password': { paramsTuple?: []; params?: {} }
+    'legacy.verify.email': { paramsTuple?: []; params?: {} }
     'register': { paramsTuple?: []; params?: {} }
     'new_account.store': { paramsTuple?: []; params?: {} }
     'new_account.register_step_1': { paramsTuple?: []; params?: {} }
@@ -40,6 +45,13 @@ export type ScannedRoutes = {
     'admin.products': { paramsTuple?: []; params?: {} }
     'admin.orders': { paramsTuple?: []; params?: {} }
     'admin.analytics': { paramsTuple?: []; params?: {} }
+    'admin.subscribers': { paramsTuple?: []; params?: {} }
+    'admin.blog': { paramsTuple?: []; params?: {} }
+    'admin.newsletters': { paramsTuple?: []; params?: {} }
+    'admin.newsletter': { paramsTuple?: []; params?: {} }
+    'admin.email.campaigns': { paramsTuple?: []; params?: {} }
+    'admin.conversions': { paramsTuple?: []; params?: {} }
+    'admin.hero.banner': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
     'vendor.kyc': { paramsTuple?: []; params?: {} }
@@ -77,6 +89,22 @@ export type ScannedRoutes = {
     'orders.update_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'reviews.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'blog_posts.index': { paramsTuple?: []; params?: {} }
+    'blog_posts.store': { paramsTuple?: []; params?: {} }
+    'blog_posts.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'blog_posts.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'newsletter_admin.index': { paramsTuple?: []; params?: {} }
+    'newsletter_admin.store': { paramsTuple?: []; params?: {} }
+    'newsletter_admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'newsletter_admin.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'email_campaigns.index': { paramsTuple?: []; params?: {} }
+    'email_campaigns.store': { paramsTuple?: []; params?: {} }
+    'email_campaigns.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'email_campaigns.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'site_settings.index': { paramsTuple?: []; params?: {} }
+    'site_settings.show': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
+    'site_settings.upsert': { paramsTuple?: []; params?: {} }
+    'site_settings.upload_image': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -89,6 +117,11 @@ export type ScannedRoutes = {
     'affiliate.redirect': { paramsTuple: [ParamValue]; params: {'link_code': ParamValue} }
     'for.partners': { paramsTuple?: []; params?: {} }
     'privacy': { paramsTuple?: []; params?: {} }
+    'legacy.login': { paramsTuple?: []; params?: {} }
+    'legacy.register': { paramsTuple?: []; params?: {} }
+    'legacy.forgot.password': { paramsTuple?: []; params?: {} }
+    'legacy.reset.password': { paramsTuple?: []; params?: {} }
+    'legacy.verify.email': { paramsTuple?: []; params?: {} }
     'register': { paramsTuple?: []; params?: {} }
     'login': { paramsTuple?: []; params?: {} }
     'verify.email': { paramsTuple?: []; params?: {} }
@@ -105,6 +138,13 @@ export type ScannedRoutes = {
     'admin.products': { paramsTuple?: []; params?: {} }
     'admin.orders': { paramsTuple?: []; params?: {} }
     'admin.analytics': { paramsTuple?: []; params?: {} }
+    'admin.subscribers': { paramsTuple?: []; params?: {} }
+    'admin.blog': { paramsTuple?: []; params?: {} }
+    'admin.newsletters': { paramsTuple?: []; params?: {} }
+    'admin.newsletter': { paramsTuple?: []; params?: {} }
+    'admin.email.campaigns': { paramsTuple?: []; params?: {} }
+    'admin.conversions': { paramsTuple?: []; params?: {} }
+    'admin.hero.banner': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
     'vendor.kyc': { paramsTuple?: []; params?: {} }
@@ -124,6 +164,11 @@ export type ScannedRoutes = {
     'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.index': { paramsTuple?: []; params?: {} }
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
+    'blog_posts.index': { paramsTuple?: []; params?: {} }
+    'newsletter_admin.index': { paramsTuple?: []; params?: {} }
+    'email_campaigns.index': { paramsTuple?: []; params?: {} }
+    'site_settings.index': { paramsTuple?: []; params?: {} }
+    'site_settings.show': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -136,6 +181,11 @@ export type ScannedRoutes = {
     'affiliate.redirect': { paramsTuple: [ParamValue]; params: {'link_code': ParamValue} }
     'for.partners': { paramsTuple?: []; params?: {} }
     'privacy': { paramsTuple?: []; params?: {} }
+    'legacy.login': { paramsTuple?: []; params?: {} }
+    'legacy.register': { paramsTuple?: []; params?: {} }
+    'legacy.forgot.password': { paramsTuple?: []; params?: {} }
+    'legacy.reset.password': { paramsTuple?: []; params?: {} }
+    'legacy.verify.email': { paramsTuple?: []; params?: {} }
     'register': { paramsTuple?: []; params?: {} }
     'login': { paramsTuple?: []; params?: {} }
     'verify.email': { paramsTuple?: []; params?: {} }
@@ -152,6 +202,13 @@ export type ScannedRoutes = {
     'admin.products': { paramsTuple?: []; params?: {} }
     'admin.orders': { paramsTuple?: []; params?: {} }
     'admin.analytics': { paramsTuple?: []; params?: {} }
+    'admin.subscribers': { paramsTuple?: []; params?: {} }
+    'admin.blog': { paramsTuple?: []; params?: {} }
+    'admin.newsletters': { paramsTuple?: []; params?: {} }
+    'admin.newsletter': { paramsTuple?: []; params?: {} }
+    'admin.email.campaigns': { paramsTuple?: []; params?: {} }
+    'admin.conversions': { paramsTuple?: []; params?: {} }
+    'admin.hero.banner': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
     'vendor.kyc': { paramsTuple?: []; params?: {} }
@@ -171,6 +228,11 @@ export type ScannedRoutes = {
     'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.index': { paramsTuple?: []; params?: {} }
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
+    'blog_posts.index': { paramsTuple?: []; params?: {} }
+    'newsletter_admin.index': { paramsTuple?: []; params?: {} }
+    'email_campaigns.index': { paramsTuple?: []; params?: {} }
+    'site_settings.index': { paramsTuple?: []; params?: {} }
+    'site_settings.show': { paramsTuple: [ParamValue]; params: {'key': ParamValue} }
   }
   POST: {
     'new_account.store': { paramsTuple?: []; params?: {} }
@@ -192,6 +254,11 @@ export type ScannedRoutes = {
     'reviews.store': { paramsTuple?: []; params?: {} }
     'profile.upload_image': { paramsTuple?: []; params?: {} }
     'reviews.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'blog_posts.store': { paramsTuple?: []; params?: {} }
+    'newsletter_admin.store': { paramsTuple?: []; params?: {} }
+    'email_campaigns.store': { paramsTuple?: []; params?: {} }
+    'site_settings.upsert': { paramsTuple?: []; params?: {} }
+    'site_settings.upload_image': { paramsTuple?: []; params?: {} }
   }
   PUT: {
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -201,10 +268,16 @@ export type ScannedRoutes = {
     'products.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'orders.update_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'blog_posts.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'newsletter_admin.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'email_campaigns.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   DELETE: {
     'products.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'blog_posts.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'newsletter_admin.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'email_campaigns.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {

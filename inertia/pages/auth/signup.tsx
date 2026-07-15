@@ -152,7 +152,10 @@ export default function Signup() {
                 <ul className="space-y-2">
                   {type.perks.map((perk, i) => (
                     <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <CheckCircle className="w-4 h-4 flex-shrink-0" style={{ color: type.color }} />
+                      <CheckCircle
+                        className="w-4 h-4 flex-shrink-0"
+                        style={{ color: type.color }}
+                      />
                       {perk}
                     </li>
                   ))}

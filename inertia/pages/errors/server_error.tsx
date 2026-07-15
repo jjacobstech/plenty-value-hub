@@ -1,5 +1,5 @@
-import { Link } from "@inertiajs/react";
-import { motion } from "framer-motion";
+import { Link } from '@inertiajs/react'
+import { motion } from 'framer-motion'
 
 export default function ServerError() {
   return (
@@ -11,12 +11,12 @@ export default function ServerError() {
       <motion.div
         className="absolute top-1/3 left-[12%] w-72 h-72 rounded-full bg-gradient-to-br from-red-50 to-orange-50 blur-3xl opacity-50"
         animate={{ y: [0, -18, 0], x: [0, 8, 0] }}
-        transition={{ duration: 9, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
       />
       <motion.div
         className="absolute bottom-1/4 right-[12%] w-80 h-80 rounded-full bg-gradient-to-br from-rose-50 to-stone-50 blur-3xl opacity-50"
         animate={{ y: [0, 14, 0], x: [0, -12, 0] }}
-        transition={{ duration: 11, repeat: Infinity, ease: "easeInOut" }}
+        transition={{ duration: 11, repeat: Infinity, ease: 'easeInOut' }}
       />
 
       <div className="relative z-10 max-w-lg w-full text-center">
@@ -63,7 +63,8 @@ export default function ServerError() {
             Something went wrong
           </h1>
           <p className="text-slate-500 text-base leading-relaxed max-w-sm mx-auto">
-            Our servers ran into an unexpected problem. Please try again in a moment — we're working on it.
+            Our servers ran into an unexpected problem. Please try again in a moment — we're working
+            on it.
           </p>
         </motion.div>
 
@@ -99,5 +100,5 @@ export default function ServerError() {
         Error 500
       </motion.div>
     </div>
-  );
+  )
 }

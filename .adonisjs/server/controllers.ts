@@ -8,7 +8,10 @@ export const controllers = {
   Admin: () => import('#controllers/admin_controller'),
   AffiliateLinks: () => import('#controllers/affiliate_links_controller'),
   Api: () => import('#controllers/api_controller'),
+  BlogPosts: () => import('#controllers/blog_posts_controller'),
+  EmailCampaigns: () => import('#controllers/email_campaigns_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
+  NewsletterAdmin: () => import('#controllers/newsletter_admin_controller'),
   Newsletters: () => import('#controllers/newsletters_controller'),
   Oauth: () => import('#controllers/oauth_controller'),
   Orders: () => import('#controllers/orders_controller'),
@@ -18,4 +21,5 @@ export const controllers = {
   Reviews: () => import('#controllers/reviews_controller'),
   Seo: () => import('#controllers/seo_controller'),
   Session: () => import('#controllers/session_controller'),
+  SiteSettings: () => import('#controllers/site_settings_controller'),
 }

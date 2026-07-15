@@ -2,11 +2,11 @@ services:
   app:
     build: .
     ports:
-      - "${PORT:-3333}:${PORT:-3333}"
+      - '${PORT:-3333}:${PORT:-3333}'
     env_file:
       - .env
     extra_hosts:
-      - "host.docker.internal:host-gateway"
+      - 'host.docker.internal:host-gateway'
     networks:
       - dokploy-network
 networks:

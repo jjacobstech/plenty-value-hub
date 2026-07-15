@@ -44,84 +44,86 @@ export default function AdminDashboard({
 
   return (
     <DashboardLayout role="admin">
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Marketplace overview and key metrics</p>
-      </div>
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold">Admin Dashboard</h1>
+          <p className="text-muted-foreground">Marketplace overview and key metrics</p>
+        </div>
 
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatsCard title="GMV ($)" value={formatNGN(totalGMV)} icon={DollarSign} />
-        <StatsCard
-          title="Platform Revenue ($)"
-          value={formatNGN(platformRevenue)}
-          icon={TrendingUp}
-        />
-        <StatsCard title="Total Orders" value={orders.length} icon={ShoppingCart} />
-        <StatsCard
-          title="Active Products"
-          value={products.filter((p) => p.status === 'approved').length}
-          icon={Package}
-        />
-        <StatsCard title="Pending Approval" value={pendingProducts} icon={Package} />
-        <StatsCard title="Newsletter Subs" value={subscriberCount} icon={Mail} />
-      </div>
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <StatsCard title="GMV ($)" value={formatNGN(totalGMV)} icon={DollarSign} />
+          <StatsCard
+            title="Platform Revenue ($)"
+            value={formatNGN(platformRevenue)}
+            icon={TrendingUp}
+          />
+          <StatsCard title="Total Orders" value={orders.length} icon={ShoppingCart} />
+          <StatsCard
+            title="Active Products"
+            value={products.filter((p) => p.status === 'approved').length}
+            icon={Package}
+          />
+          <StatsCard title="Pending Approval" value={pendingProducts} icon={Package} />
+          <StatsCard title="Newsletter Subs" value={subscriberCount} icon={Mail} />
+        </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">User Breakdown</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Consumers</span>
-                <span className="font-bold">
-                  {users.filter((u) => u.role === 'consumer' || !u.role).length}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Affiliates</span>
-                <span className="font-bold">{affiliates}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Vendors</span>
-                <span className="font-bold">{vendors}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-muted-foreground">Admins</span>
-                <span className="font-bold">{users.filter((u) => u.role === 'admin').length}</span>
-              </div>
-              <div className="border-t pt-3 flex justify-between items-center">
-                <span className="text-sm font-medium">Total Users</span>
-                <span className="font-bold">{users.length}</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {chartData.length > 0 && (
+        <div className="grid lg:grid-cols-2 gap-6">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Revenue by Category</CardTitle>
+              <CardTitle className="text-lg">User Breakdown</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="h-56">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
-                    <XAxis dataKey="name" className="text-xs" />
-                    <YAxis className="text-xs" />
-                    <Tooltip formatter={(v) => formatNGN(v)} />
-                    <Bar dataKey="revenue" fill="hsl(38, 92%, 50%)" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Consumers</span>
+                  <span className="font-bold">
+                    {users.filter((u) => u.role === 'consumer' || !u.role).length}
+                  </span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Affiliates</span>
+                  <span className="font-bold">{affiliates}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Vendors</span>
+                  <span className="font-bold">{vendors}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-muted-foreground">Admins</span>
+                  <span className="font-bold">
+                    {users.filter((u) => u.role === 'admin').length}
+                  </span>
+                </div>
+                <div className="border-t pt-3 flex justify-between items-center">
+                  <span className="text-sm font-medium">Total Users</span>
+                  <span className="font-bold">{users.length}</span>
+                </div>
               </div>
             </CardContent>
           </Card>
-        )}
+
+          {chartData.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Revenue by Category</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-56">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartData}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
+                      <XAxis dataKey="name" className="text-xs" />
+                      <YAxis className="text-xs" />
+                      <Tooltip formatter={(v) => formatNGN(v)} />
+                      <Bar dataKey="revenue" fill="hsl(38, 92%, 50%)" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </div>
       </div>
-    </div>
     </DashboardLayout>
   )
 }

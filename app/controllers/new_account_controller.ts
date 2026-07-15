@@ -207,7 +207,7 @@ export default class NewAccountController {
     user.resetTokenExpiresAt = DateTime.now().plus({ hours: 1 })
     await user.save()
 
-    const resetUrl = `${process.env.APP_URL}/reset-password?token=${token}`
+    const resetUrl = `${process.env.APP_URL}/auth/reset-password?token=${token}`
 
     await mail.send((message) => {
       message

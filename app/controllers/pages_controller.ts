@@ -4,24 +4,34 @@ import Review from '#models/review'
 import Order from '#models/order'
 import AffiliateLink from '#models/affiliate_link'
 import NewsletterSubscriber from '#models/newsletter_subscriber'
+import BlogPost from '#models/blog_post'
+import Newsletter from '#models/newsletter'
+import EmailCampaign from '#models/email_campaign'
+import SiteSetting from '#models/site_setting'
 import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
 
 export default class PagesController {
   // Public pages - Home
   async home({ inertia }: HttpContext) {
-    const featuredProducts = await Product.query()
-      .where('status', 'approved')
-      .where('is_featured', true)
-      .orderBy('created_at', 'desc')
-      .limit(8)
+    const [featuredProducts, trendingProducts, heroBanner] = await Promise.all([
+      Product.query()
+        .where('status', 'approved')
+        .where('is_featured', true)
+        .orderBy('created_at', 'desc')
+        .limit(8),
+      Product.query()
+        .where('status', 'approved')
+        .orderBy('gravity_score', 'desc')
+        .limit(4),
+      SiteSetting.findBy('key', 'hero_banner'),
+    ])
 
-    const trendingProducts = await Product.query()
-      .where('status', 'approved')
-      .orderBy('gravity_score', 'desc')
-      .limit(4)
-
-    return inertia.render('Home', { featuredProducts, trendingProducts })
+    return inertia.render('Home', {
+      featuredProducts,
+      trendingProducts,
+      heroBannerImage: heroBanner?.value || '/hero-banner.png',
+    })
   }
 
   async marketplace({ inertia }: HttpContext) {
@@ -211,5 +221,66 @@ export default class PagesController {
   async affiliateProfile({ inertia, auth }: HttpContext) {
     const user = await User.query().where('id', auth.user!.id).firstOrFail()
     return inertia.render('affiliate/AffiliateProfile', { user: user.serialize() })
+  }
+
+  // New admin pages
+  async adminSubscribers({ inertia, auth }: HttpContext) {
+    const subscribers = await NewsletterSubscriber.query().orderBy('created_at', 'desc').limit(500)
+    return inertia.render('admin/AdminSubscribers', { user: auth.user, subscribers })
+  }
+
+  async adminBlog({ inertia, auth }: HttpContext) {
+    const posts = await BlogPost.query().orderBy('created_at', 'desc').limit(100)
+    return inertia.render('admin/AdminBlog', { user: auth.user, posts })
+  }
+
+  async adminNewsletterList({ inertia, auth }: HttpContext) {
+    const newsletters = await Newsletter.query().orderBy('created_at', 'desc').limit(100)
+    const subscriberCount = await NewsletterSubscriber.query()
+      .where('status', 'active')
+      .count('* as total')
+      .first()
+    return inertia.render('admin/AdminNewsletterList', {
+      user: auth.user,
+      newsletters,
+      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+    })
+  }
+
+  async adminNewsletter({ inertia, auth }: HttpContext) {
+    const subscriberCount = await NewsletterSubscriber.query()
+      .where('status', 'active')
+      .count('* as total')
+      .first()
+    return inertia.render('admin/AdminNewsletter', {
+      user: auth.user,
+      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+    })
+  }
+
+  async adminEmailCampaigns({ inertia, auth }: HttpContext) {
+    const campaigns = await EmailCampaign.query().orderBy('created_at', 'desc').limit(100)
+    const subscriberCount = await NewsletterSubscriber.query()
+      .where('status', 'active')
+      .count('* as total')
+      .first()
+    return inertia.render('admin/AdminEmailCampaigns', {
+      user: auth.user,
+      campaigns,
+      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+    })
+  }
+
+  async adminConversions({ inertia, auth }: HttpContext) {
+    const [orders, links] = await Promise.all([
+      Order.query().orderBy('created_at', 'desc').limit(500),
+      AffiliateLink.query().orderBy('created_at', 'desc').limit(500),
+    ])
+    return inertia.render('admin/AdminConversions', { user: auth.user, orders, links })
+  }
+
+  async adminHeroBanner({ inertia, auth }: HttpContext) {
+    const settings = await SiteSetting.all()
+    return inertia.render('admin/AdminHeroBanner', { user: auth.user, settings })
   }
 }

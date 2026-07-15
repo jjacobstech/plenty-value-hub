@@ -129,11 +129,7 @@ export default function Login() {
           />
         </div>
 
-        <Button
-          type="submit"
-          className="w-full h-12 font-medium"
-          disabled={processing}
-        >
+        <Button type="submit" className="w-full h-12 font-medium" disabled={processing}>
           {processing ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />

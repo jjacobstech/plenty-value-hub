@@ -34,6 +34,19 @@ export interface ApiDefinition {
     partners: typeof routes['for.partners']
   }
   privacy: typeof routes['privacy']
+  legacy: {
+    login: typeof routes['legacy.login']
+    register: typeof routes['legacy.register']
+    forgot: {
+      password: typeof routes['legacy.forgot.password']
+    }
+    reset: {
+      password: typeof routes['legacy.reset.password']
+    }
+    verify: {
+      email: typeof routes['legacy.verify.email']
+    }
+  }
   register: typeof routes['register']
   newAccount: {
     store: typeof routes['new_account.store']
@@ -76,6 +89,17 @@ export interface ApiDefinition {
     products: typeof routes['admin.products']
     orders: typeof routes['admin.orders']
     analytics: typeof routes['admin.analytics']
+    subscribers: typeof routes['admin.subscribers']
+    blog: typeof routes['admin.blog']
+    newsletters: typeof routes['admin.newsletters']
+    newsletter: typeof routes['admin.newsletter']
+    email: {
+      campaigns: typeof routes['admin.email.campaigns']
+    }
+    conversions: typeof routes['admin.conversions']
+    hero: {
+      banner: typeof routes['admin.hero.banner']
+    }
     getPlatformStats: typeof routes['admin.get_platform_stats']
     updateUser: typeof routes['admin.update_user']
   }
@@ -116,5 +140,29 @@ export interface ApiDefinition {
     updateAffiliate: typeof routes['profile.update_affiliate']
     updateVendor: typeof routes['profile.update_vendor']
     uploadImage: typeof routes['profile.upload_image']
+  }
+  blogPosts: {
+    index: typeof routes['blog_posts.index']
+    store: typeof routes['blog_posts.store']
+    update: typeof routes['blog_posts.update']
+    destroy: typeof routes['blog_posts.destroy']
+  }
+  newsletterAdmin: {
+    index: typeof routes['newsletter_admin.index']
+    store: typeof routes['newsletter_admin.store']
+    update: typeof routes['newsletter_admin.update']
+    destroy: typeof routes['newsletter_admin.destroy']
+  }
+  emailCampaigns: {
+    index: typeof routes['email_campaigns.index']
+    store: typeof routes['email_campaigns.store']
+    update: typeof routes['email_campaigns.update']
+    destroy: typeof routes['email_campaigns.destroy']
+  }
+  siteSettings: {
+    index: typeof routes['site_settings.index']
+    show: typeof routes['site_settings.show']
+    upsert: typeof routes['site_settings.upsert']
+    uploadImage: typeof routes['site_settings.upload_image']
   }
 }

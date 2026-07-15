@@ -28,6 +28,11 @@ router.get('/product/:id', [controllers.Pages, 'productDetail']).as('product.det
 router.get('/ref/:link_code', [controllers.Pages, 'affiliateRedirect']).as('affiliate.redirect')
 router.get('/for-partners', [controllers.Pages, 'forPartners']).as('for.partners')
 router.get('/privacy', [controllers.Pages, 'privacyPolicy']).as('privacy')
+router.get('/login', [controllers.Session, 'create']).as('legacy.login')
+router.get('/register', [controllers.NewAccount, 'create']).as('legacy.register')
+router.get('/forgot-password', [controllers.Pages, 'forgotPassword']).as('legacy.forgot.password')
+router.get('/reset-password', [controllers.Pages, 'resetPassword']).as('legacy.reset.password')
+router.get('/verify-email', [controllers.Pages, 'verifyEmail']).as('legacy.verify.email')
 
 /**
  * Auth routes (guest only)
@@ -40,12 +45,8 @@ router
     router.post('/signup/step1', [controllers.NewAccount, 'registerStep1']).use(signupThrottle)
     router.post('/signup/step2', [controllers.NewAccount, 'registerStep2']).use(signupThrottle)
     router.post('/signup/step3', [controllers.NewAccount, 'registerStep3']).use(signupThrottle)
-    router
-      .post('/signup/verify-otp', [controllers.NewAccount, 'verifyOtp'])
-      .use(authThrottle)
-    router
-      .post('/signup/resend-otp', [controllers.NewAccount, 'resendOtp'])
-      .use(authThrottle)
+    router.post('/signup/verify-otp', [controllers.NewAccount, 'verifyOtp']).use(authThrottle)
+    router.post('/signup/resend-otp', [controllers.NewAccount, 'resendOtp']).use(authThrottle)
 
     // Login — throttled per IP
     router.get('/login', [controllers.Session, 'create']).as('login')
@@ -56,13 +57,9 @@ router
 
     // Password reset — throttled per IP
     router.get('/forgot-password', [controllers.Pages, 'forgotPassword']).as('forgot.password')
-    router
-      .post('/forgot-password', [controllers.NewAccount, 'forgotPassword'])
-      .use(authThrottle)
+    router.post('/forgot-password', [controllers.NewAccount, 'forgotPassword']).use(authThrottle)
     router.get('/reset-password', [controllers.Pages, 'resetPassword']).as('reset.password')
-    router
-      .post('/reset-password', [controllers.NewAccount, 'resetPassword'])
-      .use(authThrottle)
+    router.post('/reset-password', [controllers.NewAccount, 'resetPassword']).use(authThrottle)
 
     // OAuth routes
     router.get('/google', [controllers.Oauth, 'redirectToGoogle']).as('google.redirect')
@@ -121,6 +118,15 @@ router
     router.get('/products', [controllers.Pages, 'adminProducts']).as('admin.products')
     router.get('/orders', [controllers.Pages, 'adminOrders']).as('admin.orders')
     router.get('/analytics', [controllers.Pages, 'adminAnalytics']).as('admin.analytics')
+    router.get('/subscribers', [controllers.Pages, 'adminSubscribers']).as('admin.subscribers')
+    router.get('/blog', [controllers.Pages, 'adminBlog']).as('admin.blog')
+    router.get('/newsletters', [controllers.Pages, 'adminNewsletterList']).as('admin.newsletters')
+    router.get('/newsletter', [controllers.Pages, 'adminNewsletter']).as('admin.newsletter')
+    router
+      .get('/email-campaigns', [controllers.Pages, 'adminEmailCampaigns'])
+      .as('admin.email.campaigns')
+    router.get('/conversions', [controllers.Pages, 'adminConversions']).as('admin.conversions')
+    router.get('/hero-banner', [controllers.Pages, 'adminHeroBanner']).as('admin.hero.banner')
   })
   .prefix('/admin')
   .use(middleware.adminAuth())
@@ -208,6 +214,30 @@ router
             router.put('/orders/:id', [controllers.Orders, 'updateStatus'])
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
+
+            // Blog posts
+            router.get('/blog-posts', [controllers.BlogPosts, 'index'])
+            router.post('/blog-posts', [controllers.BlogPosts, 'store'])
+            router.put('/blog-posts/:id', [controllers.BlogPosts, 'update'])
+            router.delete('/blog-posts/:id', [controllers.BlogPosts, 'destroy'])
+
+            // Newsletters
+            router.get('/newsletters', [controllers.NewsletterAdmin, 'index'])
+            router.post('/newsletters', [controllers.NewsletterAdmin, 'store'])
+            router.put('/newsletters/:id', [controllers.NewsletterAdmin, 'update'])
+            router.delete('/newsletters/:id', [controllers.NewsletterAdmin, 'destroy'])
+
+            // Email campaigns
+            router.get('/email-campaigns', [controllers.EmailCampaigns, 'index'])
+            router.post('/email-campaigns', [controllers.EmailCampaigns, 'store'])
+            router.put('/email-campaigns/:id', [controllers.EmailCampaigns, 'update'])
+            router.delete('/email-campaigns/:id', [controllers.EmailCampaigns, 'destroy'])
+
+            // Site settings (hero banner)
+            router.get('/site-settings', [controllers.SiteSettings, 'index'])
+            router.get('/site-settings/:key', [controllers.SiteSettings, 'show'])
+            router.post('/site-settings', [controllers.SiteSettings, 'upsert'])
+            router.post('/site-settings/upload-image', [controllers.SiteSettings, 'uploadImage'])
           })
           .use(middleware.role(['admin']))
           .use(adminThrottle)

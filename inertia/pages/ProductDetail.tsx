@@ -130,25 +130,23 @@ export default function ProductDetail({ product, reviews = [] }: ProductDetailPr
   const productStructuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: product.name,
-    description: productDescription,
-    image: product.image_url || undefined,
-    brand: product.vendor_name
-      ? { '@type': 'Brand', name: product.vendor_name }
-      : undefined,
-    offers: {
+    'name': product.name,
+    'description': productDescription,
+    'image': product.image_url || undefined,
+    'brand': product.vendor_name ? { '@type': 'Brand', 'name': product.vendor_name } : undefined,
+    'offers': {
       '@type': 'Offer',
-      price: product.sale_price || product.price,
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
-      url: typeof window !== 'undefined' ? window.location.href : '',
+      'price': product.sale_price || product.price,
+      'priceCurrency': 'USD',
+      'availability': 'https://schema.org/InStock',
+      'url': typeof window !== 'undefined' ? window.location.href : '',
     },
-    aggregateRating:
+    'aggregateRating':
       product.rating && product.review_count
         ? {
             '@type': 'AggregateRating',
-            ratingValue: product.rating,
-            reviewCount: product.review_count,
+            'ratingValue': product.rating,
+            'reviewCount': product.review_count,
           }
         : undefined,
   }

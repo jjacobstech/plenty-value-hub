@@ -96,7 +96,8 @@ export default function Footer() {
               Vendors, affiliates, and buyers — all thriving together.
             </p>
             <div className="flex gap-3 mt-5">
-              <Link href="/auth/signup"
+              <Link
+                href="/auth/signup"
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white transition-opacity hover:opacity-90"
                 style={{ backgroundColor: '#81C14B' }}
               >
@@ -134,8 +135,19 @@ export default function Footer() {
                 className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:bg-[#81C14B]"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  style={{ color: 'rgba(255,255,255,0.7)' }}
+                >
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                 </svg>
               </a>
               <a
@@ -145,8 +157,13 @@ export default function Footer() {
                 className="w-9 h-9 rounded-lg flex items-center justify-center transition-all hover:bg-[#81C14B]"
                 style={{ border: '1px solid rgba(255,255,255,0.2)' }}
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor" style={{ color: 'rgba(255,255,255,0.7)' }}>
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                <svg
+                  className="w-4 h-4"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  style={{ color: 'rgba(255,255,255,0.7)' }}
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                 </svg>
               </a>
               <a
