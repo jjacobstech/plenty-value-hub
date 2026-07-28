@@ -112,6 +112,8 @@
     "luxon": "^3.7.2",
     "nanoid": "^5.1.11",
     "pg": "^8.22.0",
+    "quill": "^2.0.3",
+    "quill-table-better": "^1.2.3",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "recharts": "^3.8.1",

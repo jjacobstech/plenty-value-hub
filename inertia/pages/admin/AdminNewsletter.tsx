@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
+import PageEditor from '@/components/PageEditor'
 import {
   LayoutTemplate,
   Send,
@@ -275,75 +276,21 @@ export default function AdminNewsletter({ subscriberCount = 0 }: Props) {
                 </div>
 
                 {activeTab === 'write' ? (
-                  <div className="space-y-2">
-                    {/* Rich text formatting tools */}
-                    <div className="flex items-center gap-1.5 border-b pb-2 flex-wrap">
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-gray-600"
-                        onClick={() => insertText('<strong>', '</strong>')}
-                        title="Bold"
-                      >
-                        <Bold className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-gray-600"
-                        onClick={() => insertText('<em>', '</em>')}
-                        title="Italic"
-                      >
-                        <Italic className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-gray-600"
-                        onClick={() => insertText('<h1>', '</h1>')}
-                        title="Header 1"
-                      >
-                        <Heading1 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-gray-600"
-                        onClick={() => insertText('<h2>', '</h2>')}
-                        title="Header 2"
-                      >
-                        <Heading2 className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-gray-600"
-                        onClick={() => {
-                          const url = window.prompt('Enter link URL:')
-                          if (url) insertText(`<a href="${url}" target="_blank">`, '</a>')
-                        }}
-                        title="Link"
-                      >
-                        <LinkIcon className="w-4 h-4" />
-                      </Button>
-                    </div>
-
-                    <Textarea
-                      ref={textareaRef}
-                      value={content}
-                      onChange={(e) => setContent(e.target.value)}
-                      placeholder="Craft your newsletter using standard HTML tags..."
-                      rows={18}
-                      className="font-mono text-sm leading-relaxed"
-                    />
-                  </div>
+                  <PageEditor content={content} setContent={setContent} />
                 ) : (
                   <div className="border rounded-lg p-5 min-h-[380px] bg-white overflow-y-auto max-h-[500px]">
                     {content.trim() ? (
-                      <div
-                        className="prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ __html: content }}
-                      />
+                      <main className="max-w-3xl mx-auto px-4 sm:px-6 md:px-10 py-12 body-enter">
+                        <div
+                          className="ql-container ql-snow article-body"
+                          style={{ border: 'none' }}
+                        >
+                          <div
+                            className="ql-editor"
+                            dangerouslySetInnerHTML={{ __html: content }}
+                          />
+                        </div>
+                      </main>
                     ) : (
                       <p className="text-gray-400 text-sm italic">
                         Nothing to preview yet. Start typing content...

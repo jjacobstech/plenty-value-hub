@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
+import PageEditor from '@/components/PageEditor'
 import {
   Plus,
   Edit,
@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner'
 import axios from 'axios'
 import { router } from '@inertiajs/react'
+import { Textarea } from '~/components/ui/textarea'
 
 const BLOG_CATEGORIES = [
   'Product Reviews',
@@ -271,71 +272,23 @@ export default function AdminBlog({ posts: initialPosts = [] }: Props) {
                       Preview
                     </button>
                   </div>
-
                   {activeTab === 'write' ? (
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-1.5 border-b pb-2 flex-wrap">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-gray-600"
-                          onClick={() => insertText('<strong>', '</strong>')}
-                        >
-                          <Bold className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-gray-600"
-                          onClick={() => insertText('<em>', '</em>')}
-                        >
-                          <Italic className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-gray-600"
-                          onClick={() => insertText('<h1>', '</h1>')}
-                        >
-                          <Heading1 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-gray-600"
-                          onClick={() => insertText('<h2>', '</h2>')}
-                        >
-                          <Heading2 className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-gray-600"
-                          onClick={() => {
-                            const url = window.prompt('Enter link URL:')
-                            if (url) insertText(`<a href="${url}" target="_blank">`, '</a>')
-                          }}
-                        >
-                          <LinkIcon className="w-4 h-4" />
-                        </Button>
-                      </div>
-
-                      <Textarea
-                        ref={textareaRef}
-                        value={form.content}
-                        onChange={(e) => setForm({ ...form, content: e.target.value })}
-                        placeholder="Write your blog post body using HTML/Markdown..."
-                        rows={16}
-                        className="font-mono text-sm leading-relaxed"
-                      />
-                    </div>
+                    <PageEditor
+                      content={form.content}
+                      setContent={(value) => setForm({ ...form, content: value })}
+                    />
                   ) : (
                     <div className="border rounded-lg p-5 min-h-[380px] bg-white overflow-y-auto max-h-[500px]">
                       {form.content.trim() ? (
                         <div
-                          className="prose prose-sm max-w-none"
-                          dangerouslySetInnerHTML={{ __html: form.content }}
-                        />
+                          className="ql-container ql-snow article-body"
+                          style={{ border: 'none' }}
+                        >
+                          <div
+                            className="ql-editor"
+                            dangerouslySetInnerHTML={{ __html: form.content }}
+                          />
+                        </div>
                       ) : (
                         <p className="text-gray-400 text-sm italic">Nothing to preview yet.</p>
                       )}

@@ -28,10 +28,13 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
     }
     setLoading(true)
     try {
-      await apiClient.post('/auth/reset-password', { resetToken, newPassword })
-      window.location.href = '/login'
+      const response = await apiClient.post('/auth/reset-password', { resetToken, newPassword })
+
+      console.log(response.data)
+      // window.location.href = '/login'
     } catch (err) {
       setError(err.message || 'Failed to reset password')
+      console.error(err)
     } finally {
       setLoading(false)
     }

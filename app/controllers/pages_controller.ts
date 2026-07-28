@@ -20,10 +20,7 @@ export default class PagesController {
         .where('is_featured', true)
         .orderBy('created_at', 'desc')
         .limit(8),
-      Product.query()
-        .where('status', 'approved')
-        .orderBy('gravity_score', 'desc')
-        .limit(4),
+      Product.query().where('status', 'approved').orderBy('gravity_score', 'desc').limit(4),
       SiteSetting.findBy('key', 'hero_banner'),
     ])
 

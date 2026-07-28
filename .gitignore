@@ -1,3 +1,4 @@
+# Frontend assets compiled code
 # Dependencies and AdonisJS build
 node_modules
 build
@@ -25,3 +26,5 @@ yarn-error.log
 # Platform specific
 .DS_Store
 storage/uploads
+
+.foglamp/

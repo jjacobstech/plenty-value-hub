@@ -220,7 +220,9 @@ export default class NewAccountController {
   }
 
   async resetPassword({ request, response, auth }: HttpContext) {
+    return 'working';
     const { token, password } = await request.validateUsing(resetPasswordValidator)
+
 
     const hashedToken = createHash('sha256').update(token).digest('hex')
     const user = await User.query()

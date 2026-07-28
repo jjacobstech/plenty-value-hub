@@ -207,7 +207,7 @@ export default function AdminEmailCampaigns({
                         { label: 'Opens', value: c.openCount || 0 },
                         { label: 'Clicks', value: c.clickCount || 0 },
                         { label: 'Conversions', value: c.conversionCount || 0 },
-                        { label: 'Revenue', value: `$${(c.revenueGenerated || 0).toFixed(0)}` },
+                        { label: 'Revenue', value: `$${c.revenueGenerated || 0}` },
                       ].map((m) => (
                         <div key={m.label} className="bg-gray-50 rounded-lg p-2 text-center">
                           <p className="text-xs text-gray-400">{m.label}</p>

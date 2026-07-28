@@ -27,6 +27,7 @@ COPY --from=builder --chown=node:node /app/build ./
 
 # tmp must exist and be writable by node before we drop privileges
 RUN mkdir -p tmp && chown node:node tmp
+RUN mkdir -p /app/storage/uploads && chown -R node:node /app/storage
 
 USER node
 
