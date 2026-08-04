@@ -1,1 +1,0 @@
-{"version":3,"file":"review.js","sourceRoot":"","sources":["../../../app/models/review.ts"],"names":[],"mappings":";;;;;;;;;AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,kBAAkB,CAAA;AAC/C,OAAO,EAAE,SAAS,EAAE,MAAM,qBAAqB,CAAA;AAE/C,OAAO,OAAO,MAAM,iBAAiB,CAAA;AAErC,MAAM,CAAC,OAAO,OAAO,MAAO,SAAQ,YAAY;CAG/C;AADS;IADP,SAAS,CAAC,GAAG,EAAE,CAAC,OAAO,EAAE,EAAE,UAAU,EAAE,WAAW,EAAE,CAAC;;uCACZ"}

@@ -1,1 +1,0 @@
-const t=(r,e=!1)=>{if(r==null)return"$0";const i=Number(r);if(Number.isNaN(i))return"$0";if(e){if(i>=1e6)return`$${(i/1e6).toFixed(1)}M`;if(i>=1e3)return`$${(i/1e3).toFixed(1)}K`}return`$${i.toLocaleString("en-US",{minimumFractionDigits:0,maximumFractionDigits:0})}`},n=t;export{n as a,t as f};
