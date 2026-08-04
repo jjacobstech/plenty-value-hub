@@ -1,1 +1,0 @@
-import{b as o}from"./app--c8ZbItp.js";function r(){const t=document.cookie.split("; ").find(e=>e.startsWith("XSRF-TOKEN="));return t?decodeURIComponent(t.split("=")[1]):""}const s=o.create();s.interceptors.request.use(t=>(t.headers["X-XSRF-TOKEN"]=r(),t));export{s as a};

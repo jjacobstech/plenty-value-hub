@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from '@adonisjs/inertia/react'
-import { useForm } from '@inertiajs/react'
+import { useForm, usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -52,6 +52,7 @@ export default function Login() {
     email: '',
     password: '',
   })
+  const { flash } = usePage().props as unknown as { flash?: { error?: string; success?: string } }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -72,6 +73,11 @@ export default function Login() {
         </>
       }
     >
+      {flash?.error && (
+        <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+          {flash.error}
+        </div>
+      )}
       {(errors.email || errors.password) && (
         <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
           {errors.email || errors.password}

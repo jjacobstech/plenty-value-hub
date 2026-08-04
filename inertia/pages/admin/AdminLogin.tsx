@@ -20,11 +20,17 @@ type AdminLoginProps = {
 }
 
 export default function AdminLogin({ adminExists }: AdminLoginProps) {
-  const { url } = usePage()
+  const { url, props } = usePage() as unknown as {
+    url: string
+    props: { flash?: { error?: string; success?: string } }
+  }
   const params = new URLSearchParams(url.split('?')[1] ?? '')
-  const errorKey = params.get('error')
-  const errorMessage = errorKey
-    ? (ERROR_MESSAGES[errorKey] ?? 'An unexpected error occurred.')
+  const queryError = params.get('error')
+  const flashError = props.flash?.error
+  const errorMessage = flashError
+    ? flashError
+    : queryError
+      ? (ERROR_MESSAGES[queryError] ?? 'An unexpected error occurred.')
     : null
 
   return (

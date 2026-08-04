@@ -50,6 +50,11 @@ export default class OauthController {
       }
 
       let user = await User.findBy('email', googleUser.email)
+      if (user?.role === 'admin') {
+        session.flash('error', 'Please sign in through the admin portal.')
+        return response.redirect('/admin/auth/login?error=not_admin')
+      }
+
       const source = session.get('oauth_source', 'login')
 
       if (!user) {

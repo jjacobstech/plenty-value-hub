@@ -1,5 +1,10 @@
 import { defineConfig } from '@adonisjs/shield'
+import env from '#start/env'
 
+const appUrl = env.get('APP_URL')
+const s3Endpoint = env.get('S3_ENDPOINT')
+const s3Url = `${s3Endpoint}/*`
+console.log({ appUrl, s3Url }) // temporarily, in shield.ts
 const shieldConfig = defineConfig({
   /**
    * Configure CSP policies for your app. Refer documentation
@@ -18,9 +23,9 @@ const shieldConfig = defineConfig({
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-      imgSrc: ["'self'", 'data:', 'blob:', 'https:'],
+      imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http://localhost:*', `${appUrl}`, `${s3Url}`],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'"],
+      connectSrc: ["'self'", 'ws://localhost:*', 'http://localhost:*', appUrl, s3Url],
     },
 
     /**

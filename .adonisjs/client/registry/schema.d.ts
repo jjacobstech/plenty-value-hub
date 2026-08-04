@@ -729,7 +729,7 @@ export interface Registry {
   }
   'products.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/products'
+    pattern: '/api/products'
     types: {
       body: {}
       paramsTuple: []
@@ -741,7 +741,7 @@ export interface Registry {
   }
   'products.show': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/products/:id'
+    pattern: '/api/products/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -753,7 +753,7 @@ export interface Registry {
   }
   'newsletters.subscribe': {
     methods: ["POST"]
-    pattern: '/api/admin/newsletters/subscribe'
+    pattern: '/api/newsletters/subscribe'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/newsletter').subscribeNewsletterValidator)>>
       paramsTuple: []
@@ -765,7 +765,7 @@ export interface Registry {
   }
   'newsletters.unsubscribe': {
     methods: ["POST"]
-    pattern: '/api/admin/newsletters/unsubscribe'
+    pattern: '/api/newsletters/unsubscribe'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/newsletter').unsubscribeValidator)>>
       paramsTuple: []
@@ -777,7 +777,7 @@ export interface Registry {
   }
   'affiliate_links.track_click': {
     methods: ["POST"]
-    pattern: '/api/admin/affiliate-links/track-click'
+    pattern: '/api/affiliate-links/track-click'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/affiliate_link').trackClickValidator)>>
       paramsTuple: []
@@ -789,7 +789,7 @@ export interface Registry {
   }
   'reviews.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/reviews'
+    pattern: '/api/reviews'
     types: {
       body: {}
       paramsTuple: []
@@ -801,7 +801,7 @@ export interface Registry {
   }
   'products.store': {
     methods: ["POST"]
-    pattern: '/api/admin/products'
+    pattern: '/api/products'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/product').createProductValidator)>>
       paramsTuple: []
@@ -813,7 +813,7 @@ export interface Registry {
   }
   'products.update': {
     methods: ["PUT"]
-    pattern: '/api/admin/products/:id'
+    pattern: '/api/products/:id'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/product').updateProductValidator)>>
       paramsTuple: [ParamValue]
@@ -825,7 +825,7 @@ export interface Registry {
   }
   'products.destroy': {
     methods: ["DELETE"]
-    pattern: '/api/admin/products/:id'
+    pattern: '/api/products/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -837,7 +837,7 @@ export interface Registry {
   }
   'orders.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/orders'
+    pattern: '/api/orders'
     types: {
       body: {}
       paramsTuple: []
@@ -849,7 +849,7 @@ export interface Registry {
   }
   'orders.show': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/orders/:id'
+    pattern: '/api/orders/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -861,7 +861,7 @@ export interface Registry {
   }
   'orders.process_order': {
     methods: ["POST"]
-    pattern: '/api/admin/orders'
+    pattern: '/api/orders'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/order').processOrderValidator)>>
       paramsTuple: []
@@ -873,7 +873,7 @@ export interface Registry {
   }
   'affiliate_links.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/affiliate-links'
+    pattern: '/api/affiliate-links'
     types: {
       body: {}
       paramsTuple: []
@@ -885,7 +885,7 @@ export interface Registry {
   }
   'affiliate_links.store': {
     methods: ["POST"]
-    pattern: '/api/admin/affiliate-links'
+    pattern: '/api/affiliate-links'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/affiliate_link').createAffiliateLinkValidator)>>
       paramsTuple: []
@@ -897,7 +897,7 @@ export interface Registry {
   }
   'affiliate_links.update': {
     methods: ["PUT"]
-    pattern: '/api/admin/affiliate-links/:id'
+    pattern: '/api/affiliate-links/:id'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/affiliate_link').updateAffiliateLinkValidator)>>
       paramsTuple: [ParamValue]
@@ -909,7 +909,7 @@ export interface Registry {
   }
   'affiliate_links.destroy': {
     methods: ["DELETE"]
-    pattern: '/api/admin/affiliate-links/:id'
+    pattern: '/api/affiliate-links/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -921,7 +921,7 @@ export interface Registry {
   }
   'reviews.store': {
     methods: ["POST"]
-    pattern: '/api/admin/reviews'
+    pattern: '/api/reviews'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/review').createReviewValidator)>>
       paramsTuple: []
@@ -933,7 +933,7 @@ export interface Registry {
   }
   'profile.update_affiliate': {
     methods: ["PUT"]
-    pattern: '/api/admin/profile/affiliate'
+    pattern: '/api/profile/affiliate'
     types: {
       body: {}
       paramsTuple: []
@@ -945,7 +945,7 @@ export interface Registry {
   }
   'profile.update_vendor': {
     methods: ["PUT"]
-    pattern: '/api/admin/profile/vendor'
+    pattern: '/api/profile/vendor'
     types: {
       body: {}
       paramsTuple: []
@@ -957,7 +957,7 @@ export interface Registry {
   }
   'profile.upload_image': {
     methods: ["POST"]
-    pattern: '/api/admin/profile/upload-image'
+    pattern: '/api/profile/upload-image'
     types: {
       body: {}
       paramsTuple: []
@@ -969,7 +969,7 @@ export interface Registry {
   }
   'admin.get_platform_stats': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/stats'
+    pattern: '/api/stats'
     types: {
       body: {}
       paramsTuple: []
@@ -981,7 +981,7 @@ export interface Registry {
   }
   'products.approve': {
     methods: ["PUT"]
-    pattern: '/api/admin/products/:id/approve'
+    pattern: '/api/products/:id/approve'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -993,7 +993,7 @@ export interface Registry {
   }
   'orders.update_status': {
     methods: ["PUT"]
-    pattern: '/api/admin/orders/:id'
+    pattern: '/api/orders/:id'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
       paramsTuple: [ParamValue]
@@ -1005,7 +1005,7 @@ export interface Registry {
   }
   'admin.update_user': {
     methods: ["PUT"]
-    pattern: '/api/admin/users/:id'
+    pattern: '/api/users/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1017,7 +1017,7 @@ export interface Registry {
   }
   'reviews.approve': {
     methods: ["POST"]
-    pattern: '/api/admin/reviews/:id/approve'
+    pattern: '/api/reviews/:id/approve'
     types: {
       body: ExtractBody<InferInput<(typeof import('#validators/review').updateReviewValidator)>>
       paramsTuple: [ParamValue]
@@ -1029,7 +1029,7 @@ export interface Registry {
   }
   'blog_posts.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/blog-posts'
+    pattern: '/api/blog-posts'
     types: {
       body: {}
       paramsTuple: []
@@ -1041,7 +1041,7 @@ export interface Registry {
   }
   'blog_posts.store': {
     methods: ["POST"]
-    pattern: '/api/admin/blog-posts'
+    pattern: '/api/blog-posts'
     types: {
       body: {}
       paramsTuple: []
@@ -1053,7 +1053,7 @@ export interface Registry {
   }
   'blog_posts.update': {
     methods: ["PUT"]
-    pattern: '/api/admin/blog-posts/:id'
+    pattern: '/api/blog-posts/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1065,7 +1065,7 @@ export interface Registry {
   }
   'blog_posts.destroy': {
     methods: ["DELETE"]
-    pattern: '/api/admin/blog-posts/:id'
+    pattern: '/api/blog-posts/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1077,7 +1077,7 @@ export interface Registry {
   }
   'newsletter_admin.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/newsletters'
+    pattern: '/api/newsletters'
     types: {
       body: {}
       paramsTuple: []
@@ -1089,7 +1089,7 @@ export interface Registry {
   }
   'newsletter_admin.store': {
     methods: ["POST"]
-    pattern: '/api/admin/newsletters'
+    pattern: '/api/newsletters'
     types: {
       body: {}
       paramsTuple: []
@@ -1101,7 +1101,7 @@ export interface Registry {
   }
   'newsletter_admin.update': {
     methods: ["PUT"]
-    pattern: '/api/admin/newsletters/:id'
+    pattern: '/api/newsletters/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1113,7 +1113,7 @@ export interface Registry {
   }
   'newsletter_admin.destroy': {
     methods: ["DELETE"]
-    pattern: '/api/admin/newsletters/:id'
+    pattern: '/api/newsletters/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1125,7 +1125,7 @@ export interface Registry {
   }
   'email_campaigns.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/email-campaigns'
+    pattern: '/api/email-campaigns'
     types: {
       body: {}
       paramsTuple: []
@@ -1137,7 +1137,7 @@ export interface Registry {
   }
   'email_campaigns.store': {
     methods: ["POST"]
-    pattern: '/api/admin/email-campaigns'
+    pattern: '/api/email-campaigns'
     types: {
       body: {}
       paramsTuple: []
@@ -1149,7 +1149,7 @@ export interface Registry {
   }
   'email_campaigns.update': {
     methods: ["PUT"]
-    pattern: '/api/admin/email-campaigns/:id'
+    pattern: '/api/email-campaigns/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1161,7 +1161,7 @@ export interface Registry {
   }
   'email_campaigns.destroy': {
     methods: ["DELETE"]
-    pattern: '/api/admin/email-campaigns/:id'
+    pattern: '/api/email-campaigns/:id'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1173,7 +1173,7 @@ export interface Registry {
   }
   'site_settings.index': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/site-settings'
+    pattern: '/api/site-settings'
     types: {
       body: {}
       paramsTuple: []
@@ -1185,7 +1185,7 @@ export interface Registry {
   }
   'site_settings.show': {
     methods: ["GET","HEAD"]
-    pattern: '/api/admin/site-settings/:key'
+    pattern: '/api/site-settings/:key'
     types: {
       body: {}
       paramsTuple: [ParamValue]
@@ -1197,7 +1197,7 @@ export interface Registry {
   }
   'site_settings.upsert': {
     methods: ["POST"]
-    pattern: '/api/admin/site-settings'
+    pattern: '/api/site-settings'
     types: {
       body: {}
       paramsTuple: []
@@ -1209,7 +1209,7 @@ export interface Registry {
   }
   'site_settings.upload_image': {
     methods: ["POST"]
-    pattern: '/api/admin/site-settings/upload-image'
+    pattern: '/api/site-settings/upload-image'
     types: {
       body: {}
       paramsTuple: []

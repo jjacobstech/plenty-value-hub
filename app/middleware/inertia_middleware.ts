@@ -18,6 +18,7 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
     /**
      * Fetching the first error from the flash messages
      */
+    const flashedErrors = session?.flashMessages.get('errors') as Record<string, string> | undefined
     const error = session?.flashMessages.get('error') as string
     const success = session?.flashMessages.get('success') as string
 
@@ -26,7 +27,10 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
      * transformers for rich data-types like Models.
      */
     return {
-      errors: ctx.inertia.always(this.getValidationErrors(ctx)),
+      errors: ctx.inertia.always({
+        ...this.getValidationErrors(ctx),
+        ...(flashedErrors ?? {}),
+      }),
       flash: ctx.inertia.always({
         error,
         success,

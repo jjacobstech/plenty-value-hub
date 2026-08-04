@@ -39,26 +39,31 @@ export default class AdminAuthController {
     const google = ally.use('googleAdmin')
 
     if (google.accessDenied()) {
-      return response.redirect('/admin/auth/login?error=access_denied')
+      session.flash('error', 'Google sign-in was cancelled.')
+      return response.redirect('/admin/auth/login')
     }
 
     if (google.stateMisMatch()) {
-      return response.redirect('/admin/auth/login?error=state_mismatch')
+      session.flash('error', 'Authentication state mismatch. Please try again.')
+      return response.redirect('/admin/auth/login')
     }
 
     if (google.hasError()) {
-      return response.redirect('/admin/auth/login?error=oauth_error')
+      session.flash('error', 'Google authentication failed. Please try again.')
+      return response.redirect('/admin/auth/login')
     }
 
     let googleUser: Awaited<ReturnType<typeof google.user>>
     try {
       googleUser = await google.user()
     } catch {
-      return response.redirect('/admin/auth/login?error=oauth_error')
+      session.flash('error', 'Google authentication failed. Please try again.')
+      return response.redirect('/admin/auth/login')
     }
 
     if (!googleUser.email) {
-      return response.redirect('/admin/auth/login?error=no_email')
+      session.flash('error', 'Google did not provide an email address.')
+      return response.redirect('/admin/auth/login')
     }
 
     const source = session.pull('admin_oauth_source', 'login') as 'setup' | 'login'
@@ -67,12 +72,14 @@ export default class AdminAuthController {
       // Middleware should have blocked this, but double-check
       const adminExists = await User.query().where('role', 'admin').first()
       if (adminExists) {
-        return response.redirect('/admin/auth/login?error=admin_exists')
+        session.flash('error', 'An admin account already exists. Only one admin is allowed.')
+        return response.redirect('/admin/auth/login')
       }
 
       const existingUser = await User.findBy('email', googleUser.email)
       if (existingUser) {
-        return response.redirect('/admin/auth/login?error=email_taken')
+        session.flash('error', 'That Google account is already registered under a different role.')
+        return response.redirect('/admin/auth/login')
       }
 
       const admin = await User.create({
@@ -91,7 +98,8 @@ export default class AdminAuthController {
     // source === 'login'
     const user = await User.findBy('email', googleUser.email)
     if (!user || user.role !== 'admin') {
-      return response.redirect('/admin/auth/login?error=not_admin')
+      session.flash('error', 'That Google account does not have admin access.')
+      return response.redirect('/admin/auth/login')
     }
 
     await auth.use('web').login(user)

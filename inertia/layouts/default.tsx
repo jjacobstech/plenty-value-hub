@@ -5,19 +5,23 @@ import { type ReactElement, useEffect } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 
 export default function Layout({ children }: { children: ReactElement<Data.SharedProps> }) {
-  const { url } = usePage()
+  const { url, props } = usePage() as unknown as {
+    url: string
+    props: { flash?: { error?: string; success?: string } }
+  }
+
   useEffect(() => {
     toast.dismiss()
   }, [url])
 
   useEffect(() => {
-    if (children.props.flash.error) {
-      toast.error(children.props.flash.error)
+    if (props.flash?.error) {
+      toast.error(props.flash.error)
     }
-    if (children.props.flash.success) {
-      toast.success(children.props.flash.success)
+    if (props.flash?.success) {
+      toast.success(props.flash.success)
     }
-  })
+  }, [props.flash?.error, props.flash?.success])
 
   return (
     <>

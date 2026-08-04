@@ -3,10 +3,14 @@ import BaseInertiaMiddleware from '@adonisjs/inertia/inertia_middleware';
 export default class InertiaMiddleware extends BaseInertiaMiddleware {
     share(ctx) {
         const { session, auth } = ctx;
+        const flashedErrors = session?.flashMessages.get('errors');
         const error = session?.flashMessages.get('error');
         const success = session?.flashMessages.get('success');
         return {
-            errors: ctx.inertia.always(this.getValidationErrors(ctx)),
+            errors: ctx.inertia.always({
+                ...this.getValidationErrors(ctx),
+                ...(flashedErrors ?? {}),
+            }),
             flash: ctx.inertia.always({
                 error,
                 success,

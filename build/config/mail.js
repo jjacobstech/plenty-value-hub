@@ -13,6 +13,11 @@ const mailConfig = defineConfig({
         smtp: transports.smtp({
             host: env.get('SMTP_HOST'),
             port: env.get('SMTP_PORT'),
+            auth: {
+                type: 'login',
+                user: env.get('SMTP_USER'),
+                pass: env.get('SMTP_PASSWORD'),
+            },
         }),
     },
 });

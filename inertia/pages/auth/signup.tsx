@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from '@adonisjs/inertia/react'
-import { useForm } from '@inertiajs/react'
+import { useForm, usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -89,6 +89,7 @@ export default function Signup() {
     passwordConfirmation: '',
     role: '',
   })
+  const { flash } = usePage().props as unknown as { flash?: { error?: string; success?: string } }
 
   const handleTypeSelect = (type: string) => {
     setAccountType(type)
@@ -227,6 +228,16 @@ export default function Signup() {
         </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-border p-8">
+          {flash?.error && (
+            <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
+              {flash.error}
+            </div>
+          )}
+          {flash?.success && (
+            <div className="mb-4 p-3 rounded-lg bg-green-50 text-green-700 text-sm border border-green-200">
+              {flash.success}
+            </div>
+          )}
           {Object.values(errors).some(Boolean) && (
             <div className="mb-4 p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
               {Object.values(errors).find(Boolean)}

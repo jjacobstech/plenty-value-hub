@@ -10,22 +10,7 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { BaseModel, column } from '@adonisjs/lucid/orm';
 import { DateTime } from 'luxon';
 export class AffiliateLinkSchema extends BaseModel {
-    static $columns = [
-        'affiliateId',
-        'campaignName',
-        'clicks',
-        'commissionEarned',
-        'conversions',
-        'createdAt',
-        'id',
-        'linkCode',
-        'productId',
-        'productName',
-        'revenue',
-        'status',
-        'subId',
-        'updatedAt',
-    ];
+    static $columns = ['affiliateId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt'];
     $columns = AffiliateLinkSchema.$columns;
 }
 __decorate([
@@ -85,25 +70,7 @@ __decorate([
     __metadata("design:type", Object)
 ], AffiliateLinkSchema.prototype, "updatedAt", void 0);
 export class BlogPostSchema extends BaseModel {
-    static $columns = [
-        'authorName',
-        'category',
-        'content',
-        'createdAt',
-        'excerpt',
-        'featuredImageUrl',
-        'id',
-        'publishedAt',
-        'readTimeMinutes',
-        'seoDescription',
-        'seoTitle',
-        'slug',
-        'status',
-        'tags',
-        'title',
-        'updatedAt',
-        'viewCount',
-    ];
+    static $columns = ['authorName', 'category', 'content', 'createdAt', 'excerpt', 'featuredImageUrl', 'id', 'publishedAt', 'readTimeMinutes', 'seoDescription', 'seoTitle', 'slug', 'status', 'tags', 'title', 'updatedAt', 'viewCount'];
     $columns = BlogPostSchema.$columns;
 }
 __decorate([
@@ -175,23 +142,7 @@ __decorate([
     __metadata("design:type", Object)
 ], BlogPostSchema.prototype, "viewCount", void 0);
 export class EmailCampaignSchema extends BaseModel {
-    static $columns = [
-        'audienceSegment',
-        'campaignType',
-        'clickCount',
-        'content',
-        'conversionCount',
-        'createdAt',
-        'id',
-        'name',
-        'openCount',
-        'recipientsCount',
-        'revenueGenerated',
-        'sentAt',
-        'status',
-        'subject',
-        'updatedAt',
-    ];
+    static $columns = ['audienceSegment', 'campaignType', 'clickCount', 'content', 'conversionCount', 'createdAt', 'id', 'name', 'openCount', 'recipientsCount', 'revenueGenerated', 'sentAt', 'status', 'subject', 'updatedAt'];
     $columns = EmailCampaignSchema.$columns;
 }
 __decorate([
@@ -255,16 +206,7 @@ __decorate([
     __metadata("design:type", Object)
 ], EmailCampaignSchema.prototype, "updatedAt", void 0);
 export class NewsletterSubscriberSchema extends BaseModel {
-    static $columns = [
-        'createdAt',
-        'email',
-        'id',
-        'interests',
-        'name',
-        'source',
-        'status',
-        'updatedAt',
-    ];
+    static $columns = ['createdAt', 'email', 'id', 'interests', 'name', 'source', 'status', 'updatedAt'];
     $columns = NewsletterSubscriberSchema.$columns;
 }
 __decorate([
@@ -300,20 +242,7 @@ __decorate([
     __metadata("design:type", Object)
 ], NewsletterSubscriberSchema.prototype, "updatedAt", void 0);
 export class NewsletterSchema extends BaseModel {
-    static $columns = [
-        'category',
-        'clickCount',
-        'content',
-        'createdAt',
-        'id',
-        'openCount',
-        'recipientsCount',
-        'revenueGenerated',
-        'sentAt',
-        'status',
-        'subject',
-        'updatedAt',
-    ];
+    static $columns = ['category', 'clickCount', 'content', 'createdAt', 'id', 'openCount', 'recipientsCount', 'revenueGenerated', 'sentAt', 'status', 'subject', 'updatedAt'];
     $columns = NewsletterSchema.$columns;
 }
 __decorate([
@@ -365,26 +294,7 @@ __decorate([
     __metadata("design:type", Object)
 ], NewsletterSchema.prototype, "updatedAt", void 0);
 export class OrderSchema extends BaseModel {
-    static $columns = [
-        'affiliateId',
-        'affiliateLinkId',
-        'amount',
-        'buyerEmail',
-        'buyerId',
-        'commissionAmount',
-        'createdAt',
-        'currency',
-        'id',
-        'orderNumber',
-        'paymentMethod',
-        'platformFee',
-        'productId',
-        'productName',
-        'status',
-        'updatedAt',
-        'vendorId',
-        'vendorPayout',
-    ];
+    static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'status', 'updatedAt', 'vendorId', 'vendorPayout'];
     $columns = OrderSchema.$columns;
 }
 __decorate([
@@ -460,38 +370,7 @@ __decorate([
     __metadata("design:type", Object)
 ], OrderSchema.prototype, "vendorPayout", void 0);
 export class ProductSchema extends BaseModel {
-    static $columns = [
-        'affiliateResources',
-        'avgEarningsPerSale',
-        'billingCycle',
-        'category',
-        'commissionRate',
-        'conversionRate',
-        'createdAt',
-        'description',
-        'galleryUrls',
-        'gravityScore',
-        'id',
-        'imageUrl',
-        'isFeatured',
-        'name',
-        'price',
-        'productType',
-        'rating',
-        'recurringBilling',
-        'refundRate',
-        'reviewCount',
-        'salePrice',
-        'shortDescription',
-        'slug',
-        'status',
-        'tags',
-        'totalRevenue',
-        'totalSales',
-        'updatedAt',
-        'vendorId',
-        'vendorName',
-    ];
+    static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'updatedAt', 'vendorId', 'vendorName'];
     $columns = ProductSchema.$columns;
 }
 __decorate([
@@ -631,22 +510,7 @@ __decorate([
     __metadata("design:type", Number)
 ], RateLimitSchema.prototype, "points", void 0);
 export class ReviewSchema extends BaseModel {
-    static $columns = [
-        'cons',
-        'content',
-        'createdAt',
-        'helpfulCount',
-        'id',
-        'isVerifiedPurchase',
-        'productId',
-        'productName',
-        'pros',
-        'rating',
-        'reviewerName',
-        'status',
-        'title',
-        'updatedAt',
-    ];
+    static $columns = ['cons', 'content', 'createdAt', 'helpfulCount', 'id', 'isVerifiedPurchase', 'productId', 'productName', 'pros', 'rating', 'reviewerName', 'status', 'title', 'updatedAt'];
     $columns = ReviewSchema.$columns;
 }
 __decorate([
@@ -734,38 +598,7 @@ __decorate([
     __metadata("design:type", Object)
 ], SiteSettingSchema.prototype, "value", void 0);
 export class UserSchema extends BaseModel {
-    static $columns = [
-        'bio',
-        'businessDescription',
-        'businessLogo',
-        'businessName',
-        'businessType',
-        'country',
-        'coverBanner',
-        'createdAt',
-        'email',
-        'emailVerifiedAt',
-        'fullName',
-        'heardAbout',
-        'id',
-        'instagram',
-        'location',
-        'marketingChannels',
-        'niche',
-        'otpCode',
-        'otpExpiresAt',
-        'password',
-        'phone',
-        'productCategories',
-        'profilePicture',
-        'resetToken',
-        'resetTokenExpiresAt',
-        'role',
-        'twitter',
-        'updatedAt',
-        'website',
-        'youtube',
-    ];
+    static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'website', 'youtube'];
     $columns = UserSchema.$columns;
 }
 __decorate([

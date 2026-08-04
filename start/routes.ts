@@ -244,4 +244,4 @@ router
       })
       .use(middleware.auth())
   })
-  .prefix('/api/admin')
+  .prefix('/api')

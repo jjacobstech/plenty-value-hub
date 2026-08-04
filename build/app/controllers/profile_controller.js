@@ -1,3 +1,4 @@
+import env from '#start/env';
 import User from '#models/user';
 import drive from '@adonisjs/drive/services/main';
 import { createReadStream } from 'node:fs';
@@ -5,6 +6,7 @@ import { extname } from 'node:path';
 import { randomBytes } from 'node:crypto';
 const ALLOWED_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024;
+const storageDisk = env.get('DRIVE');
 function pickPresent(body, keys) {
     const out = {};
     for (const key of keys) {
@@ -65,11 +67,11 @@ export default class ProfileController {
         }
         const ext = extname(file.clientName).toLowerCase().replace('.', '') || 'jpg';
         const key = `profiles/${user.id}/${imageType}/${randomBytes(8).toString('hex')}.${ext}`;
-        await drive.use('fs').putStream(key, createReadStream(file.tmpPath), {
+        await drive.use(storageDisk).putStream(key, createReadStream(file.tmpPath), {
             contentType: file.headers['content-type'],
             visibility: 'public',
         });
-        const url = await drive.use('fs').getUrl(key);
+        const url = await drive.use(storageDisk).getUrl(key);
         if (imageType === 'profile_picture')
             user.profilePicture = url;
         else if (imageType === 'business_logo')

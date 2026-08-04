@@ -221,8 +221,6 @@ export default class NewAccountController {
 
   async resetPassword({ request, response, auth }: HttpContext) {
     const { token, password } = await request.validateUsing(resetPasswordValidator)
-
-
     const hashedToken = createHash('sha256').update(token).digest('hex')
     const user = await User.query()
       .where('reset_token', hashedToken)

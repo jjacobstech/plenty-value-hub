@@ -1,9 +1,12 @@
 import SiteSetting from '#models/site_setting'
 import type { HttpContext } from '@adonisjs/core/http'
+import env from '#start/env'
 import drive from '@adonisjs/drive/services/main'
 import { createReadStream } from 'node:fs'
 import { extname } from 'node:path'
 import { randomBytes } from 'node:crypto'
+
+const storageDisk = env.get('DRIVE')
 
 export default class SiteSettingsController {
   async index({ response }: HttpContext) {
@@ -49,12 +52,12 @@ export default class SiteSettingsController {
     const ext = extname(file.clientName).toLowerCase().replace('.', '') || 'jpg'
     const key = `site/${randomBytes(8).toString('hex')}.${ext}`
 
-    await drive.use('fs').putStream(key, createReadStream(file.tmpPath!), {
+    await drive.use(storageDisk).putStream(key, createReadStream(file.tmpPath!), {
       contentType: file.headers['content-type'],
       visibility: 'public',
     })
 
-    const url = await drive.use('fs').getUrl(key)
+    const url = await drive.use(storageDisk).getUrl(key)
     return response.json({ success: true, url })
   }
 }
