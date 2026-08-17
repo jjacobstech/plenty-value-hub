@@ -31,7 +31,7 @@ export default function AdminLogin({ adminExists }: AdminLoginProps) {
     ? flashError
     : queryError
       ? (ERROR_MESSAGES[queryError] ?? 'An unexpected error occurred.')
-    : null
+      : null
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#001845] px-4">

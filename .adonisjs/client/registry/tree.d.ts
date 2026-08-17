@@ -100,7 +100,12 @@ export interface ApiDefinition {
     hero: {
       banner: typeof routes['admin.hero.banner']
     }
+    payment: {
+      settings: typeof routes['admin.payment.settings']
+    }
+    payouts: typeof routes['admin.payouts']
     getPlatformStats: typeof routes['admin.get_platform_stats']
+    authStatus: typeof routes['admin.auth_status']
     updateUser: typeof routes['admin.update_user']
   }
   vendor: {
@@ -130,16 +135,53 @@ export interface ApiDefinition {
     update: typeof routes['affiliate_links.update']
     destroy: typeof routes['affiliate_links.destroy']
   }
+  siteSettings: {
+    paymentConfig: typeof routes['site_settings.payment_config']
+    index: typeof routes['site_settings.index']
+    upsert: typeof routes['site_settings.upsert']
+    uploadImage: typeof routes['site_settings.upload_image']
+    show: typeof routes['site_settings.show']
+  }
+  payment: {
+    providers: typeof routes['payment.providers']
+    initialize: typeof routes['payment.initialize']
+    verify: typeof routes['payment.verify']
+  }
+  webhook: {
+    stripeWebhook: typeof routes['webhook.stripe_webhook']
+    paystackWebhook: typeof routes['webhook.paystack_webhook']
+    flutterwaveWebhook: typeof routes['webhook.flutterwave_webhook']
+    paypalWebhook: typeof routes['webhook.paypal_webhook']
+    handleWebhook: typeof routes['webhook.handle_webhook']
+    getWebhookEndpoints: typeof routes['webhook.get_webhook_endpoints']
+    testWebhook: typeof routes['webhook.test_webhook']
+  }
   orders: {
     index: typeof routes['orders.index']
     show: typeof routes['orders.show']
     processOrder: typeof routes['orders.process_order']
+    notifyVendor: typeof routes['orders.notify_vendor']
     updateStatus: typeof routes['orders.update_status']
   }
   profile: {
     updateAffiliate: typeof routes['profile.update_affiliate']
     updateVendor: typeof routes['profile.update_vendor']
     uploadImage: typeof routes['profile.upload_image']
+  }
+  upload: {
+    uploadProductImage: typeof routes['upload.upload_product_image']
+    uploadProductGallery: typeof routes['upload.upload_product_gallery']
+    uploadProfileImage: typeof routes['upload.upload_profile_image']
+    uploadAdminImage: typeof routes['upload.upload_admin_image']
+    uploadVideo: typeof routes['upload.upload_video']
+    uploadDocument: typeof routes['upload.upload_document']
+    uploadFile: typeof routes['upload.upload_file']
+  }
+  wallet: {
+    show: typeof routes['wallet.show']
+    requestPayout: typeof routes['wallet.request_payout']
+    adminIndex: typeof routes['wallet.admin_index']
+    adminUpdate: typeof routes['wallet.admin_update']
   }
   blogPosts: {
     index: typeof routes['blog_posts.index']
@@ -159,10 +201,13 @@ export interface ApiDefinition {
     update: typeof routes['email_campaigns.update']
     destroy: typeof routes['email_campaigns.destroy']
   }
-  siteSettings: {
-    index: typeof routes['site_settings.index']
-    show: typeof routes['site_settings.show']
-    upsert: typeof routes['site_settings.upsert']
-    uploadImage: typeof routes['site_settings.upload_image']
+  paymentSettings: {
+    index: typeof routes['payment_settings.index']
+    statusList: typeof routes['payment_settings.status_list']
+    store: typeof routes['payment_settings.store']
+    show: typeof routes['payment_settings.show']
+    update: typeof routes['payment_settings.update']
+    toggle: typeof routes['payment_settings.toggle']
+    destroy: typeof routes['payment_settings.destroy']
   }
 }

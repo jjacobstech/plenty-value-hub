@@ -7,8 +7,14 @@ services:
       - .env
     extra_hosts:
       - 'host.docker.internal:host-gateway'
+    volumes:
+      - app_storage:/app/storage/uploads
     networks:
       - dokploy-network
+
 networks:
   dokploy-network:
     external: true
+
+volumes:
+  app_storage:

@@ -1,4 +1,7 @@
 import vine from '@vinejs/vine'
+import env from '#start/env'
+
+const requireTld = env.get('NODE_ENV') === 'production'
 
 export const createProductValidator = vine.create({
   name: vine.string().trim().minLength(3).maxLength(255),
@@ -25,8 +28,8 @@ export const createProductValidator = vine.create({
   price: vine.number().min(0.01),
   salePrice: vine.number().min(0.01).optional(),
   commissionRate: vine.number().min(0).max(100),
-  imageUrl: vine.string().url().optional(),
-  galleryUrls: vine.array(vine.string().url()).optional(),
+  imageUrl: vine.string().url({ require_tld: requireTld }).optional(),
+  galleryUrls: vine.array(vine.string().url({ require_tld: requireTld })).optional(),
   tags: vine.array(vine.string().trim()).optional(),
   isFeatured: vine.boolean().optional(),
   recurringBilling: vine.boolean().optional(),
@@ -61,11 +64,12 @@ export const updateProductValidator = vine.create({
   price: vine.number().min(0.01).optional(),
   salePrice: vine.number().min(0.01).optional(),
   commissionRate: vine.number().min(0).max(100).optional(),
-  imageUrl: vine.string().url().optional(),
-  galleryUrls: vine.array(vine.string().url()).optional(),
+  imageUrl: vine.string().url({ require_tld: requireTld }).optional(),
+  galleryUrls: vine.array(vine.string().url({ require_tld: requireTld })).optional(),
   tags: vine.array(vine.string().trim()).optional(),
   isFeatured: vine.boolean().optional(),
   recurringBilling: vine.boolean().optional(),
   billingCycle: vine.enum(['one_time', 'monthly', 'yearly'] as const).optional(),
   affiliateResources: vine.any().optional(),
+  status: vine.enum(['approved', 'rejected', 'archived'] as const).optional(),
 })

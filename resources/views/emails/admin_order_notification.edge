@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>New Order Notification — Plenty Value Admin</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 32px;
+        border: 1px solid #e2e8f0;
+      }
+      .header {
+        text-align: center;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .badge {
+        display: inline-block;
+        background: #dcfce7;
+        color: #166534;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        margin-top: 8px;
+      }
+      .details {
+        margin: 24px 0;
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #e2e8f0;
+      }
+      .row:last-child {
+        border-bottom: none;
+      }
+      .label {
+        color: #64748b;
+        font-size: 14px;
+      }
+      .value {
+        font-weight: 600;
+        font-size: 14px;
+        color: #0f172a;
+      }
+      .footer {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2 style="margin: 0; color: #001845;">🛒 New Sale Completed!</h2>
+        <div class="badge">Admin Alert</div>
+      </div>
+
+      <p>Hello Admin,</p>
+      <p>A new order has been completed on <strong>Plenty Value</strong>.</p>
+
+      <div class="details">
+        <div class="row">
+          <span class="label">Order Number</span>
+          <span class="value">#{{ order.orderNumber }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Product</span>
+          <span class="value">{{ product.name }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Total Amount</span>
+          <span class="value">${{ order.amount }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Platform Fee</span>
+          <span class="value" style="color: #16a34a;">+${{ order.platformFee }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Vendor Payout</span>
+          <span class="value">${{ order.vendorPayout }}</span>
+        </div>
+        @if(order.commissionAmount && order.commissionAmount > 0)
+          <div class="row">
+            <span class="label">Affiliate Commission</span>
+            <span class="value">${{ order.commissionAmount }}</span>
+          </div>
+        @end
+
+        <div class="row">
+          <span class="label">Payment Gateway</span>
+          <span class="value" style="text-transform: uppercase;">{{ order.paymentMethod }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Buyer Email</span>
+          <span class="value">{{ order.buyerEmail }}</span>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>Plenty Value Admin System — Automated Notification</p>
+      </div>
+    </div>
+  </body>
+</html>

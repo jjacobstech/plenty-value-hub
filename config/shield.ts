@@ -4,7 +4,6 @@ import env from '#start/env'
 const appUrl = env.get('APP_URL')
 const s3Endpoint = env.get('S3_ENDPOINT')
 const s3Url = `${s3Endpoint}/*`
-console.log({ appUrl, s3Url }) // temporarily, in shield.ts
 const shieldConfig = defineConfig({
   /**
    * Configure CSP policies for your app. Refer documentation
@@ -25,7 +24,7 @@ const shieldConfig = defineConfig({
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       imgSrc: ["'self'", 'data:', 'blob:', 'https:', 'http://localhost:*', `${appUrl}`, `${s3Url}`],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'", 'ws://localhost:*', 'http://localhost:*', appUrl, s3Url],
+      connectSrc: ["'self'", 'data:', 'ws://localhost:*', 'http://localhost:*', appUrl, s3Url],
     },
 
     /**
@@ -48,7 +47,7 @@ const shieldConfig = defineConfig({
      * Route patterns to exclude from CSRF checks.
      * Useful for external webhooks or API endpoints.
      */
-    exceptRoutes: [],
+    exceptRoutes: ['/api/payments/webhook/*', '/api/payments/webhook/:provider'],
 
     /**
      * Expose an encrypted XSRF-TOKEN cookie for frontend HTTP clients.

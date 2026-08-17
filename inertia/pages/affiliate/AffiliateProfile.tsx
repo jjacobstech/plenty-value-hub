@@ -59,6 +59,8 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
     niche: user?.niche,
     profilePicture: user?.profilePicture,
     coverBanner: user?.coverBanner,
+    payoutMethod: user?.payoutMethod || 'bank_transfer',
+    payoutDetails: user?.payoutDetails || '',
   })
 
   useEffect(() => {
@@ -74,6 +76,8 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
       niche: user?.niche,
       profilePicture: user?.profilePicture,
       coverBanner: user?.coverBanner,
+      payoutMethod: user?.payoutMethod || 'bank_transfer',
+      payoutDetails: user?.payoutDetails || '',
     })
   }, [user])
 
@@ -90,6 +94,8 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
         location: form.location || undefined,
         niche: form.niche || undefined,
         marketingChannels: form.marketingChannels || undefined,
+        payoutMethod: form.payoutMethod || undefined,
+        payoutDetails: form.payoutDetails || undefined,
       })
       toast.success('Profile updated!')
       setEditing(false)
@@ -389,6 +395,54 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
                     className="pl-9"
                   />
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Payout Method Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>Payout Method & Account Details</span>
+              <Badge variant="outline" className="text-xs capitalize font-medium">
+                {form.payoutMethod?.replace('_', ' ') || 'Bank Transfer'}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label>Payout Method</Label>
+                <select
+                  disabled={!editing}
+                  value={form.payoutMethod}
+                  onChange={(e) => setForm({ ...form, payoutMethod: e.target.value })}
+                  className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-ring disabled:opacity-50"
+                >
+                  <option value="bank_transfer">Direct Bank Transfer</option>
+                  <option value="paypal">PayPal Account</option>
+                  <option value="stripe">Stripe Connect</option>
+                  <option value="mobile_money">Mobile Money</option>
+                </select>
+              </div>
+              <div>
+                <Label>Account Details / Instructions</Label>
+                <Textarea
+                  disabled={!editing}
+                  rows={3}
+                  value={form.payoutDetails}
+                  onChange={(e) => setForm({ ...form, payoutDetails: e.target.value })}
+                  placeholder={
+                    form.payoutMethod === 'paypal'
+                      ? 'Enter your PayPal email address (e.g., affiliate@paypal.com)'
+                      : form.payoutMethod === 'mobile_money'
+                        ? 'Enter your Mobile Money provider, phone number, and account name'
+                        : form.payoutMethod === 'stripe'
+                          ? 'Enter your Stripe Account ID (acct_xxx) or connected email'
+                          : 'Enter Bank Name, Account Number, Account Holder Name, and SWIFT/Routing code'
+                  }
+                />
               </div>
             </div>
           </CardContent>

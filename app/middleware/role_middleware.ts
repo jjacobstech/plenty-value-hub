@@ -10,6 +10,15 @@ export default class RoleMiddleware {
     }
 
     if (!roles.includes(user.role)) {
+      // Log detailed info for debugging
+      console.error('[RoleMiddleware] Permission denied', {
+        userId: user.id,
+        userRole: user.role,
+        userEmail: user.email,
+        requiredRoles: roles,
+        path: ctx.request.url(),
+        method: ctx.request.method(),
+      })
       throw new Exception('You do not have permission to access this resource', { status: 403 })
     }
 

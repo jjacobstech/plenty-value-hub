@@ -97,7 +97,6 @@ export default class ProductsController {
     }
 
     const payload = await request.validateUsing(updateProductValidator)
-
     product.merge(payload as any)
     await product.save()
 

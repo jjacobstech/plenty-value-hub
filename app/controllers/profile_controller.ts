@@ -35,6 +35,8 @@ export default class ProfileController {
       'location',
       'niche',
       'marketingChannels',
+      'payoutMethod',
+      'payoutDetails',
     ])
 
     user.merge(updates)
@@ -56,6 +58,8 @@ export default class ProfileController {
       'twitter',
       'location',
       'productCategories',
+      'payoutMethod',
+      'payoutDetails',
     ])
 
     user.merge(updates)

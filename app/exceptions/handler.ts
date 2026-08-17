@@ -1,6 +1,7 @@
 import app from '@adonisjs/core/services/app'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
+import { createJsonLogEntry, writeJsonLog, DEFAULT_LOG_FILE } from '#services/json_logger'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -40,6 +41,34 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
+    const entry = createJsonLogEntry({
+      level: 'error',
+      event: 'http_exception',
+      message: error instanceof Error ? error.message : 'Unhandled application error',
+      error,
+      context: {
+        method: ctx.request.method(),
+        url: ctx.request.url(),
+        route: ctx.route?.pattern,
+        status: ctx.response.getStatus(),
+      },
+      request: {
+        ip: ctx.request.ip(),
+        headers: Object.fromEntries(
+          Object.entries(ctx.request.headers()).map(([key, value]) => [
+            key,
+            Array.isArray(value) ? value : [value],
+          ])
+        ),
+      },
+      metadata: {
+        appEnv: app.getEnvironment(),
+        loggerFile: DEFAULT_LOG_FILE,
+      },
+    })
+
+    await writeJsonLog(entry)
+
     return super.report(error, ctx)
   }
 }

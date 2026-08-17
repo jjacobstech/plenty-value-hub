@@ -1,9 +1,11 @@
 import Order from '#models/order'
 import Product from '#models/product'
+import User from '#models/user'
 import AffiliateLink from '#models/affiliate_link'
 import { processOrderValidator, updateOrderValidator } from '#validators/order'
 import { RevenueService } from '#services/revenue_service'
 import { generateOrderNumber } from '#services/order_number_service'
+import { PaymentService } from '#services/payment_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import mail from '@adonisjs/mail/services/main'
 import { Decimal } from 'decimal.js'
@@ -85,6 +87,12 @@ export default class OrdersController {
       !!payload.affiliateLinkCode
     )
 
+    const paymentConfig = await PaymentService.resolveCheckoutMethod()
+    const paymentMethod = payload.paymentMethod || paymentConfig.provider.key
+    if (paymentMethod !== 'manual' && !paymentConfig.provider.enabled) {
+      return response.status(400).json({ error: 'Selected payment provider is not enabled' })
+    }
+
     const orderNumber = generateOrderNumber()
 
     let affiliateLink: AffiliateLink | null = null
@@ -113,6 +121,7 @@ export default class OrdersController {
       vendorPayout: vendorPayout.toFixed(2),
       status: 'completed',
       currency: 'USD',
+      paymentMethod,
     })
 
     if (affiliateLink) {
@@ -136,6 +145,9 @@ export default class OrdersController {
     product.gravityScore = Math.min(100, (product.gravityScore || 0) + 1)
     await product.save()
 
+    const { WalletService } = await import('#services/wallet_service')
+    await WalletService.handleOrderCompleted(order)
+
     await mail.send((message) => {
       message
         .to(user.email)
@@ -157,6 +169,59 @@ export default class OrdersController {
         vendorPayout: order.vendorPayout,
         status: order.status,
       },
+    })
+  }
+
+  async notifyVendor({ params, request, auth, response }: HttpContext) {
+    const user = auth.use('web').user!
+    const order = await Order.find(params.id)
+
+    if (!order) {
+      return response.status(404).json({ error: 'Order not found' })
+    }
+
+    if (order.buyerId !== user.id && user.role !== 'admin') {
+      return response.status(403).json({ error: 'Not authorized to notify vendor' })
+    }
+
+    const vendor = order.vendorId ? await User.find(order.vendorId) : null
+    if (!vendor || !vendor.email) {
+      return response.status(404).json({ error: 'Vendor not found' })
+    }
+
+    const message = String(request.input('message') || '').trim()
+    const paymentReference = String(request.input('paymentReference') || '').trim()
+    const notes = [
+      message || 'I have completed the manual payment for this order.',
+      paymentReference ? `Payment reference: ${paymentReference}` : null,
+      `Order number: ${order.orderNumber}`,
+      `Buyer email: ${user.email}`,
+    ].filter(Boolean)
+
+    await mail.send((messageBuilder) => {
+      messageBuilder
+        .to(vendor.email)
+        .subject(`Manual payment notification for order #${order.orderNumber}`).html(`
+          <div style="font-family: Arial, sans-serif; max-width: 620px; margin: 0 auto; padding: 24px; border: 1px solid #e2e8f0; border-radius: 12px; background: #ffffff; color: #1f2937;">
+            <h2 style="color: #001845; margin-bottom: 12px;">Manual payment notification</h2>
+            <p>Hello ${vendor.fullName || 'Seller'},</p>
+            <p>A buyer has notified you that they completed a manual payment for order <strong>#${order.orderNumber}</strong>.</p>
+            <div style="background: #f8fafc; border-radius: 8px; padding: 16px; margin: 18px 0;">
+              ${notes
+                .map(
+                  (line) =>
+                    `<p style="margin: 8px 0;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`
+                )
+                .join('')}
+            </div>
+            <p>Please confirm receipt and then mark the order as completed in your dashboard.</p>
+          </div>
+        `)
+    })
+
+    return response.json({
+      success: true,
+      message: 'Vendor has been notified about the manual payment.',
     })
   }
 
@@ -186,6 +251,16 @@ export default class OrdersController {
     order.status = payload.status
     await order.save()
 
+    const { WalletService } = await import('#services/wallet_service')
+
+    if (payload.status === 'completed' && oldStatus === 'pending') {
+      await WalletService.handleOrderCompleted(order)
+    }
+
+    if (payload.status === 'cancelled' && oldStatus === 'pending') {
+      await WalletService.handleOrderCancelled(order)
+    }
+
     if (payload.status === 'refunded') {
       if (order.affiliateLinkId) {
         const affiliateLink = await AffiliateLink.find(order.affiliateLinkId)
@@ -211,6 +286,10 @@ export default class OrdersController {
           .toDecimalPlaces(2)
           .toString()
         await product.save()
+      }
+
+      if (oldStatus === 'completed') {
+        await WalletService.handleOrderRefunded(order)
       }
     }
 

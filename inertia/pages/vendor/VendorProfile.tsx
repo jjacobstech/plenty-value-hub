@@ -1,4 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
+import ImageUploadField from '@/components/ImageUploadField'
 import React, { useEffect, useRef, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -16,35 +17,39 @@ import {
   CheckCircle2,
   Edit2,
   Save,
-  Upload,
   Loader2,
-  ImagePlus,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
 
 type VendorProfileProps = {
   user: any
+  paymentConfig?: {
+    providers?: Array<{ key: string; label: string; enabled: boolean }>
+  }
 }
 
 export default function VendorProfile(props: VendorProfileProps) {
-  const { user } = props
+  const { user, paymentConfig: initialConfig } = props
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [uploading, setUploading] = useState<'logo' | 'banner' | null>(null)
-  const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [bannerPreview, setBannerPreview] = useState<string | null>(null)
+  const [availableProviders, setAvailableProviders] = useState<
+    Array<{ key: string; label: string }>
+  >(initialConfig?.providers || [])
 
-  const logoInputRef = useRef<HTMLInputElement>(null)
-  const bannerInputRef = useRef<HTMLInputElement>(null)
-
-  // Revoke object URLs on unmount to free memory
+  // Remove refs and cleanup code
   useEffect(() => {
-    return () => {
-      if (logoPreview?.startsWith('blob:')) URL.revokeObjectURL(logoPreview)
-      if (bannerPreview?.startsWith('blob:')) URL.revokeObjectURL(bannerPreview)
+    if (!availableProviders.length) {
+      api
+        .get('/api/payments/config')
+        .then((res) => {
+          if (res.data?.providers) {
+            setAvailableProviders(res.data.providers)
+          }
+        })
+        .catch(() => {})
     }
-  }, [logoPreview, bannerPreview])
+  }, [availableProviders.length])
 
   const [form, setForm] = useState({
     businessName: user?.businessName || '',
@@ -57,6 +62,8 @@ export default function VendorProfile(props: VendorProfileProps) {
     businessLogo: user?.businessLogo || '',
     coverBanner: user?.coverBanner || '',
     productCategories: user?.productCategories || '',
+    payoutMethod: user?.payoutMethod || 'manual',
+    payoutDetails: user?.payoutDetails || '',
   })
 
   useEffect(() => {
@@ -71,6 +78,8 @@ export default function VendorProfile(props: VendorProfileProps) {
       businessLogo: user?.businessLogo || '',
       coverBanner: user?.coverBanner || '',
       productCategories: user?.productCategories || '',
+      payoutMethod: user?.payoutMethod || 'bank_transfer',
+      payoutDetails: user?.payoutDetails || '',
     })
   }, [user])
 
@@ -85,7 +94,11 @@ export default function VendorProfile(props: VendorProfileProps) {
         instagram: form.instagram || undefined,
         twitter: form.twitter || undefined,
         location: form.location || undefined,
+        businessLogo: form.businessLogo || undefined,
+        coverBanner: form.coverBanner || undefined,
         productCategories: form.productCategories || undefined,
+        payoutMethod: form.payoutMethod || undefined,
+        payoutDetails: form.payoutDetails || undefined,
       })
       toast.success('Profile updated successfully!')
       setEditing(false)
@@ -93,36 +106,6 @@ export default function VendorProfile(props: VendorProfileProps) {
       toast.error('Failed to save profile. Please try again.')
     } finally {
       setSaving(false)
-    }
-  }
-
-  const handleImageUpload = async (file: File, type: 'business_logo' | 'cover_banner') => {
-    const objectUrl = URL.createObjectURL(file)
-    if (type === 'business_logo') setLogoPreview(objectUrl)
-    else setBannerPreview(objectUrl)
-
-    setUploading(type === 'business_logo' ? 'logo' : 'banner')
-    try {
-      const fd = new FormData()
-      fd.append('image', file)
-      fd.append('type', type)
-      const { data } = await api.post<{ url: string }>('/api/profile/upload-image', fd)
-
-      if (type === 'business_logo') {
-        setLogoPreview(null)
-        setForm((f) => ({ ...f, businessLogo: data.url }))
-        toast.success('Business logo updated!')
-      } else {
-        setBannerPreview(null)
-        setForm((f) => ({ ...f, coverBanner: data.url }))
-        toast.success('Cover banner updated!')
-      }
-    } catch (err: any) {
-      if (type === 'business_logo') setLogoPreview(null)
-      else setBannerPreview(null)
-      toast.error(err.response?.data?.error ?? 'Image upload failed')
-    } finally {
-      setUploading(null)
     }
   }
 
@@ -140,7 +123,7 @@ export default function VendorProfile(props: VendorProfileProps) {
           <Button
             variant={editing ? 'default' : 'outline'}
             onClick={editing ? handleSave : () => setEditing(true)}
-            disabled={saving || uploading !== null}
+            disabled={saving}
             style={editing ? { backgroundColor: '#001845', color: '#fff' } : {}}
           >
             {saving ? (
@@ -165,52 +148,35 @@ export default function VendorProfile(props: VendorProfileProps) {
         {/* Profile Header Card */}
         <Card className="overflow-hidden">
           <div
-            className="h-36 relative"
-            style={{ background: 'linear-gradient(135deg, #001845 0%, #81C14B 100%)' }}
+            className="h-36 relative bg-cover bg-center"
+            style={{
+              backgroundImage: form.coverBanner ? `url('${form.coverBanner}')` : 'none',
+              background: form.coverBanner
+                ? `url('${form.coverBanner}') no-repeat center/cover`
+                : 'linear-gradient(135deg, #001845 0%, #81C14B 100%)',
+            }}
           >
-            {(bannerPreview || form.coverBanner) && (
-              <img
-                src={bannerPreview ?? form.coverBanner}
-                alt="Cover"
-                className="w-full h-full object-cover absolute inset-0"
-              />
-            )}
             {editing && (
-              <button
-                type="button"
-                onClick={() => bannerInputRef.current?.click()}
-                disabled={uploading === 'banner'}
-                className="absolute inset-0 flex flex-col items-center justify-center bg-black/40 text-white opacity-0 hover:opacity-100 transition-opacity gap-1"
-              >
-                {uploading === 'banner' ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <>
-                    <ImagePlus className="w-5 h-5" />
-                    <span className="text-xs">Change Banner</span>
-                  </>
-                )}
-              </button>
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                <div className="w-1/3">
+                  <ImageUploadField
+                    label=""
+                    value={form.coverBanner}
+                    onChange={(url) => setForm({ ...form, coverBanner: url || '' })}
+                    endpoint="/api/uploads/profile-image"
+                    formDataExtra={{ type: 'cover_banner' }}
+                    showPreview={false}
+                  />
+                </div>
+              </div>
             )}
-            <input
-              ref={bannerInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={(e) => {
-                const f = e.target.files?.[0]
-                if (f) handleImageUpload(f, 'cover_banner')
-              }}
-            />
-            <div className="absolute bottom-4 left-6 flex items-end gap-4">
+
+            {/* Logo anchored to bottom-left of the banner */}
+            <div className="absolute -bottom-10 left-6 flex items-end gap-4">
               <div className="relative w-20 h-20">
                 <div className="w-20 h-20 rounded-2xl border-4 border-white bg-white shadow-lg overflow-hidden">
-                  {logoPreview || form.businessLogo ? (
-                    <img
-                      src={logoPreview ?? form.businessLogo}
-                      alt="Logo"
-                      className="w-full h-full object-cover"
-                    />
+                  {form.businessLogo ? (
+                    <img src={form.businessLogo} alt="Logo" className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-[#81C14B]/10">
                       <Store className="w-8 h-8 text-[#81C14B]" />
@@ -218,47 +184,40 @@ export default function VendorProfile(props: VendorProfileProps) {
                   )}
                 </div>
                 {editing && (
-                  <button
-                    type="button"
-                    onClick={() => logoInputRef.current?.click()}
-                    disabled={uploading === 'logo'}
-                    className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/40 text-white opacity-0 hover:opacity-100 transition-opacity"
-                    title="Change logo"
-                  >
-                    {uploading === 'logo' ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <Upload className="w-4 h-4" />
-                    )}
-                  </button>
+                  <div className="absolute inset-0 rounded-2xl overflow-hidden cursor-pointer">
+                    <ImageUploadField
+                      label=""
+                      value={form.businessLogo}
+                      onChange={(url) => setForm({ ...form, businessLogo: url || '' })}
+                      endpoint="/api/uploads/profile-image"
+                      formDataExtra={{ type: 'business_logo' }}
+                      showPreview={false}
+                    />
+                  </div>
                 )}
-                <input
-                  ref={logoInputRef}
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0]
-                    if (f) handleImageUpload(f, 'business_logo')
-                  }}
-                />
-              </div>
-              <div className="mb-1">
-                <h2 className="text-white font-bold text-lg drop-shadow">
-                  {form.businessName || user?.fullName || 'Your Business'}
-                </h2>
-                <Badge className="bg-[#81C14B] text-white border-0 text-xs">
-                  <CheckCircle2 className="w-3 h-3 mr-1" /> Verified Seller
-                </Badge>
               </div>
             </div>
           </div>
-          <CardContent className="pt-4 pb-5 px-6">
+
+          {/* Name + badge row — padded top to clear the overlapping logo */}
+          <div className="pt-14 px-6 pb-1 flex items-center gap-3">
+            <div>
+              <h2 className="font-bold text-lg leading-tight">
+                {form.businessName || user?.fullName || 'Your Business'}
+              </h2>
+              <Badge className="bg-[#81C14B] text-white border-0 text-xs mt-1">
+                <CheckCircle2 className="w-3 h-3 mr-1" /> Verified Seller
+              </Badge>
+            </div>
+          </div>
+
+          <CardContent className="pt-2 pb-5 px-6">
             <p className="text-sm text-muted-foreground">
               {form.businessDescription || 'No description yet.'}
             </p>
           </CardContent>
         </Card>
+
 
         {/* Business Information */}
         <Card>
@@ -370,6 +329,65 @@ export default function VendorProfile(props: VendorProfileProps) {
                     className="pl-9"
                   />
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Payout Method Configuration */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base flex items-center justify-between">
+              <span>Payout Method & Account Details</span>
+              <Badge variant="outline" className="text-xs capitalize font-medium">
+                {form.payoutMethod?.replace('_', ' ') || 'Bank Transfer'}
+              </Badge>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
+                <Label>Payout Method</Label>
+                <select
+                  disabled={!editing}
+                  value={form.payoutMethod}
+                  onChange={(e) => setForm({ ...form, payoutMethod: e.target.value })}
+                  className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-ring disabled:opacity-50"
+                >
+                  {availableProviders.length > 0 ? (
+                    availableProviders.map((p) => (
+                      <option key={p.key} value={p.key}>
+                        {p.label}
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="manual">Manual / Direct Bank Transfer</option>
+                      <option value="stripe">Stripe</option>
+                      <option value="paystack">Paystack</option>
+                      <option value="flutterwave">Flutterwave</option>
+                      <option value="paypal">PayPal</option>
+                    </>
+                  )}
+                </select>
+              </div>
+              <div>
+                <Label>Account Details / Instructions</Label>
+                <Textarea
+                  disabled={!editing}
+                  rows={3}
+                  value={form.payoutDetails}
+                  onChange={(e) => setForm({ ...form, payoutDetails: e.target.value })}
+                  placeholder={
+                    form.payoutMethod === 'paypal'
+                      ? 'Enter your PayPal email address (e.g., vendor@paypal.com)'
+                      : form.payoutMethod === 'mobile_money'
+                        ? 'Enter your Mobile Money provider, phone number, and account name'
+                        : form.payoutMethod === 'stripe'
+                          ? 'Enter your Stripe Account ID (acct_xxx) or connected email'
+                          : 'Enter Bank Name, Account Number, Account Holder Name, and SWIFT/Routing code'
+                  }
+                />
               </div>
             </div>
           </CardContent>

@@ -211,7 +211,7 @@ export default function Navbar({ user, onLogout }) {
                       )}
                       <Button
                         variant="ghost"
-                        className="w-full justify-start text-destructive"
+                        className="w-full hover:bg-white justify-start text-destructive"
                         onClick={onLogout}
                       >
                         Log Out

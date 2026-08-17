@@ -1,0 +1,11 @@
+<!-- 
+TODO: Replace with official PayPal logo SVG from:
+https://www.paypal.com/en/business/tools/brand-guidance
+
+This is a placeholder. Do not use in production.
+The official PayPal SVG must be obtained from their brand guidance page.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <rect width="64" height="64" rx="4" fill="#F5F5F5"/>
+  <text x="32" y="32" textAnchor="middle" dy="0.3em" fontSize="12" fill="#666">PAYPAL</text>
+</svg>

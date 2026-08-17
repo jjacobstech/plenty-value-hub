@@ -24,7 +24,7 @@ export default function BrandLogo({
   const wordmarkHeight = size
 
   const inner = (
-    <span className={`inline-flex items-center ${className}`}>
+    <span className={`inline-flex items-center bg-white rounded-md p-2 ${className}`}>
       {(variant === 'logo' || variant === 'combined') && (
         <img
           src={LOGO_URL}

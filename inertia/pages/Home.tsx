@@ -347,7 +347,7 @@ export default function Home({
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
               {displayProducts.slice(0, 8).map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.id} product={product} showCommission={true} />
               ))}
             </div>
           </div>

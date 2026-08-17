@@ -4,7 +4,7 @@ import UserTransformer from '#transformers/user_transformer'
 import BaseInertiaMiddleware from '@adonisjs/inertia/inertia_middleware'
 
 export default class InertiaMiddleware extends BaseInertiaMiddleware {
-  share(ctx: HttpContext) {
+  async share(ctx: HttpContext) {
     /**
      * The share method is called everytime an Inertia page is rendered. In
      * certain cases, a page may get rendered before the session middleware
@@ -26,6 +26,9 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
      * Data shared with all Inertia pages. Make sure you are using
      * transformers for rich data-types like Models.
      */
+    const { PaymentService } = await import('#services/payment_service')
+    const publicPaymentConfig = await PaymentService.getPublicConfig()
+
     return {
       errors: ctx.inertia.always({
         ...this.getValidationErrors(ctx),
@@ -36,6 +39,8 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
         success,
       }),
       user: ctx.inertia.always(auth?.user ? UserTransformer.transform(auth.user) : undefined),
+      systemCurrency: ctx.inertia.always(publicPaymentConfig.currency),
+      currencySymbol: ctx.inertia.always(publicPaymentConfig.currencySymbol),
     }
   }
 

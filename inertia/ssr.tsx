@@ -6,6 +6,7 @@ import ReactDOMServer from 'react-dom/server'
 import { createInertiaApp } from '@inertiajs/react'
 import { TuyauProvider } from '@adonisjs/inertia/react'
 import { resolvePageComponent } from '@adonisjs/inertia/helpers'
+import { Toaster } from 'sonner'
 
 export default function render(page: any) {
   return createInertiaApp({
@@ -22,6 +23,7 @@ export default function render(page: any) {
       return (
         <TuyauProvider client={client}>
           <App {...props} />
+          <Toaster position="top-center" richColors />
         </TuyauProvider>
       )
     },

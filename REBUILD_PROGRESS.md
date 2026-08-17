@@ -324,3 +324,105 @@ node ace serve --hmr
 # Build for production
 npm run build
 ```
+
+---
+
+## ✅ Wallet & Payout System Completed (Phase 4)
+
+### Database & Models
+
+- ✅ Created wallet migrations: `wallets`, `wallet_transactions`, `payout_requests` tables
+- ✅ Implemented Wallet model with relationships: user, transactions, payoutRequests
+- ✅ Implemented WalletTransaction model (immutable ledger)
+- ✅ Implemented PayoutRequest model (with status lifecycle)
+- ✅ Added payout fields to User model: `payoutMethod`, `payoutDetails`
+
+### Business Logic (WalletService)
+
+- ✅ `getOrCreateWallet()` — Wallet initialization
+- ✅ `getSummary()` — Complete wallet snapshot with transactions & payouts
+- ✅ `handleOrderCreated()` — Credit pending balances
+- ✅ `handleOrderCompleted()` — Move pending → available
+- ✅ `handleOrderCancelled()` — Clear pending balances
+- ✅ `handleOrderRefunded()` — Debit available balances
+- ✅ `requestPayout()` — Create payout request with validation
+- ✅ `updatePayoutStatus()` — Approve/pay/reject payouts
+- ✅ `listPayoutRequests()` — Admin payout listing
+- ✅ Private helpers: creditPending, clearPending, creditAvailable, debitAvailable, applyWalletChange
+
+### API Endpoints (WalletController)
+
+- ✅ `GET /api/wallet` — User wallet summary
+- ✅ `POST /api/wallet/payouts` — Request payout
+- ✅ `GET /api/admin/payouts` — List payouts (admin)
+- ✅ `PUT /api/admin/payouts/:id` — Update payout status (admin)
+
+### Pages & UI
+
+- ✅ Updated `inertia/pages/affiliate/AffiliateEarnings.tsx` — Wallet integration, payout history, request button
+- ✅ Updated `inertia/pages/vendor/VendorEarnings.tsx` — Wallet integration, payout history, request button
+- ✅ Verified `inertia/pages/vendor/VendorProfile.tsx` — Payout method setup form
+- ✅ Verified `inertia/pages/affiliate/AffiliateProfile.tsx` — Payout method setup form
+- ✅ Verified `inertia/pages/admin/AdminPayouts.tsx` — Payout request management
+
+### Profile Integration (ProfileController)
+
+- ✅ `updateVendor()` — Accept payoutMethod & payoutDetails
+- ✅ `updateAffiliate()` — Accept payoutMethod & payoutDetails
+- ✅ Routes wired: `PUT /profile/vendor`, `PUT /profile/affiliate`
+
+### Routes & Middleware
+
+- ✅ All wallet endpoints wired in `start/routes.ts`
+- ✅ Role-based access control (vendor/affiliate only)
+- ✅ Admin-only endpoints protected
+
+### Documentation
+
+- ✅ Created `WALLET_PAYOUT_GUIDE.md` — Complete architecture guide
+  - Database schema documentation
+  - Service layer reference
+  - API endpoint documentation
+  - Order event integration
+  - Payout workflow explanation
+  - Security considerations
+  - Troubleshooting guide
+  - Future enhancements
+
+- ✅ Created `WALLET_TESTING_GUIDE.md` — Comprehensive testing guide
+  - 15+ test scenarios with step-by-step instructions
+  - SQL verification queries
+  - Expected results for each scenario
+  - Performance testing guidelines
+  - Security testing checklists
+  - Database integrity verification
+  - Deployment pre-flight checklist
+  - Troubleshooting guide for common issues
+
+### Key Features Implemented
+
+- ✅ Dual-balance tracking (available + pending)
+- ✅ Immutable transaction ledger with idempotent operations
+- ✅ Database-level constraints prevent duplicates
+- ✅ Atomic transactions with row-level locking
+- ✅ Decimal.js for precision (no float rounding errors)
+- ✅ Payout workflow: pending → approved → paid (or rejected with refund)
+- ✅ Minimum payout validation ($10)
+- ✅ Payout method configuration required
+- ✅ Admin approval workflow with notes
+- ✅ Transaction history per user (last 50 transactions)
+- ✅ Payout request history per user (last 20 requests)
+- ✅ Order event integration (created/completed/cancelled/refunded)
+- ✅ Affiliate commission tracking
+- ✅ Platform fee calculation
+
+### Testing Status
+
+- ✅ Test scenarios documented (15+ comprehensive scenarios)
+- ✅ SQL verification queries provided
+- ✅ Database integrity checks provided
+- ✅ Performance benchmarks documented
+- ✅ Security testing scenarios provided
+- ✅ Ready for manual testing and QA
+
+---

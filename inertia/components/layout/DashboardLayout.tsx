@@ -22,6 +22,7 @@ import {
   Send,
   MousePointer,
   Image,
+  Wallet,
 } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
 import { cn } from '@/lib/utils'
@@ -76,6 +77,8 @@ const menuItems: Record<Role, MenuItem[]> = {
     { icon: Send, label: 'Email Campaigns', path: '/admin/email-campaigns' },
     { icon: BookOpen, label: 'Blog', path: '/admin/blog' },
     { icon: Image, label: 'Hero Banner', path: '/admin/hero-banner' },
+    { icon: DollarSign, label: 'Payments', path: '/admin/payment-settings' },
+    { icon: Wallet, label: 'Payouts', path: '/admin/payouts' },
   ],
 }
 
@@ -106,13 +109,13 @@ function Sidebar({
       >
         {!collapsed && <BrandLogo size={32} darkBg={true} linkTo="/" />}
         <Button
-          variant="ghost"
+          variant="secondary"
           size="icon"
           onClick={onToggle}
           className="shrink-0"
-          style={{ color: '#8099BB' }}
+          style={{ color: '#ffffff' }}
         >
-          <ChevronLeft className={cn('w-4 h-4 transition-transform', collapsed && 'rotate-180')} />
+          <ChevronLeft className={cn('w-5 h-5 transition-transform', collapsed && 'rotate-180')} />
         </Button>
       </div>
 
@@ -229,7 +232,7 @@ export default function DashboardLayout({
               variant="ghost"
               size="sm"
               onClick={handleLogout}
-              className="gap-1.5 text-muted-foreground hover:text-destructive"
+              className="gap-1.5 text-muted-foreground hover:text-destructive hover:bg-white"
             >
               <LogOut className="w-4 h-4" /> Log out
             </Button>

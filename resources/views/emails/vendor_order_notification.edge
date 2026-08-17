@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>You Made a Sale! — Plenty Value</title>
+    <style>
+      body {
+        font-family:
+          -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        background-color: #f8fafc;
+        color: #1e293b;
+        margin: 0;
+        padding: 20px;
+      }
+      .container {
+        max-width: 600px;
+        margin: 0 auto;
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 32px;
+        border: 1px solid #e2e8f0;
+      }
+      .header {
+        text-align: center;
+        padding-bottom: 24px;
+        border-bottom: 1px solid #f1f5f9;
+      }
+      .badge {
+        display: inline-block;
+        background: #dbeafe;
+        color: #1e40af;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 12px;
+        border-radius: 9999px;
+        margin-top: 8px;
+      }
+      .details {
+        margin: 24px 0;
+        background: #f8fafc;
+        border-radius: 8px;
+        padding: 20px;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px dashed #e2e8f0;
+      }
+      .row:last-child {
+        border-bottom: none;
+      }
+      .label {
+        color: #64748b;
+        font-size: 14px;
+      }
+      .value {
+        font-weight: 600;
+        font-size: 14px;
+        color: #0f172a;
+      }
+      .highlight {
+        background: #f0fdf4;
+        border: 1px solid #bbf7d0;
+        border-radius: 8px;
+        padding: 16px;
+        text-align: center;
+        margin: 20px 0;
+      }
+      .amount {
+        font-size: 28px;
+        font-weight: 800;
+        color: #15803d;
+      }
+      .footer {
+        text-align: center;
+        color: #94a3b8;
+        font-size: 12px;
+        margin-top: 24px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h2 style="margin: 0; color: #001845;">🎉 Congratulations! You Made a Sale</h2>
+        <div class="badge">Vendor Payout Alert</div>
+      </div>
+
+      <p>Hello Vendor,</p>
+      <p>Great news! Someone just purchased your product on <strong>Plenty Value</strong>.</p>
+
+      <div class="highlight">
+        <div style="font-size: 13px; color: #166534; font-weight: 600;">YOUR PAYOUT</div>
+        <div class="amount">+${{ order.vendorPayout }}</div>
+      </div>
+
+      <div class="details">
+        <div class="row">
+          <span class="label">Product Name</span>
+          <span class="value">{{ product.name }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Order Number</span>
+          <span class="value">#{{ order.orderNumber }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Product Price</span>
+          <span class="value">${{ order.amount }}</span>
+        </div>
+        <div class="row">
+          <span class="label">Buyer</span>
+          <span class="value">{{ order.buyerEmail }}</span>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p>Thank you for partnering with Plenty Value!</p>
+      </div>
+    </div>
+  </body>
+</html>

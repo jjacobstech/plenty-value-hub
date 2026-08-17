@@ -27,7 +27,8 @@ export default function AdminHeroBanner({ settings = [] }: Props) {
     try {
       const formData = new FormData()
       formData.append('image', file)
-      const res = await axios.post('/api/admin/site-settings/upload-image', formData, {
+      formData.append('type', 'hero_banner')
+      const res = await axios.post('/api/uploads/admin-image', formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
       })
       setPreviewUrl(res.data.url)

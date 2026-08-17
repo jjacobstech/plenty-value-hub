@@ -81,6 +81,13 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   @column()
   declare productCategories: string | null
 
+  // Vendor and Affiliate Payout Configuration
+  @column()
+  declare payoutMethod: string | null
+
+  @column()
+  declare payoutDetails: string | null
+
   get initials() {
     const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
     if (first && last) {

@@ -583,6 +583,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminHeroBanner']>>>
     }
   }
+  'admin.payment.settings': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/payment-settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminPaymentSettings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminPaymentSettings']>>>
+    }
+  }
+  'admin.payouts': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/payouts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminPayouts']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminPayouts']>>>
+    }
+  }
   'vendor.dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/vendor'
@@ -799,6 +823,114 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['index']>>>
     }
   }
+  'site_settings.payment_config': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payment-settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['paymentConfig']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['paymentConfig']>>>
+    }
+  }
+  'payment.providers': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payment-providers'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['providers']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['providers']>>>
+    }
+  }
+  'payment.initialize': {
+    methods: ["POST"]
+    pattern: '/api/payments/initialize'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/payment').initializePaymentValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/payment').initializePaymentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['initialize']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['initialize']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'payment.verify': {
+    methods: ["POST"]
+    pattern: '/api/payments/verify'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/payment').verifyPaymentValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/payment').verifyPaymentValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['verify']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['verify']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'webhook.stripe_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payments/webhook/stripe'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['stripeWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['stripeWebhook']>>>
+    }
+  }
+  'webhook.paystack_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payments/webhook/paystack'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['paystackWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['paystackWebhook']>>>
+    }
+  }
+  'webhook.flutterwave_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payments/webhook/flutterwave'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['flutterwaveWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['flutterwaveWebhook']>>>
+    }
+  }
+  'webhook.paypal_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payments/webhook/paypal'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['paypalWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['paypalWebhook']>>>
+    }
+  }
+  'webhook.handle_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payments/webhook/:provider'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { provider: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['handleWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['handleWebhook']>>>
+    }
+  }
   'products.store': {
     methods: ["POST"]
     pattern: '/api/products'
@@ -869,6 +1001,18 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/order').processOrderValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['processOrder']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['processOrder']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'orders.notify_vendor': {
+    methods: ["POST"]
+    pattern: '/api/orders/:id/notify-vendor'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['notifyVendor']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['notifyVendor']>>>
     }
   }
   'affiliate_links.index': {
@@ -967,6 +1111,114 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/profile_controller').default['uploadImage']>>>
     }
   }
+  'upload.upload_product_image': {
+    methods: ["POST"]
+    pattern: '/api/uploads/product-image'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProductImage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProductImage']>>>
+    }
+  }
+  'upload.upload_product_gallery': {
+    methods: ["POST"]
+    pattern: '/api/uploads/product-gallery'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProductGallery']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProductGallery']>>>
+    }
+  }
+  'upload.upload_profile_image': {
+    methods: ["POST"]
+    pattern: '/api/uploads/profile-image'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProfileImage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProfileImage']>>>
+    }
+  }
+  'upload.upload_admin_image': {
+    methods: ["POST"]
+    pattern: '/api/uploads/admin-image'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadAdminImage']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadAdminImage']>>>
+    }
+  }
+  'upload.upload_video': {
+    methods: ["POST"]
+    pattern: '/api/uploads/video'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadVideo']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadVideo']>>>
+    }
+  }
+  'upload.upload_document': {
+    methods: ["POST"]
+    pattern: '/api/uploads/document'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadDocument']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadDocument']>>>
+    }
+  }
+  'upload.upload_file': {
+    methods: ["POST"]
+    pattern: '/api/uploads/file'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadFile']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadFile']>>>
+    }
+  }
+  'wallet.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/wallet'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['show']>>>
+    }
+  }
+  'wallet.request_payout': {
+    methods: ["POST"]
+    pattern: '/api/wallet/payouts'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/wallet').requestPayoutValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/wallet').requestPayoutValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['requestPayout']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['requestPayout']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
   'admin.get_platform_stats': {
     methods: ["GET","HEAD"]
     pattern: '/api/stats'
@@ -977,6 +1229,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['getPlatformStats']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['getPlatformStats']>>>
+    }
+  }
+  'admin.auth_status': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/auth-status'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['authStatus']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['authStatus']>>>
     }
   }
   'products.approve': {
@@ -1025,6 +1289,30 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/review').updateReviewValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['approve']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/reviews_controller').default['approve']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'wallet.admin_index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payouts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['adminIndex']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['adminIndex']>>>
+    }
+  }
+  'wallet.admin_update': {
+    methods: ["PUT"]
+    pattern: '/api/payouts/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/wallet').updatePayoutValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/wallet').updatePayoutValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['adminUpdate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['adminUpdate']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'blog_posts.index': {
@@ -1183,18 +1471,6 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['index']>>>
     }
   }
-  'site_settings.show': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/site-settings/:key'
-    types: {
-      body: {}
-      paramsTuple: [ParamValue]
-      params: { key: ParamValue }
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['show']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['show']>>>
-    }
-  }
   'site_settings.upsert': {
     methods: ["POST"]
     pattern: '/api/site-settings'
@@ -1217,6 +1493,126 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['uploadImage']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['uploadImage']>>>
+    }
+  }
+  'site_settings.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/site-settings/:key'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { key: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/site_settings_controller').default['show']>>>
+    }
+  }
+  'webhook.get_webhook_endpoints': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payments/webhook-endpoints'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['getWebhookEndpoints']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['getWebhookEndpoints']>>>
+    }
+  }
+  'webhook.test_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payments/webhook-test/:provider'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { provider: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['testWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/webhook_controller').default['testWebhook']>>>
+    }
+  }
+  'payment_settings.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payment-gateway-settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['index']>>>
+    }
+  }
+  'payment_settings.status_list': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payment-gateway-settings/status/list'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['statusList']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['statusList']>>>
+    }
+  }
+  'payment_settings.store': {
+    methods: ["POST"]
+    pattern: '/api/payment-gateway-settings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['store']>>>
+    }
+  }
+  'payment_settings.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payment-gateway-settings/:gateway'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { gateway: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['show']>>>
+    }
+  }
+  'payment_settings.update': {
+    methods: ["PUT"]
+    pattern: '/api/payment-gateway-settings/:gateway'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { gateway: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['update']>>>
+    }
+  }
+  'payment_settings.toggle': {
+    methods: ["PATCH"]
+    pattern: '/api/payment-gateway-settings/:gateway/toggle'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { gateway: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['toggle']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['toggle']>>>
+    }
+  }
+  'payment_settings.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/payment-gateway-settings/:gateway'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { gateway: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_settings_controller').default['destroy']>>>
     }
   }
 }

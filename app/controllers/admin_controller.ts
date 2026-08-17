@@ -140,4 +140,30 @@ export default class AdminController {
     await user.save()
     return response.json(user)
   }
+
+  /**
+   * Diagnostic endpoint to check current auth status
+   * Useful for debugging permission issues
+   */
+  async authStatus({ auth, response }: HttpContext) {
+    const user = auth.user
+    console.log('[AuthStatus] Current auth state:', {
+      isAuthenticated: !!user,
+      userId: user?.id,
+      email: user?.email,
+      role: user?.role,
+      fullName: user?.fullName,
+    })
+    return response.json({
+      isAuthenticated: !!user,
+      user: user
+        ? {
+            id: user.id,
+            email: user.email,
+            role: user.role,
+            fullName: user.fullName,
+          }
+        : null,
+    })
+  }
 }

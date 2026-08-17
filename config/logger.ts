@@ -1,6 +1,9 @@
 import env from '#start/env'
+import { resolve } from 'node:path'
 import app from '@adonisjs/core/services/app'
 import { defineConfig, syncDestination, targets } from '@adonisjs/core/logger'
+
+const jsonLogFile = resolve(process.cwd(), 'storage', 'logs', 'app-events.jsonl')
 
 const loggerConfig = defineConfig({
   /**
@@ -34,7 +37,7 @@ const loggerConfig = defineConfig({
        * Configure where logs are written.
        */
       transport: {
-        targets: [targets.file({ destination: 1 })],
+        targets: [targets.file({ destination: 1 }), targets.file({ destination: jsonLogFile })],
       },
     },
   },

@@ -16,21 +16,45 @@ import { Wallet, Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
 import { toast } from 'sonner'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import api from '@/api/http-client'
+
+type WalletData = {
+  availableBalance: string
+  pendingBalance: string
+  currency: string
+}
+
+type PayoutRequest = {
+  id: number
+  amount: string
+  status: 'pending' | 'approved' | 'paid' | 'rejected'
+  createdAt: string
+}
 
 type VendorEarningsProps = {
   user: any
   orders: any[]
+  wallet?: WalletData
+  transactions?: any[]
+  payoutRequests?: PayoutRequest[]
 }
 
 export default function VendorEarnings(props: VendorEarningsProps) {
-  const { orders } = props
+  const { orders, wallet, payoutRequests } = props
 
-  const completedRevenue = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((sum, o) => sum + (o.vendorPayout || 0), 0)
-  const pendingRevenue = orders
-    .filter((o) => o.status === 'pending')
-    .reduce((sum, o) => sum + (o.vendorPayout || 0), 0)
+  // Use wallet data if available (more accurate), otherwise calculate from orders
+  const completedRevenue = wallet
+    ? parseFloat(wallet.availableBalance)
+    : orders
+        .filter((o) => o.status === 'completed')
+        .reduce((sum, o) => sum + (o.vendorPayout || 0), 0)
+
+  const pendingRevenue = wallet
+    ? parseFloat(wallet.pendingBalance)
+    : orders
+        .filter((o) => o.status === 'pending')
+        .reduce((sum, o) => sum + (o.vendorPayout || 0), 0)
+
   const totalCommissions = orders
     .filter((o) => o.status === 'completed')
     .reduce((sum, o) => sum + (o.commissionAmount || 0), 0)
@@ -87,6 +111,32 @@ export default function VendorEarnings(props: VendorEarningsProps) {
     toast.success('PDF exported successfully!')
   }
 
+  const handleRequestPayout = async () => {
+    const amount = prompt('Enter payout amount (USD):', '$10')
+    if (!amount) return
+
+    const parsed = parseFloat(amount.replace('$', '').trim())
+    if (!parsed || parsed < 10) {
+      toast.error('Minimum payout amount is $10')
+      return
+    }
+
+    try {
+      await api.post('/api/wallet/payouts', { amount: parsed })
+      toast.success('Payout request submitted!')
+      window.location.reload()
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error || 'Payout request failed')
+    }
+  }
+
+  const payoutStatusStyles: Record<string, string> = {
+    pending: 'bg-blue-100 text-blue-700',
+    approved: 'bg-yellow-100 text-yellow-700',
+    paid: 'bg-green-100 text-green-700',
+    rejected: 'bg-red-100 text-red-700',
+  }
+
   const statusStyles: Record<string, string> = {
     completed: 'bg-green-100 text-green-700',
     pending: 'bg-amber-100 text-amber-700',
@@ -97,16 +147,21 @@ export default function VendorEarnings(props: VendorEarningsProps) {
   return (
     <DashboardLayout role="vendor">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold">Earnings & Payouts</h1>
             <p className="text-muted-foreground text-sm">
               Track your revenue and withdrawal history
             </p>
           </div>
-          <Button variant="outline" className="gap-2" onClick={exportToPDF}>
-            <Download className="w-4 h-4" /> Export PDF
-          </Button>
+          <div className="flex gap-2 flex-wrap">
+            <Button onClick={handleRequestPayout} className="gap-2 bg-[#81C14B] hover:bg-[#72AA3D]">
+              <Banknote className="w-4 h-4" /> Request Payout
+            </Button>
+            <Button variant="outline" className="gap-2" onClick={exportToPDF}>
+              <Download className="w-4 h-4" /> Export PDF
+            </Button>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -150,19 +205,73 @@ export default function VendorEarnings(props: VendorEarningsProps) {
           </Card>
         </div>
 
+        {payoutRequests && payoutRequests.length > 0 && (
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle className="text-base font-semibold flex items-center gap-2">
+                <Clock className="w-4 h-4 text-blue-600" /> Recent Payout Requests
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="p-0 overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Requested</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Method</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {payoutRequests.map((pr) => (
+                    <TableRow key={pr.id}>
+                      <TableCell className="font-semibold">{formatNGN(pr.amount)}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {format(new Date(pr.createdAt), 'MMM d, yyyy')}
+                      </TableCell>
+                      <TableCell>
+                        <span
+                          className={`text-xs px-2 py-0.5 rounded-full font-medium ${payoutStatusStyles[pr.status] ?? 'bg-slate-100 text-slate-600'}`}
+                        >
+                          {pr.status}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-sm capitalize">
+                        {props.user?.payoutMethod?.replace('_', ' ') || '—'}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
         <Card className="border-[#81C14B]/30 bg-[#81C14B]/5">
           <CardContent className="p-5">
-            <h3 className="font-semibold text-sm mb-2">💰 Payout Methods (USD)</h3>
-            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-              <span className="bg-white px-3 py-1 rounded-full border">🏦 Bank Transfer</span>
-              <span className="bg-white px-3 py-1 rounded-full border">💳 Paystack</span>
-              <span className="bg-white px-3 py-1 rounded-full border">💸 Flutterwave</span>
-              <span className="bg-white px-3 py-1 rounded-full border">📱 OPay</span>
-              <span className="bg-white px-3 py-1 rounded-full border">🟢 Opay / Kuda</span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="font-semibold text-sm mb-1 flex items-center gap-2">
+                  <Banknote className="w-4 h-4 text-[#81C14B]" /> Configured Payout Method
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Active Method:{' '}
+                  <strong className="capitalize text-slate-800">
+                    {props.user?.payoutMethod?.replace('_', ' ') || 'Direct Bank Transfer'}
+                  </strong>
+                </p>
+                {props.user?.payoutDetails && (
+                  <p className="text-xs font-mono text-slate-600 bg-white/80 p-2 rounded-md border mt-2 max-w-md">
+                    {props.user.payoutDetails}
+                  </p>
+                )}
+              </div>
+              <a href="/vendor/profile">
+                <Button variant="outline" size="sm" className="bg-white text-xs gap-1.5 shrink-0">
+                  Update Payout Account
+                </Button>
+              </a>
             </div>
-            <p className="text-xs text-muted-foreground mt-2">
-              Contact support to set up your withdrawal preferences.
-            </p>
           </CardContent>
         </Card>
 

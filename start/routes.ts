@@ -11,6 +11,7 @@ import { middleware } from '#start/kernel'
 import { authThrottle, signupThrottle, adminThrottle } from '#start/limiter'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
+import { use } from 'react'
 
 /**
  * SEO
@@ -127,6 +128,10 @@ router
       .as('admin.email.campaigns')
     router.get('/conversions', [controllers.Pages, 'adminConversions']).as('admin.conversions')
     router.get('/hero-banner', [controllers.Pages, 'adminHeroBanner']).as('admin.hero.banner')
+    router
+      .get('/payment-settings', [controllers.Pages, 'adminPaymentSettings'])
+      .as('admin.payment.settings')
+    router.get('/payouts', [controllers.Pages, 'adminPayouts']).as('admin.payouts')
   })
   .prefix('/admin')
   .use(middleware.adminAuth())
@@ -171,15 +176,29 @@ router
  */
 router
   .group(() => {
-    // Public endpoints
+    // ── Public endpoints ──────────────────────────────────────────────
     router.get('/products', [controllers.Products, 'index'])
     router.get('/products/:id', [controllers.Products, 'show'])
     router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
     router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
     router.get('/reviews', [controllers.Reviews, 'index'])
+    router.get('/payment-settings', [controllers.SiteSettings, 'paymentConfig'])
+    router.get('/payment-providers', [controllers.Payment, 'providers'])
+    router.post('/payments/initialize', [controllers.Payment, 'initialize'])
+    router.post('/payments/verify', [controllers.Payment, 'verify'])
 
-    // Authenticated endpoints
+    // ── Webhook endpoints (no auth — secured by signature verification) ──
+    // Order matters: AdonisJS matches in registration order, so the named
+    // provider routes must come BEFORE the ':provider' catch-all or they
+    // will never be reached.
+    router.post('/payments/webhook/stripe', [controllers.Webhook, 'stripeWebhook'])
+    router.post('/payments/webhook/paystack', [controllers.Webhook, 'paystackWebhook'])
+    router.post('/payments/webhook/flutterwave', [controllers.Webhook, 'flutterwaveWebhook'])
+    router.post('/payments/webhook/paypal', [controllers.Webhook, 'paypalWebhook'])
+    router.post('/payments/webhook/:provider', [controllers.Webhook, 'handleWebhook'])
+
+    // ── Authenticated endpoints ───────────────────────────────────────
     router
       .group(() => {
         // Products (vendor)
@@ -187,10 +206,13 @@ router
         router.put('/products/:id', [controllers.Products, 'update'])
         router.delete('/products/:id', [controllers.Products, 'destroy'])
 
+        // Payments
+
         // Orders
         router.get('/orders', [controllers.Orders, 'index'])
         router.get('/orders/:id', [controllers.Orders, 'show'])
         router.post('/orders', [controllers.Orders, 'processOrder'])
+        router.post('/orders/:id/notify-vendor', [controllers.Orders, 'notifyVendor'])
 
         // Affiliate Links
         router.get('/affiliate-links', [controllers.AffiliateLinks, 'index'])
@@ -206,14 +228,32 @@ router
         router.put('/profile/vendor', [controllers.Profile, 'updateVendor'])
         router.post('/profile/upload-image', [controllers.Profile, 'uploadImage'])
 
-        // Admin endpoints
+        // File uploads (unified upload controller)
+        router.post('/uploads/product-image', [controllers.Upload, 'uploadProductImage'])
+        router.post('/uploads/product-gallery', [controllers.Upload, 'uploadProductGallery'])
+        router.post('/uploads/profile-image', [controllers.Upload, 'uploadProfileImage'])
+        router.post('/uploads/admin-image', [controllers.Upload, 'uploadAdminImage'])
+        router.post('/uploads/video', [controllers.Upload, 'uploadVideo'])
+        router.post('/uploads/document', [controllers.Upload, 'uploadDocument'])
+        router.post('/uploads/file', [controllers.Upload, 'uploadFile'])
+
+        // Wallet & payouts (vendor / affiliate)
+        router.get('/wallet', [controllers.Wallet, 'show'])
+        router.post('/wallet/payouts', [controllers.Wallet, 'requestPayout'])
+
+        // ── Admin endpoints ─────────────────────────────────────────
         router
           .group(() => {
             router.get('/stats', [controllers.Admin, 'getPlatformStats'])
+            router.get('/auth-status', [controllers.Admin, 'authStatus'])
             router.put('/products/:id/approve', [controllers.Products, 'approve'])
             router.put('/orders/:id', [controllers.Orders, 'updateStatus'])
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
+
+            // Payout management
+            router.get('/payouts', [controllers.Wallet, 'adminIndex'])
+            router.put('/payouts/:id', [controllers.Wallet, 'adminUpdate'])
 
             // Blog posts
             router.get('/blog-posts', [controllers.BlogPosts, 'index'])
@@ -234,10 +274,37 @@ router
             router.delete('/email-campaigns/:id', [controllers.EmailCampaigns, 'destroy'])
 
             // Site settings (hero banner)
+            // Static segments before ':key' so they aren't swallowed.
             router.get('/site-settings', [controllers.SiteSettings, 'index'])
-            router.get('/site-settings/:key', [controllers.SiteSettings, 'show'])
             router.post('/site-settings', [controllers.SiteSettings, 'upsert'])
             router.post('/site-settings/upload-image', [controllers.SiteSettings, 'uploadImage'])
+            router.get('/site-settings/:key', [controllers.SiteSettings, 'show'])
+
+            // Webhook management (admin)
+            router.get('/payments/webhook-endpoints', [controllers.Webhook, 'getWebhookEndpoints'])
+            router.post('/payments/webhook-test/:provider', [controllers.Webhook, 'testWebhook'])
+
+            // Payment gateway settings (admin)
+            // 'status/list' registered before ':gateway' for the same reason.
+            router.get('/payment-gateway-settings', [controllers.PaymentSettings, 'index'])
+            router.get('/payment-gateway-settings/status/list', [
+              controllers.PaymentSettings,
+              'statusList',
+            ])
+            router.post('/payment-gateway-settings', [controllers.PaymentSettings, 'store'])
+            router.get('/payment-gateway-settings/:gateway', [controllers.PaymentSettings, 'show'])
+            router.put('/payment-gateway-settings/:gateway', [
+              controllers.PaymentSettings,
+              'update',
+            ])
+            router.patch('/payment-gateway-settings/:gateway/toggle', [
+              controllers.PaymentSettings,
+              'toggle',
+            ])
+            router.delete('/payment-gateway-settings/:gateway', [
+              controllers.PaymentSettings,
+              'destroy',
+            ])
           })
           .use(middleware.role(['admin']))
           .use(adminThrottle)
