@@ -6,7 +6,6 @@ import type {
   WebhookPayload,
   WebhookResponse,
   PaymentStatus,
-  RefundRequest,
   RefundResponse,
 } from '#interfaces/payment_provider'
 import crypto from 'node:crypto'
@@ -108,15 +107,15 @@ export class StripeProvider implements PaymentProvider {
 
   async verifyPayment(sessionId: string, reference?: string): Promise<PaymentResponse> {
     try {
-      const session = await this.stripe.checkout.sessions.retrieve(sessionId)
+      void reference
+      const stripe = await this.getStripeClient()
+      const session = await stripe.checkout.sessions.retrieve(sessionId)
 
       if (!session.payment_intent || typeof session.payment_intent === 'string') {
         throw new Error('Payment intent not found')
       }
 
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(
-        session.payment_intent as string
-      )
+      const paymentIntent = await stripe.paymentIntents.retrieve(session.payment_intent.id)
 
       return {
         success: paymentIntent.status === 'succeeded',
@@ -161,7 +160,7 @@ export class StripeProvider implements PaymentProvider {
 
   async handleWebhookEvent(payload: WebhookPayload): Promise<WebhookResponse> {
     try {
-      const { eventType, data } = payload
+      const { eventType } = payload
 
       switch (eventType) {
         case 'charge.succeeded':
@@ -206,14 +205,15 @@ export class StripeProvider implements PaymentProvider {
 
   async refundPayment(transactionId: string, amount?: number): Promise<RefundResponse> {
     try {
-      const session = await this.stripe.checkout.sessions.retrieve(transactionId)
+      const stripe = await this.getStripeClient()
+      const session = await stripe.checkout.sessions.retrieve(transactionId)
 
       if (!session.payment_intent || typeof session.payment_intent === 'string') {
         throw new Error('Payment intent not found')
       }
 
-      const refund = await this.stripe.refunds.create({
-        payment_intent: session.payment_intent as string,
+      const refund = await stripe.refunds.create({
+        payment_intent: session.payment_intent.id,
         amount: amount,
       })
 

@@ -6,7 +6,6 @@ import type {
   WebhookPayload,
   WebhookResponse,
   PaymentStatus,
-  RefundRequest,
   RefundResponse,
 } from '#interfaces/payment_provider'
 import crypto from 'node:crypto'
@@ -100,7 +99,9 @@ export class FlutterwaveProvider implements PaymentProvider {
 
   async verifyPayment(transactionId: string, reference?: string): Promise<PaymentResponse> {
     try {
-      const response = await this.client.get(`/transactions/${transactionId}/verify`)
+      void reference
+      const client = await this.getClient()
+      const response = await client.get(`/transactions/${transactionId}/verify`)
       const data = response.data
 
       if (!data.status) {
@@ -147,6 +148,7 @@ export class FlutterwaveProvider implements PaymentProvider {
   async handleWebhookEvent(payload: WebhookPayload): Promise<WebhookResponse> {
     try {
       const { eventType, data } = payload
+      void data
 
       switch (eventType) {
         case 'charge.completed':
@@ -183,7 +185,8 @@ export class FlutterwaveProvider implements PaymentProvider {
 
   async refundPayment(transactionId: string, amount?: number): Promise<RefundResponse> {
     try {
-      const response = await this.client.post(`/transactions/${transactionId}/refund`, {
+      const client = await this.getClient()
+      const response = await client.post(`/transactions/${transactionId}/refund`, {
         amount: amount ? (amount / 100).toString() : undefined,
       })
 

@@ -84,7 +84,7 @@ export default class PaymentController {
       const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
         productPrice,
         salePrice,
-        Number.parseFloat(product.commissionRate),
+        product.commissionRate,
         !!payload.affiliateLinkCode
       )
 

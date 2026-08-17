@@ -83,7 +83,7 @@ export default class OrdersController {
     const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
       productPrice,
       salePrice,
-      Number.parseFloat(product.commissionRate),
+      product.commissionRate,
       !!payload.affiliateLinkCode
     )
 
@@ -196,7 +196,7 @@ export default class OrdersController {
       paymentReference ? `Payment reference: ${paymentReference}` : null,
       `Order number: ${order.orderNumber}`,
       `Buyer email: ${user.email}`,
-    ].filter(Boolean)
+    ].filter((line): line is string => Boolean(line))
 
     await mail.send((messageBuilder) => {
       messageBuilder
@@ -208,10 +208,7 @@ export default class OrdersController {
             <p>A buyer has notified you that they completed a manual payment for order <strong>#${order.orderNumber}</strong>.</p>
             <div style="background: #f8fafc; border-radius: 8px; padding: 16px; margin: 18px 0;">
               ${notes
-                .map(
-                  (line) =>
-                    `<p style="margin: 8px 0;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`
-                )
+                .map((line) => `<p style="margin: 8px 0;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`)
                 .join('')}
             </div>
             <p>Please confirm receipt and then mark the order as completed in your dashboard.</p>

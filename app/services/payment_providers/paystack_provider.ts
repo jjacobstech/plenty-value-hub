@@ -6,7 +6,6 @@ import type {
   WebhookPayload,
   WebhookResponse,
   PaymentStatus,
-  RefundRequest,
   RefundResponse,
 } from '#interfaces/payment_provider'
 import crypto from 'node:crypto'
@@ -109,6 +108,7 @@ export class PaystackProvider implements PaymentProvider {
 
   async verifyPayment(reference: string, transactionId?: string): Promise<PaymentResponse> {
     try {
+      void transactionId
       if (!(await this.loadSecrets()) || !this.client) {
         throw new Error('Paystack provider not properly configured')
       }
@@ -160,6 +160,7 @@ export class PaystackProvider implements PaymentProvider {
   async handleWebhookEvent(payload: WebhookPayload): Promise<WebhookResponse> {
     try {
       const { eventType, data } = payload
+      void data
 
       switch (eventType) {
         case 'charge.success': {

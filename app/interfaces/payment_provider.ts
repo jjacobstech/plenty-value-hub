@@ -40,6 +40,8 @@ export interface WebhookResponse {
   success: boolean
   message: string
   received: boolean
+  reference?: string
+  eventType?: string
 }
 
 export interface PaymentStatus {
@@ -72,7 +74,7 @@ export interface PaymentProvider {
   /**
    * Refund a payment
    */
-  refundPayment(transactionId: string, amount?: number): Promise<PaymentResponse>
+  refundPayment(transactionId: string, amount?: number): Promise<RefundResponse>
 
   /**
    * Get provider configuration
@@ -82,12 +84,12 @@ export interface PaymentProvider {
   /**
    * Check if provider is available
    */
-  isAvailable(): boolean
+  isAvailable(): boolean | Promise<boolean>
 }
 
 export interface PaymentProviderFactory {
   create(provider: string): PaymentProvider | null
-  getAvailableProviders(): string[]
+  getAvailableProviders(): Promise<string[]>
 }
 
 export interface RefundRequest {

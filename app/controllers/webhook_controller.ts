@@ -114,14 +114,11 @@ export default class WebhookController {
       }
 
       // Always return 200 to acknowledge receipt
-      return response.json(
-        {
-          success: result.success,
-          message: result.message,
-          provider: result.provider,
-        },
-        200
-      )
+      return response.status(200).json({
+        success: result.success,
+        message: result.message,
+        provider: result.provider,
+      })
     } catch (error) {
       logger.error(`Webhook error for ${provider}`, {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -131,7 +128,7 @@ export default class WebhookController {
       // Still return 200 to prevent retries for validation errors
       const errorResponse = PaymentValidator.formatErrorResponse(error)
 
-      return response.json(errorResponse, 200)
+      return response.status(200).json(errorResponse)
     }
   }
 
@@ -150,25 +147,19 @@ export default class WebhookController {
         await this.completeOrderByReference(result.reference, 'stripe')
       }
 
-      return response.json(
-        {
-          success: result.success,
-          message: result.message,
-        },
-        200
-      )
+      return response.status(200).json({
+        success: result.success,
+        message: result.message,
+      })
     } catch (error) {
       logger.error('Stripe webhook error', {
         error: error instanceof Error ? error.message : 'Unknown error',
       })
 
-      return response.json(
-        {
-          success: false,
-          message: 'Webhook processing failed',
-        },
-        200
-      )
+      return response.status(200).json({
+        success: false,
+        message: 'Webhook processing failed',
+      })
     }
   }
 
@@ -187,25 +178,19 @@ export default class WebhookController {
         await this.completeOrderByReference(result.reference, 'paystack')
       }
 
-      return response.json(
-        {
-          success: result.success,
-          message: result.message,
-        },
-        200
-      )
+      return response.status(200).json({
+        success: result.success,
+        message: result.message,
+      })
     } catch (error) {
       logger.error('Paystack webhook error', {
         error: error instanceof Error ? error.message : 'Unknown error',
       })
 
-      return response.json(
-        {
-          success: false,
-          message: 'Webhook processing failed',
-        },
-        200
-      )
+      return response.status(200).json({
+        success: false,
+        message: 'Webhook processing failed',
+      })
     }
   }
 
@@ -224,25 +209,19 @@ export default class WebhookController {
         await this.completeOrderByReference(result.reference, 'flutterwave')
       }
 
-      return response.json(
-        {
-          success: result.success,
-          message: result.message,
-        },
-        200
-      )
+      return response.status(200).json({
+        success: result.success,
+        message: result.message,
+      })
     } catch (error) {
       logger.error('Flutterwave webhook error', {
         error: error instanceof Error ? error.message : 'Unknown error',
       })
 
-      return response.json(
-        {
-          success: false,
-          message: 'Webhook processing failed',
-        },
-        200
-      )
+      return response.status(200).json({
+        success: false,
+        message: 'Webhook processing failed',
+      })
     }
   }
 
@@ -261,25 +240,19 @@ export default class WebhookController {
         await this.completeOrderByReference(result.reference, 'paypal')
       }
 
-      return response.json(
-        {
-          success: result.success,
-          message: result.message,
-        },
-        200
-      )
+      return response.status(200).json({
+        success: result.success,
+        message: result.message,
+      })
     } catch (error) {
       logger.error('PayPal webhook error', {
         error: error instanceof Error ? error.message : 'Unknown error',
       })
 
-      return response.json(
-        {
-          success: false,
-          message: 'Webhook processing failed',
-        },
-        200
-      )
+      return response.status(200).json({
+        success: false,
+        message: 'Webhook processing failed',
+      })
     }
   }
 
@@ -313,12 +286,12 @@ export default class WebhookController {
    * POST /api/payments/webhook-test/:provider
    * Test webhook from provider (admin only)
    */
-  async testWebhook({ params, request, response }: HttpContext) {
+  async testWebhook({ params, response }: HttpContext) {
     const { provider } = params
 
     try {
       // Validate provider
-      PaymentValidator.validateProvider(provider)
+      await PaymentValidator.validateProvider(provider)
 
       // Create test payload based on provider
       const testPayload = this.createTestPayload(provider)

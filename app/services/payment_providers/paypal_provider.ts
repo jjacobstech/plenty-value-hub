@@ -6,10 +6,8 @@ import type {
   WebhookPayload,
   WebhookResponse,
   PaymentStatus,
-  RefundRequest,
   RefundResponse,
 } from '#interfaces/payment_provider'
-import crypto from 'node:crypto'
 import { paymentConfig } from '#config/payment'
 import { PaymentGatewayService } from '#services/payment_gateway_service'
 
@@ -21,7 +19,6 @@ export class PayPalProvider implements PaymentProvider {
 
   constructor() {
     this.config = paymentConfig.providers.paypal
-    const clientId = this.config.clientId
 
     this.client = axios.create({
       baseURL: this.config.apiBaseUrl,
@@ -99,6 +96,7 @@ export class PayPalProvider implements PaymentProvider {
 
   async verifyPayment(orderId: string, reference?: string): Promise<PaymentResponse> {
     try {
+      void reference
       const token = await this.getAccessToken()
 
       const response = await this.client.get(`/v2/checkout/orders/${orderId}`, {
@@ -136,6 +134,8 @@ export class PayPalProvider implements PaymentProvider {
 
   verifyWebhookSignature(payload: string, signature: string): boolean {
     try {
+      void payload
+      void signature
       // PayPal webhook signature verification is more complex
       // This is a simplified version. In production, verify using PayPal's verification endpoint
       return true // Implement full verification as needed
@@ -147,6 +147,7 @@ export class PayPalProvider implements PaymentProvider {
   async handleWebhookEvent(payload: WebhookPayload): Promise<WebhookResponse> {
     try {
       const { eventType, data } = payload
+      void data
 
       switch (eventType) {
         case 'CHECKOUT.ORDER.APPROVED':

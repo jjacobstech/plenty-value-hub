@@ -5,15 +5,13 @@ import type {
   PaymentResponse,
   WebhookPayload,
   WebhookResponse,
-  RefundRequest,
   RefundResponse,
-  TransactionRecord,
 } from '#interfaces/payment_provider'
 import { StripeProvider } from './payment_providers/stripe_provider.js'
 import { PaystackProvider } from './payment_providers/paystack_provider.js'
 import { FlutterwaveProvider } from './payment_providers/flutterwave_provider.js'
 import { PayPalProvider } from './payment_providers/paypal_provider.js'
-import { paymentConfig, type PaymentProvider as PaymentProviderType } from '#config/payment'
+import { paymentConfig } from '#config/payment'
 import logger from '@adonisjs/core/services/logger'
 import { PaymentGatewayService } from '#services/payment_gateway_service'
 
@@ -59,12 +57,14 @@ class ManualProvider implements PaymentProvider {
     }
   }
 
-  async refundPayment(): Promise<RefundResponse> {
+  async refundPayment(transactionId: string, amount?: number): Promise<RefundResponse> {
+    void transactionId
+    void amount
     return {
       success: false,
       provider: 'manual',
       refundId: '',
-      transactionId: '',
+      transactionId,
       amount: 0,
       status: 'failed',
       message: 'Manual provider does not support automated refunds',
@@ -127,6 +127,10 @@ export class PaymentGateway implements PaymentProviderFactory {
           return null
       }
 
+      if (!instance) {
+        return null
+      }
+
       this.providers.set(provider, instance)
       logger.info(`Lazy-initialized payment provider: ${provider}`)
       return instance
@@ -165,14 +169,15 @@ export class PaymentGateway implements PaymentProviderFactory {
   /**
    * Set the active payment provider
    */
-  setActiveProvider(provider: string): boolean {
+  async setActiveProvider(provider: string): Promise<boolean> {
     if (!this.providers.has(provider)) {
       logger.warn(`Provider not found: ${provider}`)
       return false
     }
 
     const instance = this.providers.get(provider)
-    if (!instance?.isAvailable() && provider !== 'manual') {
+    const available = instance ? await instance.isAvailable() : false
+    if (!available && provider !== 'manual') {
       logger.warn(`Provider not available: ${provider}`)
       return false
     }
@@ -448,7 +453,8 @@ export class PaymentGateway implements PaymentProviderFactory {
    */
   getSupportedCurrencies(provider?: string): string[] {
     const prov = provider || this.activeProvider
-    return paymentConfig.supportedCurrencies[prov as PaymentProviderType] || []
+    const supportedCurrencies = paymentConfig.supportedCurrencies as Record<string, string[]>
+    return supportedCurrencies[prov] || []
   }
 
   /**
@@ -456,7 +462,8 @@ export class PaymentGateway implements PaymentProviderFactory {
    */
   isCurrencySupported(currency: string, provider?: string): boolean {
     const prov = provider || this.activeProvider
-    const supported = paymentConfig.supportedCurrencies[prov as PaymentProviderType] || []
+    const supportedCurrencies = paymentConfig.supportedCurrencies as Record<string, string[]>
+    const supported = supportedCurrencies[prov] || []
     return supported.includes(currency.toUpperCase())
   }
 
@@ -488,7 +495,8 @@ export class PaymentGateway implements PaymentProviderFactory {
    * Get webhook URL for a provider
    */
   getWebhookUrl(provider: string): string {
-    const endpoint = paymentConfig.webhookEndpoints[provider as PaymentProviderType]
+    const webhookEndpoints = paymentConfig.webhookEndpoints as Record<string, string>
+    const endpoint = webhookEndpoints[provider]
     if (!endpoint) {
       throw new Error(`Webhook endpoint not configured for ${provider}`)
     }

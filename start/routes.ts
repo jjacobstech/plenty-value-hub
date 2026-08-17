@@ -11,7 +11,6 @@ import { middleware } from '#start/kernel'
 import { authThrottle, signupThrottle, adminThrottle } from '#start/limiter'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
-import { use } from 'react'
 
 /**
  * SEO

@@ -1,7 +1,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 
-import { normalizeProductPayload } from '../inertia/lib/productPayload.ts'
+import { normalizeProductPayload } from './helpers/productPayload.js'
 
 test('normalizeProductPayload converts vendor form keys to backend contract', () => {
   const payload = normalizeProductPayload(

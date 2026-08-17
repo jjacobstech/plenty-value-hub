@@ -109,5 +109,6 @@ export interface PaymentProviderConfig {
   publicKey?: string
   secretKey?: string
   webhookSecret?: string
+  merchantId?: string | null
   [key: string]: any
 }

@@ -6,6 +6,7 @@ import { createReadStream } from 'fs'
 import { extname } from 'path'
 import { appUrl } from '#config/app'
 
+type UploadContext = Pick<HttpContext, 'request' | 'auth' | 'response'>
 
 const storageDisk = env.get('DRIVE')
 
@@ -28,7 +29,7 @@ export default class UploadController {
    * Upload product image
    * POST /api/uploads/product-image
    */
-  async uploadProductImage({ request, auth, response }: HttpContext) {
+  async uploadProductImage({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user) {
@@ -95,7 +96,7 @@ export default class UploadController {
    * Upload product gallery images (multiple)
    * POST /api/uploads/product-gallery
    */
-  async uploadProductGallery({ request, auth, response }: HttpContext) {
+  async uploadProductGallery({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user) {
@@ -174,7 +175,7 @@ export default class UploadController {
    * Upload profile image (avatar, logo, banner)
    * POST /api/uploads/profile-image
    */
-  async uploadProfileImage({ request, auth, response }: HttpContext) {
+  async uploadProfileImage({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user) {
@@ -247,7 +248,7 @@ export default class UploadController {
    * Upload admin/site image (hero banner, blog featured image, etc)
    * POST /api/uploads/admin-image
    */
-  async uploadAdminImage({ request, auth, response }: HttpContext) {
+  async uploadAdminImage({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user || user.role !== 'admin') {
@@ -309,7 +310,7 @@ export default class UploadController {
    * Upload video (for admin editor, blog posts, etc)
    * POST /api/uploads/video
    */
-  async uploadVideo({ request, auth, response }: HttpContext) {
+  async uploadVideo({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user || user.role !== 'admin') {
@@ -369,7 +370,7 @@ export default class UploadController {
    * Upload document (for admin, vendor documents)
    * POST /api/uploads/document
    */
-  async uploadDocument({ request, auth, response }: HttpContext) {
+  async uploadDocument({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user) {
@@ -431,7 +432,7 @@ export default class UploadController {
    * Generic file upload (for compatibility)
    * POST /api/uploads/file
    */
-  async uploadFile({ request, auth, response }: HttpContext) {
+  async uploadFile({ request, auth, response }: UploadContext) {
     const user = await auth.use('web').user
 
     if (!user) {
