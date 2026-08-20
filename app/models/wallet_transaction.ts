@@ -1,13 +1,24 @@
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo, beforeSave } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import Wallet from '#models/wallet'
+import crypto from 'node:crypto'
 
 export default class WalletTransaction extends BaseModel {
   static table = 'wallet_transactions'
 
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare uuid: string
+
+  @beforeSave()
+  static async generateUuid(model: WalletTransaction) {
+    if (!model.uuid) {
+      model.uuid = crypto.randomUUID()
+    }
+  }
 
   @column()
   declare walletId: number

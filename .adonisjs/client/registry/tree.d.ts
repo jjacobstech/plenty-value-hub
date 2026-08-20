@@ -171,6 +171,7 @@ export interface ApiDefinition {
   upload: {
     uploadProductImage: typeof routes['upload.upload_product_image']
     uploadProductGallery: typeof routes['upload.upload_product_gallery']
+    uploadDigitalAsset: typeof routes['upload.upload_digital_asset']
     uploadProfileImage: typeof routes['upload.upload_profile_image']
     uploadAdminImage: typeof routes['upload.upload_admin_image']
     uploadVideo: typeof routes['upload.upload_video']

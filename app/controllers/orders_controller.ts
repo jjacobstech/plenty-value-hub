@@ -40,7 +40,11 @@ export default class OrdersController {
 
   async show({ params, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const order = await Order.find(params.id)
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const order = await Order.query()
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .preload('product' as never)
+      .first()
 
     if (!order) {
       return response.status(404).json({ error: 'Order not found' })
@@ -55,9 +59,22 @@ export default class OrdersController {
       return response.status(403).json({ error: 'Not authorized to view this order' })
     }
 
+    const orderData = order.serialize()
+
+    // Include digital asset information if order is completed and user is buyer, vendor, or admin
+    if (order.status === 'completed' && (order.product as any)) {
+      const prod = order.product as any
+      if (prod.productType === 'digital' && prod.digitalAssetUrl) {
+        orderData.digitalAsset = {
+          url: prod.digitalAssetUrl,
+          name: prod.digitalAssetName || prod.name || 'Digital Asset',
+        }
+      }
+    }
+
     return response.json({
       success: true,
-      data: order.serialize(),
+      data: orderData,
     })
   }
 
@@ -83,7 +100,7 @@ export default class OrdersController {
     const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
       productPrice,
       salePrice,
-      product.commissionRate,
+      Number(product.commissionRate),
       !!payload.affiliateLinkCode
     )
 
@@ -122,6 +139,7 @@ export default class OrdersController {
       status: 'completed',
       currency: 'USD',
       paymentMethod,
+      shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
     })
 
     if (affiliateLink) {
@@ -174,7 +192,10 @@ export default class OrdersController {
 
   async notifyVendor({ params, request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const order = await Order.find(params.id)
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const order = await Order.query()
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .first()
 
     if (!order) {
       return response.status(404).json({ error: 'Order not found' })
@@ -208,7 +229,10 @@ export default class OrdersController {
             <p>A buyer has notified you that they completed a manual payment for order <strong>#${order.orderNumber}</strong>.</p>
             <div style="background: #f8fafc; border-radius: 8px; padding: 16px; margin: 18px 0;">
               ${notes
-                .map((line) => `<p style="margin: 8px 0;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`)
+                .map(
+                  (line) =>
+                    `<p style="margin: 8px 0;">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</p>`
+                )
                 .join('')}
             </div>
             <p>Please confirm receipt and then mark the order as completed in your dashboard.</p>
@@ -229,7 +253,10 @@ export default class OrdersController {
       return response.status(403).json({ error: 'Only admins can update orders' })
     }
 
-    const order = await Order.find(params.id)
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const order = await Order.query()
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .first()
     if (!order) {
       return response.status(404).json({ error: 'Order not found' })
     }

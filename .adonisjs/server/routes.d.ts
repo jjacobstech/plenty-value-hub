@@ -98,6 +98,7 @@ export type ScannedRoutes = {
     'profile.upload_image': { paramsTuple?: []; params?: {} }
     'upload.upload_product_image': { paramsTuple?: []; params?: {} }
     'upload.upload_product_gallery': { paramsTuple?: []; params?: {} }
+    'upload.upload_digital_asset': { paramsTuple?: []; params?: {} }
     'upload.upload_profile_image': { paramsTuple?: []; params?: {} }
     'upload.upload_admin_image': { paramsTuple?: []; params?: {} }
     'upload.upload_video': { paramsTuple?: []; params?: {} }
@@ -318,6 +319,7 @@ export type ScannedRoutes = {
     'profile.upload_image': { paramsTuple?: []; params?: {} }
     'upload.upload_product_image': { paramsTuple?: []; params?: {} }
     'upload.upload_product_gallery': { paramsTuple?: []; params?: {} }
+    'upload.upload_digital_asset': { paramsTuple?: []; params?: {} }
     'upload.upload_profile_image': { paramsTuple?: []; params?: {} }
     'upload.upload_admin_image': { paramsTuple?: []; params?: {} }
     'upload.upload_video': { paramsTuple?: []; params?: {} }

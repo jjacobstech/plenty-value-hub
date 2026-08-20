@@ -80,14 +80,16 @@
           <div class="detail-row"><strong>Amount:</strong> <span>${{ order.amount }}</span></div>
           <div class="detail-row"><strong>Status:</strong> <span>{{ order.status }}</span></div>
         </div>
-@if(isManualPayment)
-<div class="order-details" style="background: #f0fdf4; border-left: 4px solid #81C14B;">
-  <p><strong>Manual payment instructions</strong></p>
-  <p>Send your payment via: <strong>{{ manualInstructions.payoutMethod }}</strong></p>
-  <p><strong>Account details:</strong> {{ manualInstructions.payoutDetails }}</p>
-  <p>Once you have made the transfer, please notify the seller using the order details or by emailing them directly.</p>
-</div>
-@endif
+        @if(isManualPayment)
+          <div class="order-details" style="background: #f0fdf4; border-left: 4px solid #81C14B;">
+            <p><strong>Manual payment instructions</strong></p>
+            <p>Send your payment via: <strong>{{ manualInstructions.payoutMethod }}</strong></p>
+            <p><strong>Account details:</strong> {{ manualInstructions.payoutDetails }}</p>
+            <p>
+              Once you have made the transfer, please notify the seller using the order details or by emailing them directly.
+            </p>
+          </div>
+        @end
 
         <p>We appreciate your business and hope you enjoy your purchase!</p>
       </div>

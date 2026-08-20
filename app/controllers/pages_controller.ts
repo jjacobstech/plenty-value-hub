@@ -51,8 +51,6 @@ function resolveAssetUrl(raw: unknown, origin: string): string | null {
   }
 }
 
-
-
 export default class PagesController {
   // Public pages - Home
   async home({ inertia }: HttpContext) {
@@ -90,15 +88,15 @@ export default class PagesController {
     const origin =
       env.get('APP_URL') ?? `${request.protocol()}://${request.host() ?? 'localhost:3000'}`
 
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
     const [productRow, reviewRows, paymentConfig] = await Promise.all([
-      // Only approved products are publicly visible — a pending or rejected
-      // listing should 404 rather than render.
-      Product.query().where('id', params.id).where('status', 'approved').firstOrFail(),
+      Product.query()
+        .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+        .where('status', 'approved')
+        .firstOrFail(),
 
-      // NOTE: adjust the column/relation names below to match your Review model.
       Review.query()
-        .where('product_id', params.id)
-        // .where('is_approved', true)
+        .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('product_id', params.id)))
         .orderBy('created_at', 'desc')
         .limit(50),
 
@@ -175,7 +173,6 @@ export default class PagesController {
       },
     })
   }
-
 
   async affiliateRedirect({ inertia, params }: HttpContext) {
     return inertia.render('AffiliateRedirect', { link_code: params.link_code })

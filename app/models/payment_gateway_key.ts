@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, beforeSave } from '@adonisjs/lucid/orm'
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'crypto'
 
 /**
@@ -35,6 +35,16 @@ export default class PaymentGatewayKey extends BaseModel {
 
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare uuid: string
+
+  @beforeSave()
+  static async generateUuid(model: PaymentGatewayKey) {
+    if (!model.uuid) {
+      model.uuid = randomBytes(16).toString('hex')
+    }
+  }
 
   /**
    * Gateway identifier (unique): 'paystack', 'flutterwave', 'paypal', 'stripe'

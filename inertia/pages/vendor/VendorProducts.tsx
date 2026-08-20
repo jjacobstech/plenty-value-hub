@@ -23,7 +23,7 @@ import {
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Plus, Pencil, Trash2, Package, AlertCircle } from 'lucide-react'
-import { formatUSD as formatNGN } from '@/lib/currency'
+import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
 import { validateProduct, getFieldError, hasFieldError } from '@/validators/productValidator'
@@ -55,6 +55,8 @@ const defaultForm = {
   salePrice: '',
   commissionRate: '30',
   imageUrl: '',
+  digitalAssetUrl: '',
+  digitalAssetName: '',
   recurringBilling: false,
   billingCycle: 'one_time',
 }
@@ -120,6 +122,8 @@ export default function VendorProducts(props: VendorProductsProps) {
         ...(form.shortDescription.trim() && { shortDescription: form.shortDescription.trim() }),
         ...(form.salePrice && { salePrice: Number.parseFloat(form.salePrice) }),
         ...(form.imageUrl && { imageUrl: form.imageUrl }),
+        ...(form.digitalAssetUrl && { digitalAssetUrl: form.digitalAssetUrl }),
+        ...(form.digitalAssetName && { digitalAssetName: form.digitalAssetName }),
         ...(form.billingCycle && { billingCycle: form.billingCycle }),
         recurringBilling: form.recurringBilling,
       }
@@ -161,7 +165,7 @@ export default function VendorProducts(props: VendorProductsProps) {
 
         setServerErrors(serverValidationErrors)
         toast.error('Validation Error', {
-          description: 'Please fix the errors below'
+          description: 'Please fix the errors below',
         })
       } else {
         toast.error('Failed to save product')
@@ -194,6 +198,8 @@ export default function VendorProducts(props: VendorProductsProps) {
       salePrice: product.salePrice != null ? String(num(product.salePrice)) : '',
       commissionRate: product.commissionRate != null ? String(num(product.commissionRate)) : '30',
       imageUrl: product.imageUrl || '',
+      digitalAssetUrl: product.digitalAssetUrl || '',
+      digitalAssetName: product.digitalAssetName || '',
       recurringBilling: product.recurringBilling || false,
       billingCycle: product.billingCycle || 'one_time',
     })
@@ -253,27 +259,37 @@ export default function VendorProducts(props: VendorProductsProps) {
             </DialogHeader>
 
             {/* Server/Validation Errors Summary */}
-            {(validationErrors || serverErrors) && Object.keys({ ...validationErrors, ...serverErrors }).length > 0 && (
-              <div className="mb-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="text-sm font-semibold text-red-900">
-                    {Object.keys({ ...validationErrors, ...serverErrors }).length} error{Object.keys({ ...validationErrors, ...serverErrors }).length === 1 ? '' : 's'} found
-                  </p>
-                  <ul className="text-xs text-red-700 mt-2 space-y-1">
-                    {Object.entries({ ...validationErrors, ...serverErrors }).slice(0, 3).map(([field, error]) => (
-                      <li key={field} className="flex gap-2">
-                        <span className="font-medium">{field}:</span>
-                        <span>{Array.isArray(error) ? error[0] : error}</span>
-                      </li>
-                    ))}
-                    {Object.keys({ ...validationErrors, ...serverErrors }).length > 3 && (
-                      <li className="text-xs italic">+{Object.keys({ ...validationErrors, ...serverErrors }).length - 3} more errors</li>
-                    )}
-                  </ul>
+            {(validationErrors || serverErrors) &&
+              Object.keys({ ...validationErrors, ...serverErrors }).length > 0 && (
+                <div className="mb-4 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-red-900">
+                      {Object.keys({ ...validationErrors, ...serverErrors }).length} error
+                      {Object.keys({ ...validationErrors, ...serverErrors }).length === 1
+                        ? ''
+                        : 's'}{' '}
+                      found
+                    </p>
+                    <ul className="text-xs text-red-700 mt-2 space-y-1">
+                      {Object.entries({ ...validationErrors, ...serverErrors })
+                        .slice(0, 3)
+                        .map(([field, error]) => (
+                          <li key={field} className="flex gap-2">
+                            <span className="font-medium">{field}:</span>
+                            <span>{Array.isArray(error) ? error[0] : error}</span>
+                          </li>
+                        ))}
+                      {Object.keys({ ...validationErrors, ...serverErrors }).length > 3 && (
+                        <li className="text-xs italic">
+                          +{Object.keys({ ...validationErrors, ...serverErrors }).length - 3} more
+                          errors
+                        </li>
+                      )}
+                    </ul>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
 
             <form onSubmit={handleSave} className="space-y-3 sm:space-y-4 md:space-y-5">
               <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-5">
@@ -341,7 +357,9 @@ export default function VendorProducts(props: VendorProductsProps) {
                 {/* Price fields */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
                   <div>
-                    <Label className="text-xs sm:text-sm md:text-base">Price (USD) *</Label>
+                    <Label className="text-xs sm:text-sm md:text-base">
+                      Price ({getActiveCurrency()}) *
+                    </Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -354,7 +372,9 @@ export default function VendorProducts(props: VendorProductsProps) {
                     />
                   </div>
                   <div>
-                    <Label className="text-xs sm:text-sm md:text-base">Sale Price (USD)</Label>
+                    <Label className="text-xs sm:text-sm md:text-base">
+                      Sale Price ({getActiveCurrency()})
+                    </Label>
                     <Input
                       type="number"
                       step="0.01"
@@ -385,7 +405,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                       {formatNGN(
                         ((Number.parseFloat(form.price) || 0) *
                           (Number.parseFloat(form.commissionRate) || 0)) /
-                        100
+                          100
                       )}{' '}
                       per sale
                     </p>
@@ -403,6 +423,59 @@ export default function VendorProducts(props: VendorProductsProps) {
                     helpText="Upload a product image (JPG, PNG, WebP, GIF • Max 10MB)"
                   />
                 </div>
+
+                {/* Digital Product Asset Upload (for digital products) */}
+                {form.productType === 'digital' && (
+                  <div className="space-y-2 border border-dashed border-primary/40 p-4 rounded-lg bg-primary/5">
+                    <Label className="text-xs sm:text-sm md:text-base font-semibold text-primary">
+                      Original Digital Product Asset *
+                    </Label>
+                    <p className="text-xs text-muted-foreground">
+                      Upload the digital file (PDF, ZIP, MP4, MP3, EPUB, etc.) that buyers receive
+                      upon purchasing this product.
+                    </p>
+                    <ImageUploadField
+                      label="Digital Asset File"
+                      value={form.digitalAssetUrl}
+                      onChange={(url) =>
+                        setForm({
+                          ...form,
+                          digitalAssetUrl: url || '',
+                          digitalAssetName: url ? form.digitalAssetName || 'Product File' : '',
+                        })
+                      }
+                      endpoint="/api/uploads/digital-asset"
+                      allowedTypes={[
+                        'pdf',
+                        'zip',
+                        'rar',
+                        'mp4',
+                        'mp3',
+                        'epub',
+                        'doc',
+                        'docx',
+                        'png',
+                        'jpg',
+                        'jpeg',
+                      ]}
+                      maxSizeMB={200}
+                      showPreview={false}
+                    />
+                    {form.digitalAssetUrl && (
+                      <div className="text-xs text-green-700 bg-green-50 p-2 rounded border border-green-200 flex items-center justify-between">
+                        <span>Asset attached: {form.digitalAssetName || form.digitalAssetUrl}</span>
+                        <a
+                          href={form.digitalAssetUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="font-semibold underline text-green-800 ml-2"
+                        >
+                          Preview File
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Billing */}
                 <div>
@@ -475,11 +548,15 @@ export default function VendorProducts(props: VendorProductsProps) {
                   <TableHeader>
                     <TableRow className="text-xs sm:text-sm md:text-base">
                       <TableHead className="min-w-[150px] sm:min-w-[200px]">Product</TableHead>
-                      <TableHead className="min-w-[80px] sm:min-w-[100px]">Price ($)</TableHead>
+                      <TableHead className="min-w-[80px] sm:min-w-[100px]">
+                        Price ({getActiveCurrency()})
+                      </TableHead>
                       <TableHead className="min-w-[80px] sm:min-w-[100px]">Commission</TableHead>
                       <TableHead className="min-w-[80px] sm:min-w-[100px]">Status</TableHead>
                       <TableHead className="min-w-[60px] sm:min-w-[80px]">Sales</TableHead>
-                      <TableHead className="min-w-[80px] sm:min-w-[120px]">Revenue ($)</TableHead>
+                      <TableHead className="min-w-[80px] sm:min-w-[120px]">
+                        Revenue ({getActiveCurrency()})
+                      </TableHead>
                       <TableHead className="min-w-[60px] sm:min-w-[80px]" />
                     </TableRow>
                   </TableHeader>
@@ -518,8 +595,9 @@ export default function VendorProducts(props: VendorProductsProps) {
                         </TableCell>
                         <TableCell>
                           <span
-                            className={`text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium inline-block ${statusStyles[p.status] ?? 'bg-slate-100 text-slate-600'
-                              }`}
+                            className={`text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-medium inline-block ${
+                              statusStyles[p.status] ?? 'bg-slate-100 text-slate-600'
+                            }`}
                           >
                             {p.status}
                           </span>
@@ -556,15 +634,15 @@ export default function VendorProducts(props: VendorProductsProps) {
                 </Table>
               </div>
             ) : (
-                <div className="text-center py-8 sm:py-12 md:py-16 px-4">
-                  <Package className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-muted-foreground/30 mx-auto mb-3" />
-                  <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-3">
+              <div className="text-center py-8 sm:py-12 md:py-16 px-4">
+                <Package className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-muted-foreground/30 mx-auto mb-3" />
+                <p className="text-xs sm:text-sm md:text-base text-muted-foreground mb-3">
                   No products yet. Add your first listing!
                 </p>
                 <Button
                   onClick={() => setShowForm(true)}
                   style={{ backgroundColor: '#001845' }}
-                    className="text-white text-xs sm:text-sm md:text-base"
+                  className="text-white text-xs sm:text-sm md:text-base"
                 >
                   <Plus className="w-4 h-4 mr-2" /> Add First Product
                 </Button>

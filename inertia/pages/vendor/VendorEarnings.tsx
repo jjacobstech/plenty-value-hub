@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
-import { formatUSD as formatNGN } from '@/lib/currency'
+import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { format } from 'date-fns'
 import { Wallet, Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
 import { toast } from 'sonner'
@@ -112,12 +112,13 @@ export default function VendorEarnings(props: VendorEarningsProps) {
   }
 
   const handleRequestPayout = async () => {
-    const amount = prompt('Enter payout amount (USD):', '$10')
+    const curr = getActiveCurrency()
+    const amount = prompt(`Enter payout amount (${curr}):`, '10')
     if (!amount) return
 
-    const parsed = parseFloat(amount.replace('$', '').trim())
+    const parsed = parseFloat(amount.replace(/[^0-9.]/g, '').trim())
     if (!parsed || parsed < 10) {
-      toast.error('Minimum payout amount is $10')
+      toast.error('Minimum payout amount is 10')
       return
     }
 

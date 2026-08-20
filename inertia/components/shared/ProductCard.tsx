@@ -26,7 +26,7 @@ const CATEGORY_LABELS = {
 export default function ProductCard({ product, showCommission = false }) {
   console.log(product)
   return (
-    <Link href={`/product/${product.id}`}>
+    <Link href={`/product/${product.uuid || product.id}`}>
       <Card className="group overflow-hidden border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 h-full">
         <div className="aspect-[4/3] bg-muted relative overflow-hidden">
           {product.imageUrl || product.image_url ? (
@@ -88,17 +88,19 @@ export default function ProductCard({ product, showCommission = false }) {
                 <span className="font-bold text-lg">{formatUSD(product.price)}</span>
               )}
             </div>
-            {showCommission && (product.commissionRate ?? product.commission_rate ?? product.commission) !== undefined && (
-              <div
-                className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
-                style={{ color: '#81C14B', background: 'rgba(129,193,75,0.12)' }}
-              >
-                <TrendingUp className="w-3 h-3" />
-                <span className="font-semibold">
-                  {product.commissionRate ?? product.commission_rate ?? product.commission}%
-                </span>
-              </div>
-            )}
+            {showCommission &&
+              (product.commissionRate ?? product.commission_rate ?? product.commission) !==
+                undefined && (
+                <div
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
+                  style={{ color: '#81C14B', background: 'rgba(129,193,75,0.12)' }}
+                >
+                  <TrendingUp className="w-3 h-3" />
+                  <span className="font-semibold">
+                    {product.commissionRate ?? product.commission_rate ?? product.commission}%
+                  </span>
+                </div>
+              )}
           </div>
         </CardContent>
       </Card>

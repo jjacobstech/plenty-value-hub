@@ -25,12 +25,7 @@ const SOURCE_COLORS: Record<string, string> = {
   other: '#9ca3af',
 }
 
-const formatUSD = (v: number) =>
-  new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-    maximumFractionDigits: 0,
-  }).format(v)
+import { formatCurrency as formatUSD } from '@/lib/currency'
 
 type Order = {
   id: number

@@ -108,7 +108,13 @@ export class PaymentGatewayService {
    */
   static async getCredential(
     gateway: string,
-    credentialType: 'publicKey' | 'secretKey' | 'webhookSecret' | 'merchantId' | 'clientId' | 'clientSecret'
+    credentialType:
+      | 'publicKey'
+      | 'secretKey'
+      | 'webhookSecret'
+      | 'merchantId'
+      | 'clientId'
+      | 'clientSecret'
   ) {
     try {
       const gatewayKey = await PaymentGatewayKey.findByGateway(gateway)

@@ -1,12 +1,23 @@
 import { ProductSchema } from '#database/schema'
-import { belongsTo, hasMany } from '@adonisjs/lucid/orm'
+import { belongsTo, hasMany, column, beforeSave } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import Order from '#models/order'
 import AffiliateLink from '#models/affiliate_link'
 import Review from '#models/review'
+import crypto from 'node:crypto'
 
 export default class Product extends ProductSchema {
+  @column()
+  declare uuid: string
+
+  @beforeSave()
+  static async generateUuid(product: Product) {
+    if (!product.uuid) {
+      product.uuid = crypto.randomUUID()
+    }
+  }
+
   @belongsTo(() => User, { foreignKey: 'vendorId' })
   declare vendor: BelongsTo<typeof User>
 

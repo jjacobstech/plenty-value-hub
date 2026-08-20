@@ -14,7 +14,6 @@ const ALLOWED_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp', 'gif']
 const ALLOWED_VIDEO_TYPES = ['mp4', 'webm', 'mov', 'avi', 'mkv']
 const ALLOWED_DOCUMENT_TYPES = ['pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']
 
-
 const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
 const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
 const MAX_DOCUMENT_SIZE = 25 * 1024 * 1024 // 25MB
@@ -424,6 +423,72 @@ export default class UploadController {
         success: false,
         error:
           'Failed to upload document. Please try again or contact support if the problem persists.',
+      })
+    }
+  }
+
+  /**
+   * Upload digital asset for a digital product
+   * POST /api/uploads/digital-asset
+   */
+  async uploadDigitalAsset({ request, auth, response }: UploadContext) {
+    const user = await auth.use('web').user
+
+    if (!user) {
+      return response.unauthorized({
+        success: false,
+        error: 'Authentication required. Please log in to upload assets.',
+      })
+    }
+
+    if (user.role !== 'vendor' && user.role !== 'admin') {
+      return response.forbidden({
+        success: false,
+        error: 'Only vendors and admins can upload digital product assets.',
+      })
+    }
+
+    const file = request.file('file', {
+      size: 200 * 1024 * 1024, // 200MB limit for digital assets
+    })
+
+    if (!file) {
+      return response.badRequest({
+        success: false,
+        error: 'No asset file was provided. Please select a file to upload.',
+      })
+    }
+
+    if (!file.isValid) {
+      const errorMsg = file.errors[0]?.message || 'The uploaded file is not valid.'
+      return response.unprocessableEntity({
+        success: false,
+        error: errorMsg,
+      })
+    }
+
+    try {
+      const ext = extname(file.clientName).toLowerCase().replace('.', '') || 'bin'
+      const key = `digital_assets/${user.id}/${randomBytes(12).toString('hex')}.${ext}`
+
+      await drive.use(storageDisk).putStream(key, createReadStream(file.tmpPath!), {
+        contentType: file.headers['content-type'],
+        visibility: 'public',
+      })
+
+      const url = `${appUrl}${await drive.use(storageDisk).getUrl(key)}`
+
+      return response.json({
+        success: true,
+        url,
+        key,
+        name: file.clientName,
+      })
+    } catch (error) {
+      console.error('Digital asset upload error:', error)
+      return response.internalServerError({
+        success: false,
+        error: 'Failed to upload digital asset. Please try again.',
       })
     }
   }

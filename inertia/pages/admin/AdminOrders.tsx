@@ -80,48 +80,77 @@ export default function AdminOrders(props: AdminOrdersProps) {
                   <TableHead>Amount</TableHead>
                   <TableHead>Commission</TableHead>
                   <TableHead>Platform Fee</TableHead>
+                  <TableHead>Shipping Details</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Action</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filtered.map((o) => (
-                  <TableRow key={o.id}>
-                    <TableCell className="font-mono text-xs">
-                      {o.orderNumber || String(o.id).slice(-8)}
-                    </TableCell>
-                    <TableCell className="font-medium">{o.productName}</TableCell>
-                    <TableCell className="text-muted-foreground text-sm">
-                      {format(new Date(o.createdAt), 'MMM d, yyyy')}
-                    </TableCell>
-                    <TableCell>{formatNGN(o.amount)}</TableCell>
-                    <TableCell className="text-green-600">
-                      {formatNGN(o.commissionAmount)}
-                    </TableCell>
-                    <TableCell>{formatNGN(o.platformFee)}</TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={(statusColors[o.status] as any) ?? 'secondary'}
-                        className="text-xs capitalize"
-                      >
-                        {o.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
-                        <SelectTrigger className="w-28 h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="pending">Pending</SelectItem>
-                          <SelectItem value="completed">Completed</SelectItem>
-                          <SelectItem value="refunded">Refunded</SelectItem>
-                          <SelectItem value="cancelled">Cancelled</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {filtered.map((o) => {
+                  let shipping = null
+                  try {
+                    shipping =
+                      typeof o.shippingDetails === 'string'
+                        ? JSON.parse(o.shippingDetails)
+                        : o.shippingDetails
+                  } catch (e) {
+                    shipping = null
+                  }
+                  return (
+                    <TableRow key={o.id}>
+                      <TableCell className="font-mono text-xs">
+                        {o.orderNumber || String(o.id).slice(-8)}
+                      </TableCell>
+                      <TableCell className="font-medium">{o.productName}</TableCell>
+                      <TableCell className="text-muted-foreground text-sm">
+                        {format(new Date(o.createdAt), 'MMM d, yyyy')}
+                      </TableCell>
+                      <TableCell>{formatNGN(o.amount)}</TableCell>
+                      <TableCell className="text-green-600">
+                        {formatNGN(o.commissionAmount)}
+                      </TableCell>
+                      <TableCell>{formatNGN(o.platformFee)}</TableCell>
+                      <TableCell className="text-xs">
+                        {shipping && shipping.address ? (
+                          <div className="max-w-xs space-y-0.5">
+                            <p className="font-medium">{shipping.address}</p>
+                            <p className="text-muted-foreground">
+                              {[shipping.city, shipping.state, shipping.country]
+                                .filter(Boolean)
+                                .join(', ')}
+                            </p>
+                            {shipping.phone && (
+                              <p className="text-muted-foreground">Tel: {shipping.phone}</p>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Badge
+                          variant={(statusColors[o.status] as any) ?? 'secondary'}
+                          className="text-xs capitalize"
+                        >
+                          {o.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <Select value={o.status} onValueChange={(v) => updateStatus(o.id, v)}>
+                          <SelectTrigger className="w-28 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="completed">Completed</SelectItem>
+                            <SelectItem value="refunded">Refunded</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
               </TableBody>
             </Table>
             {filtered.length === 0 && (

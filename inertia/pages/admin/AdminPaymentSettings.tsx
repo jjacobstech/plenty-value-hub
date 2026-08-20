@@ -18,7 +18,12 @@ import { toast } from 'sonner'
 import api from '@/api/http-client'
 
 const SUPPORTED_GATEWAYS = [
-  { id: 'manual', name: 'Manual / Offline', color: 'text-emerald-600', icon: '/icons/manual-bank.svg' },
+  {
+    id: 'manual',
+    name: 'Manual / Offline',
+    color: 'text-emerald-600',
+    icon: '/icons/manual-bank.svg',
+  },
   { id: 'paystack', name: 'Paystack', color: 'text-blue-600', icon: '/icons/paystack-logo.svg' },
   {
     id: 'flutterwave',
@@ -78,7 +83,9 @@ export default function AdminPaymentSettings() {
 
   const loadSystemSettings = async () => {
     try {
-      const { data } = await api.get<{ currency?: string; activeProvider?: string }>('/api/payment-settings')
+      const { data } = await api.get<{ currency?: string; activeProvider?: string }>(
+        '/api/payment-settings'
+      )
       if (data) {
         setForm((prev) => ({
           ...prev,
@@ -144,9 +151,10 @@ export default function AdminPaymentSettings() {
         return
       }
 
-      const endpoint = editingId && editingId > 0
-        ? `/api/payment-gateway-settings/${form.gateway}`
-        : '/api/payment-gateway-settings'
+      const endpoint =
+        editingId && editingId > 0
+          ? `/api/payment-gateway-settings/${form.gateway}`
+          : '/api/payment-gateway-settings'
       const method = editingId && editingId > 0 ? 'put' : 'post'
 
       const { data } = await api[method]<{ success: boolean; data: any }>(endpoint, {
@@ -233,7 +241,9 @@ export default function AdminPaymentSettings() {
         {/* Currency & General Settings Card */}
         <Card className="border border-gray-200">
           <CardContent className="p-5 space-y-4">
-            <h2 className="font-semibold text-base">System Settings (Currency & Default Provider)</h2>
+            <h2 className="font-semibold text-base">
+              System Settings (Currency & Default Provider)
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label className="text-sm">Platform System Currency</Label>
@@ -246,7 +256,10 @@ export default function AdminPaymentSettings() {
                       await api.post('/api/site-settings', {
                         key: 'payment_settings',
                         label: 'Payment Settings',
-                        value: { currency: newCurrency, activeProvider: form.activeProvider || 'manual' },
+                        value: {
+                          currency: newCurrency,
+                          activeProvider: form.activeProvider || 'manual',
+                        },
                       })
                       toast.success(`System currency updated to ${newCurrency}`)
                     } catch {
@@ -401,10 +414,11 @@ export default function AdminPaymentSettings() {
                       <TableCell>
                         <button
                           onClick={() => handleToggle(gateway)}
-                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition ${gateway.isActive
+                          className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium transition ${
+                            gateway.isActive
                               ? 'bg-green-100 text-green-700 hover:bg-green-200'
                               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
+                          }`}
                         >
                           {gateway.isActive ? 'Active' : 'Inactive'}
                         </button>

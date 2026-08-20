@@ -1,11 +1,22 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, beforeSave } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
+import crypto from 'node:crypto'
 
 export default class EmailCampaign extends BaseModel {
   static table = 'email_campaigns'
 
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare uuid: string
+
+  @beforeSave()
+  static async generateUuid(model: EmailCampaign) {
+    if (!model.uuid) {
+      model.uuid = crypto.randomUUID()
+    }
+  }
 
   @column()
   declare name: string

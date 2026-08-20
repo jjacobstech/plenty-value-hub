@@ -168,7 +168,11 @@ export class PaymentValidator {
   /**
    * Validate webhook signature
    */
-  static async validateWebhookSignature(provider: string, payload: string, signature: string): Promise<void> {
+  static async validateWebhookSignature(
+    provider: string,
+    payload: string,
+    signature: string
+  ): Promise<void> {
     if (!provider || provider.trim() === '') {
       throw new PaymentValidationError('Provider is required', 'MISSING_PROVIDER')
     }

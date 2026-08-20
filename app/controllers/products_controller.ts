@@ -40,8 +40,9 @@ export default class ProductsController {
   }
 
   async show({ params, response }: HttpContext) {
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
     const product = await Product.query()
-      .where('id', params.id)
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
       .where('status', 'approved')
       .preload('vendor' as never)
       .preload('reviews' as never, (query: any) => query.where('status', 'approved'))
@@ -86,7 +87,10 @@ export default class ProductsController {
 
   async update({ params, request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const product = await Product.find(params.id)
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const product = await Product.query()
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .first()
 
     if (!product) {
       return response.status(404).json({ error: 'Product not found' })
@@ -109,7 +113,10 @@ export default class ProductsController {
 
   async destroy({ params, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const product = await Product.find(params.id)
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const product = await Product.query()
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .first()
 
     if (!product) {
       return response.status(404).json({ error: 'Product not found' })
@@ -134,7 +141,10 @@ export default class ProductsController {
       return response.status(403).json({ error: 'Only admins can approve products' })
     }
 
-    const product = await Product.find(params.id)
+    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const product = await Product.query()
+      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .first()
 
     if (!product) {
       return response.status(404).json({ error: 'Product not found' })

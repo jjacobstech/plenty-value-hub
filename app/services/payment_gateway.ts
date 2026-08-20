@@ -334,7 +334,13 @@ export class PaymentGateway implements PaymentProviderFactory {
     provider: string,
     payload: string,
     signature: string
-  ): Promise<{ success: boolean; message: string; provider: string; reference?: string; eventType?: string }> {
+  ): Promise<{
+    success: boolean
+    message: string
+    provider: string
+    reference?: string
+    eventType?: string
+  }> {
     const instance = this.create(provider)
 
     if (!instance) {

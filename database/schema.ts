@@ -23,6 +23,7 @@ export class AffiliateLinkSchema extends BaseModel {
     'status',
     'subId',
     'updatedAt',
+    'uuid',
   ] as const
   $columns = AffiliateLinkSchema.$columns
   @column()
@@ -53,6 +54,8 @@ export class AffiliateLinkSchema extends BaseModel {
   declare subId: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
 }
 
 export class BlogPostSchema extends BaseModel {
@@ -73,6 +76,7 @@ export class BlogPostSchema extends BaseModel {
     'tags',
     'title',
     'updatedAt',
+    'uuid',
     'viewCount',
   ] as const
   $columns = BlogPostSchema.$columns
@@ -109,6 +113,8 @@ export class BlogPostSchema extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
+  declare uuid: string | null
+  @column()
   declare viewCount: number | null
 }
 
@@ -129,6 +135,7 @@ export class EmailCampaignSchema extends BaseModel {
     'status',
     'subject',
     'updatedAt',
+    'uuid',
   ] as const
   $columns = EmailCampaignSchema.$columns
   @column()
@@ -161,6 +168,8 @@ export class EmailCampaignSchema extends BaseModel {
   declare subject: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
 }
 
 export class NewsletterSubscriberSchema extends BaseModel {
@@ -173,6 +182,7 @@ export class NewsletterSubscriberSchema extends BaseModel {
     'source',
     'status',
     'updatedAt',
+    'uuid',
   ] as const
   $columns = NewsletterSubscriberSchema.$columns
   @column.dateTime({ autoCreate: true })
@@ -191,6 +201,8 @@ export class NewsletterSubscriberSchema extends BaseModel {
   declare status: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
 }
 
 export class NewsletterSchema extends BaseModel {
@@ -207,6 +219,7 @@ export class NewsletterSchema extends BaseModel {
     'status',
     'subject',
     'updatedAt',
+    'uuid',
   ] as const
   $columns = NewsletterSchema.$columns
   @column()
@@ -233,6 +246,8 @@ export class NewsletterSchema extends BaseModel {
   declare subject: string
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
 }
 
 export class OrderSchema extends BaseModel {
@@ -251,8 +266,10 @@ export class OrderSchema extends BaseModel {
     'platformFee',
     'productId',
     'productName',
+    'shippingDetails',
     'status',
     'updatedAt',
+    'uuid',
     'vendorId',
     'vendorPayout',
   ] as const
@@ -286,9 +303,13 @@ export class OrderSchema extends BaseModel {
   @column()
   declare productName: string | null
   @column()
+  declare shippingDetails: any | null
+  @column()
   declare status: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
   @column()
   declare vendorId: number | null
   @column()
@@ -305,6 +326,7 @@ export class PaymentGatewayKeySchema extends BaseModel {
     'publicKey',
     'secretKey',
     'updatedAt',
+    'uuid',
     'webhookSecret',
   ] as const
   $columns = PaymentGatewayKeySchema.$columns
@@ -325,6 +347,8 @@ export class PaymentGatewayKeySchema extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
+  declare uuid: string | null
+  @column()
   declare webhookSecret: string | null
 }
 
@@ -340,6 +364,7 @@ export class PayoutRequestSchema extends BaseModel {
     'status',
     'updatedAt',
     'userId',
+    'uuid',
     'walletId',
   ] as const
   $columns = PayoutRequestSchema.$columns
@@ -364,6 +389,8 @@ export class PayoutRequestSchema extends BaseModel {
   @column()
   declare userId: number
   @column()
+  declare uuid: string | null
+  @column()
   declare walletId: number
 }
 
@@ -377,6 +404,8 @@ export class ProductSchema extends BaseModel {
     'conversionRate',
     'createdAt',
     'description',
+    'digitalAssetName',
+    'digitalAssetUrl',
     'galleryUrls',
     'gravityScore',
     'id',
@@ -397,6 +426,7 @@ export class ProductSchema extends BaseModel {
     'totalRevenue',
     'totalSales',
     'updatedAt',
+    'uuid',
     'vendorId',
     'vendorName',
   ] as const
@@ -410,11 +440,17 @@ export class ProductSchema extends BaseModel {
   @column()
   declare category: string
   @column()
+  declare commissionRate: string
+  @column()
   declare conversionRate: string | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
   declare description: string | null
+  @column()
+  declare digitalAssetName: string | null
+  @column()
+  declare digitalAssetUrl: string | null
   @column()
   declare galleryUrls: any | null
   @column()
@@ -427,15 +463,8 @@ export class ProductSchema extends BaseModel {
   declare isFeatured: boolean | null
   @column()
   declare name: string
-  @column({
-    consume: (value: string | number | null) => (value === null ? null : Number(value)),
-  })
+  @column()
   declare price: string
-
-  @column({
-    consume: (value: string | number | null) => (value === null ? null : Number(value)),
-  })
-  declare commissionRate: number
   @column()
   declare productType: string
   @column()
@@ -462,6 +491,8 @@ export class ProductSchema extends BaseModel {
   declare totalSales: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
   @column()
   declare vendorId: number | null
   @column()
@@ -495,6 +526,7 @@ export class ReviewSchema extends BaseModel {
     'status',
     'title',
     'updatedAt',
+    'uuid',
   ] as const
   $columns = ReviewSchema.$columns
   @column()
@@ -525,10 +557,12 @@ export class ReviewSchema extends BaseModel {
   declare title: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
 }
 
 export class SiteSettingSchema extends BaseModel {
-  static $columns = ['createdAt', 'id', 'key', 'label', 'updatedAt', 'value'] as const
+  static $columns = ['createdAt', 'id', 'key', 'label', 'updatedAt', 'uuid', 'value'] as const
   $columns = SiteSettingSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -540,6 +574,8 @@ export class SiteSettingSchema extends BaseModel {
   declare label: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string | null
   @column()
   declare value: string | null
 }
@@ -576,6 +612,7 @@ export class UserSchema extends BaseModel {
     'role',
     'twitter',
     'updatedAt',
+    'uuid',
     'website',
     'youtube',
   ] as const
@@ -641,6 +678,8 @@ export class UserSchema extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
+  declare uuid: string | null
+  @column()
   declare website: string | null
   @column()
   declare youtube: string | null
@@ -657,6 +696,7 @@ export class WalletTransactionSchema extends BaseModel {
     'referenceId',
     'referenceType',
     'type',
+    'uuid',
     'walletId',
   ] as const
   $columns = WalletTransactionSchema.$columns
@@ -679,6 +719,8 @@ export class WalletTransactionSchema extends BaseModel {
   @column()
   declare type: string
   @column()
+  declare uuid: string | null
+  @column()
   declare walletId: number
 }
 
@@ -691,6 +733,7 @@ export class WalletSchema extends BaseModel {
     'pendingBalance',
     'updatedAt',
     'userId',
+    'uuid',
   ] as const
   $columns = WalletSchema.$columns
   @column()
@@ -707,4 +750,6 @@ export class WalletSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare userId: number
+  @column()
+  declare uuid: string | null
 }

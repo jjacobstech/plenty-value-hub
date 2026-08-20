@@ -256,7 +256,6 @@ export default class WebhookController {
     }
   }
 
-
   /**
    * GET /api/payments/webhook-endpoints
    * Get all webhook endpoints (for configuration)

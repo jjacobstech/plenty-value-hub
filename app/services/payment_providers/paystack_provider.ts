@@ -91,7 +91,10 @@ export class PaystackProvider implements PaymentProvider {
       }
     } catch (error: any) {
       if (error?.response?.data) {
-        console.error('[PaystackProvider.initiatePayment] Paystack API error response:', error.response.data)
+        console.error(
+          '[PaystackProvider.initiatePayment] Paystack API error response:',
+          error.response.data
+        )
       }
       return {
         success: false,
@@ -100,7 +103,9 @@ export class PaystackProvider implements PaymentProvider {
         status: { status: 'failed', code: 'PAYSTACK_ERROR', message: 'Payment initiation failed' },
         amount: request.amount,
         currency: request.currency,
-        message: error?.response?.data?.message || (error instanceof Error ? error.message : 'Payment initiation failed'),
+        message:
+          error?.response?.data?.message ||
+          (error instanceof Error ? error.message : 'Payment initiation failed'),
         timestamp: new Date(),
       }
     }

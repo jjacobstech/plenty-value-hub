@@ -570,6 +570,12 @@ const routes = {
     tokens: [{"old":"/api/uploads/product-gallery","type":0,"val":"api","end":""},{"old":"/api/uploads/product-gallery","type":0,"val":"uploads","end":""},{"old":"/api/uploads/product-gallery","type":0,"val":"product-gallery","end":""}],
     types: placeholder as Registry['upload.upload_product_gallery']['types'],
   },
+  'upload.upload_digital_asset': {
+    methods: ["POST"],
+    pattern: '/api/uploads/digital-asset',
+    tokens: [{"old":"/api/uploads/digital-asset","type":0,"val":"api","end":""},{"old":"/api/uploads/digital-asset","type":0,"val":"uploads","end":""},{"old":"/api/uploads/digital-asset","type":0,"val":"digital-asset","end":""}],
+    types: placeholder as Registry['upload.upload_digital_asset']['types'],
+  },
   'upload.upload_profile_image': {
     methods: ["POST"],
     pattern: '/api/uploads/profile-image',

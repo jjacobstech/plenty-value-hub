@@ -50,7 +50,6 @@ export default function AdminProducts(props: AdminProductsProps) {
   const [statusFilter, setStatusFilter] = useState('all')
 
   const updateProduct = async (id: number, data: Record<string, any>) => {
-
     try {
       const { data: updated } = await api.put(`/api/products/${id}`, data)
       console.log(data, updated)

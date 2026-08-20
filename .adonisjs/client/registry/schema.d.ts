@@ -1135,6 +1135,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadProductGallery']>>>
     }
   }
+  'upload.upload_digital_asset': {
+    methods: ["POST"]
+    pattern: '/api/uploads/digital-asset'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadDigitalAsset']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/upload_controller').default['uploadDigitalAsset']>>>
+    }
+  }
   'upload.upload_profile_image': {
     methods: ["POST"]
     pattern: '/api/uploads/profile-image'

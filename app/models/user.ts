@@ -2,10 +2,21 @@ import { UserSchema } from '#database/schema'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
-import { column } from '@adonisjs/lucid/orm'
+import { column, beforeSave } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
+import crypto from 'node:crypto'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
+  @column()
+  declare uuid: string
+
+  @beforeSave()
+  static async generateUuid(user: User) {
+    if (!user.uuid) {
+      user.uuid = crypto.randomUUID()
+    }
+  }
+
   @column()
   declare role: 'admin' | 'vendor' | 'affiliate' | 'consumer'
 

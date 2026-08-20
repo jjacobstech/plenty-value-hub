@@ -84,7 +84,7 @@ export default class PaymentController {
       const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
         productPrice,
         salePrice,
-        product.commissionRate,
+        Number(product.commissionRate),
         !!payload.affiliateLinkCode
       )
 
@@ -123,6 +123,7 @@ export default class PaymentController {
           status: 'completed',
           currency: 'USD',
           paymentMethod: 'manual',
+          shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
         })
 
         await this.postOrderComplete(order, product, affiliateLink)
@@ -130,11 +131,11 @@ export default class PaymentController {
         const vendor = await User.find(product.vendorId)
         const vendorPayoutInfo = vendor
           ? {
-            fullName: vendor.fullName,
-            email: vendor.email,
-            payoutMethod: vendor.payoutMethod,
-            payoutDetails: vendor.payoutDetails,
-          }
+              fullName: vendor.fullName,
+              email: vendor.email,
+              payoutMethod: vendor.payoutMethod,
+              payoutDetails: vendor.payoutDetails,
+            }
           : null
 
         logger.info('Manual payment order created', {
@@ -178,6 +179,7 @@ export default class PaymentController {
         status: 'pending',
         currency: systemCurrency,
         paymentMethod: chosenProvider,
+        shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
       })
 
       const { WalletService } = await import('#services/wallet_service')

@@ -16,11 +16,16 @@ export const CURRENCY_SYMBOLS: Record<string, string> = {
 
 export const getActiveCurrencySymbol = (): string => {
   if (typeof window !== 'undefined') {
-    // 1. Check window.__inertia_page
+    // 1. Check window.__currencySymbol set by PublicLayout or app
+    if ((window as any)?.__currencySymbol) {
+      return (window as any).__currencySymbol
+    }
+
+    // 2. Check window.__inertia_page
     const winProp = (window as any)?.__inertia_page?.props?.currencySymbol
     if (winProp) return winProp
 
-    // 2. Check Inertia root element dataset / page data
+    // 3. Check Inertia root element dataset / page data
     const appEl = document.getElementById('app')
     if (appEl?.dataset?.page) {
       try {
@@ -32,6 +37,24 @@ export const getActiveCurrencySymbol = (): string => {
     }
   }
   return '$'
+}
+
+export const getActiveCurrency = (): string => {
+  if (typeof window !== 'undefined') {
+    const winProp = (window as any)?.__inertia_page?.props?.systemCurrency
+    if (winProp) return winProp
+
+    const appEl = document.getElementById('app')
+    if (appEl?.dataset?.page) {
+      try {
+        const pageData = JSON.parse(appEl.dataset.page)
+        if (pageData?.props?.systemCurrency) {
+          return pageData.props.systemCurrency
+        }
+      } catch {}
+    }
+  }
+  return 'USD'
 }
 
 export const formatCurrency = (amount: any, currencySymbol?: string, compact = false) => {

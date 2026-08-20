@@ -4,7 +4,7 @@ import StatsCard from '@/components/shared/StatsCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { DollarSign, Users, Package, ShoppingCart, TrendingUp, Mail } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { formatUSD as formatNGN } from '@/lib/currency'
+import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 
 type AdminDashboardProps = {
   products: any[]
@@ -42,6 +42,8 @@ export default function AdminDashboard({
     revenue,
   }))
 
+  const curr = getActiveCurrency()
+
   return (
     <DashboardLayout role="admin">
       <div className="space-y-6">
@@ -51,9 +53,9 @@ export default function AdminDashboard({
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-          <StatsCard title="GMV ($)" value={formatNGN(totalGMV)} icon={DollarSign} />
+          <StatsCard title={`GMV (${curr})`} value={formatNGN(totalGMV)} icon={DollarSign} />
           <StatsCard
-            title="Platform Revenue ($)"
+            title={`Platform Revenue (${curr})`}
             value={formatNGN(platformRevenue)}
             icon={TrendingUp}
           />

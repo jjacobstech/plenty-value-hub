@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { usePage, router } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
@@ -26,6 +26,7 @@ import {
 } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
 import { cn } from '@/lib/utils'
+import { CURRENCY_SYMBOLS } from '@/lib/currency'
 
 type Role = 'vendor' | 'affiliate' | 'admin'
 
@@ -196,7 +197,15 @@ export default function DashboardLayout({
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
-  const { user } = usePage().props as any
+  const { user, currencySymbol, systemCurrency } = usePage().props as any
+
+  const symbol = currencySymbol || (systemCurrency ? CURRENCY_SYMBOLS[systemCurrency] : '$') || '$'
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      ;(window as any).__currencySymbol = symbol
+    }
+  }, [symbol])
 
   const handleLogout = () => router.post('/logout')
 

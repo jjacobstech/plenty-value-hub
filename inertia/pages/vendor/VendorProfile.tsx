@@ -176,7 +176,11 @@ export default function VendorProfile(props: VendorProfileProps) {
               <div className="relative w-20 h-20">
                 <div className="w-20 h-20 rounded-2xl border-4 border-white bg-white shadow-lg overflow-hidden">
                   {form.businessLogo ? (
-                    <img src={form.businessLogo} alt="Logo" className="w-full h-full object-cover" />
+                    <img
+                      src={form.businessLogo}
+                      alt="Logo"
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-[#81C14B]/10">
                       <Store className="w-8 h-8 text-[#81C14B]" />
@@ -217,7 +221,6 @@ export default function VendorProfile(props: VendorProfileProps) {
             </p>
           </CardContent>
         </Card>
-
 
         {/* Business Information */}
         <Card>

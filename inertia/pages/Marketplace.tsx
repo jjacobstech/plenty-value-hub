@@ -102,7 +102,10 @@ function normalizeProduct(p: Record<string, any>): Product {
   const commissionRate = num(pick(p, 'commissionRate', 'commission_rate'))
   const gravityScore = num(pick(p, 'gravityScore', 'gravity_score'))
   const rating = num(pick(p, 'rating', 'averageRating', 'average_rating'))
-  const vendorName = pick(p, 'vendorName', 'vendor_name', 'vendor')?.name ?? pick(p, 'vendorName', 'vendor_name') ?? null
+  const vendorName =
+    pick(p, 'vendorName', 'vendor_name', 'vendor')?.name ??
+    pick(p, 'vendorName', 'vendor_name') ??
+    null
 
   const imageUrl =
     pick(
@@ -150,7 +153,7 @@ function normalizeProduct(p: Record<string, any>): Product {
 }
 
 /** Price actually charged — sale price when set, otherwise list price. */
-const effectivePrice = (p: Product) => (p.salePrice ?? p.price)
+const effectivePrice = (p: Product) => p.salePrice ?? p.price
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                         */
@@ -344,7 +347,7 @@ export default function Marketplace({ products: rawProducts = [] }: MarketplaceP
                             ? {
                                 color: '#001845',
                                 borderLeftColor: '#81C14B',
-                              backgroundColor: '#00184508',
+                                backgroundColor: '#00184508',
                               }
                             : {}
                         }

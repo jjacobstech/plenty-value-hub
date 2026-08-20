@@ -230,6 +230,7 @@ router
         // File uploads (unified upload controller)
         router.post('/uploads/product-image', [controllers.Upload, 'uploadProductImage'])
         router.post('/uploads/product-gallery', [controllers.Upload, 'uploadProductGallery'])
+        router.post('/uploads/digital-asset', [controllers.Upload, 'uploadDigitalAsset'])
         router.post('/uploads/profile-image', [controllers.Upload, 'uploadProfileImage'])
         router.post('/uploads/admin-image', [controllers.Upload, 'uploadAdminImage'])
         router.post('/uploads/video', [controllers.Upload, 'uploadVideo'])

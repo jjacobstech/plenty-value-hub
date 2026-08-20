@@ -1,11 +1,22 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, beforeSave } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
+import crypto from 'node:crypto'
 
 export default class SiteSetting extends BaseModel {
   static table = 'site_settings'
 
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare uuid: string
+
+  @beforeSave()
+  static async generateUuid(model: SiteSetting) {
+    if (!model.uuid) {
+      model.uuid = crypto.randomUUID()
+    }
+  }
 
   @column()
   declare key: string

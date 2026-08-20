@@ -119,6 +119,15 @@ export default function ProductDetail({
     () => payment.activeProvider ?? payment.providers[0]?.key ?? ''
   )
 
+  const [shippingDetails, setShippingDetails] = useState({
+    address: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
+    phone: '',
+  })
+
   // Guard against an Inertia partial reload changing the provider list.
   useEffect(() => {
     if (!payment.providers.some((p) => p.key === selectedProvider)) {
@@ -143,6 +152,14 @@ export default function ProductDetail({
       return
     }
 
+    if (
+      product.productType === 'physical' &&
+      (!shippingDetails.address.trim() || !shippingDetails.city.trim())
+    ) {
+      toast.error('Please fill in your shipping address and city for this physical product.')
+      return
+    }
+
     // Read at click time, not render time — safe under SSR.
     const affiliateLinkCode =
       typeof window !== 'undefined' ? sessionStorage.getItem('pv_ref') : null
@@ -155,6 +172,7 @@ export default function ProductDetail({
         affiliateLinkCode,
         callbackUrl: window.location.href,
         email,
+        shippingDetails: product.productType === 'physical' ? shippingDetails : undefined,
       })
 
       if (!res.data?.success) {
@@ -343,6 +361,58 @@ export default function ProductDetail({
               </p>
             </div>
           </div>
+
+          {/* Physical Product Shipping Address Form */}
+          {product.productType === 'physical' && checkoutAvailable && (
+            <div className="space-y-3 p-4 bg-muted/40 rounded-xl border border-border/60">
+              <p className="text-xs font-semibold text-slate-800 uppercase tracking-wider">
+                Shipping Address (Physical Delivery)
+              </p>
+              <div className="space-y-2">
+                <Input
+                  placeholder="Street Address *"
+                  value={shippingDetails.address}
+                  onChange={(e) =>
+                    setShippingDetails({ ...shippingDetails, address: e.target.value })
+                  }
+                  required
+                />
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="City *"
+                    value={shippingDetails.city}
+                    onChange={(e) =>
+                      setShippingDetails({ ...shippingDetails, city: e.target.value })
+                    }
+                    required
+                  />
+                  <Input
+                    placeholder="State / Province"
+                    value={shippingDetails.state}
+                    onChange={(e) =>
+                      setShippingDetails({ ...shippingDetails, state: e.target.value })
+                    }
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Input
+                    placeholder="Country"
+                    value={shippingDetails.country}
+                    onChange={(e) =>
+                      setShippingDetails({ ...shippingDetails, country: e.target.value })
+                    }
+                  />
+                  <Input
+                    placeholder="Phone Number"
+                    value={shippingDetails.phone}
+                    onChange={(e) =>
+                      setShippingDetails({ ...shippingDetails, phone: e.target.value })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Guest email — gateways require one for the receipt */}
           {needsEmail && checkoutAvailable && (

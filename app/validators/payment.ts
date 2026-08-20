@@ -8,6 +8,16 @@ export const initializePaymentValidator = vine.create({
   affiliateLinkCode: vine.string().trim().optional(),
   callbackUrl: vine.string().trim().optional(),
   email: vine.string().email().optional(),
+  shippingDetails: vine
+    .object({
+      address: vine.string().trim().optional(),
+      city: vine.string().trim().optional(),
+      state: vine.string().trim().optional(),
+      country: vine.string().trim().optional(),
+      postalCode: vine.string().trim().optional(),
+      phone: vine.string().trim().optional(),
+    })
+    .optional(),
 })
 
 export const verifyPaymentValidator = vine.create({
