@@ -63,9 +63,15 @@ export default class ProfileController {
     const user = await User.findOrFail(auth.user!.id)
     const body = request.body() as Record<string, any>
 
+    console.log(body)
+
     const updates = pickPresent(body, [
       'businessName',
       'businessDescription',
+          'coverBanner',
+      'profilePicture',
+      'coverBanner',
+      'businessLogo',
       'phone',
       'website',
       'instagram',
@@ -83,6 +89,8 @@ export default class ProfileController {
       'payoutEmail',
       'payoutAccountId',
     ])
+
+    console.log(updates)
 
     user.merge(updates)
     await user.save()

@@ -161,6 +161,8 @@ export default function ImageUploadField({
         headers: { 'Content-Type': 'multipart/form-data' },
       })
 
+      console.log(data)
+
       setUploadProgress(100)
 
       if (data.success && data.url) {
