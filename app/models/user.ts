@@ -2,11 +2,9 @@ import { UserSchema } from '#database/schema'
 import hash from '@adonisjs/core/services/hash'
 import { compose } from '@adonisjs/core/helpers'
 import { withAuthFinder } from '@adonisjs/auth/mixins/lucid'
-import { column, beforeSave, computed } from '@adonisjs/lucid/orm'
+import { column, beforeSave } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 import crypto from 'node:crypto'
-import drive from '@adonisjs/drive/services/main'
-import env from '#start/env'
 
 export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   @column()
@@ -127,37 +125,6 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
 
   @column()
   declare payoutDetails: string | null
-
-  /**
-   * Resolve image URLs from storage keys
-   */
-  private async resolveImageUrl(imageKey: string | null): Promise<string | null> {
-    if (!imageKey) return null
-    
-    // If it's already a full URL, return it
-    if (imageKey.startsWith('http://') || imageKey.startsWith('https://')) {
-      return imageKey
-    }
-
-    try {
-      const storageDisk = env.get('DRIVE')
-      const url = await drive.use(storageDisk).getUrl(imageKey)
-      return url
-    } catch {
-      return null
-    }
-  }
-
-  /**
-   * Custom serializer to resolve image URLs
-   */
-  override serialize() {
-    const serialized = super.serialize() as any
-    
-    // Sync version for basic profile loads - store keys as-is
-    // URLs will be resolved on-demand by computed properties or getter
-    return serialized
-  }
 
   get initials() {
     const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
