@@ -5,6 +5,7 @@ import drive from '@adonisjs/drive/services/main'
 import { createReadStream } from 'node:fs'
 import { extname } from 'node:path'
 import { randomBytes } from 'node:crypto'
+import { ImageService } from '#services/image_service'
 
 const ALLOWED_IMAGE_TYPES = ['jpg', 'jpeg', 'png', 'webp', 'gif']
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024 // 5 MB
@@ -50,7 +51,12 @@ export default class ProfileController {
     user.merge(updates)
     await user.save()
 
-    return response.json({ success: true, user: user.serialize() })
+    // Resolve image URLs before returning
+    const userData = user.serialize() as any
+    userData.profilePicture = await ImageService.getUrl(user.profilePicture)
+    userData.coverBanner = await ImageService.getUrl(user.coverBanner)
+
+    return response.json({ success: true, user: userData })
   }
 
   async updateVendor({ request, response, auth }: HttpContext) {
@@ -81,7 +87,13 @@ export default class ProfileController {
     user.merge(updates)
     await user.save()
 
-    return response.json({ success: true, user: user.serialize() })
+    // Resolve image URLs before returning
+    const userData = user.serialize() as any
+    userData.profilePicture = await ImageService.getUrl(user.profilePicture)
+    userData.businessLogo = await ImageService.getUrl(user.businessLogo)
+    userData.coverBanner = await ImageService.getUrl(user.coverBanner)
+
+    return response.json({ success: true, user: userData })
   }
 
   async uploadImage({ request, response, auth }: HttpContext) {
@@ -107,18 +119,25 @@ export default class ProfileController {
     const ext = extname(file.clientName).toLowerCase().replace('.', '') || 'jpg'
     const key = `profiles/${user.id}/${imageType}/${randomBytes(8).toString('hex')}.${ext}`
 
-    await drive.use(storageDisk).putStream(key, createReadStream(file.tmpPath!), {
-      contentType: file.headers['content-type'],
-      visibility: 'public',
-    })
+    try {
+      await drive.use(storageDisk).putStream(key, createReadStream(file.tmpPath!), {
+        contentType: file.headers['content-type'],
+        visibility: 'public',
+      })
 
-    const url = await drive.use(storageDisk).getUrl(key)
+      // Store only the key, not the full URL
+      if (imageType === 'profile_picture') user.profilePicture = key
+      else if (imageType === 'business_logo') user.businessLogo = key
+      else if (imageType === 'cover_banner') user.coverBanner = key
 
-    if (imageType === 'profile_picture') user.profilePicture = url
-    else if (imageType === 'business_logo') user.businessLogo = url
-    else if (imageType === 'cover_banner') user.coverBanner = url
+      await user.save()
 
-    await user.save()
-    return response.json({ success: true, url })
+      // Return the URL for frontend display
+      const url = await drive.use(storageDisk).getUrl(key)
+      return response.json({ success: true, url, key })
+    } catch (error) {
+      console.error('Profile image upload error:', error)
+      return response.internalServerError({ error: 'Failed to upload image' })
+    }
   }
 }
