@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
+import { PAYOUT_METHODS, MOBILE_MONEY_PROVIDERS } from '@/constants/payout-methods'
 
 type AffiliateProfileProps = {
   user: any
@@ -59,8 +60,17 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
     niche: user?.niche,
     profilePicture: user?.profilePicture,
     coverBanner: user?.coverBanner,
-    payoutMethod: user?.payoutMethod || 'bank_transfer',
-    payoutDetails: user?.payoutDetails || '',
+    payoutMethod: user?.payoutMethod || 'bank',
+    // Bank Transfer fields
+    payoutBankName: user?.payoutBankName || '',
+    payoutAccountNumber: user?.payoutAccountNumber || '',
+    payoutAccountName: user?.payoutAccountName || '',
+    // Mobile Money fields
+    payoutMobileProvider: user?.payoutMobileProvider || '',
+    payoutMobileNumber: user?.payoutMobileNumber || '',
+    // PayPal/Stripe/Other
+    payoutEmail: user?.payoutEmail || '',
+    payoutAccountId: user?.payoutAccountId || '',
   })
 
   useEffect(() => {
@@ -76,8 +86,14 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
       niche: user?.niche,
       profilePicture: user?.profilePicture,
       coverBanner: user?.coverBanner,
-      payoutMethod: user?.payoutMethod || 'bank_transfer',
-      payoutDetails: user?.payoutDetails || '',
+      payoutMethod: user?.payoutMethod || 'bank',
+      payoutBankName: user?.payoutBankName || '',
+      payoutAccountNumber: user?.payoutAccountNumber || '',
+      payoutAccountName: user?.payoutAccountName || '',
+      payoutMobileProvider: user?.payoutMobileProvider || '',
+      payoutMobileNumber: user?.payoutMobileNumber || '',
+      payoutEmail: user?.payoutEmail || '',
+      payoutAccountId: user?.payoutAccountId || '',
     })
   }, [user])
 
@@ -95,7 +111,13 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
         niche: form.niche || undefined,
         marketingChannels: form.marketingChannels || undefined,
         payoutMethod: form.payoutMethod || undefined,
-        payoutDetails: form.payoutDetails || undefined,
+        payoutBankName: form.payoutBankName || undefined,
+        payoutAccountNumber: form.payoutAccountNumber || undefined,
+        payoutAccountName: form.payoutAccountName || undefined,
+        payoutMobileProvider: form.payoutMobileProvider || undefined,
+        payoutMobileNumber: form.payoutMobileNumber || undefined,
+        payoutEmail: form.payoutEmail || undefined,
+        payoutAccountId: form.payoutAccountId || undefined,
       })
       toast.success('Profile updated!')
       setEditing(false)
@@ -406,45 +428,265 @@ export default function AffiliateProfile(props: AffiliateProfileProps) {
             <CardTitle className="text-base flex items-center justify-between">
               <span>Payout Method & Account Details</span>
               <Badge variant="outline" className="text-xs capitalize font-medium">
-                {form.payoutMethod?.replace('_', ' ') || 'Bank Transfer'}
+                {form.payoutMethod?.replace('_', ' ') || 'Bank'}
               </Badge>
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="grid grid-cols-1 gap-4">
-              <div>
-                <Label>Payout Method</Label>
-                <select
-                  disabled={!editing}
-                  value={form.payoutMethod}
-                  onChange={(e) => setForm({ ...form, payoutMethod: e.target.value })}
-                  className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-ring disabled:opacity-50"
-                >
-                  <option value="bank_transfer">Direct Bank Transfer</option>
-                  <option value="paypal">PayPal Account</option>
-                  <option value="stripe">Stripe Connect</option>
-                  <option value="mobile_money">Mobile Money</option>
-                </select>
-              </div>
-              <div>
-                <Label>Account Details / Instructions</Label>
-                <Textarea
-                  disabled={!editing}
-                  rows={3}
-                  value={form.payoutDetails}
-                  onChange={(e) => setForm({ ...form, payoutDetails: e.target.value })}
-                  placeholder={
-                    form.payoutMethod === 'paypal'
-                      ? 'Enter your PayPal email address (e.g., affiliate@paypal.com)'
-                      : form.payoutMethod === 'mobile_money'
-                        ? 'Enter your Mobile Money provider, phone number, and account name'
-                        : form.payoutMethod === 'stripe'
-                          ? 'Enter your Stripe Account ID (acct_xxx) or connected email'
-                          : 'Enter Bank Name, Account Number, Account Holder Name, and SWIFT/Routing code'
-                  }
-                />
-              </div>
+          <CardContent className="space-y-6">
+            {/* Payment Method Selection */}
+            <div>
+              <Label htmlFor="payout-method" className="text-base font-semibold mb-3 block">
+                Select Payout Method
+              </Label>
+              <select
+                id="payout-method"
+                disabled={!editing}
+                value={form.payoutMethod}
+                onChange={(e) => setForm({ ...form, payoutMethod: e.target.value })}
+                className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-ring disabled:opacity-50"
+              >
+                {PAYOUT_METHODS.map((method) => (
+                  <option key={method.key} value={method.key}>
+                    {method.label}
+                  </option>
+                ))}
+              </select>
             </div>
+
+            {/* Bank Transfer Fields */}
+            {(form.payoutMethod === 'bank' || form.payoutMethod === 'bank_transfer') && (
+              <div className="space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <p className="text-sm font-medium text-blue-900">Bank Account Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <Label htmlFor="bank-name">Bank Name *</Label>
+                    <Input
+                      id="bank-name"
+                      disabled={!editing}
+                      value={form.payoutBankName}
+                      onChange={(e) => setForm({ ...form, payoutBankName: e.target.value })}
+                      placeholder="e.g., Guaranty Trust Bank (GTB)"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="account-name">Account Holder Name *</Label>
+                    <Input
+                      id="account-name"
+                      disabled={!editing}
+                      value={form.payoutAccountName}
+                      onChange={(e) => setForm({ ...form, payoutAccountName: e.target.value })}
+                      placeholder="Your full name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="account-number">Account Number *</Label>
+                    <Input
+                      id="account-number"
+                      disabled={!editing}
+                      value={form.payoutAccountNumber}
+                      onChange={(e) => setForm({ ...form, payoutAccountNumber: e.target.value })}
+                      placeholder="10-16 digit account number"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Mobile Money Fields */}
+            {form.payoutMethod === 'mobile_money' && (
+              <div className="space-y-4 p-4 bg-green-50 rounded-lg border border-green-200">
+                <p className="text-sm font-medium text-green-900">Mobile Money Details</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="mobile-provider">Provider *</Label>
+                    <select
+                      id="mobile-provider"
+                      disabled={!editing}
+                      value={form.payoutMobileProvider}
+                      onChange={(e) => setForm({ ...form, payoutMobileProvider: e.target.value })}
+                      className="w-full text-sm rounded-md border border-input bg-background px-3 py-2 text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-ring disabled:opacity-50"
+                      required
+                    >
+                      <option value="">Select provider</option>
+                      {MOBILE_MONEY_PROVIDERS.map((provider) => (
+                        <option key={provider.key} value={provider.key}>
+                          {provider.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <Label htmlFor="mobile-number">Phone Number *</Label>
+                    <Input
+                      id="mobile-number"
+                      disabled={!editing}
+                      value={form.payoutMobileNumber}
+                      onChange={(e) => setForm({ ...form, payoutMobileNumber: e.target.value })}
+                      placeholder="+234 XXX XXX XXXX"
+                      required
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="account-name-mobile">Account Holder Name *</Label>
+                    <Input
+                      id="account-name-mobile"
+                      disabled={!editing}
+                      value={form.payoutAccountName}
+                      onChange={(e) => setForm({ ...form, payoutAccountName: e.target.value })}
+                      placeholder="Name registered with mobile money"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* PayPal Fields */}
+            {form.payoutMethod === 'paypal' && (
+              <div className="space-y-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                <p className="text-sm font-medium text-yellow-900">PayPal Account Details</p>
+                <div>
+                  <Label htmlFor="paypal-email">PayPal Email *</Label>
+                  <Input
+                    id="paypal-email"
+                    type="email"
+                    disabled={!editing}
+                    value={form.payoutEmail}
+                    onChange={(e) => setForm({ ...form, payoutEmail: e.target.value })}
+                    placeholder="your.email@paypal.com"
+                    required
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Stripe Fields */}
+            {form.payoutMethod === 'stripe' && (
+              <div className="space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                <p className="text-sm font-medium text-purple-900 mb-3">Stripe Account Details</p>
+                <p className="text-xs text-purple-700 mb-4">
+                  Enter your Stripe account information. Admin will use this to process your payouts manually.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="stripe-account-id">Account ID *</Label>
+                    <Input
+                      id="stripe-account-id"
+                      disabled={!editing}
+                      value={form.payoutAccountId}
+                      onChange={(e) => setForm({ ...form, payoutAccountId: e.target.value })}
+                      placeholder="acct_1234567890"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="stripe-email">Email Associated with Account *</Label>
+                    <Input
+                      id="stripe-email"
+                      type="email"
+                      disabled={!editing}
+                      value={form.payoutEmail}
+                      onChange={(e) => setForm({ ...form, payoutEmail: e.target.value })}
+                      placeholder="stripe@example.com"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Paystack Fields */}
+            {form.payoutMethod === 'paystack' && (
+              <div className="space-y-4 p-4 bg-indigo-50 rounded-lg border border-indigo-200">
+                <p className="text-sm font-medium text-indigo-900 mb-3">Paystack Bank Account Details</p>
+                <p className="text-xs text-indigo-700 mb-4">
+                  Enter your bank account where Paystack will send your payouts. Admin will use this information.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <Label htmlFor="paystack-bank">Bank Name *</Label>
+                    <Input
+                      id="paystack-bank"
+                      disabled={!editing}
+                      value={form.payoutBankName}
+                      onChange={(e) => setForm({ ...form, payoutBankName: e.target.value })}
+                      placeholder="e.g., Guaranty Trust Bank (GTB)"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="paystack-account-name">Account Name *</Label>
+                    <Input
+                      id="paystack-account-name"
+                      disabled={!editing}
+                      value={form.payoutAccountName}
+                      onChange={(e) => setForm({ ...form, payoutAccountName: e.target.value })}
+                      placeholder="Account holder name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="paystack-account-number">Account Number *</Label>
+                    <Input
+                      id="paystack-account-number"
+                      disabled={!editing}
+                      value={form.payoutAccountNumber}
+                      onChange={(e) => setForm({ ...form, payoutAccountNumber: e.target.value })}
+                      placeholder="10-16 digits"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Flutterwave Fields */}
+            {form.payoutMethod === 'flutterwave' && (
+              <div className="space-y-4 p-4 bg-red-50 rounded-lg border border-red-200">
+                <p className="text-sm font-medium text-red-900 mb-3">Flutterwave Bank Account Details</p>
+                <p className="text-xs text-red-700 mb-4">
+                  Enter your bank account where Flutterwave will send your payouts. Admin will use this information.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="col-span-2">
+                    <Label htmlFor="flutterwave-bank">Bank Name *</Label>
+                    <Input
+                      id="flutterwave-bank"
+                      disabled={!editing}
+                      value={form.payoutBankName}
+                      onChange={(e) => setForm({ ...form, payoutBankName: e.target.value })}
+                      placeholder="e.g., First Bank Nigeria"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="flutterwave-account-name">Account Name *</Label>
+                    <Input
+                      id="flutterwave-account-name"
+                      disabled={!editing}
+                      value={form.payoutAccountName}
+                      onChange={(e) => setForm({ ...form, payoutAccountName: e.target.value })}
+                      placeholder="Account holder name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="flutterwave-account-number">Account Number *</Label>
+                    <Input
+                      id="flutterwave-account-number"
+                      disabled={!editing}
+                      value={form.payoutAccountNumber}
+                      onChange={(e) => setForm({ ...form, payoutAccountNumber: e.target.value })}
+                      placeholder="10-16 digits"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

@@ -1,4 +1,5 @@
 import User from '#models/user'
+import Notification from '#models/notification'
 import type Order from '#models/order'
 import type Product from '#models/product'
 import mail from '@adonisjs/mail/services/main'
@@ -21,6 +22,19 @@ export class NotificationService {
             payoutDetails: vendor.payoutDetails || 'Bank transfer details not set yet.',
           }
         : null
+
+    // Parse shipping details if available
+    let shippingDetails: any = null
+    if (order.shippingDetails) {
+      try {
+        shippingDetails =
+          typeof order.shippingDetails === 'string'
+            ? JSON.parse(order.shippingDetails)
+            : order.shippingDetails
+      } catch (err) {
+        console.error('[NotificationService] Failed to parse shipping details:', err)
+      }
+    }
 
     // 1. Notify Buyer
     if (order.buyerEmail) {
@@ -70,6 +84,7 @@ export class NotificationService {
       if (vendorId) {
         const vendor = await User.find(vendorId)
         if (vendor && vendor.email) {
+          // Send email notification
           await mail.send((message) => {
             message
               .to(vendor.email)
@@ -77,7 +92,23 @@ export class NotificationService {
               .htmlView('emails/vendor_order_notification', {
                 order: serializedOrder,
                 product: serializedProduct,
+                shippingDetails,
               })
+          })
+
+          // Create in-app notification
+          await Notification.createNotification({
+            userId: vendorId,
+            type: 'sale',
+            title: `New Sale: ${product.name}`,
+            message: `You made a sale! Order #${order.orderNumber} for $${order.vendorPayout}`,
+            icon: '🎉',
+            data: {
+              orderId: order.id,
+              productId: product.id,
+              amount: order.vendorPayout,
+            },
+            actionUrl: `/vendor/orders/${order.id}`,
           })
         }
       }

@@ -13,6 +13,7 @@ export const controllers = {
   NewAccount: () => import('#controllers/new_account_controller'),
   NewsletterAdmin: () => import('#controllers/newsletter_admin_controller'),
   Newsletters: () => import('#controllers/newsletters_controller'),
+  Notifications: () => import('#controllers/notifications_controller'),
   Oauth: () => import('#controllers/oauth_controller'),
   Orders: () => import('#controllers/orders_controller'),
   Pages: () => import('#controllers/pages_controller'),

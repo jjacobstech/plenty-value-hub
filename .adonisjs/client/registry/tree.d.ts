@@ -184,6 +184,15 @@ export interface ApiDefinition {
     adminIndex: typeof routes['wallet.admin_index']
     adminUpdate: typeof routes['wallet.admin_update']
   }
+  notifications: {
+    index: typeof routes['notifications.index']
+    getUnreadCount: typeof routes['notifications.get_unread_count']
+    show: typeof routes['notifications.show']
+    markAsRead: typeof routes['notifications.mark_as_read']
+    markAllAsRead: typeof routes['notifications.mark_all_as_read']
+    destroy: typeof routes['notifications.destroy']
+    destroyAll: typeof routes['notifications.destroy_all']
+  }
   blogPosts: {
     index: typeof routes['blog_posts.index']
     store: typeof routes['blog_posts.store']

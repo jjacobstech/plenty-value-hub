@@ -36,7 +36,15 @@ export default class ProfileController {
       'niche',
       'marketingChannels',
       'payoutMethod',
-      'payoutDetails',
+      'payoutBankName',
+      'payoutAccountNumber',
+      'payoutAccountName',
+      'payoutRoutingNumber',
+      'payoutSwiftCode',
+      'payoutMobileProvider',
+      'payoutMobileNumber',
+      'payoutEmail',
+      'payoutAccountId',
     ])
 
     user.merge(updates)
@@ -59,7 +67,15 @@ export default class ProfileController {
       'location',
       'productCategories',
       'payoutMethod',
-      'payoutDetails',
+      'payoutBankName',
+      'payoutAccountNumber',
+      'payoutAccountName',
+      'payoutRoutingNumber',
+      'payoutSwiftCode',
+      'payoutMobileProvider',
+      'payoutMobileNumber',
+      'payoutEmail',
+      'payoutAccountId',
     ])
 
     user.merge(updates)

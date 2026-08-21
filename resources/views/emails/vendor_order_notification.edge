@@ -114,6 +114,48 @@
         </div>
       </div>
 
+      @if(shippingDetails)
+        <div class="details" style="background: #fef3c7; border-left: 3px solid #f59e0b;">
+          <p style="margin: 0 0 12px 0; font-weight: 600; color: #92400e;">📦 Buyer's Shipping Information</p>
+          @if(shippingDetails.address)
+            <div class="row">
+              <span class="label">Address</span>
+              <span class="value">{{ shippingDetails.address }}</span>
+            </div>
+          @end
+          @if(shippingDetails.city)
+            <div class="row">
+              <span class="label">City</span>
+              <span class="value">{{ shippingDetails.city }}</span>
+            </div>
+          @end
+          @if(shippingDetails.state)
+            <div class="row">
+              <span class="label">State/Province</span>
+              <span class="value">{{ shippingDetails.state }}</span>
+            </div>
+          @end
+          @if(shippingDetails.country)
+            <div class="row">
+              <span class="label">Country</span>
+              <span class="value">{{ shippingDetails.country }}</span>
+            </div>
+          @end
+          @if(shippingDetails.postalCode)
+            <div class="row">
+              <span class="label">Postal Code</span>
+              <span class="value">{{ shippingDetails.postalCode }}</span>
+            </div>
+          @end
+          @if(shippingDetails.phone)
+            <div class="row">
+              <span class="label">Phone</span>
+              <span class="value"><a href="tel:{{ shippingDetails.phone }}" style="color: #1e40af; text-decoration: none;">{{ shippingDetails.phone }}</a></span>
+            </div>
+          @end
+        </div>
+      @end
+
       <div class="footer">
         <p>Thank you for partnering with Plenty Value!</p>
       </div>

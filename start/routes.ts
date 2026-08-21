@@ -241,6 +241,15 @@ router
         router.get('/wallet', [controllers.Wallet, 'show'])
         router.post('/wallet/payouts', [controllers.Wallet, 'requestPayout'])
 
+        // Notifications
+        router.get('/notifications', [controllers.Notifications, 'index'])
+        router.get('/notifications/unread', [controllers.Notifications, 'getUnreadCount'])
+        router.get('/notifications/:id', [controllers.Notifications, 'show'])
+        router.patch('/notifications/:id/read', [controllers.Notifications, 'markAsRead'])
+        router.patch('/notifications/read-all', [controllers.Notifications, 'markAllAsRead'])
+        router.delete('/notifications/:id', [controllers.Notifications, 'destroy'])
+        router.delete('/notifications', [controllers.Notifications, 'destroyAll'])
+
         // ── Admin endpoints ─────────────────────────────────────────
         router
           .group(() => {

@@ -25,6 +25,7 @@ import {
   Wallet,
 } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
+import NotificationCenter from '@/components/NotificationCenter'
 import { cn } from '@/lib/utils'
 import { CURRENCY_SYMBOLS } from '@/lib/currency'
 
@@ -237,6 +238,7 @@ export default function DashboardLayout({
           <div className="flex items-center gap-3 ml-auto">
             <span className="text-sm capitalize text-muted-foreground">{role} Dashboard</span>
             {user && <span className="text-sm font-medium">{user.fullName || user.email}</span>}
+            <NotificationCenter />
             <Button
               variant="ghost"
               size="sm"

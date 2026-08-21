@@ -618,6 +618,48 @@ const routes = {
     tokens: [{"old":"/api/wallet/payouts","type":0,"val":"api","end":""},{"old":"/api/wallet/payouts","type":0,"val":"wallet","end":""},{"old":"/api/wallet/payouts","type":0,"val":"payouts","end":""}],
     types: placeholder as Registry['wallet.request_payout']['types'],
   },
+  'notifications.index': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/notifications',
+    tokens: [{"old":"/api/notifications","type":0,"val":"api","end":""},{"old":"/api/notifications","type":0,"val":"notifications","end":""}],
+    types: placeholder as Registry['notifications.index']['types'],
+  },
+  'notifications.get_unread_count': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/notifications/unread',
+    tokens: [{"old":"/api/notifications/unread","type":0,"val":"api","end":""},{"old":"/api/notifications/unread","type":0,"val":"notifications","end":""},{"old":"/api/notifications/unread","type":0,"val":"unread","end":""}],
+    types: placeholder as Registry['notifications.get_unread_count']['types'],
+  },
+  'notifications.show': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/notifications/:id',
+    tokens: [{"old":"/api/notifications/:id","type":0,"val":"api","end":""},{"old":"/api/notifications/:id","type":0,"val":"notifications","end":""},{"old":"/api/notifications/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['notifications.show']['types'],
+  },
+  'notifications.mark_as_read': {
+    methods: ["PATCH"],
+    pattern: '/api/notifications/:id/read',
+    tokens: [{"old":"/api/notifications/:id/read","type":0,"val":"api","end":""},{"old":"/api/notifications/:id/read","type":0,"val":"notifications","end":""},{"old":"/api/notifications/:id/read","type":1,"val":"id","end":""},{"old":"/api/notifications/:id/read","type":0,"val":"read","end":""}],
+    types: placeholder as Registry['notifications.mark_as_read']['types'],
+  },
+  'notifications.mark_all_as_read': {
+    methods: ["PATCH"],
+    pattern: '/api/notifications/read-all',
+    tokens: [{"old":"/api/notifications/read-all","type":0,"val":"api","end":""},{"old":"/api/notifications/read-all","type":0,"val":"notifications","end":""},{"old":"/api/notifications/read-all","type":0,"val":"read-all","end":""}],
+    types: placeholder as Registry['notifications.mark_all_as_read']['types'],
+  },
+  'notifications.destroy': {
+    methods: ["DELETE"],
+    pattern: '/api/notifications/:id',
+    tokens: [{"old":"/api/notifications/:id","type":0,"val":"api","end":""},{"old":"/api/notifications/:id","type":0,"val":"notifications","end":""},{"old":"/api/notifications/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['notifications.destroy']['types'],
+  },
+  'notifications.destroy_all': {
+    methods: ["DELETE"],
+    pattern: '/api/notifications',
+    tokens: [{"old":"/api/notifications","type":0,"val":"api","end":""},{"old":"/api/notifications","type":0,"val":"notifications","end":""}],
+    types: placeholder as Registry['notifications.destroy_all']['types'],
+  },
   'admin.get_platform_stats': {
     methods: ["GET","HEAD"],
     pattern: '/api/stats',

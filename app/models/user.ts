@@ -97,6 +97,33 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   declare payoutMethod: string | null
 
   @column()
+  declare payoutBankName: string | null
+
+  @column()
+  declare payoutAccountNumber: string | null
+
+  @column()
+  declare payoutAccountName: string | null
+
+  @column()
+  declare payoutRoutingNumber: string | null
+
+  @column()
+  declare payoutSwiftCode: string | null
+
+  @column()
+  declare payoutMobileProvider: string | null
+
+  @column()
+  declare payoutMobileNumber: string | null
+
+  @column()
+  declare payoutEmail: string | null
+
+  @column()
+  declare payoutAccountId: string | null
+
+  @column()
   declare payoutDetails: string | null
 
   get initials() {

@@ -1231,6 +1231,90 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['requestPayout']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'notifications.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/notifications'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['index']>>>
+    }
+  }
+  'notifications.get_unread_count': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/notifications/unread'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['getUnreadCount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['getUnreadCount']>>>
+    }
+  }
+  'notifications.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/notifications/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['show']>>>
+    }
+  }
+  'notifications.mark_as_read': {
+    methods: ["PATCH"]
+    pattern: '/api/notifications/:id/read'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAsRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAsRead']>>>
+    }
+  }
+  'notifications.mark_all_as_read': {
+    methods: ["PATCH"]
+    pattern: '/api/notifications/read-all'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAllAsRead']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['markAllAsRead']>>>
+    }
+  }
+  'notifications.destroy': {
+    methods: ["DELETE"]
+    pattern: '/api/notifications/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['destroy']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['destroy']>>>
+    }
+  }
+  'notifications.destroy_all': {
+    methods: ["DELETE"]
+    pattern: '/api/notifications'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['destroyAll']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/notifications_controller').default['destroyAll']>>>
+    }
+  }
   'admin.get_platform_stats': {
     methods: ["GET","HEAD"]
     pattern: '/api/stats'

@@ -8,23 +8,7 @@ import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 export class AffiliateLinkSchema extends BaseModel {
-  static $columns = [
-    'affiliateId',
-    'campaignName',
-    'clicks',
-    'commissionEarned',
-    'conversions',
-    'createdAt',
-    'id',
-    'linkCode',
-    'productId',
-    'productName',
-    'revenue',
-    'status',
-    'subId',
-    'updatedAt',
-    'uuid',
-  ] as const
+  static $columns = ['affiliateId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt', 'uuid'] as const
   $columns = AffiliateLinkSchema.$columns
   @column()
   declare affiliateId: number
@@ -59,26 +43,7 @@ export class AffiliateLinkSchema extends BaseModel {
 }
 
 export class BlogPostSchema extends BaseModel {
-  static $columns = [
-    'authorName',
-    'category',
-    'content',
-    'createdAt',
-    'excerpt',
-    'featuredImageUrl',
-    'id',
-    'publishedAt',
-    'readTimeMinutes',
-    'seoDescription',
-    'seoTitle',
-    'slug',
-    'status',
-    'tags',
-    'title',
-    'updatedAt',
-    'uuid',
-    'viewCount',
-  ] as const
+  static $columns = ['authorName', 'category', 'content', 'createdAt', 'excerpt', 'featuredImageUrl', 'id', 'publishedAt', 'readTimeMinutes', 'seoDescription', 'seoTitle', 'slug', 'status', 'tags', 'title', 'updatedAt', 'uuid', 'viewCount'] as const
   $columns = BlogPostSchema.$columns
   @column()
   declare authorName: string | null
@@ -119,24 +84,7 @@ export class BlogPostSchema extends BaseModel {
 }
 
 export class EmailCampaignSchema extends BaseModel {
-  static $columns = [
-    'audienceSegment',
-    'campaignType',
-    'clickCount',
-    'content',
-    'conversionCount',
-    'createdAt',
-    'id',
-    'name',
-    'openCount',
-    'recipientsCount',
-    'revenueGenerated',
-    'sentAt',
-    'status',
-    'subject',
-    'updatedAt',
-    'uuid',
-  ] as const
+  static $columns = ['audienceSegment', 'campaignType', 'clickCount', 'content', 'conversionCount', 'createdAt', 'id', 'name', 'openCount', 'recipientsCount', 'revenueGenerated', 'sentAt', 'status', 'subject', 'updatedAt', 'uuid'] as const
   $columns = EmailCampaignSchema.$columns
   @column()
   declare audienceSegment: string | null
@@ -173,17 +121,7 @@ export class EmailCampaignSchema extends BaseModel {
 }
 
 export class NewsletterSubscriberSchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'email',
-    'id',
-    'interests',
-    'name',
-    'source',
-    'status',
-    'updatedAt',
-    'uuid',
-  ] as const
+  static $columns = ['createdAt', 'email', 'id', 'interests', 'name', 'source', 'status', 'updatedAt', 'uuid'] as const
   $columns = NewsletterSubscriberSchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
@@ -206,21 +144,7 @@ export class NewsletterSubscriberSchema extends BaseModel {
 }
 
 export class NewsletterSchema extends BaseModel {
-  static $columns = [
-    'category',
-    'clickCount',
-    'content',
-    'createdAt',
-    'id',
-    'openCount',
-    'recipientsCount',
-    'revenueGenerated',
-    'sentAt',
-    'status',
-    'subject',
-    'updatedAt',
-    'uuid',
-  ] as const
+  static $columns = ['category', 'clickCount', 'content', 'createdAt', 'id', 'openCount', 'recipientsCount', 'revenueGenerated', 'sentAt', 'status', 'subject', 'updatedAt', 'uuid'] as const
   $columns = NewsletterSchema.$columns
   @column()
   declare category: string | null
@@ -250,29 +174,39 @@ export class NewsletterSchema extends BaseModel {
   declare uuid: string | null
 }
 
+export class NotificationSchema extends BaseModel {
+  static $columns = ['actionUrl', 'createdAt', 'data', 'icon', 'id', 'isRead', 'message', 'readAt', 'title', 'type', 'updatedAt', 'userId', 'uuid'] as const
+  $columns = NotificationSchema.$columns
+  @column()
+  declare actionUrl: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare data: any | null
+  @column()
+  declare icon: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isRead: boolean | null
+  @column()
+  declare message: string | null
+  @column.dateTime()
+  declare readAt: DateTime | null
+  @column()
+  declare title: string
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: number
+  @column()
+  declare uuid: string | null
+}
+
 export class OrderSchema extends BaseModel {
-  static $columns = [
-    'affiliateId',
-    'affiliateLinkId',
-    'amount',
-    'buyerEmail',
-    'buyerId',
-    'commissionAmount',
-    'createdAt',
-    'currency',
-    'id',
-    'orderNumber',
-    'paymentMethod',
-    'platformFee',
-    'productId',
-    'productName',
-    'shippingDetails',
-    'status',
-    'updatedAt',
-    'uuid',
-    'vendorId',
-    'vendorPayout',
-  ] as const
+  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
   $columns = OrderSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -317,18 +251,7 @@ export class OrderSchema extends BaseModel {
 }
 
 export class PaymentGatewayKeySchema extends BaseModel {
-  static $columns = [
-    'createdAt',
-    'gateway',
-    'id',
-    'isActive',
-    'merchantId',
-    'publicKey',
-    'secretKey',
-    'updatedAt',
-    'uuid',
-    'webhookSecret',
-  ] as const
+  static $columns = ['createdAt', 'gateway', 'id', 'isActive', 'merchantId', 'publicKey', 'secretKey', 'updatedAt', 'uuid', 'webhookSecret'] as const
   $columns = PaymentGatewayKeySchema.$columns
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime | null
@@ -353,20 +276,7 @@ export class PaymentGatewayKeySchema extends BaseModel {
 }
 
 export class PayoutRequestSchema extends BaseModel {
-  static $columns = [
-    'adminNotes',
-    'amount',
-    'createdAt',
-    'id',
-    'payoutDetails',
-    'payoutMethod',
-    'processedAt',
-    'status',
-    'updatedAt',
-    'userId',
-    'uuid',
-    'walletId',
-  ] as const
+  static $columns = ['adminNotes', 'amount', 'createdAt', 'id', 'payoutDetails', 'payoutMethod', 'processedAt', 'status', 'updatedAt', 'userId', 'uuid', 'walletId'] as const
   $columns = PayoutRequestSchema.$columns
   @column()
   declare adminNotes: string | null
@@ -395,41 +305,7 @@ export class PayoutRequestSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = [
-    'affiliateResources',
-    'avgEarningsPerSale',
-    'billingCycle',
-    'category',
-    'commissionRate',
-    'conversionRate',
-    'createdAt',
-    'description',
-    'digitalAssetName',
-    'digitalAssetUrl',
-    'galleryUrls',
-    'gravityScore',
-    'id',
-    'imageUrl',
-    'isFeatured',
-    'name',
-    'price',
-    'productType',
-    'rating',
-    'recurringBilling',
-    'refundRate',
-    'reviewCount',
-    'salePrice',
-    'shortDescription',
-    'slug',
-    'status',
-    'tags',
-    'totalRevenue',
-    'totalSales',
-    'updatedAt',
-    'uuid',
-    'vendorId',
-    'vendorName',
-  ] as const
+  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -511,23 +387,7 @@ export class RateLimitSchema extends BaseModel {
 }
 
 export class ReviewSchema extends BaseModel {
-  static $columns = [
-    'cons',
-    'content',
-    'createdAt',
-    'helpfulCount',
-    'id',
-    'isVerifiedPurchase',
-    'productId',
-    'productName',
-    'pros',
-    'rating',
-    'reviewerName',
-    'status',
-    'title',
-    'updatedAt',
-    'uuid',
-  ] as const
+  static $columns = ['cons', 'content', 'createdAt', 'helpfulCount', 'id', 'isVerifiedPurchase', 'productId', 'productName', 'pros', 'rating', 'reviewerName', 'status', 'title', 'updatedAt', 'uuid'] as const
   $columns = ReviewSchema.$columns
   @column()
   declare cons: any | null
@@ -581,41 +441,7 @@ export class SiteSettingSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = [
-    'bio',
-    'businessDescription',
-    'businessLogo',
-    'businessName',
-    'businessType',
-    'country',
-    'coverBanner',
-    'createdAt',
-    'email',
-    'emailVerifiedAt',
-    'fullName',
-    'heardAbout',
-    'id',
-    'instagram',
-    'location',
-    'marketingChannels',
-    'niche',
-    'otpCode',
-    'otpExpiresAt',
-    'password',
-    'payoutDetails',
-    'payoutMethod',
-    'phone',
-    'productCategories',
-    'profilePicture',
-    'resetToken',
-    'resetTokenExpiresAt',
-    'role',
-    'twitter',
-    'updatedAt',
-    'uuid',
-    'website',
-    'youtube',
-  ] as const
+  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
   $columns = UserSchema.$columns
   @column()
   declare bio: string | null
@@ -658,9 +484,25 @@ export class UserSchema extends BaseModel {
   @column({ serializeAs: null })
   declare password: string
   @column()
+  declare payoutAccountId: string | null
+  @column()
+  declare payoutAccountName: string | null
+  @column()
+  declare payoutBankName: string | null
+  @column()
   declare payoutDetails: string | null
   @column()
+  declare payoutEmail: string | null
+  @column()
   declare payoutMethod: string | null
+  @column()
+  declare payoutMobileNumber: string | null
+  @column()
+  declare payoutMobileProvider: string | null
+  @column()
+  declare payoutRoutingNumber: string | null
+  @column()
+  declare payoutSwiftCode: string | null
   @column()
   declare phone: string | null
   @column()
@@ -686,19 +528,7 @@ export class UserSchema extends BaseModel {
 }
 
 export class WalletTransactionSchema extends BaseModel {
-  static $columns = [
-    'amount',
-    'balanceAfter',
-    'category',
-    'createdAt',
-    'description',
-    'id',
-    'referenceId',
-    'referenceType',
-    'type',
-    'uuid',
-    'walletId',
-  ] as const
+  static $columns = ['amount', 'balanceAfter', 'category', 'createdAt', 'description', 'id', 'referenceId', 'referenceType', 'type', 'uuid', 'walletId'] as const
   $columns = WalletTransactionSchema.$columns
   @column()
   declare amount: string
@@ -725,16 +555,7 @@ export class WalletTransactionSchema extends BaseModel {
 }
 
 export class WalletSchema extends BaseModel {
-  static $columns = [
-    'availableBalance',
-    'createdAt',
-    'currency',
-    'id',
-    'pendingBalance',
-    'updatedAt',
-    'userId',
-    'uuid',
-  ] as const
+  static $columns = ['availableBalance', 'createdAt', 'currency', 'id', 'pendingBalance', 'updatedAt', 'userId', 'uuid'] as const
   $columns = WalletSchema.$columns
   @column()
   declare availableBalance: string

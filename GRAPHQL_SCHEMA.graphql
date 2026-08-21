@@ -1,0 +1,1031 @@
+# ============================================================================
+# Plenty Value Hub - GraphQL Schema
+# Complete API specification for the entire system
+# ============================================================================
+
+# ────────────────────────────────────────────────────────────────────────────
+# SCALAR TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+scalar DateTime
+scalar Decimal
+scalar JSON
+scalar UUID
+scalar URL
+
+# ────────────────────────────────────────────────────────────────────────────
+# ENUMS
+# ────────────────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  ADMIN
+  VENDOR
+  AFFILIATE
+  CUSTOMER
+  GUEST
+}
+
+enum ProductStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum ProductType {
+  DIGITAL
+  PHYSICAL
+  SERVICE
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+  DISPUTED
+}
+
+enum PaymentProvider {
+  MANUAL
+  STRIPE
+  PAYSTACK
+  FLUTTERWAVE
+  PAYPAL
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum BillingCycle {
+  ONE_TIME
+  MONTHLY
+  YEARLY
+}
+
+enum AffiliateStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  INACTIVE
+}
+
+enum Currency {
+  USD
+  EUR
+  GBP
+  NGN
+  KES
+  GHS
+  CAD
+  AUD
+  JPY
+  CNY
+}
+
+enum PayoutStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+enum PayoutMethod {
+  BANK_TRANSFER
+  PAYPAL
+  CRYPTO
+  MOBILE_MONEY
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum WebhookEventType {
+  PAYMENT_SUCCESS
+  PAYMENT_FAILED
+  PAYMENT_REFUNDED
+  ORDER_COMPLETED
+  ORDER_CANCELLED
+  REFUND_REQUESTED
+  PAYOUT_COMPLETED
+}
+
+enum SortOrder {
+  ASC
+  DESC
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# INPUT TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+input PaginationInput {
+  page: Int! = 1
+  limit: Int! = 20
+  offset: Int
+}
+
+input SortInput {
+  field: String!
+  order: SortOrder! = ASC
+}
+
+input FilterInput {
+  field: String!
+  operator: String! # eq, neq, gt, lt, gte, lte, in, contains, startsWith, endsWith
+  value: String!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# USER TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type User {
+  id: ID!
+  uuid: UUID!
+  email: String!
+  fullName: String!
+  firstName: String
+  lastName: String
+  phone: String
+  role: UserRole!
+  avatar: String
+  bio: String
+  website: String
+  location: String
+  isEmailVerified: Boolean!
+  isPhoneVerified: Boolean!
+  isSuspended: Boolean!
+  suspensionReason: String
+  lastLoginAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  profile: UserProfile
+  products(pagination: PaginationInput, filters: [FilterInput]): ProductConnection!
+  orders(pagination: PaginationInput): OrderConnection!
+  affiliateLinks(pagination: PaginationInput): AffiliateLinkConnection!
+  wallet: Wallet
+  reviews(pagination: PaginationInput): ReviewConnection!
+  payouts(pagination: PaginationInput): PayoutConnection!
+}
+
+type UserProfile {
+  id: ID!
+  userId: ID!
+  bio: String
+  avatar: String
+  coverBanner: String
+  website: String
+  location: String
+  socialLinks: JSON
+  preferences: JSON
+  verificationStatus: String
+  documentUrl: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type UserConnection {
+  edges: [UserEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type UserEdge {
+  node: User!
+  cursor: String!
+}
+
+input CreateUserInput {
+  email: String!
+  password: String!
+  fullName: String!
+  firstName: String
+  lastName: String
+  phone: String
+  role: UserRole! = CUSTOMER
+}
+
+input UpdateUserInput {
+  email: String
+  fullName: String
+  firstName: String
+  lastName: String
+  phone: String
+  avatar: String
+  bio: String
+  website: String
+  location: String
+}
+
+input UpdateUserProfileInput {
+  bio: String
+  avatar: String
+  coverBanner: String
+  website: String
+  location: String
+  socialLinks: JSON
+  preferences: JSON
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# PRODUCT TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type Product {
+  id: ID!
+  uuid: UUID!
+  name: String!
+  slug: String!
+  description: String
+  shortDescription: String
+  category: String!
+  productType: ProductType!
+  price: Decimal!
+  salePrice: Decimal
+  commissionRate: Decimal!
+  imageUrl: String
+  galleryUrls: [String!]
+  tags: [String!]
+  isFeatured: Boolean!
+  status: ProductStatus!
+  recurringBilling: Boolean!
+  billingCycle: BillingCycle
+  totalSales: Int!
+  totalRevenue: Decimal!
+  gravityScore: Int!
+  reviewCount: Int!
+  averageRating: Decimal
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  vendor: User!
+  reviews(pagination: PaginationInput): ReviewConnection!
+  orders(pagination: PaginationInput): OrderConnection!
+  affiliateLinks(pagination: PaginationInput): AffiliateLinkConnection!
+}
+
+type ProductConnection {
+  edges: [ProductEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ProductEdge {
+  node: Product!
+  cursor: String!
+}
+
+input CreateProductInput {
+  name: String!
+  slug: String
+  description: String!
+  shortDescription: String
+  category: String!
+  productType: ProductType!
+  price: Decimal!
+  salePrice: Decimal
+  commissionRate: Decimal!
+  imageUrl: String
+  galleryUrls: [String!]
+  tags: [String!]
+  isFeatured: Boolean = false
+  recurringBilling: Boolean = false
+  billingCycle: BillingCycle = ONE_TIME
+}
+
+input UpdateProductInput {
+  name: String
+  slug: String
+  description: String
+  shortDescription: String
+  category: String
+  productType: ProductType
+  price: Decimal
+  salePrice: Decimal
+  commissionRate: Decimal
+  imageUrl: String
+  galleryUrls: [String!]
+  tags: [String!]
+  isFeatured: Boolean
+  recurringBilling: Boolean
+  billingCycle: BillingCycle
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# ORDER & PAYMENT TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type Order {
+  id: ID!
+  uuid: UUID!
+  orderNumber: String!
+  productId: ID!
+  product: Product!
+  buyerId: ID
+  buyer: User
+  vendorId: ID!
+  vendor: User!
+  affiliateId: ID
+  affiliate: User
+  affiliateLinkId: ID
+  affiliateLink: AffiliateLink
+  amount: Decimal!
+  commissionAmount: Decimal!
+  platformFee: Decimal!
+  vendorPayout: Decimal!
+  currency: Currency!
+  status: OrderStatus!
+  paymentMethod: PaymentProvider!
+  shippingDetails: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  
+  # Relations
+  payment: Payment
+}
+
+type OrderConnection {
+  edges: [OrderEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type OrderEdge {
+  node: Order!
+  cursor: String!
+}
+
+type Payment {
+  id: ID!
+  uuid: UUID!
+  orderId: ID!
+  order: Order!
+  provider: PaymentProvider!
+  reference: String!
+  transactionId: String!
+  amount: Decimal!
+  currency: Currency!
+  status: PaymentStatus!
+  statusCode: String!
+  statusMessage: String!
+  metadata: JSON
+  webhookData: JSON
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PaymentConnection {
+  edges: [PaymentEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PaymentEdge {
+  node: Payment!
+  cursor: String!
+}
+
+input InitializePaymentInput {
+  productId: Int!
+  paymentProvider: PaymentProvider
+  affiliateLinkCode: String
+  email: String
+  shippingDetails: ShippingDetailsInput
+}
+
+input ShippingDetailsInput {
+  address: String
+  city: String
+  state: String
+  country: String
+  postalCode: String
+  phone: String
+}
+
+input VerifyPaymentInput {
+  reference: String!
+  provider: PaymentProvider!
+}
+
+type PaymentResponse {
+  success: Boolean!
+  provider: PaymentProvider!
+  payment: Payment
+  order: Order
+  message: String
+  paymentUrl: String
+}
+
+type PaymentProviderConfig {
+  key: PaymentProvider!
+  name: String!
+  label: String!
+  enabled: Boolean!
+  description: String
+  publicKey: String
+  logoUrl: String
+}
+
+type PaymentSettings {
+  activeProvider: PaymentProvider!
+  currency: Currency!
+  currencySymbol: String!
+  providers: [PaymentProviderConfig!]!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# PAYMENT GATEWAY TYPES (Admin)
+# ────────────────────────────────────────────────────────────────────────────
+
+type PaymentGatewayKey {
+  id: ID!
+  gateway: PaymentProvider!
+  merchantId: String
+  isActive: Boolean!
+  hasPublicKey: Boolean!
+  hasSecretKey: Boolean!
+  hasWebhookSecret: Boolean!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PaymentGatewayKeyConnection {
+  edges: [PaymentGatewayKeyEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PaymentGatewayKeyEdge {
+  node: PaymentGatewayKey!
+  cursor: String!
+}
+
+input ConfigurePaymentGatewayInput {
+  gateway: PaymentProvider!
+  publicKey: String!
+  secretKey: String!
+  merchantId: String
+  webhookSecret: String
+  isActive: Boolean = true
+}
+
+type PaymentGatewayConfigResult {
+  success: Boolean!
+  message: String!
+  gateway: PaymentGatewayKey
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# AFFILIATE TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type AffiliateLink {
+  id: ID!
+  uuid: UUID!
+  affiliateId: ID!
+  affiliate: User!
+  productId: ID!
+  product: Product!
+  linkCode: String!
+  fullUrl: String!
+  status: AffiliateStatus!
+  conversions: Int!
+  revenue: Decimal!
+  commissionEarned: Decimal!
+  lastConversionAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type AffiliateLinkConnection {
+  edges: [AffiliateLinkEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type AffiliateLinkEdge {
+  node: AffiliateLink!
+  cursor: String!
+}
+
+input CreateAffiliateLinkInput {
+  productId: Int!
+}
+
+input UpdateAffiliateLinkInput {
+  status: AffiliateStatus
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# WALLET & PAYOUT TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type Wallet {
+  id: ID!
+  userId: ID!
+  user: User!
+  totalBalance: Decimal!
+  availableBalance: Decimal!
+  pendingBalance: Decimal!
+  reservedBalance: Decimal!
+  totalEarned: Decimal!
+  totalWithdrawn: Decimal!
+  lastWithdrawalAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type WalletTransaction {
+  id: ID!
+  walletId: ID!
+  orderId: ID
+  payoutId: ID
+  type: String! # credit, debit, reserve, release
+  amount: Decimal!
+  description: String
+  balanceBefore: Decimal!
+  balanceAfter: Decimal!
+  createdAt: DateTime!
+}
+
+type WalletTransactionConnection {
+  edges: [WalletTransactionEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type WalletTransactionEdge {
+  node: WalletTransaction!
+  cursor: String!
+}
+
+type Payout {
+  id: ID!
+  uuid: UUID!
+  userId: ID!
+  user: User!
+  amount: Decimal!
+  currency: Currency!
+  payoutMethod: PayoutMethod!
+  payoutDetails: JSON!
+  status: PayoutStatus!
+  reference: String
+  failureReason: String
+  processedAt: DateTime
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type PayoutConnection {
+  edges: [PayoutEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type PayoutEdge {
+  node: Payout!
+  cursor: String!
+}
+
+input RequestPayoutInput {
+  amount: Decimal!
+  payoutMethod: PayoutMethod!
+  payoutDetails: JSON!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# REVIEW TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type Review {
+  id: ID!
+  uuid: UUID!
+  productId: ID!
+  product: Product!
+  buyerId: ID!
+  buyer: User!
+  orderId: ID
+  rating: Int! # 1-5
+  title: String!
+  content: String
+  status: ReviewStatus!
+  helpfulCount: Int!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type ReviewConnection {
+  edges: [ReviewEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type ReviewEdge {
+  node: Review!
+  cursor: String!
+}
+
+input CreateReviewInput {
+  productId: Int!
+  orderId: Int
+  rating: Int!
+  title: String!
+  content: String
+}
+
+input UpdateReviewInput {
+  rating: Int
+  title: String
+  content: String
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# FILE UPLOAD TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type FileUpload {
+  success: Boolean!
+  url: String!
+  key: String!
+  fileName: String
+  fileSize: Int
+  fileType: String
+  message: String
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# WEBHOOK TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type WebhookEvent {
+  id: ID!
+  eventType: WebhookEventType!
+  provider: PaymentProvider!
+  reference: String!
+  status: String!
+  data: JSON!
+  retryCount: Int!
+  lastRetryAt: DateTime
+  createdAt: DateTime!
+}
+
+type WebhookEndpoint {
+  provider: PaymentProvider!
+  url: String!
+  status: String!
+  lastEventAt: DateTime
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# ADMIN DASHBOARD TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type PlatformStats {
+  totalUsers: Int!
+  totalVendors: Int!
+  totalAffiliates: Int!
+  totalProducts: Int!
+  approvedProducts: Int!
+  totalOrders: Int!
+  totalRevenue: Decimal!
+  platformFees: Decimal!
+  pendingPayouts: Decimal!
+  completedPayouts: Decimal!
+}
+
+type AdminDashboard {
+  stats: PlatformStats!
+  recentOrders(limit: Int = 10): [Order!]!
+  recentPayments(limit: Int = 10): [Payment!]!
+  topProducts(limit: Int = 10): [Product!]!
+  topVendors(limit: Int = 10): [User!]!
+  paymentProviderStatus: [PaymentProviderStatus!]!
+}
+
+type PaymentProviderStatus {
+  provider: PaymentProvider!
+  isConfigured: Boolean!
+  isActive: Boolean!
+  lastCheckedAt: DateTime
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# PAGINATION & CONNECTION TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+  page: Int!
+  totalPages: Int!
+}
+
+type Error {
+  code: String!
+  message: String!
+  field: String
+  details: JSON
+}
+
+type Result {
+  success: Boolean!
+  message: String!
+  errors: [Error!]
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# SITE SETTINGS TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type SiteSetting {
+  id: ID!
+  key: String!
+  label: String!
+  value: JSON!
+  description: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type SiteSettingConnection {
+  edges: [SiteSettingEdge!]!
+  pageInfo: PageInfo!
+  totalCount: Int!
+}
+
+type SiteSettingEdge {
+  node: SiteSetting!
+  cursor: String!
+}
+
+input UpdateSiteSettingInput {
+  key: String!
+  value: JSON!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# ROOT QUERY TYPE
+# ────────────────────────────────────────────────────────────────────────────
+
+type Query {
+  # ────────────────────────────────────────────────────────────────────────
+  # USER QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  me: User
+  user(id: ID!): User
+  users(pagination: PaginationInput, filter: [FilterInput]): UserConnection!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # PRODUCT QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  product(id: ID!): Product
+  products(
+    pagination: PaginationInput
+    filter: [FilterInput]
+    sort: SortInput
+  ): ProductConnection!
+  productsByVendor(
+    vendorId: ID!
+    pagination: PaginationInput
+  ): ProductConnection!
+  productsByCategory(
+    category: String!
+    pagination: PaginationInput
+  ): ProductConnection!
+  featuredProducts(limit: Int = 10): [Product!]!
+  searchProducts(
+    query: String!
+    pagination: PaginationInput
+  ): ProductConnection!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # ORDER QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  order(id: ID!): Order
+  orders(pagination: PaginationInput): OrderConnection!
+  orderByNumber(orderNumber: String!): Order
+  myOrders(pagination: PaginationInput): OrderConnection!
+  vendorOrders(pagination: PaginationInput): OrderConnection!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # PAYMENT QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  payment(id: ID!): Payment
+  paymentByReference(reference: String!): Payment
+  payments(pagination: PaginationInput): PaymentConnection!
+  paymentProviders: [PaymentProviderConfig!]!
+  paymentSettings: PaymentSettings!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # PAYMENT GATEWAY QUERIES (Admin)
+  # ────────────────────────────────────────────────────────────────────────
+  paymentGatewayKeys(pagination: PaginationInput): PaymentGatewayKeyConnection!
+  paymentGatewayKey(gateway: PaymentProvider!): PaymentGatewayKey
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # AFFILIATE QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  affiliateLink(id: ID!): AffiliateLink
+  affiliateLinks(pagination: PaginationInput): AffiliateLinkConnection!
+  myAffiliateLinks(pagination: PaginationInput): AffiliateLinkConnection!
+  affiliateLinkByCode(code: String!): AffiliateLink
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # WALLET & PAYOUT QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  wallet: Wallet
+  walletTransactions(pagination: PaginationInput): WalletTransactionConnection!
+  payout(id: ID!): Payout
+  payouts(pagination: PaginationInput): PayoutConnection!
+  myPayouts(pagination: PaginationInput): PayoutConnection!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # REVIEW QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  review(id: ID!): Review
+  productReviews(productId: ID!, pagination: PaginationInput): ReviewConnection!
+  myReviews(pagination: PaginationInput): ReviewConnection!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # WEBHOOK QUERIES (Admin)
+  # ────────────────────────────────────────────────────────────────────────
+  webhookEvents(pagination: PaginationInput): [WebhookEvent!]!
+  webhookEndpoints: [WebhookEndpoint!]!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # ADMIN QUERIES
+  # ────────────────────────────────────────────────────────────────────────
+  adminDashboard: AdminDashboard
+  platformStats: PlatformStats
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # SITE SETTINGS QUERIES (Admin)
+  # ────────────────────────────────────────────────────────────────────────
+  siteSettings(pagination: PaginationInput): SiteSettingConnection!
+  siteSetting(key: String!): SiteSetting
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# ROOT MUTATION TYPE
+# ────────────────────────────────────────────────────────────────────────────
+
+type Mutation {
+  # ────────────────────────────────────────────────────────────────────────
+  # AUTH MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  register(input: CreateUserInput!): AuthPayload!
+  login(email: String!, password: String!): AuthPayload!
+  logout: Result!
+  refreshToken: AuthPayload!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # USER MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  updateProfile(input: UpdateUserInput!): User!
+  updateProfileDetails(input: UpdateUserProfileInput!): UserProfile!
+  verifyEmail(token: String!): Result!
+  verifyPhone(code: String!): Result!
+  changePassword(currentPassword: String!, newPassword: String!): Result!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # PRODUCT MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  createProduct(input: CreateProductInput!): Product!
+  updateProduct(id: ID!, input: UpdateProductInput!): Product!
+  deleteProduct(id: ID!): Result!
+  approveProduct(id: ID!): Product!
+  rejectProduct(id: ID!, reason: String!): Product!
+  archiveProduct(id: ID!): Product!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # PAYMENT MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  initializePayment(input: InitializePaymentInput!): PaymentResponse!
+  verifyPayment(input: VerifyPaymentInput!): PaymentResponse!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # PAYMENT GATEWAY MUTATIONS (Admin)
+  # ────────────────────────────────────────────────────────────────────────
+  configurePaymentGateway(input: ConfigurePaymentGatewayInput!): PaymentGatewayConfigResult!
+  updatePaymentGateway(gateway: PaymentProvider!, input: ConfigurePaymentGatewayInput!): PaymentGatewayConfigResult!
+  deletePaymentGateway(gateway: PaymentProvider!): Result!
+  togglePaymentGateway(gateway: PaymentProvider!): PaymentGatewayKey!
+  testPaymentWebhook(provider: PaymentProvider!): Result!
+  updatePaymentSettings(activeProvider: PaymentProvider!, currency: Currency!): PaymentSettings!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # AFFILIATE MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  createAffiliateLink(input: CreateAffiliateLinkInput!): AffiliateLink!
+  updateAffiliateLink(id: ID!, input: UpdateAffiliateLinkInput!): AffiliateLink!
+  deleteAffiliateLink(id: ID!): Result!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # WALLET & PAYOUT MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  requestPayout(input: RequestPayoutInput!): Payout!
+  cancelPayout(id: ID!): Result!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # REVIEW MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  createReview(input: CreateReviewInput!): Review!
+  updateReview(id: ID!, input: UpdateReviewInput!): Review!
+  deleteReview(id: ID!): Result!
+  approveReview(id: ID!): Review!
+  rejectReview(id: ID!, reason: String!): Review!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # FILE UPLOAD MUTATIONS
+  # ────────────────────────────────────────────────────────────────────────
+  uploadProductImage(file: String!): FileUpload!
+  uploadProductGallery(files: [String!]!): [FileUpload!]!
+  uploadProfileImage(file: String!): FileUpload!
+  uploadAdminImage(file: String!): FileUpload!
+  uploadVideo(file: String!): FileUpload!
+  uploadDocument(file: String!): FileUpload!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # SITE SETTINGS MUTATIONS (Admin)
+  # ────────────────────────────────────────────────────────────────────────
+  updateSiteSetting(input: UpdateSiteSettingInput!): SiteSetting!
+  updateSiteSettings(settings: [UpdateSiteSettingInput!]!): [SiteSetting!]!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# ROOT SUBSCRIPTION TYPE
+# ────────────────────────────────────────────────────────────────────────────
+
+type Subscription {
+  # ────────────────────────────────────────────────────────────────────────
+  # PAYMENT SUBSCRIPTIONS
+  # ────────────────────────────────────────────────────────────────────────
+  paymentStatusChanged(orderId: ID!): Payment!
+  orderStatusChanged(orderId: ID!): Order!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # WALLET SUBSCRIPTIONS
+  # ────────────────────────────────────────────────────────────────────────
+  walletUpdated: Wallet!
+  payoutStatusChanged(payoutId: ID!): Payout!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # WEBHOOK SUBSCRIPTIONS (Admin)
+  # ────────────────────────────────────────────────────────────────────────
+  webhookEventReceived: WebhookEvent!
+  
+  # ────────────────────────────────────────────────────────────────────────
+  # NOTIFICATION SUBSCRIPTIONS
+  # ────────────────────────────────────────────────────────────────────────
+  notificationReceived: Notification!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# AUTH & NOTIFICATION TYPES
+# ────────────────────────────────────────────────────────────────────────────
+
+type AuthPayload {
+  success: Boolean!
+  message: String!
+  user: User
+  token: String
+  refreshToken: String
+  expiresIn: Int
+}
+
+type Notification {
+  id: ID!
+  userId: ID!
+  type: String!
+  title: String!
+  message: String!
+  data: JSON
+  isRead: Boolean!
+  createdAt: DateTime!
+}
+
+# ────────────────────────────────────────────────────────────────────────────
+# SCHEMA DEFINITION
+# ────────────────────────────────────────────────────────────────────────────
+
+schema {
+  query: Query
+  mutation: Mutation
+  subscription: Subscription
+}
