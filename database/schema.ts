@@ -441,7 +441,7 @@ export class SiteSettingSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
+  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutAccountNumber', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMetadata', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
   $columns = UserSchema.$columns
   @column()
   declare bio: string | null
@@ -488,11 +488,15 @@ export class UserSchema extends BaseModel {
   @column()
   declare payoutAccountName: string | null
   @column()
+  declare payoutAccountNumber: string | null
+  @column()
   declare payoutBankName: string | null
   @column()
   declare payoutDetails: string | null
   @column()
   declare payoutEmail: string | null
+  @column()
+  declare payoutMetadata: any | null
   @column()
   declare payoutMethod: string | null
   @column()

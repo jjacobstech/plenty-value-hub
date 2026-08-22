@@ -40,8 +40,71 @@ const CATEGORY_LABELS: Record<string, string> = {
   lifestyle: 'Lifestyle',
 }
 
+export interface Product {
+  id: number
+  uuid: string | null // migration doesn't set notNullable — nullable until you add the create-hook we discussed
+
+  name: string
+  slug: string | null
+  description: string | null
+  shortDescription: string | null
+
+  category:
+    | 'health_fitness'
+    | 'business_investing'
+    | 'software_saas'
+    | 'ecommerce'
+    | 'education'
+    | 'fashion'
+    | 'beauty'
+    | 'home_garden'
+    | 'technology'
+    | 'finance'
+    | 'digital_services'
+    | 'ai_tools'
+    | 'productivity'
+    | 'lifestyle'
+  productType: 'digital' | 'physical' | 'service'
+
+  price: string // decimal — keep as string, see prior note
+  salePrice: string | null
+  commissionRate: string
+
+  vendorId: number | null // migration has no .notNullable()
+  vendorName: string | null // migration column is .nullable()
+
+  imageUrl: string | null
+  galleryUrls: string[] | null
+
+  status: 'pending' | 'approved' | 'rejected' | 'archived' | null // nullable in the model despite defaultTo('pending')
+
+  gravityScore: number | null // integer, but model shows nullable
+  avgEarningsPerSale: string | null // decimal
+  conversionRate: string | null // decimal — was wrongly typed as number
+  refundRate: string | null // decimal — was wrongly typed as number
+
+  totalSales: number | null
+  totalRevenue: string // decimal, non-null in model
+
+  rating: string | null // decimal — was wrongly typed as number
+  reviewCount: number | null
+
+  isFeatured: boolean | null
+  tags: string[] | null
+  affiliateResources: unknown | null // model has this as `any` — see note below
+
+  recurringBilling: boolean | null
+  billingCycle: 'one_time' | 'monthly' | 'yearly' | null
+
+  createdAt: string
+  updatedAt: string | null // DateTime | null in the model
+
+  digitalAssetUrl: string | null
+  digitalAssetName: string | null
+}
+
 type AdminProductsProps = {
-  products: any[]
+  products: Product[]
 }
 
 export default function AdminProducts(props: AdminProductsProps) {
@@ -129,11 +192,11 @@ export default function AdminProducts(props: AdminProductsProps) {
                         {CATEGORY_LABELS[p.category] || p.category}
                       </Badge>
                     </TableCell>
-                    <TableCell>${p.price?.toFixed(2)}</TableCell>
+                    <TableCell>${p.price}</TableCell>
                     <TableCell>{p.commissionRate}%</TableCell>
                     <TableCell>
                       <Badge
-                        variant={(statusColors[p.status] as any) ?? 'secondary'}
+                        variant={(statusColors[p.status!] as any) ?? 'secondary'}
                         className="text-xs capitalize"
                       >
                         {p.status}
