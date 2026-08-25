@@ -47,7 +47,7 @@ export default function AdminPayouts(props: AdminPayoutsProps) {
 
   const updatePayout = async (id: number, status: 'approved' | 'paid' | 'rejected') => {
     try {
-      const res = await api.put(`/api/admin/payouts/${id}`, {
+      const res = await api.put(`/api/payouts/${id}`, {
         status,
         adminNotes: notes[id] || undefined,
       })

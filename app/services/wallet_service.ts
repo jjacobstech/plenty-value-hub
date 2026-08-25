@@ -208,8 +208,42 @@ export class WalletService {
       throw new Error('Only vendors and affiliates can request payouts')
     }
 
-    if (!user.payoutMethod || !user.payoutDetails) {
+    // Check if payout method is configured
+    if (!user.payoutMethod) {
       throw new Error('Configure your payout method in profile settings first')
+    }
+
+    // Validate payout method has required fields
+    switch (user.payoutMethod) {
+      case 'bank':
+      case 'bank_transfer':
+        if (!user.payoutBankName || !user.payoutAccountNumber || !user.payoutAccountName) {
+          throw new Error('Configure your payout method in profile settings first')
+        }
+        break
+      case 'mobile_money':
+        if (!user.payoutMobileProvider || !user.payoutMobileNumber || !user.payoutAccountName) {
+          throw new Error('Configure your payout method in profile settings first')
+        }
+        break
+      case 'paypal':
+        if (!user.payoutEmail) {
+          throw new Error('Configure your payout method in profile settings first')
+        }
+        break
+      case 'stripe':
+        if (!user.payoutAccountId || !user.payoutEmail) {
+          throw new Error('Configure your payout method in profile settings first')
+        }
+        break
+      case 'paystack':
+      case 'flutterwave':
+        if (!user.payoutBankName || !user.payoutAccountNumber || !user.payoutAccountName) {
+          throw new Error('Configure your payout method in profile settings first')
+        }
+        break
+      default:
+        throw new Error('Invalid payout method')
     }
 
     if (amount < MIN_PAYOUT_AMOUNT) {
@@ -256,7 +290,17 @@ export class WalletService {
           walletId: wallet.id,
           amount: amountStr,
           payoutMethod: user.payoutMethod!,
-          payoutDetails: user.payoutDetails!,
+          // Serialize payout details from individual fields
+          payoutDetails: JSON.stringify({
+            method: user.payoutMethod,
+            bankName: user.payoutBankName,
+            accountNumber: user.payoutAccountNumber,
+            accountName: user.payoutAccountName,
+            mobileProvider: user.payoutMobileProvider,
+            mobileNumber: user.payoutMobileNumber,
+            email: user.payoutEmail,
+            accountId: user.payoutAccountId,
+          }),
           status: 'pending',
         },
         { client: trx }

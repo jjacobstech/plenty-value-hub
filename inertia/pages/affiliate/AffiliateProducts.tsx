@@ -58,10 +58,10 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
   const [sortBy, setSortBy] = useState('commission')
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [copied, setCopied] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
+  const [creatingProductId, setCreatingProductId] = useState<number | null>(null)
 
   const handlePromote = async (product: any) => {
-    setIsCreating(true)
+    setCreatingProductId(product.id)
     try {
       const { data } = await api.post('/api/affiliate-links', { productId: product.id })
       toast.success('Affiliate link created! Ready to share.')
@@ -69,7 +69,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
     } catch {
       toast.error('Failed to create affiliate link')
     } finally {
-      setIsCreating(false)
+      setCreatingProductId(null)
     }
   }
 
@@ -227,7 +227,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                       className="text-white hover:opacity-90"
                       size="sm"
                       onClick={() => handlePromote(product)}
-                      disabled={isCreating || !user}
+                      disabled={creatingProductId === product.id || !user}
                     >
                       <Link2 className="w-4 h-4 mr-1.5" /> Promote
                     </Button>
@@ -271,7 +271,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                 <div className="flex items-center gap-2">
                   <Input
                     readOnly
-                    value={`${window.location.origin}/ref/${selectedProduct?.link?.link_code}`}
+                    value={`${window.location.origin}/ref/${selectedProduct?.link?.linkCode}`}
                     className="font-mono text-xs bg-muted"
                   />
                   <Button
@@ -279,7 +279,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                     variant="outline"
                     onClick={() =>
                       handleCopy(
-                        `${window.location.origin}/ref/${selectedProduct?.link?.link_code}`
+                        `${window.location.origin}/ref/${selectedProduct?.link?.linkCode}`
                       )
                     }
                   >

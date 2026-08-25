@@ -177,12 +177,20 @@ export default function VendorProducts(props: VendorProductsProps) {
   }
 
   const handleDelete = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this product? This will archive it.')) return
+
+    setSaving(true)
     try {
-      await api.delete(`/api/products/${id}`)
+      // Archive the product instead of hard delete (soft delete)
+      // This preserves referential integrity with orders
+      await api.put(`/api/products/${id}`, { status: 'archived' })
       setProducts((prev) => prev.filter((p) => p.id !== id))
-      toast.success('Product deleted')
-    } catch {
-      toast.error('Failed to delete product')
+      toast.success('Product archived')
+    } catch (error: any) {
+      console.error('Delete error:', error)
+      toast.error(error?.response?.data?.error || 'Failed to archive product')
+    } finally {
+      setSaving(false)
     }
   }
 

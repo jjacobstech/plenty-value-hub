@@ -437,7 +437,7 @@ export default function VendorProfile(props: VendorProfileProps) {
               <div className="space-y-4 p-4 bg-green-50 rounded-lg border border-green-200">
                 <p className="text-sm font-medium text-green-900">Mobile Money Details</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
+                  <div className="col-span-1">
                     <Label htmlFor="mobile-provider">Provider *</Label>
                     <select
                       id="mobile-provider"
@@ -455,7 +455,7 @@ export default function VendorProfile(props: VendorProfileProps) {
                       ))}
                     </select>
                   </div>
-                  <div>
+                  <div className="col-span-1">
                     <Label htmlFor="mobile-number">Phone Number *</Label>
                     <Input
                       id="mobile-number"
@@ -466,7 +466,7 @@ export default function VendorProfile(props: VendorProfileProps) {
                       required
                     />
                   </div>
-                  <div className="col-span-2">
+                  <div className="col-span-1 sm:col-span-2">
                     <Label htmlFor="account-name-mobile">Account Holder Name *</Label>
                     <Input
                       id="account-name-mobile"

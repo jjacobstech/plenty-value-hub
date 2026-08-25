@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { Search, CheckCircle, XCircle, Star } from 'lucide-react'
+import { Search, CheckCircle, XCircle, Star, Trash2 } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
 
@@ -111,15 +111,39 @@ export default function AdminProducts(props: AdminProductsProps) {
   const [products, setProducts] = useState(props.products)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
+  const [loading, setLoading] = useState<number | null>(null)
 
   const updateProduct = async (id: number, data: Record<string, any>) => {
+    setLoading(id)
     try {
-      const { data: updated } = await api.put(`/api/products/${id}`, data)
-      console.log(data, updated)
+      const endpoint = data.status ? `/api/products/${id}/approve` : `/api/products/${id}`
+      const method = data.status ? 'put' : 'put'
+
+      const response = method === 'put'
+        ? await api.put(endpoint, data)
+        : await api.put(endpoint, data)
+
+      const updated = response.data.data || response.data
       setProducts((prev) => prev.map((p) => (p.id === id ? updated : p)))
       toast.success('Product updated')
-    } catch {
-      toast.error('Failed to update product')
+    } catch (error: any) {
+      console.error('Update error:', error)
+      toast.error(error?.response?.data?.error || 'Failed to update product')
+    } finally {
+      setLoading(null)
+    }
+  }
+
+  const deleteProduct = async (id: number) => {
+    if (!confirm('Are you sure you want to delete this product? This will archive it.')) return
+
+    setLoading(id)
+    try {
+      // Archive the product instead of deleting it (soft delete)
+      // This preserves referential integrity with orders
+      await updateProduct(id, { status: 'archived' })
+    } finally {
+      setLoading(null)
     }
   }
 
@@ -219,6 +243,7 @@ export default function AdminProducts(props: AdminProductsProps) {
                           size="sm"
                           variant="ghost"
                           className="text-green-600 h-8 px-2"
+                          disabled={loading === p.id}
                           onClick={() => updateProduct(p.id, { status: 'approved' })}
                         >
                           <CheckCircle className="w-4 h-4" />
@@ -227,9 +252,19 @@ export default function AdminProducts(props: AdminProductsProps) {
                           size="sm"
                           variant="ghost"
                           className="text-destructive h-8 px-2"
+                          disabled={loading === p.id}
                           onClick={() => updateProduct(p.id, { status: 'rejected' })}
                         >
                           <XCircle className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-destructive h-8 px-2"
+                          disabled={loading === p.id}
+                          onClick={() => deleteProduct(p.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </Button>
                       </div>
                     </TableCell>
