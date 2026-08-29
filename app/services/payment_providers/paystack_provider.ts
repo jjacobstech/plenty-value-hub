@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from 'axios'
+import axios from 'axios'
+import type { AxiosInstance } from 'axios'
 import type {
   PaymentProvider,
   PaymentRequest,
@@ -185,6 +186,83 @@ export class PaystackProvider implements PaymentProvider {
           return {
             success: false,
             message: 'Payment failure processed',
+            received: true,
+            reference,
+            eventType,
+          }
+        }
+
+        case 'transfer.success': {
+          const reference = data?.reference || data?.data?.reference || ''
+          const transferCode = data?.transfer_code || data?.data?.transfer_code || ''
+          try {
+            const PayoutRequestModule = await import('#models/payout_request')
+            const PayoutRequest = PayoutRequestModule.default
+            const payout = await PayoutRequest.query()
+              .where((q) => {
+                if (reference) q.where('transferReference', reference)
+                if (transferCode) q.orWhere('transferCode', transferCode)
+              })
+              .first()
+
+            if (payout && payout.status !== 'paid') {
+              const { DateTime } = await import('luxon')
+              payout.status = 'paid'
+              payout.transferStatus = 'success'
+              payout.processedAt = DateTime.now()
+              payout.transferCompletedAt = DateTime.now()
+              await payout.save()
+            }
+          } catch (err) {
+            console.error(
+              '[PaystackProvider] Failed to update payout request on transfer.success:',
+              err
+            )
+          }
+
+          return {
+            success: true,
+            message: 'Transfer completed successfully',
+            received: true,
+            reference,
+            eventType,
+          }
+        }
+
+        case 'transfer.failed':
+        case 'transfer.reversed': {
+          const reference = data?.reference || data?.data?.reference || ''
+          const transferCode = data?.transfer_code || data?.data?.transfer_code || ''
+          try {
+            const PayoutRequestModule = await import('#models/payout_request')
+            const PayoutRequest = PayoutRequestModule.default
+            const payout = await PayoutRequest.query()
+              .where((q) => {
+                if (reference) q.where('transferReference', reference)
+                if (transferCode) q.orWhere('transferCode', transferCode)
+              })
+              .first()
+
+            if (payout && payout.status !== 'rejected') {
+              const WalletModule = await import('#services/wallet_service')
+              const WalletService = WalletModule.WalletService
+              payout.transferStatus = 'failed'
+              payout.transferErrorMessage =
+                data?.reason || data?.data?.reason || 'Transfer failed/reversed via webhook'
+              await payout.save()
+              await WalletService.updatePayoutStatus(
+                payout.id,
+                'rejected',
+                payout.transferErrorMessage || undefined
+              )
+            }
+          } catch (err) {
+            console.error('[PaystackProvider] Failed to process transfer failure webhook:', err)
+          }
+
+          return {
+            success: true,
+            message: 'Transfer failure processed',
             received: true,
             reference,
             eventType,

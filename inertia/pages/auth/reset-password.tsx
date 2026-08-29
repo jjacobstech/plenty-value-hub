@@ -28,12 +28,19 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
     }
     setLoading(true)
     try {
-      const response = await apiClient.post('/auth/reset-password', { resetToken, newPassword })
+      const response = await apiClient.post('/auth/reset-password', {
+        token: resetToken,
+        password: newPassword,
+        passwordConfirmation: confirmPassword,
+      })
 
-      console.log(response.data)
-      // window.location.href = '/login'
-    } catch (err) {
-      setError(err.message || 'Failed to reset password')
+      if (response.data?.success) {
+        // Redirect to dashboard based on role
+        window.location.href = response.data?.redirect || '/login'
+      }
+    } catch (err: any) {
+      const errorMsg = err?.response?.data?.error || err?.message || 'Failed to reset password'
+      setError(errorMsg)
       console.error(err)
     } finally {
       setLoading(false)

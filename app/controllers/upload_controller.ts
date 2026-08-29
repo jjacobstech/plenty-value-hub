@@ -319,10 +319,10 @@ export default class UploadController {
       })
     }
 
-    const file = request.file('video', {
-      size: MAX_VIDEO_SIZE,
-      extnames: ALLOWED_VIDEO_TYPES,
-    })
+    const file =
+      request.file('video', { size: MAX_VIDEO_SIZE, extnames: ALLOWED_VIDEO_TYPES }) ||
+      request.file('file', { size: MAX_VIDEO_SIZE, extnames: ALLOWED_VIDEO_TYPES }) ||
+      request.file('image', { size: MAX_VIDEO_SIZE, extnames: ALLOWED_VIDEO_TYPES })
 
     if (!file) {
       return response.badRequest({
@@ -379,10 +379,10 @@ export default class UploadController {
       })
     }
 
-    const file = request.file('document', {
-      size: MAX_DOCUMENT_SIZE,
-      extnames: ALLOWED_DOCUMENT_TYPES,
-    })
+    const file =
+      request.file('document', { size: MAX_DOCUMENT_SIZE, extnames: ALLOWED_DOCUMENT_TYPES }) ||
+      request.file('file', { size: MAX_DOCUMENT_SIZE, extnames: ALLOWED_DOCUMENT_TYPES }) ||
+      request.file('image', { size: MAX_DOCUMENT_SIZE, extnames: ALLOWED_DOCUMENT_TYPES })
 
     if (!file) {
       return response.badRequest({
@@ -448,9 +448,10 @@ export default class UploadController {
       })
     }
 
-    const file = request.file('file', {
-      size: 200 * 1024 * 1024, // 200MB limit for digital assets
-    })
+    const file =
+      request.file('file', { size: 200 * 1024 * 1024 }) ||
+      request.file('image', { size: 200 * 1024 * 1024 }) ||
+      request.file('asset', { size: 200 * 1024 * 1024 })
 
     if (!file) {
       return response.badRequest({

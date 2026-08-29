@@ -20,6 +20,7 @@ export default function Navbar({ user, onLogout }) {
   const navLinks = [
     { label: 'Marketplace', path: '/marketplace' },
     { label: 'Reviews', path: '/reviews' },
+    { label: 'Track Order', path: '/track-order' },
   ]
 
   const getDashboardLink = () => {

@@ -11,6 +11,110 @@ import mail from '@adonisjs/mail/services/main'
 import { Decimal } from 'decimal.js'
 
 export default class OrdersController {
+  async trackOrder({ request, response }: HttpContext) {
+    const orderNumber = String(request.input('orderNumber') || '').trim()
+    const email = String(request.input('email') || '').trim()
+
+    if (!orderNumber || !email) {
+      return response.status(400).json({
+        success: false,
+        error: 'Both Order Number and Email Address are required to track an order.',
+      })
+    }
+
+    const order = await Order.query()
+      .whereRaw('LOWER(order_number) = ?', [orderNumber.toLowerCase()])
+      .whereRaw('LOWER(buyer_email) = ?', [email.toLowerCase()])
+      .preload('product' as never)
+      .first()
+
+    if (!order) {
+      return response.status(404).json({
+        success: false,
+        error: 'No order found matching the provided Order Number and Email Address.',
+      })
+    }
+
+    const vendor = order.vendorId ? await User.find(order.vendorId) : null
+    const product = order.productId ? await Product.find(order.productId) : null
+
+    const orderData = order.serialize()
+
+    let digitalAsset = null
+    if (order.status === 'completed' && product && product.productType === 'digital') {
+      if (product.digitalAssetUrl) {
+        digitalAsset = {
+          url: product.digitalAssetUrl,
+          name: product.digitalAssetName || product.name || 'Digital Asset',
+        }
+      }
+    }
+
+    const { default: env } = await import('#start/env')
+    const supportEmail = env.get('SUPPORT_EMAIL', 'support@plentyvalue.com')
+
+    return response.json({
+      success: true,
+      data: {
+        ...orderData,
+        digitalAsset,
+        product: product ? product.serialize() : null,
+        vendor: vendor
+          ? {
+            fullName: vendor.fullName,
+            businessName: vendor.businessName,
+            email: vendor.email,
+            phone: vendor.phone,
+            location: vendor.location,
+          }
+          : null,
+        supportEmail,
+      },
+    })
+  }
+
+  async downloadDigitalAsset({ request, response }: HttpContext) {
+    const orderNumber = String(request.input('orderNumber') || '').trim()
+    const email = String(request.input('email') || '').trim()
+
+    if (!orderNumber || !email) {
+      return response.badRequest({
+        success: false,
+        error: 'Order number and email are required to download digital assets.',
+      })
+    }
+
+    const order = await Order.query()
+      .whereRaw('LOWER(order_number) = ?', [orderNumber.toLowerCase()])
+      .whereRaw('LOWER(buyer_email) = ?', [email.toLowerCase()])
+      .preload('product' as never)
+      .first()
+
+    if (!order) {
+      return response.notFound({
+        success: false,
+        error: 'Order not found.',
+      })
+    }
+
+    if (order.status !== 'completed') {
+      return response.forbidden({
+        success: false,
+        error: 'Digital download is only available for completed orders.',
+      })
+    }
+
+    const product = order.product as any
+    if (!product || product.productType !== 'digital' || !product.digitalAssetUrl) {
+      return response.badRequest({
+        success: false,
+        error: 'This order does not contain a downloadable digital asset.',
+      })
+    }
+
+    return response.redirect(product.digitalAssetUrl)
+  }
+
   async index({ auth, response, request }: HttpContext) {
     const user = auth.use('web').user!
     const page = request.input('page', 1)
@@ -123,6 +227,12 @@ export default class OrdersController {
       affiliateId = affiliateLink.affiliateId
     }
 
+    // Determine initial order status based on product type
+    const initialStatus = product.productType === 'digital' ? 'completed' : 'processing'
+
+    console.log(`[OrdersController] Creating order for product type: ${product.productType}, initial status: ${initialStatus}`)
+
+
     const order = await Order.create({
       orderNumber,
       productId: payload.productId,
@@ -136,12 +246,13 @@ export default class OrdersController {
       commissionAmount: commissionAmount.toFixed(2),
       platformFee: platformFee.toFixed(2),
       vendorPayout: vendorPayout.toFixed(2),
-      status: 'completed',
+      status: initialStatus,
       currency: 'USD',
       paymentMethod,
       shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
     })
 
+    // Update affiliate link stats (for both digital and physical products)
     if (affiliateLink) {
       affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
       affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
@@ -155,6 +266,7 @@ export default class OrdersController {
       await affiliateLink.save()
     }
 
+    // Update product stats (for both digital and physical products)
     product.totalSales = (product.totalSales || 0) + 1
     product.totalRevenue = new Decimal(product.totalRevenue || 0)
       .plus(salePrice)
@@ -163,18 +275,40 @@ export default class OrdersController {
     product.gravityScore = Math.min(100, (product.gravityScore || 0) + 1)
     await product.save()
 
-    const { WalletService } = await import('#services/wallet_service')
-    await WalletService.handleOrderCompleted(order)
+    // Handle order completion logic only for digital products (auto-completed)
+    if (order.status === 'completed') {
+    // Digital product - complete immediately
+      const { WalletService } = await import('#services/wallet_service')
+      await WalletService.handleOrderCompleted(order)
 
-    await mail.send((message) => {
-      message
-        .to(user.email)
-        .subject(`Order ${order.orderNumber} Confirmed — Plenty Value`)
-        .htmlView('emails/order_confirmation', {
-          order: order.serialize(),
-          product: product.serialize(),
-        })
-    })
+      // Send comprehensive notifications (buyer, admin, vendor, affiliate)
+      try {
+        const { NotificationService } = await import('#services/notification_service')
+        await NotificationService.notifyOrderCompleted(order, product)
+        console.log(`[OrdersController] Digital product order completed: ${order.orderNumber}`)
+
+
+      } catch (error: any) {
+        console.error(`[OrdersController] Failed to send notifications for order ${order.orderNumber}:`, error.message)
+
+
+      }
+    } else {
+
+
+      try {
+        const { NotificationService } = await import('#services/notification_service')
+        await NotificationService.notifyOrderProcessing(order, product)
+        console.log(`[OrdersController] Physical product order created (processing): ${order.orderNumber}`)
+
+
+      } catch (error: any) {
+        console.error(`[OrdersController] Failed to send processing notifications for order ${order.orderNumber}:`, error.message)
+
+        // Log email failure
+
+      }
+    }
 
     return response.status(201).json({
       success: true,
@@ -249,10 +383,6 @@ export default class OrdersController {
   async updateStatus({ params, request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
 
-    if (user.role !== 'admin') {
-      return response.status(403).json({ error: 'Only admins can update orders' })
-    }
-
     const isUuid = typeof params.id === 'string' && params.id.includes('-')
     const order = await Order.query()
       .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
@@ -261,8 +391,13 @@ export default class OrdersController {
       return response.status(404).json({ error: 'Order not found' })
     }
 
+    if (user.role !== 'admin' && order.vendorId !== user.id) {
+      return response.status(403).json({ error: 'Not authorized to update this order' })
+    }
+
     const payload = await request.validateUsing(updateOrderValidator)
     const oldStatus = order.status
+
 
     if (oldStatus === payload.status) {
       return response.json({
@@ -277,7 +412,9 @@ export default class OrdersController {
 
     const { WalletService } = await import('#services/wallet_service')
 
-    if (payload.status === 'completed' && oldStatus === 'pending') {
+    if (payload.status === 'completed' && (oldStatus === 'pending' || oldStatus === 'processing')) {
+    // Payment was already received (processing) or order was manual (pending)
+    // — now fully complete: credit vendor wallet
       await WalletService.handleOrderCompleted(order)
     }
 
@@ -318,21 +455,48 @@ export default class OrdersController {
     }
 
     if (['completed', 'refunded'].includes(payload.status)) {
-      const emailTemplate =
-        payload.status === 'completed' ? 'emails/order_confirmation' : 'emails/refund_notification'
+      if (payload.status === 'completed') {
+        // Only send completion notifications if order was not already completed
+        if (oldStatus !== 'completed') {
+          const product = await Product.find(order.productId)
+          if (product) {
+            try {
+              const { NotificationService } = await import('#services/notification_service')
+              await NotificationService.notifyOrderCompleted(order, product)
+              console.log(`[OrdersController] Order completion notification sent for status update ${order.orderNumber} (was ${oldStatus})`)
 
-      await mail.send((message) => {
-        message
-          .to(order.buyerEmail!)
-          .subject(
-            payload.status === 'completed'
-              ? `Order ${order.orderNumber} Completed`
-              : `Refund Processed for Order ${order.orderNumber}`
-          )
-          .htmlView(emailTemplate, {
-            order: order.serialize(),
+              // Log manual completion email success
+
+            } catch (error: any) {
+              console.error(`[OrdersController] Failed to send completion notifications for order ${order.orderNumber}:`, error.message)
+
+              // Log manual completion email failure
+
+            }
+          }
+        } else {
+          console.log(`[OrdersController] Order ${order.orderNumber} was already completed, skipping duplicate notification`)
+
+      // Log duplicate prevention
+
+        }
+      } else {
+        // Handle refund notifications
+        try {
+          await mail.send((message) => {
+            message
+              .to(order.buyerEmail!)
+              .subject(`Refund Processed for Order ${order.orderNumber}`)
+              .htmlView('emails/refund_notification', {
+                order: order.serialize(),
+              })
           })
-      })
+
+
+        } catch (error: any) {
+          console.error(`[OrdersController] Failed to send refund notification for order ${order.orderNumber}:`, error.message)
+        }
+      }
     }
 
     return response.json({

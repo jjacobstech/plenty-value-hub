@@ -37,6 +37,7 @@ export const createProductValidator = vine.create({
   affiliateResources: vine.any().optional(),
   digitalAssetUrl: vine.string().url({ require_tld: requireTld }).optional(),
   digitalAssetName: vine.string().trim().optional(),
+  unitCount: vine.number().min(0).optional(),
 })
 
 export const updateProductValidator = vine.create({
@@ -76,4 +77,5 @@ export const updateProductValidator = vine.create({
   digitalAssetUrl: vine.string().url({ require_tld: requireTld }).optional(),
   digitalAssetName: vine.string().trim().optional(),
   status: vine.enum(['approved', 'rejected', 'archived'] as const).optional(),
+  unitCount: vine.number().min(0).optional(),
 })

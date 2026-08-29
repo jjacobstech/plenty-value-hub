@@ -273,8 +273,8 @@ export default class PaymentController {
         return response.status(404).json({ error: 'Order not found' })
       }
 
-      // If already completed, return immediately
-      if (order.status === 'completed') {
+      // If already settled (completed or processing), return immediately
+      if (order.status === 'completed' || order.status === 'processing') {
         return response.json({
           success: true,
           verified: true,
@@ -290,22 +290,25 @@ export default class PaymentController {
       )
 
       if (verifyResult.success) {
-        order.status = 'completed'
-        await order.save()
-
         const product = await Product.find(order.productId)
         const affiliateLink = order.affiliateLinkId
           ? await AffiliateLink.find(order.affiliateLinkId)
           : null
 
         if (product) {
+          // postOrderComplete sets order.status based on product type
           await this.postOrderComplete(order, product, affiliateLink)
+        } else {
+          // Fallback if product is missing — complete the order directly
+          order.status = 'completed'
+          await order.save()
         }
 
         logger.info('Payment verified successfully', {
           provider: payload.provider,
           orderId: order.id,
           orderNumber: order.orderNumber,
+          status: order.status,
         })
       } else {
         logger.warn('Payment verification failed', {
@@ -333,12 +336,28 @@ export default class PaymentController {
 
   /**
    * Shared post-completion logic: update product stats, affiliate stats, and notify admin, vendor, affiliate, & buyer.
+   *
+   * Status is determined by product type:
+   * - digital  → 'completed' immediately (payment received + asset delivered)
+   * - physical → 'processing' (payment received, awaiting fulfillment/shipping)
+   *
+   * Wallet and notifications behave differently for each:
+   * - completed:  full wallet credit + buyer download email
+   * - processing: pending wallet credit only + vendor notified to fulfil
    */
   private async postOrderComplete(
     order: Order,
     product: Product,
     affiliateLink: AffiliateLink | null
   ) {
+    const isDigital = product.productType === 'digital'
+    const newStatus = isDigital ? 'completed' : 'processing'
+
+    order.status = newStatus
+    await order.save()
+
+
+
     if (affiliateLink) {
       affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
       affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
@@ -353,6 +372,9 @@ export default class PaymentController {
     }
 
     product.totalSales = (product.totalSales || 0) + 1
+    if (product.unitCount !== null && product.unitCount !== undefined && product.unitCount > 0) {
+      product.unitCount = Math.max(0, product.unitCount - 1)
+    }
     product.totalRevenue = new Decimal(product.totalRevenue || 0)
       .plus(order.amount)
       .toDecimalPlaces(2)
@@ -361,10 +383,21 @@ export default class PaymentController {
     await product.save()
 
     const { WalletService } = await import('#services/wallet_service')
-    await WalletService.handleOrderCompleted(order)
-
-    // Dispatch notifications to Admin, Vendor, Affiliate, and Buyer
     const { NotificationService } = await import('#services/notification_service')
-    await NotificationService.notifyOrderCompleted(order, product)
+
+    if (isDigital) {
+    // Digital product: Full completion - credit vendor wallet, fire all notifications (includes buyer download link)
+      await WalletService.handleOrderCompleted(order)
+      await NotificationService.notifyOrderCompleted(order, product)
+      console.log(`[PaymentController] Digital product completed via payment: ${order.orderNumber}`)
+
+
+    } else {
+      // Physical product: Payment received but not yet fulfilled - add pending balance, notify for processing
+      await WalletService.handleOrderCreated(order)
+      await NotificationService.notifyOrderProcessing(order, product)
+      console.log(`[PaymentController] Physical product set to processing via payment: ${order.orderNumber}`)
+
+    }
   }
 }

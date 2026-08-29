@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -10,28 +10,57 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { format } from 'date-fns'
-import { Wallet, Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
+import { Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
 import { toast } from 'sonner'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
+import api from '@/api/http-client'
+
+type WalletData = {
+  availableBalance: string
+  pendingBalance: string
+  currency: string
+}
+
+type PayoutRequest = {
+  id: number
+  amount: string
+  status: 'pending' | 'approved' | 'paid' | 'rejected'
+  createdAt: string
+}
 
 type AffiliateEarningsProps = {
   user: any
   orders: any[]
   links: any[]
+  wallet?: WalletData
+  transactions?: any[]
+  payoutRequests?: PayoutRequest[]
 }
 
 export default function AffiliateEarnings(props: AffiliateEarningsProps) {
-  const { orders, links } = props
+  const { orders, links, wallet, payoutRequests } = props
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false)
+  const [payoutAmount, setPayoutAmount] = useState('')
+  const [submittingPayout, setSubmittingPayout] = useState(false)
 
-  const totalEarnings = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((sum, o) => sum + (o.commissionAmount || 0), 0)
-  const pendingEarnings = orders
-    .filter((o) => o.status === 'pending')
-    .reduce((sum, o) => sum + (o.commissionAmount || 0), 0)
+  const totalEarnings = wallet
+    ? parseFloat(wallet.availableBalance)
+    : orders
+        .filter((o) => o.status === 'completed')
+        .reduce((sum, o) => sum + (o.commissionAmount || 0), 0)
+
+  const pendingEarnings = wallet
+    ? parseFloat(wallet.pendingBalance)
+    : orders
+        .filter((o) => o.status === 'pending')
+        .reduce((sum, o) => sum + (o.commissionAmount || 0), 0)
+
   const totalFromLinks = links.reduce((sum, l) => sum + (l.commissionEarned || 0), 0)
 
   const exportToPDF = () => {
@@ -74,24 +103,27 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
     toast.success('PDF exported successfully!')
   }
 
-  const handleRequestPayout = async () => {
-    const curr = getActiveCurrency()
-    const amount = prompt(`Enter payout amount (${curr}):`, '10')
-    if (!amount) return
+  const handleRequestPayout = () => {
+    setPayoutAmount('')
+    setPayoutModalOpen(true)
+  }
 
-    const parsed = parseFloat(amount.replace(/[^0-9.]/g, '').trim())
+  const submitPayout = async () => {
+    const parsed = parseFloat(payoutAmount.replace(/[^0-9.]/g, '').trim())
     if (!parsed || parsed < 10) {
       toast.error('Minimum payout amount is 10')
       return
     }
-
+    setSubmittingPayout(true)
     try {
-      const res = await api.post('/api/wallet/payouts', { amount: parsed })
+      await api.post('/api/wallet/payouts', { amount: parsed })
       toast.success('Payout request submitted!')
-      // Optionally refresh page
+      setPayoutModalOpen(false)
       window.location.reload()
     } catch (err: any) {
       toast.error(err?.response?.data?.error || 'Payout request failed')
+    } finally {
+      setSubmittingPayout(false)
     }
   }
 
@@ -102,13 +134,20 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
     rejected: 'bg-red-100 text-red-700',
   }
 
+  const statusStyles: Record<string, string> = {
+    completed: 'bg-green-100 text-green-700',
+    pending: 'bg-amber-100 text-amber-700',
+    refunded: 'bg-red-100 text-red-700',
+    cancelled: 'bg-slate-100 text-slate-500',
+  }
+
   return (
     <DashboardLayout role="affiliate">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold">Commissions & Payouts</h1>
-            <p className="text-muted-foreground text-sm">Track your affiliate earnings in USD</p>
+            <p className="text-muted-foreground text-sm">Track your affiliate earnings</p>
           </div>
           <div className="flex gap-2 flex-wrap">
             <Button onClick={handleRequestPayout} className="gap-2 bg-[#715AFF] hover:bg-[#6050E8]">
@@ -242,8 +281,8 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
                   <TableRow>
                     <TableHead>Product</TableHead>
                     <TableHead>Date</TableHead>
-                    <TableHead>Sale Amount ($)</TableHead>
-                    <TableHead>Commission ($)</TableHead>
+                    <TableHead>Sale Amount</TableHead>
+                    <TableHead>Commission</TableHead>
                     <TableHead>Status</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -277,6 +316,46 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Payout Request Modal */}
+      <Dialog open={payoutModalOpen} onOpenChange={setPayoutModalOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Request Payout</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">
+              Available balance:{' '}
+              <strong className="text-green-600">{formatNGN(wallet?.availableBalance ?? 0)}</strong>
+            </p>
+            <div className="space-y-1.5">
+              <Label htmlFor="affiliate-payout-amount">Amount ({getActiveCurrency()})</Label>
+              <Input
+                id="affiliate-payout-amount"
+                type="number"
+                min="10"
+                step="0.01"
+                placeholder="Enter amount (min. 10)"
+                value={payoutAmount}
+                onChange={(e) => setPayoutAmount(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submitPayout()}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPayoutModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#715AFF] hover:bg-[#6050E8]"
+              onClick={submitPayout}
+              disabled={submittingPayout}
+            >
+              {submittingPayout ? 'Submitting…' : 'Request Payout'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   )
 }

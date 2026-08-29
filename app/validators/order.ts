@@ -17,5 +17,5 @@ export const processOrderValidator = vine.create({
 })
 
 export const updateOrderValidator = vine.create({
-  status: vine.enum(['pending', 'completed', 'refunded', 'cancelled'] as const),
+  status: vine.enum(['pending', 'processing', 'completed', 'refunded', 'cancelled'] as const),
 })

@@ -28,6 +28,7 @@ router.get('/product/:id', [controllers.Pages, 'productDetail']).as('product.det
 router.get('/ref/:link_code', [controllers.Pages, 'affiliateRedirect']).as('affiliate.redirect')
 router.get('/for-partners', [controllers.Pages, 'forPartners']).as('for.partners')
 router.get('/privacy', [controllers.Pages, 'privacyPolicy']).as('privacy')
+router.get('/track-order', [controllers.Pages, 'trackOrder']).as('track.order')
 router.get('/login', [controllers.Session, 'create']).as('legacy.login')
 router.get('/register', [controllers.NewAccount, 'create']).as('legacy.register')
 router.get('/forgot-password', [controllers.Pages, 'forgotPassword']).as('legacy.forgot.password')
@@ -143,6 +144,7 @@ router
   .group(() => {
     router.get('/', [controllers.Pages, 'vendorDashboard']).as('vendor.dashboard')
     router.get('/products', [controllers.Pages, 'vendorProducts']).as('vendor.products')
+    router.get('/orders', [controllers.Pages, 'vendorOrders']).as('vendor.orders')
     router.get('/kyc', [controllers.Pages, 'vendorKYC']).as('vendor.kyc')
     router.get('/earnings', [controllers.Pages, 'vendorEarnings']).as('vendor.earnings')
     router.get('/analytics', [controllers.Pages, 'vendorAnalytics']).as('vendor.analytics')
@@ -186,6 +188,8 @@ router
     router.get('/payment-providers', [controllers.Payment, 'providers'])
     router.post('/payments/initialize', [controllers.Payment, 'initialize'])
     router.post('/payments/verify', [controllers.Payment, 'verify'])
+    router.post('/orders/track', [controllers.Orders, 'trackOrder'])
+    router.get('/orders/download', [controllers.Orders, 'downloadDigitalAsset'])
 
     // ── Webhook endpoints (no auth — secured by signature verification) ──
     // Order matters: AdonisJS matches in registration order, so the named
@@ -211,6 +215,7 @@ router
         router.get('/orders', [controllers.Orders, 'index'])
         router.get('/orders/:id', [controllers.Orders, 'show'])
         router.post('/orders', [controllers.Orders, 'processOrder'])
+        router.put('/orders/:id', [controllers.Orders, 'updateStatus']).as('vendor.orders.update')
         router.post('/orders/:id/notify-vendor', [controllers.Orders, 'notifyVendor'])
 
         // Affiliate Links
@@ -255,14 +260,17 @@ router
           .group(() => {
             router.get('/stats', [controllers.Admin, 'getPlatformStats'])
             router.get('/auth-status', [controllers.Admin, 'authStatus'])
+            router.get('/debug/banks', [controllers.Admin, 'debugPaystackBanks'])
+            router.post('/debug/test-email', [controllers.Admin, 'testEmail'])
             router.put('/products/:id/approve', [controllers.Products, 'approve'])
-            router.put('/orders/:id', [controllers.Orders, 'updateStatus'])
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
+            router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
 
             // Payout management
             router.get('/payouts', [controllers.Wallet, 'adminIndex'])
             router.put('/payouts/:id', [controllers.Wallet, 'adminUpdate'])
+            router.post('/payouts/:id/retry-transfer', [controllers.Admin, 'retryFailedTransfer'])
 
             // Blog posts
             router.get('/blog-posts', [controllers.BlogPosts, 'index'])

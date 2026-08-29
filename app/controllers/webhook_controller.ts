@@ -20,16 +20,18 @@ export default class WebhookController {
     if (!reference) return
 
     const order = await Order.findBy('orderNumber', reference)
-    if (!order || order.status === 'completed') return
-
-    order.status = 'completed'
-    order.paymentMethod = provider
-    await order.save()
+    // Skip if already settled
+    if (!order || order.status === 'completed' || order.status === 'processing') return
 
     const [product, affiliateLink] = await Promise.all([
       Product.find(order.productId),
       order.affiliateLinkId ? AffiliateLink.find(order.affiliateLinkId) : null,
     ])
+
+    const isDigital = product?.productType === 'digital'
+    order.status = isDigital ? 'completed' : 'processing'
+    order.paymentMethod = provider
+    await order.save()
 
     if (product) {
       // Update product stats
@@ -57,17 +59,21 @@ export default class WebhookController {
       }
     }
 
-    // Credit vendor and affiliate wallets
     const { WalletService } = await import('#services/wallet_service')
-    await WalletService.handleOrderCompleted(order)
-
-    // Send notifications
     const { NotificationService } = await import('#services/notification_service')
+
+    if (isDigital) {
+      await WalletService.handleOrderCompleted(order)
+    } else {
+      await WalletService.handleOrderCreated(order)
+    }
+
     if (product) await NotificationService.notifyOrderCompleted(order, product)
 
-    logger.info('Order completed via webhook', {
+    logger.info('Order settled via webhook', {
       orderId: order.id,
       orderNumber: order.orderNumber,
+      status: order.status,
       provider,
     })
   }
@@ -172,6 +178,16 @@ export default class WebhookController {
     const signature = request.header('x-paystack-signature') || ''
 
     try {
+      const webhookData = JSON.parse(payload)
+      const eventType = webhookData.event
+
+      // Handle transfer events
+      if (eventType === 'transfer.success' || eventType === 'transfer.failed' || eventType === 'transfer.reversed') {
+        await this.handlePaystackTransferEvent(webhookData)
+        return response.status(200).json({ success: true, message: 'Transfer event processed' })
+      }
+
+      // Handle regular payment events
       const result = await paymentGateway.handleWebhook('paystack', payload, signature)
 
       if (result.success && result.reference) {
@@ -191,6 +207,94 @@ export default class WebhookController {
         success: false,
         message: 'Webhook processing failed',
       })
+    }
+  }
+
+  /**
+   * Handle Paystack transfer webhook events
+   */
+  private async handlePaystackTransferEvent(webhookData: any) {
+    const { event, data } = webhookData
+
+    if (!data?.reference) {
+      logger.warn('Paystack transfer webhook missing reference', { event, data })
+      return
+    }
+
+    const reference = data.reference
+    const transferCode = data.transfer_code
+
+    // Find payout request by transfer reference
+    const { default: PayoutRequest } = await import('#models/payout_request')
+    const payout = await PayoutRequest.query()
+      .where('transferReference', reference)
+      .orWhere('transferCode', transferCode)
+      .first()
+
+    if (!payout) {
+      logger.warn('Paystack transfer webhook: payout not found', { reference, transferCode, event })
+      return
+    }
+
+    const { DateTime } = await import('luxon')
+
+    switch (event) {
+      case 'transfer.success':
+        payout.status = 'paid'
+        payout.transferStatus = 'success'
+        payout.processedAt = DateTime.now()
+        payout.transferCompletedAt = DateTime.now()
+        await payout.save()
+
+        logger.info('Paystack transfer completed successfully', {
+          payoutId: payout.id,
+          reference,
+          amount: payout.amount,
+        })
+        break
+
+      case 'transfer.failed':
+        payout.transferStatus = 'failed'
+        payout.transferErrorMessage = data.status || 'Transfer failed'
+        await payout.save()
+
+        // Refund the amount back to user's wallet
+        const { WalletService } = await import('#services/wallet_service')
+        await WalletService.updatePayoutStatus(
+          payout.id,
+          'rejected',
+          `Paystack transfer failed: ${data.status || 'Unknown error'}`
+        )
+
+        logger.warn('Paystack transfer failed', {
+          payoutId: payout.id,
+          reference,
+          reason: data.status,
+        })
+        break
+
+      case 'transfer.reversed':
+        payout.transferStatus = 'reversed'
+        payout.transferErrorMessage = data.status || 'Transfer reversed'
+        await payout.save()
+
+        // Refund the amount back to user's wallet
+        const { WalletService: WS } = await import('#services/wallet_service')
+        await WS.updatePayoutStatus(
+          payout.id,
+          'rejected',
+          `Paystack transfer reversed: ${data.status || 'Unknown error'}`
+        )
+
+        logger.warn('Paystack transfer reversed', {
+          payoutId: payout.id,
+          reference,
+          reason: data.status,
+        })
+        break
+
+      default:
+        logger.info('Unhandled Paystack transfer event', { event, reference })
     }
   }
 

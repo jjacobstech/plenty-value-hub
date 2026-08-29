@@ -52,6 +52,7 @@ const menuItems: Record<Role, MenuItem[]> = {
   vendor: [
     { icon: Home, label: 'Overview', path: '/vendor' },
     { icon: Package, label: 'Products', path: '/vendor/products' },
+    { icon: FileText, label: 'Orders', path: '/vendor/orders' },
     { icon: BarChart3, label: 'Analytics', path: '/vendor/analytics' },
     { icon: DollarSign, label: 'Earnings', path: '/vendor/earnings' },
     { icon: Store, label: 'Store Profile', path: '/vendor/profile' },

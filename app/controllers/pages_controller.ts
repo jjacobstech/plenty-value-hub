@@ -76,6 +76,11 @@ export default class PagesController {
     return inertia.render('Marketplace', { products })
   }
 
+  async trackOrder({ inertia }: HttpContext) {
+    const supportEmail = env.get('SUPPORT_EMAIL', 'support@plentyvalue.com')
+    return inertia.render('OrderTracking', { supportEmail })
+  }
+
   async reviews({ inertia }: HttpContext) {
     const reviews = await Review.query()
       .where('status', 'approved')
@@ -207,15 +212,51 @@ export default class PagesController {
   async adminDashboard({ inertia, auth }: HttpContext) {
     const [users, products, orders, subscriberCount] = await Promise.all([
       User.all(),
-      Product.all(),
-      Order.query().orderBy('created_at', 'desc').limit(500),
+      Product.query().preload('vendor').orderBy('created_at', 'desc'),
+      Order.query()
+        .preload('product')
+        .preload('buyer')
+        .preload('vendor')
+        .preload('affiliate')
+        .orderBy('created_at', 'desc')
+        .limit(500),
       NewsletterSubscriber.query().count('* as total').first(),
     ])
+
+    // Serialize data for Inertia to avoid issues with model instances
+    const serializedOrders = orders.map((order) => ({
+      id: order.id,
+      status: order.status,
+      amount: order.amount,
+      platformFee: order.platformFee,
+      commissionAmount: order.commissionAmount,
+      productId: order.productId,
+      productName: order.productName || order.product?.name,
+      buyerId: order.buyerId,
+      vendorId: order.vendorId,
+      affiliateId: order.affiliateId,
+      createdAt: order.createdAt,
+    }))
+
+    const serializedProducts = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      status: product.status,
+      category: product.category,
+      price: product.price,
+      commissionRate: product.commissionRate,
+      totalSales: product.totalSales,
+      totalRevenue: product.totalRevenue,
+      vendorId: product.vendorId,
+      vendorName: product.vendor?.fullName || product.vendor?.businessName,
+      createdAt: product.createdAt,
+    }))
+
     return inertia.render('admin/AdminDashboard', {
       user: auth.user,
       users,
-      products,
-      orders,
+      products: serializedProducts,
+      orders: serializedOrders,
       subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
     })
   }
@@ -238,35 +279,118 @@ export default class PagesController {
   async adminAnalytics({ inertia, auth }: HttpContext) {
     const [users, products, orders, links] = await Promise.all([
       User.all(),
-      Product.all(),
-      Order.query().orderBy('created_at', 'desc').limit(500),
-      AffiliateLink.all(),
+      Product.query().preload('vendor').orderBy('created_at', 'desc'),
+      Order.query()
+        .preload('product')
+        .preload('buyer')
+        .preload('vendor')
+        .preload('affiliate')
+        .orderBy('created_at', 'desc')
+        .limit(500),
+      AffiliateLink.query().preload('product').preload('affiliate'),
     ])
+
+    // Serialize data for consistent frontend access
+    const serializedOrders = orders.map((order) => ({
+      id: order.id,
+      status: order.status,
+      amount: order.amount,
+      platformFee: order.platformFee,
+      commissionAmount: order.commissionAmount,
+      productId: order.productId,
+      productName: order.productName || order.product?.name,
+      buyerId: order.buyerId,
+      vendorId: order.vendorId,
+      affiliateId: order.affiliateId,
+      createdAt: order.createdAt,
+    }))
+
+    const serializedProducts = products.map((product) => ({
+      id: product.id,
+      name: product.name,
+      status: product.status,
+      category: product.category,
+      price: product.price,
+      commissionRate: product.commissionRate,
+      totalSales: product.totalSales,
+      totalRevenue: product.totalRevenue,
+      vendorId: product.vendorId,
+      vendorName: product.vendor?.fullName || product.vendor?.businessName,
+      createdAt: product.createdAt,
+    }))
+
+    const serializedLinks = links.map((link) => ({
+      id: link.id,
+      status: link.status,
+      clicks: link.clicks || 0,
+      conversions: link.conversions || 0,
+      commissionEarned: link.commissionEarned,
+      revenue: link.revenue,
+      productName: link.productName || link.product?.name,
+      affiliateId: link.affiliateId,
+      affiliateName: link.affiliate?.fullName || link.affiliate?.businessName,
+      createdAt: link.createdAt,
+    }))
+
     return inertia.render('admin/AdminAnalytics', {
       user: auth.user,
       users,
-      products,
-      orders,
-      links,
+      products: serializedProducts,
+      orders: serializedOrders,
+      links: serializedLinks,
     })
   }
 
   // Vendor pages
   async vendorDashboard({ inertia, auth }: HttpContext) {
-    const vendorProducts = await Product.query().where('vendor_id', auth.user!.id)
-    const vendorOrders = await Order.query()
-      .join('products', 'orders.product_id', 'products.id')
-      .where('products.vendor_id', auth.user!.id)
+    const { WalletService } = await import('#services/wallet_service')
+
+    const [vendorProducts, vendorOrders, walletSummary] = await Promise.all([
+      Product.query().where('vendor_id', auth.user!.id),
+      Order.query()
+        .join('products', 'orders.product_id', 'products.id')
+        .where('products.vendor_id', auth.user!.id)
+        .select('orders.*', 'products.name as product_name')
+        .orderBy('orders.created_at', 'desc'),
+      WalletService.getSummary(auth.user!.id),
+    ])
+
+    const serializedOrders = vendorOrders.map((o) => {
+      const raw = o.serialize()
+      return {
+        ...raw,
+        vendorPayout: Number(raw.vendorPayout || raw.vendor_payout || 0),
+        amount: Number(raw.amount || 0),
+        productName: (o as any).$extras?.product_name || raw.productName || 'Product',
+        affiliateId: raw.affiliateId || raw.affiliate_id || null,
+      }
+    })
+
     return inertia.render('vendor/VendorDashboard', {
       user: auth.user,
       products: vendorProducts,
-      orders: vendorOrders,
+      orders: serializedOrders,
+      wallet: walletSummary.wallet,
     })
   }
 
   async vendorProducts({ inertia, auth }: HttpContext) {
     const products = await Product.query().where('vendor_id', auth.user!.id)
     return inertia.render('vendor/VendorProducts', { user: auth.user, products })
+  }
+
+  async vendorOrders({ inertia, auth }: HttpContext) {
+    const orders = await Order.query()
+      .join('products', 'orders.product_id', 'products.id')
+      .where('products.vendor_id', auth.user!.id)
+      .select('orders.*')
+      .preload('product' as never)
+      .orderBy('orders.created_at', 'desc')
+
+    return inertia.render('vendor/VendorOrders' as any, {
+      user: auth.user,
+      orders: orders.map((o) => o.serialize()),
+    })
   }
 
   async vendorKYC({ inertia, auth }: HttpContext) {
@@ -293,13 +417,48 @@ export default class PagesController {
   }
 
   async vendorAnalytics({ inertia, auth }: HttpContext) {
-    const orders = await Order.query()
-      .join('products', 'orders.product_id', 'products.id')
-      .where('products.vendor_id', auth.user!.id)
-      .select('orders.*')
-      .orderBy('orders.created_at', 'desc')
-    const products = await Product.query().where('vendor_id', auth.user!.id)
-    return inertia.render('vendor/VendorAnalytics', { user: auth.user, orders, products })
+    const [orders, products] = await Promise.all([
+      Order.query()
+        .join('products', 'orders.product_id', 'products.id')
+        .where('products.vendor_id', auth.user!.id)
+        .select('orders.*')
+        .orderBy('orders.created_at', 'desc'),
+      Product.query().where('vendor_id', auth.user!.id),
+    ])
+
+    const serializedOrders = orders.map((o) => o.serialize())
+    const serializedProducts = products.map((p) => p.serialize())
+
+    // Compute live per-product sales count and revenue from actual orders
+    // (more accurate than the denormalized totalSales/totalRevenue columns on Product)
+    const productStatsMap: Record<number, { totalSales: number; totalRevenue: number }> = {}
+    for (const o of serializedOrders) {
+      if (o.status !== 'completed' || !o.productId) continue
+      if (!productStatsMap[o.productId]) {
+        productStatsMap[o.productId] = { totalSales: 0, totalRevenue: 0 }
+      }
+      productStatsMap[o.productId].totalSales += 1
+      productStatsMap[o.productId].totalRevenue += parseFloat(o.vendorPayout) || 0
+    }
+
+    const enrichedProducts = serializedProducts.map((p) => {
+      const stats = productStatsMap[p.id]
+      return {
+        ...p,
+        totalSales: stats?.totalSales ?? p.totalSales ?? 0,
+        totalRevenue: stats ? stats.totalRevenue.toFixed(2) : (p.totalRevenue ?? '0'),
+      }
+    })
+    console.log({
+      user: auth.user,
+      orders: serializedOrders,
+      products: enrichedProducts,
+    })
+    return inertia.render('vendor/VendorAnalytics', {
+      user: auth.user,
+      orders: serializedOrders,
+      products: enrichedProducts,
+    })
   }
 
   async vendorProfile({ inertia, auth }: HttpContext) {

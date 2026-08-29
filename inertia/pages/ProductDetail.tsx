@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, Loader2 } from 'lucide-react'
+import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, Loader2, Download, Package, Repeat } from 'lucide-react'
 import { formatUSD } from '@/lib/currency'
 import PublicLayout from '@/components/layout/PublicLayout'
 
@@ -87,6 +87,30 @@ const CATEGORY_LABELS: Record<string, string> = {
   ai_tools: 'AI Tools',
   productivity: 'Productivity',
   lifestyle: 'Lifestyle',
+}
+
+const PRODUCT_TYPE_CONFIG: Record<
+  string,
+  { label: string; description: string; icon: React.ComponentType<any>; color: string }
+> = {
+  digital: {
+    label: 'Digital Product',
+    description: 'Instant download — delivered to your email immediately after payment.',
+    icon: Download,
+    color: 'text-blue-600 bg-blue-50 border-blue-200',
+  },
+  physical: {
+    label: 'Physical Product',
+    description: 'Ships to your address. Delivery time depends on your location.',
+    icon: Package,
+    color: 'text-orange-600 bg-orange-50 border-orange-200',
+  },
+  subscription: {
+    label: 'Subscription',
+    description: 'Recurring billing. Cancel anytime from your account.',
+    icon: Repeat,
+    color: 'text-purple-600 bg-purple-50 border-purple-200',
+  },
 }
 
 const EMPTY_PAYMENT: PaymentPayload = {
@@ -343,24 +367,33 @@ export default function ProductDetail({
           </div>
 
           {/* Quick stats */}
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             <div className="bg-muted rounded-xl p-3 text-center">
               <p className="text-xs text-muted-foreground mb-1">Commission</p>
               <p className="font-bold text-green-600">{product.commissionRate}%</p>
             </div>
-            <div className="bg-muted rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground mb-1">Avg EPC</p>
-              <p className="font-bold">
-                {product.avgEarningsPerSale !== null ? formatUSD(product.avgEarningsPerSale) : '—'}
-              </p>
-            </div>
-            <div className="bg-muted rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground mb-1">Conv. Rate</p>
-              <p className="font-bold">
-                {product.conversionRate !== null ? `${product.conversionRate}%` : '—'}
-              </p>
-            </div>
+            {product.gravityScore > 0 && (
+              <div className="bg-muted rounded-xl p-3 text-center">
+                <p className="text-xs text-muted-foreground mb-1">Gravity Score</p>
+                <p className="font-bold">{product.gravityScore}</p>
+              </div>
+            )}
           </div>
+
+          {/* Product type indicator */}
+          {product.productType && PRODUCT_TYPE_CONFIG[product.productType] && (() => {
+            const typeConfig = PRODUCT_TYPE_CONFIG[product.productType!]
+            const TypeIcon = typeConfig.icon
+            return (
+              <div className={`flex items-start gap-3 p-3.5 rounded-xl border ${typeConfig.color}`}>
+                <TypeIcon className="w-5 h-5 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-semibold">{typeConfig.label}</p>
+                  <p className="text-xs mt-0.5 opacity-80">{typeConfig.description}</p>
+                </div>
+              </div>
+            )
+          })()}
 
           {/* Physical Product Shipping Address Form */}
           {product.productType === 'physical' && checkoutAvailable && (

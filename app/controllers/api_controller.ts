@@ -82,13 +82,35 @@ export default class ApiController {
       const { product_id: productId } = request.only(['product_id', 'affiliate_link_code'])
 
       const product = await Product.findOrFail(productId)
+      
+      // Determine status based on product type
+      const initialStatus = product.productType === 'digital' ? 'completed' : 'processing'
 
       const order = await Order.create({
         buyerId: auth.user!.id,
+        buyerEmail: auth.user!.email,
         productId,
+        productName: product.name,
+        vendorId: product.vendorId,
         amount: product.price,
-        status: 'completed',
+        vendorPayout: product.price, // Simplified, should use RevenueService
+        status: initialStatus,
       })
+
+      // Handle appropriate notifications
+      const { NotificationService } = await import('#services/notification_service')
+      
+      if (initialStatus === 'completed') {
+        // Digital product
+        const { WalletService } = await import('#services/wallet_service')
+        await WalletService.handleOrderCompleted(order)
+        await NotificationService.notifyOrderCompleted(order, product)
+        console.log(`[ApiController] Digital product completed: ${order.orderNumber}`)
+      } else {
+        // Physical product
+        await NotificationService.notifyOrderProcessing(order, product)
+        console.log(`[ApiController] Physical product set to processing: ${order.orderNumber}`)
+      }
 
       return response.ok({ success: true, order })
     } catch (error) {

@@ -6,10 +6,43 @@ import { DollarSign, Users, Package, ShoppingCart, TrendingUp, Mail } from 'luci
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 
+type Order = {
+  id: number
+  status: string
+  amount: string
+  platformFee?: string
+  commissionAmount?: string
+  productId?: number
+  productName?: string
+  buyerId?: number
+  vendorId?: number
+  affiliateId?: number
+  createdAt: any
+}
+
+type Product = {
+  id: number
+  name: string
+  status: string
+  category?: string
+  price?: string
+  commissionRate?: string
+  totalSales?: number
+  totalRevenue?: string
+  createdAt: any
+}
+
+type User = {
+  id: number
+  role?: string
+  email?: string
+  fullName?: string
+}
+
 type AdminDashboardProps = {
-  products: any[]
-  orders: any[]
-  users: any[]
+  products: Product[]
+  orders: Order[]
+  users: User[]
   subscriberCount?: number
 }
 
@@ -19,24 +52,38 @@ export default function AdminDashboard({
   users = [],
   subscriberCount = 0,
 }: AdminDashboardProps) {
-  const totalGMV = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((sum, o) => sum + (o.amount || 0), 0)
-  const platformRevenue = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((sum, o) => sum + (o.platform_fee || 0), 0)
-  const pendingProducts = products.filter((p) => p.status === 'pending').length
-  const affiliates = users.filter((u) => u.role === 'affiliate').length
-  const vendors = users.filter((u) => u.role === 'vendor').length
+  // Safely calculate metrics with error handling
+  const safeParseFloat = (value: any) => {
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? 0 : parsed
+  }
 
+  const completedOrders = orders.filter((o) => o?.status === 'completed') || []
+  
+  const totalGMV = completedOrders.reduce((sum, o) => {
+    return sum + safeParseFloat(o?.amount)
+  }, 0)
+
+  const platformRevenue = completedOrders.reduce((sum, o) => {
+    return sum + safeParseFloat(o?.platformFee)
+  }, 0)
+
+  const pendingProducts = products.filter((p) => p?.status === 'pending')?.length || 0
+  const affiliates = users.filter((u) => u?.role === 'affiliate')?.length || 0
+  const vendors = users.filter((u) => u?.role === 'vendor')?.length || 0
+
+  // Safe category data calculation
   const categoryData = {}
-  orders
-    .filter((o) => o.status === 'completed')
-    .forEach((o) => {
-      const product = products.find((p) => p.id === o.product_id)
-      const cat = product?.category || 'other'
-      categoryData[cat] = (categoryData[cat] || 0) + (o.amount || 0)
-    })
+  completedOrders.forEach((o) => {
+    if (!o) return
+    
+    const product = products.find((p) => p?.id === o.productId)
+    const cat = product?.category || 'other'
+    const amount = safeParseFloat(o.amount)
+    
+    categoryData[cat] = (categoryData[cat] || 0) + amount
+  })
+
   const chartData = Object.entries(categoryData).map(([name, revenue]) => ({
     name: name.replace(/_/g, ' ').substring(0, 12),
     revenue,

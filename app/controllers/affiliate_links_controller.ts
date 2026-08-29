@@ -46,7 +46,14 @@ export default class AffiliateLinksController {
       return response.status(400).json({ error: 'Product is not approved for affiliate promotion' })
     }
 
-    const linkCode = nanoid(10)
+    // Generate a readable link code using affiliate name + random suffix
+    const affiliateName = (user.fullName || user.email.split('@')[0] || 'affiliate')
+      .toLowerCase()
+      .replace(/[^a-z0-9]/g, '-')
+      .replace(/--+/g, '-')
+      .replace(/^-|-$/g, '')
+    const randomSuffix = nanoid(6) // shorter suffix since we have the name
+    const linkCode = `${affiliateName}-${randomSuffix}`
 
     const link = await AffiliateLink.create({
       affiliateId: user.id,
@@ -65,7 +72,10 @@ export default class AffiliateLinksController {
     return response.status(201).json({
       success: true,
       message: 'Affiliate link created',
-      data: link.serialize(),
+      data: {
+        ...link.serialize(),
+        linkCode: link.linkCode, // Ensure camelCase is available for frontend
+      },
     })
   }
 

@@ -26,7 +26,8 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
   const [copiedId, setCopiedId] = useState(null)
 
   const handleCopy = (link) => {
-    const url = `${window.location.origin}/ref/${link.link_code}`
+    const linkCode = link.linkCode || link.link_code
+    const url = `${window.location.origin}/ref/${linkCode}`
     navigator.clipboard.writeText(url)
     setCopiedId(link.id)
     setTimeout(() => setCopiedId(null), 2000)
@@ -101,7 +102,7 @@ export default function AffiliateLinks(props: AffiliateLinksProps) {
                       </TableCell>
                       <TableCell>
                         <span className="font-mono text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                          /ref/{link.link_code}
+                          /ref/{link.linkCode || link.link_code}
                         </span>
                       </TableCell>
                       <TableCell>{link.clicks || 0}</TableCell>

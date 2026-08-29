@@ -25,11 +25,56 @@ import {
 } from 'recharts'
 import { formatUSD as formatNGN } from '@/lib/currency'
 
+type Order = {
+  id: number
+  status: string
+  amount: string
+  platformFee?: string
+  commissionAmount?: string
+  productId?: number
+  productName?: string
+  buyerId?: number
+  vendorId?: number
+  affiliateId?: number
+  createdAt: any
+}
+
+type Product = {
+  id: number
+  name: string
+  status: string
+  category?: string
+  price?: string
+  commissionRate?: string
+  totalSales?: number
+  totalRevenue?: string
+  createdAt: any
+}
+
+type User = {
+  id: number
+  role?: string
+  email?: string
+  fullName?: string
+}
+
+type AffiliateLink = {
+  id: number
+  status?: string
+  clicks?: number
+  conversions?: number
+  commissionEarned?: string
+  revenue?: string
+  productName?: string
+  affiliateId?: number
+  createdAt: any
+}
+
 type AdminAnalyticsProps = {
-  products: any[]
-  orders: any[]
-  users: any[]
-  links: any[]
+  products: Product[]
+  orders: Order[]
+  users: User[]
+  links: AffiliateLink[]
   analytics?: any
 }
 
@@ -39,21 +84,38 @@ export default function AdminAnalytics({
   users = [],
   links = [],
 }: AdminAnalyticsProps) {
-  const totalGMV = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((s, o) => s + (o.amount || 0), 0)
-  const platformRevenue = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((s, o) => s + (o.platform_fee || 0), 0)
-  const affiliateCommissions = orders
-    .filter((o) => o.status === 'completed')
-    .reduce((s, o) => s + (o.commission_amount || 0), 0)
-  const totalClicks = links.reduce((s, l) => s + (l.clicks || 0), 0)
-  const totalConversions = links.reduce((s, l) => s + (l.conversions || 0), 0)
-  const refundRate =
-    orders.length > 0
-      ? ((orders.filter((o) => o.status === 'refunded').length / orders.length) * 100).toFixed(1)
-      : '0'
+  // Safe parsing helper
+  const safeParseFloat = (value: any) => {
+    const parsed = parseFloat(value)
+    return isNaN(parsed) ? 0 : parsed
+  }
+
+  const safeParseInt = (value: any) => {
+    const parsed = parseInt(value)
+    return isNaN(parsed) ? 0 : parsed
+  }
+
+  const completedOrders = orders.filter((o) => o?.status === 'completed') || []
+
+  const totalGMV = completedOrders.reduce((s, o) => {
+    return s + safeParseFloat(o?.amount)
+  }, 0)
+
+  const platformRevenue = completedOrders.reduce((s, o) => {
+    return s + safeParseFloat(o?.platformFee)
+  }, 0)
+
+  const affiliateCommissions = completedOrders.reduce((s, o) => {
+    return s + safeParseFloat(o?.commissionAmount)
+  }, 0)
+
+  const totalClicks = (links || []).reduce((s, l) => s + safeParseInt(l?.clicks), 0)
+  const totalConversions = (links || []).reduce((s, l) => s + safeParseInt(l?.conversions), 0)
+  
+  const refundedOrders = orders.filter((o) => o?.status === 'refunded') || []
+  const refundRate = orders.length > 0 
+    ? ((refundedOrders.length / orders.length) * 100).toFixed(1)
+    : '0'
 
   return (
     <DashboardLayout role="admin">
@@ -97,16 +159,22 @@ export default function AdminAnalytics({
             <CardContent>
               {(() => {
                 const productRevenue = {}
-                orders
-                  .filter((o) => o.status === 'completed')
-                  .forEach((o) => {
-                    productRevenue[o.product_name || 'Unknown'] =
-                      (productRevenue[o.product_name || 'Unknown'] || 0) + (o.amount || 0)
-                  })
+                completedOrders.forEach((o) => {
+                  if (!o) return
+                  
+                  const productName = o.productName || 'Unknown Product'
+                  const amount = safeParseFloat(o.amount)
+                  
+                  productRevenue[productName] = (productRevenue[productName] || 0) + amount
+                })
+                
                 const data = Object.entries(productRevenue)
-                  .sort(([, a], [, b]) => b - a)
+                  .sort(([, a], [, b]) => (b as number) - (a as number))
                   .slice(0, 5)
-                  .map(([name, revenue]) => ({ name: name.substring(0, 15), revenue }))
+                  .map(([name, revenue]) => ({ 
+                    name: name.substring(0, 15), 
+                    revenue: revenue as number 
+                  }))
 
                 return data.length > 0 ? (
                   <div className="h-56">

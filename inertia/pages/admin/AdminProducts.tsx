@@ -201,6 +201,7 @@ export default function AdminProducts(props: AdminProductsProps) {
                   <TableHead>Category</TableHead>
                   <TableHead>Price</TableHead>
                   <TableHead>Commission</TableHead>
+                  <TableHead>Units</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Featured</TableHead>
                   <TableHead>Actions</TableHead>
@@ -218,6 +219,15 @@ export default function AdminProducts(props: AdminProductsProps) {
                     </TableCell>
                     <TableCell>${p.price}</TableCell>
                     <TableCell>{p.commissionRate}%</TableCell>
+                    <TableCell className="text-sm">
+                      {(p as any).unitCount != null ? (
+                        <span className={`font-medium ${(p as any).unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}>
+                          {(p as any).unitCount}
+                        </span>
+                      ) : (
+                        <span className="text-muted-foreground text-xs">∞</span>
+                      )}
+                    </TableCell>
                     <TableCell>
                       <Badge
                         variant={(statusColors[p.status!] as any) ?? 'secondary'}

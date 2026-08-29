@@ -69,10 +69,11 @@ type VendorDashboardProps = {
   user: any
   products: any[]
   orders: any[]
+  wallet?: { balance: number; currency: string } | null
 }
 
 export default function VendorDashboard(props: VendorDashboardProps) {
-  const { user, products, orders } = props
+  const { user, products, orders, wallet } = props
 
   const completedOrders = orders.filter((o) => o.status === 'completed')
   const pendingOrders = orders.filter((o) => o.status === 'pending')
@@ -203,9 +204,9 @@ export default function VendorDashboard(props: VendorDashboardProps) {
               <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-600" />
-                  <span className="text-sm text-green-700 font-medium">Available</span>
+                  <span className="text-sm text-green-700 font-medium">Wallet Balance</span>
                 </div>
-                <span className="font-bold text-green-700">{formatNGN(totalRevenue)}</span>
+                <span className="font-bold text-green-700">{formatNGN(wallet?.balance ?? totalRevenue)}</span>
               </div>
               <div className="flex items-center justify-between p-3 bg-amber-50 rounded-xl">
                 <div className="flex items-center gap-2">

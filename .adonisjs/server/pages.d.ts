@@ -46,6 +46,7 @@ declare module '@adonisjs/inertia/types' {
     'Home': ExtractProps<(typeof import('../../inertia/pages/Home.tsx'))['default']>
     'Login': ExtractProps<(typeof import('../../inertia/pages/Login.tsx'))['default']>
     'Marketplace': ExtractProps<(typeof import('../../inertia/pages/Marketplace.tsx'))['default']>
+    'OrderTracking': ExtractProps<(typeof import('../../inertia/pages/OrderTracking.tsx'))['default']>
     'PrivacyPolicy': ExtractProps<(typeof import('../../inertia/pages/PrivacyPolicy.tsx'))['default']>
     'ProductDetail': ExtractProps<(typeof import('../../inertia/pages/ProductDetail.tsx'))['default']>
     'Register': ExtractProps<(typeof import('../../inertia/pages/Register.tsx'))['default']>
@@ -54,6 +55,7 @@ declare module '@adonisjs/inertia/types' {
     'vendor/VendorAnalytics': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorAnalytics.tsx'))['default']>
     'vendor/VendorDashboard': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorDashboard.tsx'))['default']>
     'vendor/VendorEarnings': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorEarnings.tsx'))['default']>
+    'vendor/VendorOrders': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorOrders.tsx'))['default']>
     'vendor/VendorProducts': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProducts.tsx'))['default']>
     'vendor/VendorProfile': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProfile.tsx'))['default']>
     'VendorKYC': ExtractProps<(typeof import('../../inertia/pages/VendorKYC.tsx'))['default']>

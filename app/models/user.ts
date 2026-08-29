@@ -126,6 +126,25 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   @column()
   declare payoutDetails: string | null
 
+  // Paystack transfer recipient information
+  @column()
+  declare paystackRecipientCode: string | null
+
+  @column()
+  declare paystackBankCode: string | null
+
+  @column()
+  declare paystackBankName: string | null
+
+  @column()
+  declare paystackRecipientVerified: boolean
+
+  @column()
+  declare lastTransferReference: string | null
+
+  @column.dateTime()
+  declare lastTransferAt: DateTime | null
+
   get initials() {
     const [first, last] = this.fullName ? this.fullName.split(' ') : this.email.split('@')
     if (first && last) {

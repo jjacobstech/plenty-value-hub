@@ -91,6 +91,7 @@
     "@adonisjs/vite": "^5.1.1",
     "@aws-sdk/client-s3": "^3.1075.0",
     "@aws-sdk/s3-request-presigner": "^3.1075.0",
+    "@holoyan/adonisjs-activitylog": "^1.0.0",
     "@inertiajs/react": "^2.3.24",
     "@paypal/checkout-server-sdk": "^1.0.3",
     "@paypal/paypal-server-sdk": "^2.4.0",

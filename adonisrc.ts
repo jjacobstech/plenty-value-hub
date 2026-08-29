@@ -64,6 +64,7 @@ export default defineConfig({
     () => import('@adonisjs/mail/mail_provider'),
     () => import('@adonisjs/drive/drive_provider'),
     () => import('@adonisjs/limiter/limiter_provider'),
+    () => import('@holoyan/adonisjs-activitylog/activity_log_provider')
   ],
 
   /*

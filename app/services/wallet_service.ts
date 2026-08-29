@@ -6,6 +6,9 @@ import User from '#models/user'
 import db from '@adonisjs/lucid/services/db'
 import { Decimal } from 'decimal.js'
 import { DateTime } from 'luxon'
+import { PaystackTransferService } from '#services/paystack_transfer_service'
+import { TransactionService } from '#services/transaction_service'
+import { nanoid } from 'nanoid'
 
 export const MIN_PAYOUT_AMOUNT = 10
 
@@ -150,7 +153,62 @@ export class WalletService {
         )
       }
     }
+
+    // Record global transactions
+    try {
+      if (order.buyerId) {
+        await TransactionService.record({
+          userId: order.buyerId,
+          type: 'purchase',
+          category: 'product_purchase',
+          status: 'completed',
+          amount: order.amount,
+          currency: order.currency || 'USD',
+          paymentMethod: order.paymentMethod,
+          paymentGatewayReference: order.orderNumber,
+          orderId: order.id,
+          productId: order.productId,
+          description: `Purchase of ${order.productName}`,
+          transactionReference: `PUR_${order.orderNumber}_${order.id}`,
+        })
+      }
+
+      if (order.vendorId) {
+        await TransactionService.record({
+          userId: order.vendorId,
+          type: 'sale',
+          category: 'vendor_sale',
+          status: 'completed',
+          amount: order.vendorPayout || order.amount,
+          currency: order.currency || 'USD',
+          paymentMethod: order.paymentMethod,
+          orderId: order.id,
+          productId: order.productId,
+          description: `Sale of ${order.productName}`,
+          transactionReference: `SALE_${order.orderNumber}_${order.id}`,
+        })
+      }
+
+      if (order.affiliateId && order.commissionAmount) {
+        await TransactionService.record({
+          userId: order.affiliateId,
+          type: 'commission',
+          category: 'affiliate_commission',
+          status: 'completed',
+          amount: order.commissionAmount,
+          currency: order.currency || 'USD',
+          paymentMethod: order.paymentMethod,
+          orderId: order.id,
+          productId: order.productId,
+          description: `Affiliate commission for ${order.productName}`,
+          transactionReference: `COMM_${order.orderNumber}_${order.id}`,
+        })
+      }
+    } catch (txErr) {
+      console.error('[WalletService] Error recording transaction:', txErr)
+    }
   }
+
 
   static async handleOrderCancelled(order: Order) {
     if (order.vendorId) {
@@ -266,7 +324,7 @@ export class WalletService {
       throw new Error('You already have a pending payout request')
     }
 
-    return db.transaction(async (trx) => {
+    const payout = await db.transaction(async (trx) => {
       const lockedWallet = await Wallet.query({ client: trx })
         .where('id', wallet.id)
         .forUpdate()
@@ -322,7 +380,237 @@ export class WalletService {
 
       return payout
     })
+
+    // Process automated Paystack transfer if bank/paystack details are present
+    const isBankPayout =
+      user.payoutMethod === 'bank' ||
+      user.payoutMethod === 'bank_transfer' ||
+      user.payoutMethod === 'paystack' ||
+      (user.payoutAccountNumber && user.payoutBankName)
+
+    if (isBankPayout) {
+      try {
+        await this.processPaystackTransfer(payout, user)
+      } catch (err: any) {
+        console.error('[WalletService] Automated Paystack transfer failed:', err?.message || err)
+        // If transfer fails, processPaystackTransfer rejects the payout and refunds balance
+        throw err
+      }
+    }
+
+    try {
+      await TransactionService.record({
+        userId: payout.userId,
+        type: 'payout',
+        category: 'vendor_payout',
+        status:
+          payout.status === 'paid'
+            ? 'completed'
+            : payout.status === 'rejected'
+              ? 'failed'
+              : 'pending',
+        amount: payout.amount,
+        currency: 'USD',
+        paymentMethod: payout.payoutMethod,
+        payoutRequestId: payout.id,
+        transactionReference: payout.transferReference || `PO_${payout.id}`,
+        description: `Payout request #${payout.id} via ${payout.payoutMethod}`,
+      })
+    } catch (txErr) {
+      console.error('[WalletService] Error recording payout transaction:', txErr)
+    }
+
+    return payout
   }
+
+
+  /**
+   * Process automated transfer via Paystack for vendor/affiliate payout requests
+   */
+  static async processPaystackTransfer(payout: PayoutRequest, user: User) {
+    const paystackTransferService = new PaystackTransferService()
+
+    // Common bank abbreviations mapping for Nigerian banks
+    const bankAbbreviations: Record<string, string[]> = {
+      'guaranty trust bank': ['gtb', 'guaranty trust', 'guaranty'],
+      'access bank': ['access', 'access bank plc', 'diamond bank'],
+      'first bank': ['first bank nigeria', 'fbn', 'firstbank'],
+      'zenith bank': ['zenith', 'zenith bank plc'],
+      'uba': ['united bank for africa', 'uba plc'],
+      'fidelity bank': ['fidelity', 'fidelity bank plc'],
+      'union bank': ['union bank of nigeria', 'union bank plc'],
+      'sterling bank': ['sterling', 'sterling bank plc'],
+      'fcmb': ['first city monument bank', 'fcmb plc'],
+      'wema bank': ['wema', 'wema bank plc'],
+      'ecobank': ['ecobank nigeria', 'ecobank plc'],
+      'keystone bank': ['keystone', 'keystone bank limited'],
+      'polaris bank': ['polaris', 'polaris bank limited', 'skye bank'],
+      'stanbic ibtc': ['stanbic', 'stanbic ibtc bank'],
+      'unity bank': ['unity', 'unity bank plc'],
+      'providus bank': ['providus', 'providus bank limited'],
+      'jaiz bank': ['jaiz', 'jaiz bank plc'],
+      'suntrust bank': ['suntrust', 'suntrust bank nigeria limited'],
+      'heritage bank': ['heritage', 'heritage banking company limited'],
+      'taj bank': ['taj', 'taj bank limited'],
+    }
+
+    try {
+      let recipientCode = user.paystackRecipientCode
+
+      // Step 1: Create recipient if not already stored
+      if (!recipientCode) {
+        let bankCode = user.paystackBankCode
+
+        if (!bankCode && user.payoutBankName) {
+          const banksRes = await paystackTransferService.getBanks()
+          if (banksRes.success && banksRes.banks) {
+            const searchName = user.payoutBankName.trim().toLowerCase()
+            
+            // First, try exact matching
+            let matchedBank = banksRes.banks.find((b) => {
+              const bName = b.name.toLowerCase()
+              const bSlug = b.slug.toLowerCase()
+              return (
+                bName === searchName ||
+                bSlug === searchName ||
+                b.code === searchName
+              )
+            })
+
+            // If no exact match, try abbreviation mapping
+            if (!matchedBank) {
+              for (const [fullName, abbreviations] of Object.entries(bankAbbreviations)) {
+                if (abbreviations.includes(searchName)) {
+                  matchedBank = banksRes.banks.find((b) => 
+                    b.name.toLowerCase().includes(fullName) || 
+                    b.slug.toLowerCase().includes(fullName.replace(/\s+/g, '-'))
+                  )
+                  if (matchedBank) break
+                }
+              }
+            }
+
+            // Fallback to partial matching
+            if (!matchedBank) {
+              matchedBank = banksRes.banks.find((b) => {
+                const bName = b.name.toLowerCase()
+                const bSlug = b.slug.toLowerCase()
+                return (
+                  bName.includes(searchName) ||
+                  searchName.includes(bName) ||
+                  bSlug.includes(searchName)
+                )
+              })
+            }
+
+            if (matchedBank) {
+              bankCode = matchedBank.code
+              user.paystackBankCode = bankCode
+              user.paystackBankName = matchedBank.name
+              await user.save()
+              console.log(`[PaystackTransfer] Resolved bank "${user.payoutBankName}" to "${matchedBank.name}" (${bankCode})`)
+            }
+          }
+        }
+
+        if (!bankCode) {
+          if (/^\d+$/.test(user.payoutBankName || '')) {
+            bankCode = user.payoutBankName!
+          } else {
+            const errMsg = `Could not resolve bank code for "${user.payoutBankName}". Please update bank details in profile.`
+            payout.transferStatus = 'failed'
+            payout.transferErrorMessage = errMsg
+            await payout.save()
+            await this.updatePayoutStatus(payout.id, 'rejected', errMsg)
+            throw new Error(errMsg)
+          }
+        }
+
+        const recipientRes = await paystackTransferService.createTransferRecipient(
+          user.payoutAccountNumber!,
+          bankCode,
+          user.payoutAccountName!
+        )
+
+        if (!recipientRes.success || !recipientRes.recipientCode) {
+          const errMsg = recipientRes.message || 'Failed to create Paystack transfer recipient'
+          payout.transferStatus = 'failed'
+          payout.transferErrorMessage = errMsg
+          await payout.save()
+          await this.updatePayoutStatus(payout.id, 'rejected', errMsg)
+          throw new Error(errMsg)
+        }
+
+        recipientCode = recipientRes.recipientCode
+        user.paystackRecipientCode = recipientCode
+        user.paystackRecipientVerified = true
+        await user.save()
+      }
+
+      // Step 2: Initiate Transfer
+      const reference = `TRF_${payout.id}_${Date.now()}_${nanoid(8)}`
+      const amountInKobo = Math.round(Number(payout.amount) * 100)
+
+      const transferRes = await paystackTransferService.initiateTransfer({
+        amount: amountInKobo,
+        recipientCode,
+        reference,
+        reason: `Payout #${payout.id} - ${user.businessName || user.fullName || user.email}`,
+        currency: 'NGN',
+      })
+
+      // Update payout with transfer details
+      payout.transferCode = transferRes.transferCode || null
+      payout.transferReference = reference
+      payout.transferStatus = transferRes.status
+      payout.transferInitiatedAt = DateTime.now()
+
+      if (transferRes.success) {
+        if (transferRes.status === 'success') {
+          // Transfer completed immediately
+          payout.status = 'paid'
+          payout.processedAt = DateTime.now()
+          payout.transferCompletedAt = DateTime.now()
+        } else {
+          // Transfer is pending, keep status as approved
+          payout.status = 'approved'
+        }
+        await payout.save()
+
+        user.lastTransferReference = reference
+        user.lastTransferAt = DateTime.now()
+        await user.save()
+
+        console.log(`[PaystackTransfer] Transfer initiated successfully for payout ${payout.id}, status: ${transferRes.status}`)
+      } else {
+        // Transfer failed
+        payout.transferStatus = 'failed'
+        payout.transferErrorMessage = transferRes.message || 'Paystack transfer failed'
+        await payout.save()
+
+        await this.updatePayoutStatus(
+          payout.id,
+          'rejected',
+          `Paystack transfer failed: ${transferRes.message || 'Unknown error'}`
+        )
+        throw new Error(`Paystack Transfer Failed: ${transferRes.message || 'Unknown error'}`)
+      }
+
+      return payout
+    } catch (error: any) {
+      // Ensure error is logged and payout is marked as failed
+      console.error(`[PaystackTransfer] Error processing transfer for payout ${payout.id}:`, error.message)
+      
+      if (payout.transferStatus !== 'failed') {
+        payout.transferStatus = 'failed'
+        payout.transferErrorMessage = error.message
+        await payout.save()
+      }
+      
+      throw error
+    }
+  }
+
 
   static async updatePayoutStatus(
     payoutId: number,
@@ -381,6 +669,20 @@ export class WalletService {
       payout.processedAt = DateTime.now()
     }
     await payout.save()
+
+    // Automatically process Paystack transfer when payout is approved
+    if (status === 'approved' && payout.payoutMethod === 'bank_transfer') {
+      const user = await User.findOrFail(payout.userId)
+      try {
+        await this.processPaystackTransfer(payout, user)
+        console.log(`[WalletService] Automatic Paystack transfer initiated for payout ${payout.id}`)
+      } catch (error: any) {
+        console.error(`[WalletService] Automatic Paystack transfer failed for payout ${payout.id}:`, error.message)
+        // The processPaystackTransfer method already handles failure by rejecting the payout
+        // So we don't need to do anything else here
+      }
+    }
+
     return payout
   }
 
@@ -566,5 +868,62 @@ export class WalletService {
         { client: trx }
       )
     })
+  }
+
+  /**
+   * Retry a failed Paystack transfer
+   */
+  static async retryPaystackTransfer(payoutId: number) {
+    const payout = await PayoutRequest.findOrFail(payoutId)
+    const user = await User.findOrFail(payout.userId)
+
+    if (payout.status !== 'approved' || payout.transferStatus !== 'failed') {
+      throw new Error('Only failed transfers can be retried')
+    }
+
+    // Reset transfer status
+    payout.transferStatus = null
+    payout.transferErrorMessage = null
+    await payout.save()
+
+    try {
+      await this.processPaystackTransfer(payout, user)
+      return { success: true, message: 'Transfer retry initiated successfully' }
+    } catch (error: any) {
+      return { success: false, message: error.message }
+    }
+  }
+
+  /**
+   * Debug method to list all available Paystack banks
+   * Useful for troubleshooting bank code resolution issues
+   */
+  static async listPaystackBanks() {
+    const paystackTransferService = new PaystackTransferService()
+    const banksRes = await paystackTransferService.getBanks()
+    
+    if (banksRes.success && banksRes.banks) {
+      console.log(`[PaystackTransfer] Available banks (${banksRes.banks.length}):`)
+      
+      // Show all GTB-related banks
+      const gtbBanks = banksRes.banks.filter(b => 
+        b.name.toLowerCase().includes('guaranty') || 
+        b.name.toLowerCase().includes('gtb') ||
+        b.slug.toLowerCase().includes('gtb') ||
+        b.slug.toLowerCase().includes('guaranty')
+      )
+      
+      if (gtbBanks.length > 0) {
+        console.log('\n[PaystackTransfer] GTB/Guaranty related banks:')
+        gtbBanks.forEach(bank => {
+          console.log(`- ${bank.name} (${bank.code}) - slug: ${bank.slug}`)
+        })
+      }
+      
+      return banksRes.banks
+    } else {
+      console.error('[PaystackTransfer] Failed to fetch banks:', banksRes.message)
+      return []
+    }
   }
 }

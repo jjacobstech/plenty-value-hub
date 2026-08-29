@@ -7,6 +7,37 @@
 import { BaseModel, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
+export class ActivityLogSchema extends BaseModel {
+  static $columns = ['batchId', 'createdAt', 'current', 'description', 'entityId', 'entityType', 'event', 'id', 'modelId', 'modelType', 'name', 'previous', 'updatedAt'] as const
+  $columns = ActivityLogSchema.$columns
+  @column()
+  declare batchId: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare current: any | null
+  @column()
+  declare description: string | null
+  @column()
+  declare entityId: string | null
+  @column()
+  declare entityType: string | null
+  @column()
+  declare event: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare modelId: string | null
+  @column()
+  declare modelType: string | null
+  @column()
+  declare name: string | null
+  @column()
+  declare previous: any | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class AffiliateLinkSchema extends BaseModel {
   static $columns = ['affiliateId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt', 'uuid'] as const
   $columns = AffiliateLinkSchema.$columns
@@ -276,7 +307,7 @@ export class PaymentGatewayKeySchema extends BaseModel {
 }
 
 export class PayoutRequestSchema extends BaseModel {
-  static $columns = ['adminNotes', 'amount', 'createdAt', 'id', 'payoutDetails', 'payoutMethod', 'processedAt', 'status', 'updatedAt', 'userId', 'uuid', 'walletId'] as const
+  static $columns = ['adminNotes', 'amount', 'createdAt', 'id', 'payoutDetails', 'payoutMethod', 'processedAt', 'status', 'transferCode', 'transferCompletedAt', 'transferErrorMessage', 'transferInitiatedAt', 'transferReference', 'transferStatus', 'updatedAt', 'userId', 'uuid', 'walletId'] as const
   $columns = PayoutRequestSchema.$columns
   @column()
   declare adminNotes: string | null
@@ -294,6 +325,18 @@ export class PayoutRequestSchema extends BaseModel {
   declare processedAt: DateTime | null
   @column()
   declare status: string
+  @column()
+  declare transferCode: string | null
+  @column.dateTime()
+  declare transferCompletedAt: DateTime | null
+  @column()
+  declare transferErrorMessage: string | null
+  @column.dateTime()
+  declare transferInitiatedAt: DateTime | null
+  @column()
+  declare transferReference: string | null
+  @column()
+  declare transferStatus: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
@@ -305,7 +348,7 @@ export class PayoutRequestSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
+  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -365,6 +408,8 @@ export class ProductSchema extends BaseModel {
   declare totalRevenue: string | null
   @column()
   declare totalSales: number | null
+  @column()
+  declare unitCount: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
@@ -440,8 +485,49 @@ export class SiteSettingSchema extends BaseModel {
   declare value: string | null
 }
 
+export class TransactionSchema extends BaseModel {
+  static $columns = ['amount', 'category', 'createdAt', 'currency', 'description', 'id', 'metadata', 'orderId', 'paymentGatewayReference', 'paymentMethod', 'payoutRequestId', 'productId', 'status', 'transactionReference', 'type', 'updatedAt', 'userId', 'uuid'] as const
+  $columns = TransactionSchema.$columns
+  @column()
+  declare amount: string
+  @column()
+  declare category: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare currency: string
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: string | null
+  @column()
+  declare orderId: number | null
+  @column()
+  declare paymentGatewayReference: string | null
+  @column()
+  declare paymentMethod: string | null
+  @column()
+  declare payoutRequestId: number | null
+  @column()
+  declare productId: number | null
+  @column()
+  declare status: string
+  @column()
+  declare transactionReference: string
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime
+  @column()
+  declare userId: number | null
+  @column()
+  declare uuid: string
+}
+
 export class UserSchema extends BaseModel {
-  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutAccountNumber', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMetadata', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
+  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'lastTransferAt', 'lastTransferReference', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutAccountNumber', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMetadata', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'paystackBankCode', 'paystackBankName', 'paystackRecipientCode', 'paystackRecipientVerified', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
   $columns = UserSchema.$columns
   @column()
   declare bio: string | null
@@ -471,6 +557,10 @@ export class UserSchema extends BaseModel {
   declare id: number
   @column()
   declare instagram: string | null
+  @column.dateTime()
+  declare lastTransferAt: DateTime | null
+  @column()
+  declare lastTransferReference: string | null
   @column()
   declare location: string | null
   @column()
@@ -507,6 +597,14 @@ export class UserSchema extends BaseModel {
   declare payoutRoutingNumber: string | null
   @column()
   declare payoutSwiftCode: string | null
+  @column()
+  declare paystackBankCode: string | null
+  @column()
+  declare paystackBankName: string | null
+  @column()
+  declare paystackRecipientCode: string | null
+  @column()
+  declare paystackRecipientVerified: boolean | null
   @column()
   declare phone: string | null
   @column()

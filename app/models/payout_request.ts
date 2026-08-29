@@ -45,6 +45,25 @@ export default class PayoutRequest extends BaseModel {
   @column.dateTime()
   declare processedAt: DateTime | null
 
+  // Transfer tracking fields
+  @column()
+  declare transferCode: string | null
+
+  @column()
+  declare transferReference: string | null
+
+  @column()
+  declare transferStatus: string | null
+
+  @column()
+  declare transferErrorMessage: string | null
+
+  @column.dateTime()
+  declare transferInitiatedAt: DateTime | null
+
+  @column.dateTime()
+  declare transferCompletedAt: DateTime | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

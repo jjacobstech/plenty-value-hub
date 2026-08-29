@@ -210,6 +210,7 @@ export default function Footer() {
           <FooterCol
             title="Support"
             links={[
+              { to: '/track-order', label: 'Track Order' },
               { href: 'mailto:newsletter@plentyvalue.com', label: 'Help Center' },
               { href: 'mailto:newsletter@plentyvalue.com', label: 'FAQs' },
               { to: '/privacy-policy', label: 'Privacy Policy' },

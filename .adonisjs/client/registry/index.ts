@@ -66,6 +66,12 @@ const routes = {
     tokens: [{"old":"/privacy","type":0,"val":"privacy","end":""}],
     types: placeholder as Registry['privacy']['types'],
   },
+  'track.order': {
+    methods: ["GET","HEAD"],
+    pattern: '/track-order',
+    tokens: [{"old":"/track-order","type":0,"val":"track-order","end":""}],
+    types: placeholder as Registry['track.order']['types'],
+  },
   'legacy.login': {
     methods: ["GET","HEAD"],
     pattern: '/login',
@@ -318,6 +324,12 @@ const routes = {
     tokens: [{"old":"/vendor/products","type":0,"val":"vendor","end":""},{"old":"/vendor/products","type":0,"val":"products","end":""}],
     types: placeholder as Registry['vendor.products']['types'],
   },
+  'vendor.orders': {
+    methods: ["GET","HEAD"],
+    pattern: '/vendor/orders',
+    tokens: [{"old":"/vendor/orders","type":0,"val":"vendor","end":""},{"old":"/vendor/orders","type":0,"val":"orders","end":""}],
+    types: placeholder as Registry['vendor.orders']['types'],
+  },
   'vendor.kyc': {
     methods: ["GET","HEAD"],
     pattern: '/vendor/kyc',
@@ -438,6 +450,18 @@ const routes = {
     tokens: [{"old":"/api/payments/verify","type":0,"val":"api","end":""},{"old":"/api/payments/verify","type":0,"val":"payments","end":""},{"old":"/api/payments/verify","type":0,"val":"verify","end":""}],
     types: placeholder as Registry['payment.verify']['types'],
   },
+  'orders.track_order': {
+    methods: ["POST"],
+    pattern: '/api/orders/track',
+    tokens: [{"old":"/api/orders/track","type":0,"val":"api","end":""},{"old":"/api/orders/track","type":0,"val":"orders","end":""},{"old":"/api/orders/track","type":0,"val":"track","end":""}],
+    types: placeholder as Registry['orders.track_order']['types'],
+  },
+  'orders.download_digital_asset': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/orders/download',
+    tokens: [{"old":"/api/orders/download","type":0,"val":"api","end":""},{"old":"/api/orders/download","type":0,"val":"orders","end":""},{"old":"/api/orders/download","type":0,"val":"download","end":""}],
+    types: placeholder as Registry['orders.download_digital_asset']['types'],
+  },
   'webhook.stripe_webhook': {
     methods: ["POST"],
     pattern: '/api/payments/webhook/stripe',
@@ -503,6 +527,12 @@ const routes = {
     pattern: '/api/orders',
     tokens: [{"old":"/api/orders","type":0,"val":"api","end":""},{"old":"/api/orders","type":0,"val":"orders","end":""}],
     types: placeholder as Registry['orders.process_order']['types'],
+  },
+  'vendor.orders.update': {
+    methods: ["PUT"],
+    pattern: '/api/orders/:id',
+    tokens: [{"old":"/api/orders/:id","type":0,"val":"api","end":""},{"old":"/api/orders/:id","type":0,"val":"orders","end":""},{"old":"/api/orders/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['vendor.orders.update']['types'],
   },
   'orders.notify_vendor': {
     methods: ["POST"],
@@ -672,23 +702,35 @@ const routes = {
     tokens: [{"old":"/api/auth-status","type":0,"val":"api","end":""},{"old":"/api/auth-status","type":0,"val":"auth-status","end":""}],
     types: placeholder as Registry['admin.auth_status']['types'],
   },
+  'admin.debug_paystack_banks': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/debug/banks',
+    tokens: [{"old":"/api/debug/banks","type":0,"val":"api","end":""},{"old":"/api/debug/banks","type":0,"val":"debug","end":""},{"old":"/api/debug/banks","type":0,"val":"banks","end":""}],
+    types: placeholder as Registry['admin.debug_paystack_banks']['types'],
+  },
+  'admin.test_email': {
+    methods: ["POST"],
+    pattern: '/api/debug/test-email',
+    tokens: [{"old":"/api/debug/test-email","type":0,"val":"api","end":""},{"old":"/api/debug/test-email","type":0,"val":"debug","end":""},{"old":"/api/debug/test-email","type":0,"val":"test-email","end":""}],
+    types: placeholder as Registry['admin.test_email']['types'],
+  },
   'products.approve': {
     methods: ["PUT"],
     pattern: '/api/products/:id/approve',
     tokens: [{"old":"/api/products/:id/approve","type":0,"val":"api","end":""},{"old":"/api/products/:id/approve","type":0,"val":"products","end":""},{"old":"/api/products/:id/approve","type":1,"val":"id","end":""},{"old":"/api/products/:id/approve","type":0,"val":"approve","end":""}],
     types: placeholder as Registry['products.approve']['types'],
   },
-  'orders.update_status': {
-    methods: ["PUT"],
-    pattern: '/api/orders/:id',
-    tokens: [{"old":"/api/orders/:id","type":0,"val":"api","end":""},{"old":"/api/orders/:id","type":0,"val":"orders","end":""},{"old":"/api/orders/:id","type":1,"val":"id","end":""}],
-    types: placeholder as Registry['orders.update_status']['types'],
-  },
   'admin.update_user': {
     methods: ["PUT"],
     pattern: '/api/users/:id',
     tokens: [{"old":"/api/users/:id","type":0,"val":"api","end":""},{"old":"/api/users/:id","type":0,"val":"users","end":""},{"old":"/api/users/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['admin.update_user']['types'],
+  },
+  'admin.delete_user': {
+    methods: ["DELETE"],
+    pattern: '/api/users/:id',
+    tokens: [{"old":"/api/users/:id","type":0,"val":"api","end":""},{"old":"/api/users/:id","type":0,"val":"users","end":""},{"old":"/api/users/:id","type":1,"val":"id","end":""}],
+    types: placeholder as Registry['admin.delete_user']['types'],
   },
   'reviews.approve': {
     methods: ["POST"],
@@ -707,6 +749,12 @@ const routes = {
     pattern: '/api/payouts/:id',
     tokens: [{"old":"/api/payouts/:id","type":0,"val":"api","end":""},{"old":"/api/payouts/:id","type":0,"val":"payouts","end":""},{"old":"/api/payouts/:id","type":1,"val":"id","end":""}],
     types: placeholder as Registry['wallet.admin_update']['types'],
+  },
+  'admin.retry_failed_transfer': {
+    methods: ["POST"],
+    pattern: '/api/payouts/:id/retry-transfer',
+    tokens: [{"old":"/api/payouts/:id/retry-transfer","type":0,"val":"api","end":""},{"old":"/api/payouts/:id/retry-transfer","type":0,"val":"payouts","end":""},{"old":"/api/payouts/:id/retry-transfer","type":1,"val":"id","end":""},{"old":"/api/payouts/:id/retry-transfer","type":0,"val":"retry-transfer","end":""}],
+    types: placeholder as Registry['admin.retry_failed_transfer']['types'],
   },
   'blog_posts.index': {
     methods: ["GET","HEAD"],

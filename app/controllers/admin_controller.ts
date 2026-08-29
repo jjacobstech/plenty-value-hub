@@ -141,6 +141,20 @@ export default class AdminController {
     return response.json(user)
   }
 
+  async deleteUser({ params, response, auth }: HttpContext) {
+    const currentUser = auth.use('web').user!
+    if (currentUser.role !== 'admin') {
+      return response.status(403).json({ error: 'Forbidden' })
+    }
+    // Prevent self-deletion
+    if (currentUser.id === Number(params.id)) {
+      return response.status(400).json({ error: 'You cannot delete your own account' })
+    }
+    const user = await User.findOrFail(params.id)
+    await user.delete()
+    return response.json({ success: true, message: 'User deleted' })
+  }
+
   /**
    * Diagnostic endpoint to check current auth status
    * Useful for debugging permission issues
@@ -165,5 +179,123 @@ export default class AdminController {
           }
         : null,
     })
+  }
+
+  /**
+   * Debug endpoint to list Paystack banks and troubleshoot bank code issues
+   */
+  async debugPaystackBanks({ auth, response }: HttpContext) {
+    const user = auth.use('web').user!
+    
+    if (user.role !== 'admin') {
+      return response.status(403).json({ error: 'Only admins can access debug endpoints' })
+    }
+
+    try {
+      const { WalletService } = await import('#services/wallet_service')
+      const banks = await WalletService.listPaystackBanks()
+      
+      return response.json({
+        success: true,
+        totalBanks: banks.length,
+        gtbBanks: banks.filter(b => 
+          b.name.toLowerCase().includes('guaranty') || 
+          b.name.toLowerCase().includes('gtb')
+        ),
+        allBanks: banks.slice(0, 50) // Limit to first 50 for response size
+      })
+    } catch (error: any) {
+      console.error('[AdminController] Error fetching banks:', error.message)
+      return response.status(500).json({ 
+        error: 'Failed to fetch banks', 
+        message: error.message 
+      })
+    }
+  }
+
+  /**
+   * Retry a failed Paystack transfer
+   */
+  async retryFailedTransfer({ params, auth, response }: HttpContext) {
+    const user = auth.use('web').user!
+    
+    if (user.role !== 'admin') {
+      return response.status(403).json({ error: 'Only admins can retry transfers' })
+    }
+
+    try {
+      const payoutId = parseInt(params.id)
+      const { WalletService } = await import('#services/wallet_service')
+      const result = await WalletService.retryPaystackTransfer(payoutId)
+      
+      return response.json(result)
+    } catch (error: any) {
+      console.error('[AdminController] Error retrying transfer:', error.message)
+      return response.status(500).json({ 
+        error: 'Failed to retry transfer', 
+        message: error.message 
+      })
+    }
+  }
+
+  /**
+   * Test email sending functionality
+   */
+  async testEmail({ auth, response, request }: HttpContext) {
+    const user = auth.use('web').user!
+    
+    if (user.role !== 'admin') {
+      return response.status(403).json({ error: 'Only admins can test emails' })
+    }
+
+    try {
+      const { orderId } = request.only(['orderId'])
+      
+      if (orderId) {
+        // Test with a specific order
+        const Order = (await import('#models/order')).default
+        const Product = (await import('#models/product')).default
+        
+        const order = await Order.find(orderId)
+        if (!order) {
+          return response.status(404).json({ error: 'Order not found' })
+        }
+        
+        const product = await Product.find(order.productId)
+        if (!product) {
+          return response.status(404).json({ error: 'Product not found' })
+        }
+        
+        const { NotificationService } = await import('#services/notification_service')
+        await NotificationService.notifyOrderCompleted(order, product)
+        
+        return response.json({ 
+          success: true, 
+          message: `Test email sent for order ${order.orderNumber}`,
+          orderNumber: order.orderNumber,
+          buyerEmail: order.buyerEmail 
+        })
+      } else {
+        // Send a simple test email
+        const mail = (await import('@adonisjs/mail/services/main')).default
+        await mail.send((message) => {
+          message
+            .to(user.email)
+            .subject('Test Email from Plenty Value')
+            .html('<h1>Test Email</h1><p>This is a test email to verify mail configuration is working.</p>')
+        })
+        
+        return response.json({ 
+          success: true, 
+          message: `Test email sent to ${user.email}` 
+        })
+      }
+    } catch (error: any) {
+      console.error('[AdminController] Error sending test email:', error.message)
+      return response.status(500).json({ 
+        error: 'Failed to send test email', 
+        message: error.message 
+      })
+    }
   }
 }

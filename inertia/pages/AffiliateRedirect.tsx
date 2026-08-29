@@ -24,13 +24,13 @@ export default function AffiliateRedirect({ link_code }: AffiliateRedirectProps)
     }
 
     apiClient
-      .post('/affiliate-redirect', { link_code })
+      .post('/api/affiliate-links/track-click', { linkCode: link_code })
       .then((res: any) => {
-        const { product_id } = res.data || res
-        if (product_id) {
+        const { productId } = res.data || res
+        if (productId) {
           // Store affiliate code so purchase flow can attribute it
           sessionStorage.setItem('pv_ref', link_code)
-          router.visit(`/product/${product_id}`)
+          router.visit(`/product/${productId}`)
         } else {
           router.visit('/marketplace')
         }

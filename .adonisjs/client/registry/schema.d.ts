@@ -127,6 +127,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['privacyPolicy']>>>
     }
   }
+  'track.order': {
+    methods: ["GET","HEAD"]
+    pattern: '/track-order'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['trackOrder']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['trackOrder']>>>
+    }
+  }
   'legacy.login': {
     methods: ["GET","HEAD"]
     pattern: '/login'
@@ -631,6 +643,18 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['vendorProducts']>>>
     }
   }
+  'vendor.orders': {
+    methods: ["GET","HEAD"]
+    pattern: '/vendor/orders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['vendorOrders']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['vendorOrders']>>>
+    }
+  }
   'vendor.kyc': {
     methods: ["GET","HEAD"]
     pattern: '/vendor/kyc'
@@ -871,6 +895,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/payment_controller').default['verify']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
+  'orders.track_order': {
+    methods: ["POST"]
+    pattern: '/api/orders/track'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['trackOrder']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['trackOrder']>>>
+    }
+  }
+  'orders.download_digital_asset': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/orders/download'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['downloadDigitalAsset']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['downloadDigitalAsset']>>>
+    }
+  }
   'webhook.stripe_webhook': {
     methods: ["POST"]
     pattern: '/api/payments/webhook/stripe'
@@ -1001,6 +1049,18 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/order').processOrderValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['processOrder']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['processOrder']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'vendor.orders.update': {
+    methods: ["PUT"]
+    pattern: '/api/orders/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['updateStatus']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['updateStatus']>>> | { status: 422; response: { errors: SimpleError[] } }
     }
   }
   'orders.notify_vendor': {
@@ -1339,6 +1399,30 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['authStatus']>>>
     }
   }
+  'admin.debug_paystack_banks': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/debug/banks'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['debugPaystackBanks']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['debugPaystackBanks']>>>
+    }
+  }
+  'admin.test_email': {
+    methods: ["POST"]
+    pattern: '/api/debug/test-email'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['testEmail']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['testEmail']>>>
+    }
+  }
   'products.approve': {
     methods: ["PUT"]
     pattern: '/api/products/:id/approve'
@@ -1351,18 +1435,6 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/products_controller').default['approve']>>>
     }
   }
-  'orders.update_status': {
-    methods: ["PUT"]
-    pattern: '/api/orders/:id'
-    types: {
-      body: ExtractBody<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
-      paramsTuple: [ParamValue]
-      params: { id: ParamValue }
-      query: ExtractQuery<InferInput<(typeof import('#validators/order').updateOrderValidator)>>
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['updateStatus']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/orders_controller').default['updateStatus']>>> | { status: 422; response: { errors: SimpleError[] } }
-    }
-  }
   'admin.update_user': {
     methods: ["PUT"]
     pattern: '/api/users/:id'
@@ -1373,6 +1445,18 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['updateUser']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['updateUser']>>>
+    }
+  }
+  'admin.delete_user': {
+    methods: ["DELETE"]
+    pattern: '/api/users/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['deleteUser']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['deleteUser']>>>
     }
   }
   'reviews.approve': {
@@ -1409,6 +1493,18 @@ export interface Registry {
       query: ExtractQuery<InferInput<(typeof import('#validators/wallet').updatePayoutValidator)>>
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['adminUpdate']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/wallet_controller').default['adminUpdate']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin.retry_failed_transfer': {
+    methods: ["POST"]
+    pattern: '/api/payouts/:id/retry-transfer'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['retryFailedTransfer']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_controller').default['retryFailedTransfer']>>>
     }
   }
   'blog_posts.index': {

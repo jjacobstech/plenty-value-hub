@@ -213,6 +213,14 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                       <p className="text-xs text-muted-foreground">Gravity</p>
                       <p className="font-bold">{product.gravityScore || 0}</p>
                     </div>
+                    {product.unitCount != null && (
+                      <div className="text-center hidden sm:block">
+                        <p className="text-xs text-muted-foreground">Units Left</p>
+                        <p className={`font-bold text-sm ${product.unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}>
+                          {product.unitCount === 0 ? 'Out of stock' : product.unitCount}
+                        </p>
+                      </div>
+                    )}
                     {product.rating && (
                       <div className="text-center hidden md:block">
                         <p className="text-xs text-muted-foreground">Rating</p>
@@ -271,7 +279,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                 <div className="flex items-center gap-2">
                   <Input
                     readOnly
-                    value={`${window.location.origin}/ref/${selectedProduct?.link?.linkCode}`}
+                    value={`${window.location.origin}/ref/${selectedProduct?.link?.linkCode || selectedProduct?.link?.link_code || 'error'}`}
                     className="font-mono text-xs bg-muted"
                   />
                   <Button
@@ -279,7 +287,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                     variant="outline"
                     onClick={() =>
                       handleCopy(
-                        `${window.location.origin}/ref/${selectedProduct?.link?.linkCode}`
+                        `${window.location.origin}/ref/${selectedProduct?.link?.linkCode || selectedProduct?.link?.link_code || 'error'}`
                       )
                     }
                   >

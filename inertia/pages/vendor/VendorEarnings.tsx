@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -10,6 +10,9 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { format } from 'date-fns'
 import { Wallet, Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
@@ -41,6 +44,9 @@ type VendorEarningsProps = {
 
 export default function VendorEarnings(props: VendorEarningsProps) {
   const { orders, wallet, payoutRequests } = props
+  const [payoutModalOpen, setPayoutModalOpen] = useState(false)
+  const [payoutAmount, setPayoutAmount] = useState('')
+  const [submittingPayout, setSubmittingPayout] = useState(false)
 
   // Use wallet data if available (more accurate), otherwise calculate from orders
   const completedRevenue = wallet
@@ -113,21 +119,26 @@ export default function VendorEarnings(props: VendorEarningsProps) {
 
   const handleRequestPayout = async () => {
     const curr = getActiveCurrency()
-    const amount = prompt(`Enter payout amount (${curr}):`, '10')
-    if (!amount) return
+    setPayoutAmount('')
+    setPayoutModalOpen(true)
+  }
 
-    const parsed = parseFloat(amount.replace(/[^0-9.]/g, '').trim())
+  const submitPayout = async () => {
+    const parsed = parseFloat(payoutAmount.replace(/[^0-9.]/g, '').trim())
     if (!parsed || parsed < 10) {
       toast.error('Minimum payout amount is 10')
       return
     }
-
+    setSubmittingPayout(true)
     try {
       await api.post('/api/wallet/payouts', { amount: parsed })
       toast.success('Payout request submitted!')
+      setPayoutModalOpen(false)
       window.location.reload()
     } catch (err: any) {
       toast.error(err?.response?.data?.error || 'Payout request failed')
+    } finally {
+      setSubmittingPayout(false)
     }
   }
 
@@ -328,6 +339,46 @@ export default function VendorEarnings(props: VendorEarningsProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Payout Request Modal */}
+      <Dialog open={payoutModalOpen} onOpenChange={setPayoutModalOpen}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Request Payout</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <p className="text-sm text-muted-foreground">
+              Available balance:{' '}
+              <strong className="text-green-600">{formatNGN(wallet?.availableBalance ?? 0)}</strong>
+            </p>
+            <div className="space-y-1.5">
+              <Label htmlFor="payout-amount">Amount ({getActiveCurrency()})</Label>
+              <Input
+                id="payout-amount"
+                type="number"
+                min="10"
+                step="0.01"
+                placeholder="Enter amount (min. 10)"
+                value={payoutAmount}
+                onChange={(e) => setPayoutAmount(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && submitPayout()}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={() => setPayoutModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              className="bg-[#81C14B] hover:bg-[#72AA3D]"
+              onClick={submitPayout}
+              disabled={submittingPayout}
+            >
+              {submittingPayout ? 'Submitting…' : 'Request Payout'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   )
 }

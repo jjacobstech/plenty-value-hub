@@ -34,6 +34,9 @@ export interface ApiDefinition {
     partners: typeof routes['for.partners']
   }
   privacy: typeof routes['privacy']
+  track: {
+    order: typeof routes['track.order']
+  }
   legacy: {
     login: typeof routes['legacy.login']
     register: typeof routes['legacy.register']
@@ -106,11 +109,18 @@ export interface ApiDefinition {
     payouts: typeof routes['admin.payouts']
     getPlatformStats: typeof routes['admin.get_platform_stats']
     authStatus: typeof routes['admin.auth_status']
+    debugPaystackBanks: typeof routes['admin.debug_paystack_banks']
+    testEmail: typeof routes['admin.test_email']
     updateUser: typeof routes['admin.update_user']
+    deleteUser: typeof routes['admin.delete_user']
+    retryFailedTransfer: typeof routes['admin.retry_failed_transfer']
   }
   vendor: {
     dashboard: typeof routes['vendor.dashboard']
     products: typeof routes['vendor.products']
+    orders: typeof routes['vendor.orders'] & {
+      update: typeof routes['vendor.orders.update']
+    }
     kyc: typeof routes['vendor.kyc']
     earnings: typeof routes['vendor.earnings']
     analytics: typeof routes['vendor.analytics']
@@ -147,6 +157,14 @@ export interface ApiDefinition {
     initialize: typeof routes['payment.initialize']
     verify: typeof routes['payment.verify']
   }
+  orders: {
+    trackOrder: typeof routes['orders.track_order']
+    downloadDigitalAsset: typeof routes['orders.download_digital_asset']
+    index: typeof routes['orders.index']
+    show: typeof routes['orders.show']
+    processOrder: typeof routes['orders.process_order']
+    notifyVendor: typeof routes['orders.notify_vendor']
+  }
   webhook: {
     stripeWebhook: typeof routes['webhook.stripe_webhook']
     paystackWebhook: typeof routes['webhook.paystack_webhook']
@@ -155,13 +173,6 @@ export interface ApiDefinition {
     handleWebhook: typeof routes['webhook.handle_webhook']
     getWebhookEndpoints: typeof routes['webhook.get_webhook_endpoints']
     testWebhook: typeof routes['webhook.test_webhook']
-  }
-  orders: {
-    index: typeof routes['orders.index']
-    show: typeof routes['orders.show']
-    processOrder: typeof routes['orders.process_order']
-    notifyVendor: typeof routes['orders.notify_vendor']
-    updateStatus: typeof routes['orders.update_status']
   }
   profile: {
     updateAffiliate: typeof routes['profile.update_affiliate']

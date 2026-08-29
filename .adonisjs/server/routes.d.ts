@@ -14,6 +14,7 @@ export type ScannedRoutes = {
     'affiliate.redirect': { paramsTuple: [ParamValue]; params: {'link_code': ParamValue} }
     'for.partners': { paramsTuple?: []; params?: {} }
     'privacy': { paramsTuple?: []; params?: {} }
+    'track.order': { paramsTuple?: []; params?: {} }
     'legacy.login': { paramsTuple?: []; params?: {} }
     'legacy.register': { paramsTuple?: []; params?: {} }
     'legacy.forgot.password': { paramsTuple?: []; params?: {} }
@@ -56,6 +57,7 @@ export type ScannedRoutes = {
     'admin.payouts': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
+    'vendor.orders': { paramsTuple?: []; params?: {} }
     'vendor.kyc': { paramsTuple?: []; params?: {} }
     'vendor.earnings': { paramsTuple?: []; params?: {} }
     'vendor.analytics': { paramsTuple?: []; params?: {} }
@@ -76,6 +78,8 @@ export type ScannedRoutes = {
     'payment.providers': { paramsTuple?: []; params?: {} }
     'payment.initialize': { paramsTuple?: []; params?: {} }
     'payment.verify': { paramsTuple?: []; params?: {} }
+    'orders.track_order': { paramsTuple?: []; params?: {} }
+    'orders.download_digital_asset': { paramsTuple?: []; params?: {} }
     'webhook.stripe_webhook': { paramsTuple?: []; params?: {} }
     'webhook.paystack_webhook': { paramsTuple?: []; params?: {} }
     'webhook.flutterwave_webhook': { paramsTuple?: []; params?: {} }
@@ -87,6 +91,7 @@ export type ScannedRoutes = {
     'orders.index': { paramsTuple?: []; params?: {} }
     'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'orders.process_order': { paramsTuple?: []; params?: {} }
+    'vendor.orders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'orders.notify_vendor': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.index': { paramsTuple?: []; params?: {} }
     'affiliate_links.store': { paramsTuple?: []; params?: {} }
@@ -115,12 +120,15 @@ export type ScannedRoutes = {
     'notifications.destroy_all': { paramsTuple?: []; params?: {} }
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
     'admin.auth_status': { paramsTuple?: []; params?: {} }
+    'admin.debug_paystack_banks': { paramsTuple?: []; params?: {} }
+    'admin.test_email': { paramsTuple?: []; params?: {} }
     'products.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'orders.update_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.delete_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'reviews.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'wallet.admin_index': { paramsTuple?: []; params?: {} }
     'wallet.admin_update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.retry_failed_transfer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'blog_posts.index': { paramsTuple?: []; params?: {} }
     'blog_posts.store': { paramsTuple?: []; params?: {} }
     'blog_posts.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -158,6 +166,7 @@ export type ScannedRoutes = {
     'affiliate.redirect': { paramsTuple: [ParamValue]; params: {'link_code': ParamValue} }
     'for.partners': { paramsTuple?: []; params?: {} }
     'privacy': { paramsTuple?: []; params?: {} }
+    'track.order': { paramsTuple?: []; params?: {} }
     'legacy.login': { paramsTuple?: []; params?: {} }
     'legacy.register': { paramsTuple?: []; params?: {} }
     'legacy.forgot.password': { paramsTuple?: []; params?: {} }
@@ -190,6 +199,7 @@ export type ScannedRoutes = {
     'admin.payouts': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
+    'vendor.orders': { paramsTuple?: []; params?: {} }
     'vendor.kyc': { paramsTuple?: []; params?: {} }
     'vendor.earnings': { paramsTuple?: []; params?: {} }
     'vendor.analytics': { paramsTuple?: []; params?: {} }
@@ -205,6 +215,7 @@ export type ScannedRoutes = {
     'reviews.index': { paramsTuple?: []; params?: {} }
     'site_settings.payment_config': { paramsTuple?: []; params?: {} }
     'payment.providers': { paramsTuple?: []; params?: {} }
+    'orders.download_digital_asset': { paramsTuple?: []; params?: {} }
     'orders.index': { paramsTuple?: []; params?: {} }
     'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.index': { paramsTuple?: []; params?: {} }
@@ -214,6 +225,7 @@ export type ScannedRoutes = {
     'notifications.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
     'admin.auth_status': { paramsTuple?: []; params?: {} }
+    'admin.debug_paystack_banks': { paramsTuple?: []; params?: {} }
     'wallet.admin_index': { paramsTuple?: []; params?: {} }
     'blog_posts.index': { paramsTuple?: []; params?: {} }
     'newsletter_admin.index': { paramsTuple?: []; params?: {} }
@@ -236,6 +248,7 @@ export type ScannedRoutes = {
     'affiliate.redirect': { paramsTuple: [ParamValue]; params: {'link_code': ParamValue} }
     'for.partners': { paramsTuple?: []; params?: {} }
     'privacy': { paramsTuple?: []; params?: {} }
+    'track.order': { paramsTuple?: []; params?: {} }
     'legacy.login': { paramsTuple?: []; params?: {} }
     'legacy.register': { paramsTuple?: []; params?: {} }
     'legacy.forgot.password': { paramsTuple?: []; params?: {} }
@@ -268,6 +281,7 @@ export type ScannedRoutes = {
     'admin.payouts': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
+    'vendor.orders': { paramsTuple?: []; params?: {} }
     'vendor.kyc': { paramsTuple?: []; params?: {} }
     'vendor.earnings': { paramsTuple?: []; params?: {} }
     'vendor.analytics': { paramsTuple?: []; params?: {} }
@@ -283,6 +297,7 @@ export type ScannedRoutes = {
     'reviews.index': { paramsTuple?: []; params?: {} }
     'site_settings.payment_config': { paramsTuple?: []; params?: {} }
     'payment.providers': { paramsTuple?: []; params?: {} }
+    'orders.download_digital_asset': { paramsTuple?: []; params?: {} }
     'orders.index': { paramsTuple?: []; params?: {} }
     'orders.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.index': { paramsTuple?: []; params?: {} }
@@ -292,6 +307,7 @@ export type ScannedRoutes = {
     'notifications.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
     'admin.auth_status': { paramsTuple?: []; params?: {} }
+    'admin.debug_paystack_banks': { paramsTuple?: []; params?: {} }
     'wallet.admin_index': { paramsTuple?: []; params?: {} }
     'blog_posts.index': { paramsTuple?: []; params?: {} }
     'newsletter_admin.index': { paramsTuple?: []; params?: {} }
@@ -319,6 +335,7 @@ export type ScannedRoutes = {
     'affiliate_links.track_click': { paramsTuple?: []; params?: {} }
     'payment.initialize': { paramsTuple?: []; params?: {} }
     'payment.verify': { paramsTuple?: []; params?: {} }
+    'orders.track_order': { paramsTuple?: []; params?: {} }
     'webhook.stripe_webhook': { paramsTuple?: []; params?: {} }
     'webhook.paystack_webhook': { paramsTuple?: []; params?: {} }
     'webhook.flutterwave_webhook': { paramsTuple?: []; params?: {} }
@@ -339,7 +356,9 @@ export type ScannedRoutes = {
     'upload.upload_document': { paramsTuple?: []; params?: {} }
     'upload.upload_file': { paramsTuple?: []; params?: {} }
     'wallet.request_payout': { paramsTuple?: []; params?: {} }
+    'admin.test_email': { paramsTuple?: []; params?: {} }
     'reviews.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin.retry_failed_transfer': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'blog_posts.store': { paramsTuple?: []; params?: {} }
     'newsletter_admin.store': { paramsTuple?: []; params?: {} }
     'email_campaigns.store': { paramsTuple?: []; params?: {} }
@@ -350,11 +369,11 @@ export type ScannedRoutes = {
   }
   PUT: {
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'vendor.orders.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'affiliate_links.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'profile.update_affiliate': { paramsTuple?: []; params?: {} }
     'profile.update_vendor': { paramsTuple?: []; params?: {} }
     'products.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
-    'orders.update_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'admin.update_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'wallet.admin_update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'blog_posts.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -367,6 +386,7 @@ export type ScannedRoutes = {
     'affiliate_links.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'notifications.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'notifications.destroy_all': { paramsTuple?: []; params?: {} }
+    'admin.delete_user': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'blog_posts.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'newsletter_admin.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'email_campaigns.destroy': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }

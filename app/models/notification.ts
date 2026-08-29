@@ -4,7 +4,15 @@ import { DateTime } from 'luxon'
 import User from '#models/user'
 import crypto from 'node:crypto'
 
-export type NotificationType = 'sale' | 'review' | 'message' | 'system'
+export type NotificationType =
+  | 'sale'
+  | 'review'
+  | 'message'
+  | 'system'
+  | 'order'
+  | 'order_processing'
+  | 'order_completed'
+  | 'order_cancelled'
 
 export default class Notification extends BaseModel {
   static table = 'notifications'

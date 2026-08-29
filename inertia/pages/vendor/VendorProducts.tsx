@@ -59,6 +59,7 @@ const defaultForm = {
   digitalAssetName: '',
   recurringBilling: false,
   billingCycle: 'one_time',
+  unitCount: '',
 }
 
 const statusStyles: Record<string, string> = {
@@ -126,6 +127,7 @@ export default function VendorProducts(props: VendorProductsProps) {
         ...(form.digitalAssetName && { digitalAssetName: form.digitalAssetName }),
         ...(form.billingCycle && { billingCycle: form.billingCycle }),
         recurringBilling: form.recurringBilling,
+        ...(form.unitCount !== '' && { unitCount: Number.parseInt(form.unitCount as string) }),
       }
       const url = editId ? `/api/products/${editId}` : '/api/products'
       const { data: response } = editId ? await api.put(url, payload) : await api.post(url, payload)
@@ -210,6 +212,7 @@ export default function VendorProducts(props: VendorProductsProps) {
       digitalAssetName: product.digitalAssetName || '',
       recurringBilling: product.recurringBilling || false,
       billingCycle: product.billingCycle || 'one_time',
+      unitCount: product.unitCount != null ? String(product.unitCount) : '',
     })
     setShowForm(true)
   }
@@ -420,6 +423,23 @@ export default function VendorProducts(props: VendorProductsProps) {
                   )}
                 </div>
 
+                {/* Unit count */}
+                <div>
+                  <Label className="text-xs sm:text-sm md:text-base">Unit Count / Stock Qty</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    step="1"
+                    value={form.unitCount as string}
+                    onChange={(e) => setForm({ ...form, unitCount: e.target.value })}
+                    placeholder="e.g. 100 (leave blank for unlimited)"
+                    className="text-xs sm:text-sm md:text-base"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    For physical products or limited digital licenses. Leave blank for unlimited.
+                  </p>
+                </div>
+
                 {/* Product Image Upload */}
                 <div>
                   <ImageUploadField
@@ -560,6 +580,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                         Price ({getActiveCurrency()})
                       </TableHead>
                       <TableHead className="min-w-[80px] sm:min-w-[100px]">Commission</TableHead>
+                      <TableHead className="min-w-[60px] sm:min-w-[80px]">Units</TableHead>
                       <TableHead className="min-w-[80px] sm:min-w-[100px]">Status</TableHead>
                       <TableHead className="min-w-[60px] sm:min-w-[80px]">Sales</TableHead>
                       <TableHead className="min-w-[80px] sm:min-w-[120px]">
@@ -600,6 +621,15 @@ export default function VendorProducts(props: VendorProductsProps) {
                           <span className="text-green-600 font-semibold text-xs sm:text-sm md:text-base">
                             {num(p.commissionRate)}%
                           </span>
+                        </TableCell>
+                        <TableCell className="text-sm">
+                          {p.unitCount != null ? (
+                            <span className={`font-medium ${p.unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}>
+                              {p.unitCount}
+                            </span>
+                          ) : (
+                            <span className="text-muted-foreground text-xs">∞</span>
+                          )}
                         </TableCell>
                         <TableCell>
                           <span
