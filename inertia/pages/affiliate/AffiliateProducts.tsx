@@ -29,7 +29,7 @@ const CATEGORIES = [
   { label: 'Lifestyle', value: 'lifestyle' },
 ]
 
-const CAT_LABELS = {
+const CAT_LABELS: Record<string, string> = {
   health_fitness: 'Health & Fitness',
   business_investing: 'Business',
   software_saas: 'Software',
@@ -51,12 +51,46 @@ type AffiliateProductsProps = {
   products: any[]
 }
 
+interface AffiliateLink {
+  id: number
+  uuid: string
+  affiliateId: number
+  productId: number
+  productName: string
+  linkCode: string
+  subId: string | null
+  campaignName: string | null
+  status: string // consider a union e.g. 'active' | 'inactive' | 'paused'
+  clicks: number
+  conversions: number
+  revenue: string // returned as string, likely a decimal/numeric column
+  commissionEarned: string // same as above
+  createdAt: string // ISO timestamp
+  updatedAt: string // ISO timestamp
+}
+
+interface SelectedProduct {
+  id: number
+  name: string
+  price: number
+  commissionRate: number
+  imageUrl?: string
+  vendorName?: string
+  category?: string
+  isFeatured?: boolean
+  recurringBilling?: boolean
+  gravityScore?: number
+  unitCount?: number | null
+  rating?: number
+  link?: AffiliateLink
+}
+
 export default function AffiliateProducts(props: AffiliateProductsProps) {
   const { user, products } = props
   const [search, setSearch] = useState('')
   const [category, setCategory] = useState('all')
   const [sortBy, setSortBy] = useState('commission')
-  const [selectedProduct, setSelectedProduct] = useState(null)
+  const [selectedProduct, setSelectedProduct] = useState<SelectedProduct | null>(null)
   const [copied, setCopied] = useState(false)
   const [creatingProductId, setCreatingProductId] = useState<number | null>(null)
 
@@ -64,8 +98,8 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
     setCreatingProductId(product.id)
     try {
       const { data } = await api.post('/api/affiliate-links', { productId: product.id })
+      setSelectedProduct({ ...product, link: data.data })
       toast.success('Affiliate link created! Ready to share.')
-      setSelectedProduct({ ...product, link: data })
     } catch {
       toast.error('Failed to create affiliate link')
     } finally {
@@ -91,14 +125,14 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
     return result
   }, [products, search, category, sortBy])
 
-  const handleCopy = (text) => {
+  const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
     toast.success('Link copied to clipboard!')
   }
 
-  const commissionAmount = (product) => {
+  const commissionAmount = (product: { price?: number; commissionRate?: number }) => {
     if (!product.price || !product.commissionRate) return 0
     return (product.price * product.commissionRate) / 100
   }
@@ -216,7 +250,9 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                     {product.unitCount != null && (
                       <div className="text-center hidden sm:block">
                         <p className="text-xs text-muted-foreground">Units Left</p>
-                        <p className={`font-bold text-sm ${product.unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}>
+                        <p
+                          className={`font-bold text-sm ${product.unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}
+                        >
                           {product.unitCount === 0 ? 'Out of stock' : product.unitCount}
                         </p>
                       </div>
@@ -266,7 +302,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                 <p className="text-sm text-green-700 font-medium mb-1">
                   🎉 You'll earn{' '}
                   <strong>{formatNGN(commissionAmount(selectedProduct || {}))}</strong> per sale (
-                  {selectedProduct?.commission_rate}% commission)
+                  {selectedProduct?.commissionRate}% commission)
                 </p>
                 <p className="text-xs text-green-600">
                   Share your link and start earning commissions today!
@@ -279,7 +315,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                 <div className="flex items-center gap-2">
                   <Input
                     readOnly
-                    value={`${window.location.origin}/ref/${selectedProduct?.link?.linkCode || selectedProduct?.link?.link_code || 'error'}`}
+                    value={`${window.location.origin}/ref/${selectedProduct?.link?.linkCode || 'error'}`}
                     className="font-mono text-xs bg-muted"
                   />
                   <Button
@@ -287,7 +323,7 @@ export default function AffiliateProducts(props: AffiliateProductsProps) {
                     variant="outline"
                     onClick={() =>
                       handleCopy(
-                        `${window.location.origin}/ref/${selectedProduct?.link?.linkCode || selectedProduct?.link?.link_code || 'error'}`
+                        `${window.location.origin}/ref/${selectedProduct?.link?.linkCode || 'error'}`
                       )
                     }
                   >

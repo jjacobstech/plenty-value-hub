@@ -2,6 +2,7 @@ import vine from '@vinejs/vine'
 
 export const processOrderValidator = vine.create({
   productId: vine.number().positive(),
+  quantity: vine.number().positive().min(1).optional(),
   affiliateLinkCode: vine.string().trim().optional(),
   paymentMethod: vine.string().trim().optional(),
   shippingDetails: vine

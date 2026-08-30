@@ -2,6 +2,7 @@ import vine from '@vinejs/vine'
 
 export const initializePaymentValidator = vine.create({
   productId: vine.number().positive(),
+  quantity: vine.number().positive().min(1).optional(),
   paymentProvider: vine
     .enum(['manual', 'stripe', 'paystack', 'flutterwave', 'paypal'] as const)
     .optional(),

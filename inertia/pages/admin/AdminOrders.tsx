@@ -76,6 +76,7 @@ export default function AdminOrders(props: AdminOrdersProps) {
                 <TableRow>
                   <TableHead>Order #</TableHead>
                   <TableHead>Product</TableHead>
+                  <TableHead>Qty</TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Amount</TableHead>
                   <TableHead>Commission</TableHead>
@@ -102,6 +103,7 @@ export default function AdminOrders(props: AdminOrdersProps) {
                         {o.orderNumber || String(o.id).slice(-8)}
                       </TableCell>
                       <TableCell className="font-medium">{o.productName}</TableCell>
+                      <TableCell className="text-center font-bold">{o.quantity ?? 1}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">
                         {format(new Date(o.createdAt), 'MMM d, yyyy')}
                       </TableCell>

@@ -71,10 +71,13 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
 
   const totalClicks = links.reduce((sum, l) => sum + (l.clicks || 0), 0)
   const totalConversions = links.reduce((sum, l) => sum + (l.conversions || 0), 0)
-  const totalEarnings = links.reduce((sum, l) => sum + (l.commission_earned || 0), 0)
+  const totalEarnings = links.reduce(
+    (sum, l) => sum + (Number(l.commission_earned ?? l.commissionEarned) || 0),
+    0
+  )
   const pendingEarnings = orders
     .filter((o) => o.status === 'pending')
-    .reduce((sum, o) => sum + (o.commission_amount || 0), 0)
+    .reduce((sum, o) => sum + (Number(o.commission_amount ?? o.commissionAmount) || 0), 0)
   const convRate = totalClicks > 0 ? ((totalConversions / totalClicks) * 100).toFixed(1) : '0'
   const activeLinks = links.filter((l) => l.status === 'active').length
 
@@ -83,10 +86,15 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
     const day = subDays(new Date(), 6 - i)
     const dayStr = format(day, 'MMM d')
     const dayEarnings = orders
-      .filter(
-        (o) => o.status === 'completed' && format(new Date(o.created_date), 'MMM d') === dayStr
-      )
-      .reduce((sum, o) => sum + (o.commission_amount || 0), 0)
+      .filter((o) => {
+        if (o.status !== 'completed') return false
+        const rawDate = o.created_date || o.created_at || o.createdAt
+        if (!rawDate) return false
+        const parsedDate = new Date(rawDate)
+        if (Number.isNaN(parsedDate.getTime())) return false
+        return format(parsedDate, 'MMM d') === dayStr
+      })
+      .reduce((sum, o) => sum + (Number(o.commission_amount ?? o.commissionAmount) || 0), 0)
     return { day: dayStr, earnings: dayEarnings }
   })
 
@@ -280,7 +288,7 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
                         <TableCell className="text-xs">{link.clicks || 0}</TableCell>
                         <TableCell className="text-xs">{link.conversions || 0}</TableCell>
                         <TableCell className="font-semibold text-xs text-green-600">
-                          {formatNGN(link.commission_earned)}
+                          {formatNGN(link.commission_earned ?? link.commissionEarned)}
                         </TableCell>
                       </TableRow>
                     ))}

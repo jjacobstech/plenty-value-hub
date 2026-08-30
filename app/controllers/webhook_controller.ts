@@ -34,29 +34,22 @@ export default class WebhookController {
     await order.save()
 
     if (product) {
+      const orderedQty = order.quantity ?? 1
       // Update product stats
-      product.totalSales = (product.totalSales || 0) + 1
+      product.totalSales = (product.totalSales || 0) + orderedQty
       const { Decimal } = await import('decimal.js')
       product.totalRevenue = new Decimal(product.totalRevenue || 0)
         .plus(order.amount)
         .toDecimalPlaces(2)
         .toString()
       product.gravityScore = Math.min(100, (product.gravityScore || 0) + 1)
+      if (product.unitCount !== null && product.unitCount !== undefined && product.unitCount > 0) {
+        product.unitCount = Math.max(0, product.unitCount - orderedQty)
+      }
       await product.save()
 
-      // Update affiliate stats
-      if (affiliateLink) {
-        affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
-        affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-          .plus(order.amount)
-          .toDecimalPlaces(2)
-          .toString()
-        affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-          .plus(order.commissionAmount || 0)
-          .toDecimalPlaces(2)
-          .toString()
-        await affiliateLink.save()
-      }
+      const { CommissionService } = await import('#services/commission_service')
+      await CommissionService.recordAffiliateConversion(order, affiliateLink)
     }
 
     const { WalletService } = await import('#services/wallet_service')
@@ -68,7 +61,13 @@ export default class WebhookController {
       await WalletService.handleOrderCreated(order)
     }
 
-    if (product) await NotificationService.notifyOrderCompleted(order, product)
+    if (product) {
+      if (isDigital) {
+        await NotificationService.notifyOrderCompleted(order, product)
+      } else {
+        await NotificationService.notifyOrderProcessing(order, product)
+      }
+    }
 
     logger.info('Order settled via webhook', {
       orderId: order.id,

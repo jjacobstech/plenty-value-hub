@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, Loader2, Download, Package, Repeat } from 'lucide-react'
+import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, Loader2, Download, Package, Repeat, Minus, Plus } from 'lucide-react'
 import { formatUSD } from '@/lib/currency'
 import PublicLayout from '@/components/layout/PublicLayout'
 
@@ -47,6 +47,7 @@ type ProductPayload = {
   vendorName: string | null
   billingCycle: string
   recurringBilling: boolean
+  unitCount: number | null
 }
 
 type ReviewPayload = {
@@ -66,10 +67,20 @@ type PaymentPayload = {
   currencySymbol: string
 }
 
+type OrderNoticePayload = {
+  success: boolean
+  orderNumber: string
+  status: string
+  message: string
+  digitalAssetUrl?: string | null
+  digitalAssetName?: string | null
+}
+
 type ProductDetailProps = {
   product: ProductPayload
   reviews?: ReviewPayload[]
   payment?: PaymentPayload
+  orderNotice?: OrderNoticePayload | null
 }
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -131,6 +142,7 @@ export default function ProductDetail({
   product,
   reviews = [],
   payment = EMPTY_PAYMENT,
+  orderNotice = null,
 }: ProductDetailProps) {
   const { auth } = usePage().props as any
 
@@ -139,9 +151,13 @@ export default function ProductDetail({
   const [submittingReview, setSubmittingReview] = useState(false)
   const [purchasing, setPurchasing] = useState(false)
   const [guestEmail, setGuestEmail] = useState('')
+  const [quantity, setQuantity] = useState(1)
   const [selectedProvider, setSelectedProvider] = useState<string>(
     () => payment.activeProvider ?? payment.providers[0]?.key ?? ''
   )
+
+  const maxQty = product.unitCount != null ? product.unitCount : 99
+  const effectiveTotalPrice = product.effectivePrice * quantity
 
   const [shippingDetails, setShippingDetails] = useState({
     address: '',
@@ -184,14 +200,17 @@ export default function ProductDetail({
       return
     }
 
-    // Read at click time, not render time — safe under SSR.
+    // Read at click time, not render time — safe under SSR. Check sessionStorage and localStorage fallback.
     const affiliateLinkCode =
-      typeof window !== 'undefined' ? sessionStorage.getItem('pv_ref') : null
+      typeof window !== 'undefined'
+        ? sessionStorage.getItem('pv_ref') || localStorage.getItem('pv_ref')
+        : null
 
     setPurchasing(true)
     try {
       const res = await apiClient.post('/api/payments/initialize', {
         productId: product.id,
+        quantity,
         paymentProvider: selectedProvider,
         affiliateLinkCode,
         callbackUrl: window.location.href,
@@ -205,6 +224,7 @@ export default function ProductDetail({
       }
 
       sessionStorage.removeItem('pv_ref')
+      localStorage.removeItem('pv_ref')
       const redirectUrl =
         res.data.payment?.paymentUrl ??
         res.data.payment?.payment_url ??
@@ -286,6 +306,39 @@ export default function ProductDetail({
         structuredData={productStructuredData}
       />
 
+      {/* Payment Success / Order Notice Banner */}
+      {orderNotice && (
+        <div
+          className={`mb-8 p-6 rounded-2xl border ${
+            orderNotice.success
+              ? 'bg-emerald-50/90 border-emerald-300 text-emerald-950 dark:bg-emerald-950/40 dark:border-emerald-700 dark:text-emerald-100'
+              : 'bg-amber-50/90 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:border-amber-700 dark:text-amber-100'
+          }`}
+        >
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Badge className={orderNotice.success ? 'bg-emerald-600' : 'bg-amber-600'}>
+                  {orderNotice.success ? 'Payment Confirmed' : 'Pending Verification'}
+                </Badge>
+                <span className="font-semibold text-sm">Order #{orderNotice.orderNumber}</span>
+              </div>
+              <p className="text-sm opacity-90">{orderNotice.message}</p>
+            </div>
+            {orderNotice.digitalAssetUrl && (
+              <a
+                href={orderNotice.digitalAssetUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm shadow-md transition-all shrink-0"
+              >
+                <Download className="w-4 h-4" /> Download Digital Asset
+              </a>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* Breadcrumb */}
       <div className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
         <Link href="/marketplace" className="hover:text-primary">
@@ -353,16 +406,28 @@ export default function ProductDetail({
           <div className="flex items-baseline gap-3 flex-wrap">
             {product.onSale ? (
               <>
-                <span className="text-4xl font-bold">{formatUSD(product.effectivePrice)}</span>
+                <span className="text-4xl font-bold">{formatUSD(effectiveTotalPrice)}</span>
+                {quantity > 1 && (
+                  <span className="text-base text-muted-foreground">
+                    ({formatUSD(product.effectivePrice)} × {quantity})
+                  </span>
+                )}
                 <span className="text-xl text-muted-foreground line-through">
-                  {formatUSD(product.price)}
+                  {formatUSD(product.price * quantity)}
                 </span>
                 {product.discountPercent > 0 && (
                   <Badge className="bg-destructive">{product.discountPercent}% OFF</Badge>
                 )}
               </>
             ) : (
-              <span className="text-4xl font-bold">{formatUSD(product.price)}</span>
+              <>
+                <span className="text-4xl font-bold">{formatUSD(effectiveTotalPrice)}</span>
+                {quantity > 1 && (
+                  <span className="text-base text-muted-foreground">
+                    ({formatUSD(product.effectivePrice)} × {quantity})
+                  </span>
+                )}
+              </>
             )}
           </div>
 
@@ -394,6 +459,48 @@ export default function ProductDetail({
               </div>
             )
           })()}
+
+          {/* Quantity Selector — shown when checkout is available and product is physical */}
+          {checkoutAvailable && product.productType === 'physical' && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                Quantity
+                {product.unitCount != null && (
+                  <span className="ml-2 text-muted-foreground normal-case font-normal">
+                    ({product.unitCount} in stock)
+                  </span>
+                )}
+              </p>
+              <div className="flex items-center gap-3">
+                <Button
+                  id="qty-decrease"
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  disabled={quantity <= 1}
+                >
+                  <Minus className="w-3.5 h-3.5" />
+                </Button>
+                <span className="w-10 text-center text-base font-bold tabular-nums">{quantity}</span>
+                <Button
+                  id="qty-increase"
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  className="h-9 w-9"
+                  onClick={() => setQuantity((q) => Math.min(maxQty, q + 1))}
+                  disabled={quantity >= maxQty}
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                </Button>
+                {product.unitCount != null && quantity >= maxQty && (
+                  <span className="text-xs text-amber-600 font-medium">Max stock reached</span>
+                )}
+              </div>
+            </div>
+          )}
 
           {/* Physical Product Shipping Address Form */}
           {product.productType === 'physical' && checkoutAvailable && (

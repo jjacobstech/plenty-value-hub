@@ -93,15 +93,39 @@ export default class PagesController {
     const origin =
       env.get('APP_URL') ?? `${request.protocol()}://${request.host() ?? 'localhost:3000'}`
 
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const rawParamId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(rawParamId)
+    const isNumeric = /^\d+$/.test(rawParamId)
+
     const [productRow, reviewRows, paymentConfig] = await Promise.all([
       Product.query()
-        .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+        .where((q) => {
+          if (isUuid) {
+            q.where('uuid', rawParamId)
+          } else if (isNumeric) {
+            q.where('id', rawParamId)
+          } else {
+            q.where('slug', rawParamId).orWhere(
+              'id',
+              Number.isNaN(Number(rawParamId)) ? 0 : Number(rawParamId)
+            )
+          }
+        })
         .where('status', 'approved')
         .firstOrFail(),
 
       Review.query()
-        .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('product_id', params.id)))
+        .where((q) => {
+          if (isUuid) {
+            q.where('uuid', rawParamId)
+          } else if (isNumeric) {
+            q.where('product_id', rawParamId)
+          } else {
+            q.where('product_id', 0)
+          }
+        })
         .orderBy('created_at', 'desc')
         .limit(50),
 
@@ -166,9 +190,153 @@ export default class PagesController {
         ? requestedActive
         : (providers[0]?.key ?? null)
 
+    // Check for payment completion / redirect verification parameters
+    const rawRefInput =
+      request.input('reference') ||
+      request.input('trxref') ||
+      request.input('tx_ref') ||
+      request.input('session_id') ||
+      request.input('orderNumber') ||
+      request.input('order_number')
+
+    let paymentRef: string | undefined
+    if (Array.isArray(rawRefInput)) {
+      paymentRef = String(rawRefInput[0] || '').trim()
+    } else if (typeof rawRefInput === 'string') {
+      paymentRef = rawRefInput.trim()
+    } else if (rawRefInput && typeof rawRefInput === 'object') {
+      const strVal = String(Object.values(rawRefInput)[0] || '').trim()
+      if (strVal) paymentRef = strVal
+    }
+
+    let orderNotice: {
+      success: boolean
+      orderNumber: string
+      status: string
+      message: string
+      digitalAssetUrl?: string | null
+      digitalAssetName?: string | null
+    } | null = null
+
+    if (paymentRef && paymentRef.length > 0) {
+      try {
+        const orderQuery = Order.query().where('orderNumber', paymentRef)
+        if (UUID_REGEX.test(paymentRef)) {
+          orderQuery.orWhere('uuid', paymentRef)
+        }
+        const order = await orderQuery.first()
+
+        if (order) {
+          if (order.status === 'pending') {
+            const provider =
+              (request.input('provider') || order.paymentMethod || 'paystack') as string
+            const { paymentGateway } = await import('#services/payment_gateway')
+
+            const verifyResult = await paymentGateway.verifyPayment(
+              order.orderNumber,
+              order.orderNumber,
+              provider
+            )
+
+            const statusInput = String(request.input('status') || '').toLowerCase()
+            const isRedirectSuccess =
+              statusInput === 'success' ||
+              statusInput === 'successful' ||
+              statusInput === 'completed' ||
+              Boolean(request.input('reference')) ||
+              Boolean(request.input('trxref')) ||
+              Boolean(request.input('tx_ref'))
+
+            if (verifyResult.success || isRedirectSuccess) {
+              const isDigital = productRow.productType === 'digital'
+              order.status = isDigital ? 'completed' : 'processing'
+              if (provider) order.paymentMethod = provider
+              await order.save()
+
+              const orderedQty = order.quantity ?? 1
+              productRow.totalSales = (productRow.totalSales || 0) + orderedQty
+              const { Decimal } = await import('decimal.js')
+              productRow.totalRevenue = new Decimal(productRow.totalRevenue || 0)
+                .plus(order.amount)
+                .toDecimalPlaces(2)
+                .toString()
+              productRow.gravityScore = Math.min(100, (productRow.gravityScore || 0) + 1)
+              if (
+                productRow.unitCount !== null &&
+                productRow.unitCount !== undefined &&
+                productRow.unitCount > 0
+              ) {
+                productRow.unitCount = Math.max(0, productRow.unitCount - orderedQty)
+              }
+              await productRow.save()
+
+              if (order.affiliateLinkId) {
+                const affiliateLink = await AffiliateLink.find(order.affiliateLinkId)
+                if (affiliateLink) {
+                  affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
+                  affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
+                    .plus(order.amount)
+                    .toDecimalPlaces(2)
+                    .toString()
+                  affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
+                    .plus(order.commissionAmount || 0)
+                    .toDecimalPlaces(2)
+                    .toString()
+                  await affiliateLink.save()
+                }
+              }
+
+              const { WalletService } = await import('#services/wallet_service')
+              const { NotificationService } = await import('#services/notification_service')
+
+              if (isDigital) {
+                await WalletService.handleOrderCompleted(order)
+                await NotificationService.notifyOrderCompleted(order, productRow)
+                console.log(
+                  `[PagesController.productDetail] Digital product order #${order.orderNumber} completed & notification sent immediately on return.`
+                )
+              } else {
+                await WalletService.handleOrderCreated(order)
+                await NotificationService.notifyOrderProcessing(order, productRow)
+                console.log(
+                  `[PagesController.productDetail] Physical product order #${order.orderNumber} set to processing & notification sent immediately on return.`
+                )
+              }
+            }
+          }
+
+          orderNotice = {
+            success: order.status === 'completed' || order.status === 'processing',
+            orderNumber: order.orderNumber,
+            status: order.status ?? 'pending',
+            message:
+              order.status === 'completed'
+                ? 'Your payment was successful and your order is complete! Confirmation and digital asset details have been sent to your email.'
+                : order.status === 'processing'
+                  ? 'Your payment was successful! Your order is currently being processed.'
+                  : 'Payment is pending verification.',
+            digitalAssetUrl:
+              order.status === 'completed' && productRow.productType === 'digital'
+                ? productRow.digitalAssetUrl
+                : null,
+            digitalAssetName:
+              order.status === 'completed' && productRow.productType === 'digital'
+                ? productRow.digitalAssetName || productRow.name
+                : null,
+          }
+        }
+      } catch (err: any) {
+        console.error(
+          '[PagesController.productDetail] Payment verification on redirect failed:',
+          err
+        )
+      }
+    }
+
     return inertia.render('ProductDetail', {
       product,
       reviews,
+      orderNotice,
       payment: {
         providers,
         activeProvider,
@@ -179,8 +347,55 @@ export default class PagesController {
     })
   }
 
-  async affiliateRedirect({ inertia, params }: HttpContext) {
-    return inertia.render('AffiliateRedirect', { link_code: params.link_code })
+  async affiliateRedirect({ inertia, params, response, auth }: HttpContext) {
+    const linkCode = String(params.link_code || '').trim()
+    let productId: number | null = null
+
+    if (linkCode) {
+      try {
+        const link = await AffiliateLink.findBy('linkCode', linkCode)
+        if (link && link.status === 'active') {
+          productId = link.productId
+
+          const authUser = auth?.use('web')?.user
+          const isSelfReferral = authUser && authUser.id === link.affiliateId
+
+          if (!isSelfReferral) {
+            link.clicks = (link.clicks || 0) + 1
+            await link.save()
+
+            const cookiePayload = JSON.stringify({
+              affiliateId: link.affiliateId,
+              linkId: link.id,
+              linkCode: link.linkCode,
+              productId: link.productId,
+            })
+
+            const maxAgeInSeconds = 30 * 24 * 60 * 60
+            response.cookie('pv_aff_attr', cookiePayload, {
+              httpOnly: true,
+              sameSite: 'lax',
+              secure: process.env.NODE_ENV === 'production',
+              maxAge: maxAgeInSeconds,
+            })
+
+            response.cookie('pv_ref_code', link.linkCode, {
+              httpOnly: false,
+              sameSite: 'lax',
+              secure: process.env.NODE_ENV === 'production',
+              maxAge: maxAgeInSeconds,
+            })
+          }
+        }
+      } catch (err) {
+        console.error('[PagesController.affiliateRedirect] Error processing referral link:', err)
+      }
+    }
+
+    return inertia.render('AffiliateRedirect', {
+      link_code: linkCode,
+      targetProductId: productId,
+    })
   }
 
   async forPartners({ inertia }: HttpContext) {

@@ -1,11 +1,11 @@
 # Graph Report - plenty-value-hub  (2026-08-30)
 
 ## Corpus Check
-- 347 files · ~2,704,358 words
+- 347 files · ~2,704,339 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3738 nodes · 4936 edges · 441 communities (281 shown, 160 thin omitted)
+- 3738 nodes · 4928 edges · 441 communities (281 shown, 160 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
@@ -15,12 +15,12 @@
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- VendorProducts.tsx
+- VendorOrders.tsx
 - pages.d.ts
 - DashboardLayout.tsx
 - schema.d.ts
 - cn
-- Marketplace.tsx
+- ProductDetail.tsx
 - File Upload Error Handling - Enhancement Summary
 - imports
 - devDependencies
@@ -47,7 +47,7 @@
 - Session Error Handling & API Fixes
 - Vendor Notification System
 - ImageResizeModule
-- card.tsx
+- Card
 - Payout Methods - Dynamic Fields Update
 - Vendor In-App Notifications System
 - Payment Gateway Keys Migration to Database
@@ -74,7 +74,7 @@
 - PaymentGatewayKey
 - PaymentGateway
 - Payment Gateway Key Encryption/Decryption Flow
-- ProductDetail.tsx
+- VendorProducts.tsx
 - Payment Gateway Configuration - Fixes & Improvements
 - console.ts
 - File Upload Fix - ImageUploadField Component
@@ -114,7 +114,7 @@
 - paymentProviders.ts
 - Encryption Import Fix
 - File Upload System Documentation
-- badge.tsx
+- card.tsx
 - ProtectedRoute.tsx
 - chart.tsx
 - normalize.ts
@@ -364,7 +364,7 @@
 - @vinejs/vine
 - zod
 - eslint-plugin-prettier
-- @adonisjs/eslint-config
+- @adonisjs/assembler
 - @adonisjs/prettier-config
 - @adonisjs/tsconfig
 - eslint
@@ -398,7 +398,7 @@
 - reflect-metadata
 - sonner
 - @types/better-sqlite3
-- @adonisjs/shield
+- @adonisjs/auth
 - jspdf-autotable
 - @adonisjs/cors
 - quill-table-better
@@ -435,17 +435,17 @@
 
 ## Communities (441 total, 160 thin omitted)
 
-### Community 0 - "VendorProducts.tsx"
-Cohesion: 0.09
-Nodes (30): DialogContent, DialogDescription, DialogHeader(), DialogTitle, Input, SelectContent, SelectItem, SelectTrigger (+22 more)
+### Community 0 - "VendorOrders.tsx"
+Cohesion: 0.10
+Nodes (27): ProductCard(), Input, SelectContent, SelectItem, SelectTrigger, AdminProductsProps, CATEGORY_LABELS, Product (+19 more)
 
 ### Community 1 - "pages.d.ts"
 Cohesion: 0.08
 Nodes (19): @adonisjs/inertia/types, ExtractProps, InertiaPages, AuthLayout(), GoogleIcon(), BrandLogo(), BrandLogoProps, Button (+11 more)
 
 ### Community 2 - "DashboardLayout.tsx"
-Cohesion: 0.27
-Nodes (9): getActivePath(), getPathname(), isActivePath(), MenuItem, menuItems, Role, Sidebar(), Notification (+1 more)
+Cohesion: 0.33
+Nodes (8): getActivePath(), getPathname(), isActivePath(), MenuItem, menuItems, Role, Sidebar(), NotificationCenter()
 
 ### Community 3 - "schema.d.ts"
 Cohesion: 0.06
@@ -455,9 +455,9 @@ Nodes (11): placeholder, registry, routes, @tuyau/core/types, UserRegistry, Para
 Cohesion: 0.06
 Nodes (42): AccordionContent, AccordionItem, AccordionTrigger, Avatar, AvatarFallback, AvatarImage, CardFooter, ContextMenuCheckboxItem (+34 more)
 
-### Community 5 - "Marketplace.tsx"
+### Community 5 - "ProductDetail.tsx"
 Cohesion: 0.06
-Nodes (32): Footer(), PublicLayout(), SEO(), SEOProps, truncate(), ProductCard(), CURRENCY_SYMBOLS, AFFILIATE_BENEFITS (+24 more)
+Nodes (29): Footer(), PublicLayout(), SEO(), SEOProps, truncate(), CURRENCY_SYMBOLS, AFFILIATE_BENEFITS, AFFILIATE_STEPS (+21 more)
 
 ### Community 6 - "File Upload Error Handling - Enhancement Summary"
 Cohesion: 0.04
@@ -559,9 +559,9 @@ Nodes (30): 1. **Notifications Table**, 2. **Notification Model**, 3. **Notifica
 Cohesion: 0.12
 Nodes (10): QuillEditor, QuillEditorHandle, QuillEditorProps, PageEditorProps, BlockEmbed, createEditorOptions(), DividerBlot, ImageResizeModule (+2 more)
 
-### Community 32 - "card.tsx"
+### Community 32 - "Card"
 Cohesion: 0.07
-Nodes (62): DashboardLayout(), Card, CardContent, CardHeader, CardTitle, DialogFooter(), Table, TableBody (+54 more)
+Nodes (57): DashboardLayout(), Card, DialogContent, DialogDescription, DialogFooter(), DialogHeader(), DialogTitle, Table (+49 more)
 
 ### Community 33 - "Payout Methods - Dynamic Fields Update"
 Cohesion: 0.07
@@ -581,7 +581,7 @@ Nodes (25): 1. Controller - `app/controllers/upload_controller.ts`, 1. Routes - 
 
 ### Community 38 - "dependencies"
 Cohesion: 0.08
-Nodes (25): better-sqlite3, dependencies, @adonisjs/auth, @adonisjs/cors, @adonisjs/inertia, @adonisjs/lucid, @adonisjs/session, @adonisjs/static (+17 more)
+Nodes (25): better-sqlite3, dependencies, @adonisjs/cors, @adonisjs/inertia, @adonisjs/lucid, @adonisjs/session, @adonisjs/shield, @adonisjs/static (+17 more)
 
 ### Community 39 - "Payout Method Form - Visual Guide"
 Cohesion: 0.08
@@ -659,9 +659,9 @@ Nodes (7): decrypt(), derivedKey, encrypt(), PaymentGatewayKey, beforeSave, colu
 Cohesion: 0.12
 Nodes (16): 1. **Storing Keys (Encryption)**, 2. **Retrieving Keys (Decryption)**, 3. **Real-World Examples**, Critical: APP_KEY Must Match, Database vs Memory, Example A: In a Controller, Example B: In Payment Provider, Example C: Getting All Configs (+8 more)
 
-### Community 60 - "ProductDetail.tsx"
-Cohesion: 0.10
-Nodes (19): api, ImageUploadField(), ImageUploadFieldProps, Textarea, MOBILE_MONEY_PROVIDERS, PAYOUT_METHODS, AffiliateProfileProps, AffiliateRedirectProps (+11 more)
+### Community 60 - "VendorProducts.tsx"
+Cohesion: 0.14
+Nodes (13): api, ImageUploadField(), ImageUploadFieldProps, Textarea, MOBILE_MONEY_PROVIDERS, PAYOUT_METHODS, AffiliateProfileProps, AffiliateRedirectProps (+5 more)
 
 ### Community 61 - "Payment Gateway Configuration - Fixes & Improvements"
 Cohesion: 0.12
@@ -753,7 +753,7 @@ Nodes (9): Access Control, 🎯 Conclusion, Database Security, Input Validation,
 
 ### Community 92 - "devDependencies"
 Cohesion: 0.22
-Nodes (9): @adonisjs/eslint-plugin, devDependencies, @adonisjs/assembler, @adonisjs/eslint-plugin, tailwindcss, @types/react-dom, @adonisjs/assembler, @types/react-dom (+1 more)
+Nodes (9): @adonisjs/eslint-plugin, devDependencies, @adonisjs/eslint-config, @adonisjs/eslint-plugin, tailwindcss, @types/react-dom, @adonisjs/eslint-config, @types/react-dom (+1 more)
 
 ### Community 96 - "Plenty Value — Full System Architecture & Backend Rebuild Guide"
 Cohesion: 0.22
@@ -771,9 +771,9 @@ Nodes (8): Encryption Import Fix, Impact, Problem, Security Notes, Solution, Tec
 Cohesion: 0.22
 Nodes (8): Common Errors, ✅ Deployment Checklist, 🐛 Error Handling, File Upload System Documentation, Optimization Tips, 📋 Overview, 📈 Performance, 📚 Related Files
 
-### Community 100 - "badge.tsx"
+### Community 100 - "card.tsx"
 Cohesion: 0.06
-Nodes (31): PageEditor(), CATEGORY_LABELS, StatsCard(), StatsCardProps, Badge(), BadgeProps, badgeVariants, CardDescription (+23 more)
+Nodes (49): Notification, PageEditor(), CATEGORY_LABELS, StatsCard(), StatsCardProps, Badge(), BadgeProps, badgeVariants (+41 more)
 
 ### Community 101 - "ProtectedRoute.tsx"
 Cohesion: 0.31
@@ -1363,7 +1363,7 @@ Nodes (5): Admin Authentication Issues?, 🎯 Quick Navigation, Site Settings & 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `VendorProducts.tsx`, `pages.d.ts`, `DashboardLayout.tsx`, `Marketplace.tsx`, `sidebar.tsx`, `card.tsx`, `toast.tsx`, `sheet.tsx`, `alert-dialog.tsx`, `utils.ts`, `toggle-group.tsx`, `ProductDetail.tsx`, `alert.tsx`, `breadcrumb.tsx`, `drawer.tsx`, `form.tsx`, `badge.tsx`, `chart.tsx`, `command.tsx`, `carousel.tsx`, `navigation-menu.tsx`?**
+- **Why does `cn()` connect `cn` to `VendorOrders.tsx`, `pages.d.ts`, `DashboardLayout.tsx`, `sidebar.tsx`, `Card`, `toast.tsx`, `sheet.tsx`, `alert-dialog.tsx`, `utils.ts`, `toggle-group.tsx`, `VendorProducts.tsx`, `alert.tsx`, `breadcrumb.tsx`, `drawer.tsx`, `form.tsx`, `card.tsx`, `chart.tsx`, `command.tsx`, `carousel.tsx`, `navigation-menu.tsx`?**
   _High betweenness centrality (0.015) - this node is a cross-community bridge._
 - **Why does `Site Settings Documentation` connect `Site Settings Documentation` to `📋 Common Tasks`, `🐛 Troubleshooting`, `🔐 Authentication & Authorization`, `💰 Payment Settings Details`, `📚 Complete Controller Implementation Guide`, `🔗 API Endpoints`, `DOCUMENTATION_INDEX.md`, `Methods Breakdown`, `🎯 Site Settings Types`, `🧪 Testing Site Settings`, `🔧 Database Schema`, `🚀 Integration Guide`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
@@ -1371,8 +1371,8 @@ _Questions this graph is uniquely positioned to answer:_
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `Data`, `User`, `Variants` to the rest of the system?**
   _1772 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `VendorProducts.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.09191583610188261 - nodes in this community are weakly interconnected._
+- **Should `VendorOrders.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.09759759759759759 - nodes in this community are weakly interconnected._
 - **Should `pages.d.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.07922705314009662 - nodes in this community are weakly interconnected._
 - **Should `schema.d.ts` be split into smaller, more focused modules?**

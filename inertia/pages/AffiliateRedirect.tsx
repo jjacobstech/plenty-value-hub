@@ -1,6 +1,6 @@
 /**
  * AffiliateRedirect — Handles /ref/:link_code visits.
- * Tracks the click via backend, stores the link code in sessionStorage,
+ * Tracks the click via backend, stores the link code in localStorage & sessionStorage,
  * then redirects the visitor to the product page.
  */
 
@@ -12,14 +12,28 @@ import PublicLayout from '@/components/layout/PublicLayout'
 
 type AffiliateRedirectProps = {
   link_code: string
+  targetProductId?: number | null
 }
 
-export default function AffiliateRedirect({ link_code }: AffiliateRedirectProps) {
-  const [error, setError] = useState(null)
+export default function AffiliateRedirect({ link_code, targetProductId }: AffiliateRedirectProps) {
+  const [error] = useState<string | null>(null)
 
   useEffect(() => {
     if (!link_code) {
       router.visit('/marketplace')
+      return
+    }
+
+    // Persist to client storage as fallback
+    try {
+      sessionStorage.setItem('pv_ref', link_code)
+      localStorage.setItem('pv_ref', link_code)
+    } catch {
+      // Ignore storage errors (e.g. private browsing restriction)
+    }
+
+    if (targetProductId) {
+      router.visit(`/product/${targetProductId}`)
       return
     }
 
@@ -28,8 +42,6 @@ export default function AffiliateRedirect({ link_code }: AffiliateRedirectProps)
       .then((res: any) => {
         const { productId } = res.data || res
         if (productId) {
-          // Store affiliate code so purchase flow can attribute it
-          sessionStorage.setItem('pv_ref', link_code)
           router.visit(`/product/${productId}`)
         } else {
           router.visit('/marketplace')
@@ -39,7 +51,7 @@ export default function AffiliateRedirect({ link_code }: AffiliateRedirectProps)
         // Silently redirect even on error — don't block the user
         router.visit('/marketplace')
       })
-  }, [link_code])
+  }, [link_code, targetProductId])
 
   if (error) {
     return (

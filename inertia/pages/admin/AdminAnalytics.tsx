@@ -111,11 +111,10 @@ export default function AdminAnalytics({
 
   const totalClicks = (links || []).reduce((s, l) => s + safeParseInt(l?.clicks), 0)
   const totalConversions = (links || []).reduce((s, l) => s + safeParseInt(l?.conversions), 0)
-  
+
   const refundedOrders = orders.filter((o) => o?.status === 'refunded') || []
-  const refundRate = orders.length > 0 
-    ? ((refundedOrders.length / orders.length) * 100).toFixed(1)
-    : '0'
+  const refundRate =
+    orders.length > 0 ? ((refundedOrders.length / orders.length) * 100).toFixed(1) : '0'
 
   return (
     <DashboardLayout role="admin">
@@ -161,19 +160,19 @@ export default function AdminAnalytics({
                 const productRevenue = {}
                 completedOrders.forEach((o) => {
                   if (!o) return
-                  
+
                   const productName = o.productName || 'Unknown Product'
                   const amount = safeParseFloat(o.amount)
-                  
+
                   productRevenue[productName] = (productRevenue[productName] || 0) + amount
                 })
-                
+
                 const data = Object.entries(productRevenue)
                   .sort(([, a], [, b]) => (b as number) - (a as number))
                   .slice(0, 5)
-                  .map(([name, revenue]) => ({ 
-                    name: name.substring(0, 15), 
-                    revenue: revenue as number 
+                  .map(([name, revenue]) => ({
+                    name: name.substring(0, 15),
+                    revenue: revenue as number,
                   }))
 
                 return data.length > 0 ? (

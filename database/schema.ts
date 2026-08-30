@@ -237,7 +237,7 @@ export class NotificationSchema extends BaseModel {
 }
 
 export class OrderSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
+  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'quantity', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
   $columns = OrderSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -267,6 +267,8 @@ export class OrderSchema extends BaseModel {
   declare productId: number | null
   @column()
   declare productName: string | null
+  @column()
+  declare quantity: number
   @column()
   declare shippingDetails: any | null
   @column()

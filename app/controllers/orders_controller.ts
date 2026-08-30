@@ -9,6 +9,7 @@ import { PaymentService } from '#services/payment_service'
 import type { HttpContext } from '@adonisjs/core/http'
 import mail from '@adonisjs/mail/services/main'
 import { Decimal } from 'decimal.js'
+import { CommissionService } from '#services/commission_service'
 
 export default class OrdersController {
   async trackOrder({ request, response }: HttpContext) {
@@ -144,9 +145,21 @@ export default class OrdersController {
 
   async show({ params, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const order = await Order.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('orderNumber', paramId)
+        }
+      })
       .preload('product' as never)
       .first()
 
@@ -196,16 +209,58 @@ export default class OrdersController {
     }
 
     const productPrice = Number.parseFloat(product.price)
-    const salePrice =
+    const unitSalePrice =
       product.salePrice && new Decimal(product.salePrice).lessThan(product.price)
         ? Number.parseFloat(product.salePrice)
         : productPrice
 
+    const quantity = payload.quantity && payload.quantity >= 1 ? Math.floor(payload.quantity) : 1
+
+    // Validate stock if unitCount is tracked
+    if (product.unitCount !== null && product.unitCount !== undefined) {
+      if (product.unitCount < quantity) {
+        return response.status(400).json({
+          error: `Only ${product.unitCount} unit${product.unitCount !== 1 ? 's' : ''} available.`,
+        })
+      }
+    }
+
+    const salePrice = new Decimal(unitSalePrice).mul(quantity).toDecimalPlaces(2).toNumber()
+
+    // Resolve affiliate token: HTTP-only cookie first, fallback to payload
+    let affiliateCode = payload.affiliateLinkCode
+    const cookieAttrRaw = request.cookie('pv_aff_attr')
+    if (cookieAttrRaw) {
+      try {
+        const parsed = typeof cookieAttrRaw === 'string' ? JSON.parse(cookieAttrRaw) : cookieAttrRaw
+        if (parsed && parsed.linkCode) {
+          affiliateCode = parsed.linkCode
+        }
+      } catch {
+        // Ignore JSON parse error
+      }
+    }
+
+    let affiliateLink: AffiliateLink | null = null
+    let affiliateId: number | null = null
+
+    if (affiliateCode) {
+      const foundLink = await AffiliateLink.findBy('linkCode', affiliateCode)
+      if (foundLink && foundLink.status === 'active') {
+        // Self-referral check: block if buyer is the affiliate
+        const isSelfReferral = user && user.id === foundLink.affiliateId
+        if (!isSelfReferral) {
+          affiliateLink = foundLink
+          affiliateId = foundLink.affiliateId
+        }
+      }
+    }
+
     const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
-      productPrice,
+      productPrice * quantity,
       salePrice,
       Number(product.commissionRate),
-      !!payload.affiliateLinkCode
+      !!affiliateLink
     )
 
     const paymentConfig = await PaymentService.resolveCheckoutMethod()
@@ -216,22 +271,10 @@ export default class OrdersController {
 
     const orderNumber = generateOrderNumber()
 
-    let affiliateLink: AffiliateLink | null = null
-    let affiliateId: number | null = null
-
-    if (payload.affiliateLinkCode) {
-      affiliateLink = await AffiliateLink.findBy('linkCode', payload.affiliateLinkCode)
-      if (!affiliateLink || affiliateLink.status !== 'active') {
-        return response.status(400).json({ error: 'Invalid or inactive affiliate link' })
-      }
-      affiliateId = affiliateLink.affiliateId
-    }
-
     // Determine initial order status based on product type
     const initialStatus = product.productType === 'digital' ? 'completed' : 'processing'
 
     console.log(`[OrdersController] Creating order for product type: ${product.productType}, initial status: ${initialStatus}`)
-
 
     const order = await Order.create({
       orderNumber,
@@ -249,25 +292,18 @@ export default class OrdersController {
       status: initialStatus,
       currency: 'USD',
       paymentMethod,
+      quantity,
       shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
     })
 
-    // Update affiliate link stats (for both digital and physical products)
-    if (affiliateLink) {
-      affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
-      affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-        .plus(salePrice)
-        .toDecimalPlaces(2)
-        .toString()
-      affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-        .plus(commissionAmount)
-        .toDecimalPlaces(2)
-        .toString()
-      await affiliateLink.save()
-    }
+    // Record affiliate conversion safely and idempotently
+    await CommissionService.recordAffiliateConversion(order, affiliateLink)
 
     // Update product stats (for both digital and physical products)
-    product.totalSales = (product.totalSales || 0) + 1
+    product.totalSales = (product.totalSales || 0) + quantity
+    if (product.unitCount !== null && product.unitCount !== undefined && product.unitCount > 0) {
+      product.unitCount = Math.max(0, product.unitCount - quantity)
+    }
     product.totalRevenue = new Decimal(product.totalRevenue || 0)
       .plus(salePrice)
       .toDecimalPlaces(2)
@@ -316,6 +352,7 @@ export default class OrdersController {
         id: order.id,
         orderNumber: order.orderNumber,
         amount: order.amount,
+        quantity: order.quantity,
         commissionAmount: order.commissionAmount,
         platformFee: order.platformFee,
         vendorPayout: order.vendorPayout,
@@ -326,9 +363,21 @@ export default class OrdersController {
 
   async notifyVendor({ params, request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const order = await Order.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('orderNumber', paramId)
+        }
+      })
       .first()
 
     if (!order) {
@@ -383,9 +432,21 @@ export default class OrdersController {
   async updateStatus({ params, request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
 
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const order = await Order.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('orderNumber', paramId)
+        }
+      })
       .first()
     if (!order) {
       return response.status(404).json({ error: 'Order not found' })

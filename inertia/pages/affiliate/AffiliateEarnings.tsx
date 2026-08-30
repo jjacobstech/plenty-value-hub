@@ -21,6 +21,13 @@ import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
 import api from '@/api/http-client'
 
+function formatDateSafe(val: any, formatStr: string = 'MMM d, yyyy'): string {
+  if (!val) return '—'
+  const d = new Date(val)
+  if (Number.isNaN(d.getTime())) return '—'
+  return format(d, formatStr)
+}
+
 type WalletData = {
   availableBalance: string
   pendingBalance: string
@@ -89,9 +96,9 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
       head: [['Product', 'Date', 'Sale Amount', 'Commission', 'Status']],
       body: orders.map((o) => [
         o.productName,
-        format(new Date(o.createdAt), 'MMM d, yyyy'),
+        formatDateSafe(o.createdAt || o.created_at || o.created_date),
         formatNGN(o.amount),
-        formatNGN(o.commissionAmount),
+        formatNGN(o.commissionAmount || o.commission_amount),
         o.status,
       ]),
       headStyles: { fillColor: [113, 90, 255] },
@@ -222,7 +229,7 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
                     <TableRow key={pr.id}>
                       <TableCell className="font-semibold">{formatNGN(pr.amount)}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
-                        {format(new Date(pr.createdAt), 'MMM d, yyyy')}
+                        {formatDateSafe(pr.createdAt || (pr as any).created_at)}
                       </TableCell>
                       <TableCell>
                         <span
@@ -291,7 +298,7 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">{order.productName}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">
-                        {format(new Date(order.createdAt), 'MMM d, yyyy')}
+                        {formatDateSafe(order.createdAt || (order as any).created_at || (order as any).created_date)}
                       </TableCell>
                       <TableCell>{formatNGN(order.amount)}</TableCell>
                       <TableCell className="text-green-600 font-semibold">

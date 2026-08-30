@@ -11,6 +11,7 @@ import { initializePaymentValidator, verifyPaymentValidator } from '#validators/
 import type { HttpContext } from '@adonisjs/core/http'
 import { Decimal } from 'decimal.js'
 import logger from '@adonisjs/core/services/logger'
+import { CommissionService } from '#services/commission_service'
 
 export default class PaymentController {
   /**
@@ -61,6 +62,18 @@ export default class PaymentController {
         return response.status(400).json({ error: 'Product is not approved for purchase' })
       }
 
+      // Resolve quantity (default to 1)
+      const quantity = payload.quantity && payload.quantity >= 1 ? Math.floor(payload.quantity) : 1
+
+      // Validate stock if unitCount is tracked
+      if (product.unitCount !== null && product.unitCount !== undefined) {
+        if (product.unitCount < quantity) {
+          return response.status(400).json({
+            error: `Only ${product.unitCount} unit${product.unitCount !== 1 ? 's' : ''} available.`,
+          })
+        }
+      }
+
       // Get chosen provider
       const chosenProvider = payload.paymentProvider || paymentGateway.getActiveProvider()
 
@@ -74,31 +87,50 @@ export default class PaymentController {
         throw error
       }
 
-      // Calculate pricing
+      // Calculate pricing (per-unit × quantity)
       const productPrice = Number.parseFloat(product.price)
-      const salePrice =
+      const unitSalePrice =
         product.salePrice && new Decimal(product.salePrice).lessThan(product.price)
           ? Number.parseFloat(product.salePrice)
           : productPrice
 
-      const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
-        productPrice,
-        salePrice,
-        Number(product.commissionRate),
-        !!payload.affiliateLinkCode
-      )
+      const salePrice = new Decimal(unitSalePrice).mul(quantity).toDecimalPlaces(2).toNumber()
 
-      // Validate affiliate link if present
+      // Resolve affiliate token: HTTP-only cookie first, fallback to payload
+      let affiliateCode = payload.affiliateLinkCode
+      const cookieAttrRaw = request.cookie('pv_aff_attr')
+      if (cookieAttrRaw) {
+        try {
+          const parsed = typeof cookieAttrRaw === 'string' ? JSON.parse(cookieAttrRaw) : cookieAttrRaw
+          if (parsed && parsed.linkCode) {
+            affiliateCode = parsed.linkCode
+          }
+        } catch {
+          // Ignore JSON parse errors
+        }
+      }
+
       let affiliateLink: AffiliateLink | null = null
       let affiliateId: number | null = null
 
-      if (payload.affiliateLinkCode) {
-        affiliateLink = await AffiliateLink.findBy('linkCode', payload.affiliateLinkCode)
-        if (!affiliateLink || affiliateLink.status !== 'active') {
-          return response.status(400).json({ error: 'Invalid or inactive affiliate link' })
+      if (affiliateCode) {
+        const foundLink = await AffiliateLink.findBy('linkCode', affiliateCode)
+        if (foundLink && foundLink.status === 'active') {
+          // Self-referral check: block if buyer is the affiliate
+          const isSelfReferral = user && user.id === foundLink.affiliateId
+          if (!isSelfReferral) {
+            affiliateLink = foundLink
+            affiliateId = foundLink.affiliateId
+          }
         }
-        affiliateId = affiliateLink.affiliateId
       }
+
+      const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
+        productPrice * quantity,
+        salePrice,
+        Number(product.commissionRate),
+        !!affiliateLink
+      )
 
       const orderNumber = generateOrderNumber()
       const callbackUrl =
@@ -123,10 +155,11 @@ export default class PaymentController {
           status: 'completed',
           currency: 'USD',
           paymentMethod: 'manual',
+          quantity,
           shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
         })
 
-        await this.postOrderComplete(order, product, affiliateLink)
+        await this.postOrderComplete(order, product, affiliateLink, quantity)
 
         const vendor = await User.find(product.vendorId)
         const vendorPayoutInfo = vendor
@@ -142,6 +175,7 @@ export default class PaymentController {
           orderId: order.id,
           orderNumber: order.orderNumber,
           amount: order.amount,
+          quantity,
           buyerEmail,
         })
 
@@ -152,6 +186,7 @@ export default class PaymentController {
             id: order.id,
             orderNumber: order.orderNumber,
             amount: order.amount,
+            quantity: order.quantity,
             status: order.status,
           },
           vendor: vendorPayoutInfo,
@@ -179,6 +214,7 @@ export default class PaymentController {
         status: 'pending',
         currency: systemCurrency,
         paymentMethod: chosenProvider,
+        quantity,
         shippingDetails: payload.shippingDetails ? JSON.stringify(payload.shippingDetails) : null,
       })
 
@@ -193,11 +229,12 @@ export default class PaymentController {
           currency: systemCurrency,
           email: buyerEmail,
           orderId: orderNumber,
-          description: `Purchase of ${product.name}`,
+          description: `Purchase of ${product.name}${quantity > 1 ? ` (×${quantity})` : ''}`,
           returnUrl: callbackUrl,
           metadata: {
             productId: product.id,
             affiliateId: affiliateId || undefined,
+            quantity,
           },
         },
         chosenProvider
@@ -228,6 +265,7 @@ export default class PaymentController {
         orderId: order.id,
         orderNumber: order.orderNumber,
         transactionId: paymentResult.transactionId,
+        quantity,
       })
 
       return response.json({
@@ -242,6 +280,7 @@ export default class PaymentController {
           id: order.id,
           orderNumber: order.orderNumber,
           amount: order.amount,
+          quantity: order.quantity,
           status: order.status,
         },
       })
@@ -348,7 +387,8 @@ export default class PaymentController {
   private async postOrderComplete(
     order: Order,
     product: Product,
-    affiliateLink: AffiliateLink | null
+    affiliateLink: AffiliateLink | null,
+    quantity: number = 1
   ) {
     const isDigital = product.productType === 'digital'
     const newStatus = isDigital ? 'completed' : 'processing'
@@ -356,24 +396,13 @@ export default class PaymentController {
     order.status = newStatus
     await order.save()
 
+    const orderedQty = order.quantity ?? quantity
 
+    await CommissionService.recordAffiliateConversion(order, affiliateLink)
 
-    if (affiliateLink) {
-      affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
-      affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-        .plus(order.amount)
-        .toDecimalPlaces(2)
-        .toString()
-      affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-        .plus(order.commissionAmount || 0)
-        .toDecimalPlaces(2)
-        .toString()
-      await affiliateLink.save()
-    }
-
-    product.totalSales = (product.totalSales || 0) + 1
+    product.totalSales = (product.totalSales || 0) + orderedQty
     if (product.unitCount !== null && product.unitCount !== undefined && product.unitCount > 0) {
-      product.unitCount = Math.max(0, product.unitCount - 1)
+      product.unitCount = Math.max(0, product.unitCount - orderedQty)
     }
     product.totalRevenue = new Decimal(product.totalRevenue || 0)
       .plus(order.amount)

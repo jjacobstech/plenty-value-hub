@@ -40,9 +40,24 @@ export default class ProductsController {
   }
 
   async show({ params, response }: HttpContext) {
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const product = await Product.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('slug', paramId).orWhere(
+            'id',
+            Number.isNaN(Number(paramId)) ? 0 : Number(paramId)
+          )
+        }
+      })
       .where('status', 'approved')
       .preload('vendor' as never)
       .preload('reviews' as never, (query: any) => query.where('status', 'approved'))
@@ -87,9 +102,24 @@ export default class ProductsController {
 
   async update({ params, request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const product = await Product.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('slug', paramId).orWhere(
+            'id',
+            Number.isNaN(Number(paramId)) ? 0 : Number(paramId)
+          )
+        }
+      })
       .first()
 
     if (!product) {
@@ -113,9 +143,24 @@ export default class ProductsController {
 
   async destroy({ params, auth, response }: HttpContext) {
     const user = auth.use('web').user!
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const product = await Product.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('slug', paramId).orWhere(
+            'id',
+            Number.isNaN(Number(paramId)) ? 0 : Number(paramId)
+          )
+        }
+      })
       .first()
 
     if (!product) {
@@ -141,9 +186,24 @@ export default class ProductsController {
       return response.status(403).json({ error: 'Only admins can approve products' })
     }
 
-    const isUuid = typeof params.id === 'string' && params.id.includes('-')
+    const UUID_REGEX =
+      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
+    const paramId = String(params.id ?? '').trim()
+    const isUuid = UUID_REGEX.test(paramId)
+    const isNumeric = /^\d+$/.test(paramId)
     const product = await Product.query()
-      .where((q) => (isUuid ? q.where('uuid', params.id) : q.where('id', params.id)))
+      .where((q) => {
+        if (isUuid) {
+          q.where('uuid', paramId)
+        } else if (isNumeric) {
+          q.where('id', paramId)
+        } else {
+          q.where('slug', paramId).orWhere(
+            'id',
+            Number.isNaN(Number(paramId)) ? 0 : Number(paramId)
+          )
+        }
+      })
       .first()
 
     if (!product) {

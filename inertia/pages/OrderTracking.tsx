@@ -36,6 +36,7 @@ interface OrderData {
   status: 'pending' | 'completed' | 'cancelled' | 'refunded' | 'processing'
   paymentMethod: string | null
   currency: string
+  quantity?: number | null
   createdAt: string
   shippingDetails?: string | null
   product?: {
@@ -72,14 +73,14 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
     const urlParams = new URLSearchParams(window.location.search)
     const orderNumberParam = urlParams.get('orderNumber')
     const emailParam = urlParams.get('email')
-    
+
     if (orderNumberParam) {
       setOrderNumber(orderNumberParam)
     }
     if (emailParam) {
       setEmail(emailParam)
     }
-    
+
     // Auto-search if both parameters are present
     if (orderNumberParam && emailParam) {
       // Small delay to ensure state is updated
@@ -93,10 +94,10 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
 
   const handleSearch = async (e?: React.FormEvent | null, orderNumParam?: string, emailParam?: string) => {
     if (e) e.preventDefault()
-    
+
     const searchOrderNumber = orderNumParam || orderNumber.trim()
     const searchEmail = emailParam || email.trim()
-    
+
     if (!searchOrderNumber || !searchEmail) {
       setError('Please enter both your Order Number and Email Address.')
       return
@@ -197,7 +198,10 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
       />
 
       {/* Header Banner */}
-      <section style={{ backgroundColor: '#001845' }} className="text-white py-16 px-4 sm:px-6 lg:px-8">
+      <section
+        style={{ backgroundColor: '#001845' }}
+        className="text-white py-16 px-4 sm:px-6 lg:px-8"
+      >
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-white/10 mb-4">
             <Package className="w-6 h-6" style={{ color: '#81C14B' }} />
@@ -206,7 +210,8 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
             Track Your Order
           </h1>
           <p className="text-slate-300 text-base md:text-lg max-w-xl mx-auto">
-            Enter your order number and the email address used during purchase to look up your order status and access downloads.
+            Enter your order number and the email address used during purchase to look up your order
+            status and access downloads.
           </p>
         </div>
       </section>
@@ -218,9 +223,7 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
             <form onSubmit={handleSearch} className="space-y-5">
               <div className="grid md:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-white block">
-                    Order Number
-                  </label>
+                  <label className="text-sm font-semibold text-white block">Order Number</label>
                   <Input
                     type="text"
                     placeholder="e.g. ORD-17684920"
@@ -231,9 +234,7 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-white block">
-                    Email Address
-                  </label>
+                  <label className="text-sm font-semibold text-white block">Email Address</label>
                   <Input
                     type="email"
                     placeholder="your.email@example.com"
@@ -262,7 +263,8 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                   <span className="text-white font-semibold">Searching Order...</span>
                 ) : (
                   <>
-                    <Search className="w-4 h-4 text-white" /> <span className="text-white">Track Order Status</span>
+                    <Search className="w-4 h-4 text-white" />{' '}
+                    <span className="text-white">Track Order Status</span>
                   </>
                 )}
               </Button>
@@ -307,6 +309,11 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                     <div>
                       <h3 className="font-semibold text-lg text-slate-900 dark:text-white">
                         {order.product?.name || 'Product'}
+                        {(order.quantity ?? 1) > 1 && (
+                          <span className="ml-2 text-base font-normal text-muted-foreground">
+                            ×{order.quantity}
+                          </span>
+                        )}
                       </h3>
                       <p className="text-sm text-slate-500 dark:text-slate-400 capitalize">
                         Type: {order.product?.productType || 'Standard'} Product
@@ -329,10 +336,12 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                       <div>
                         <h4 className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center gap-2">
-                          <Download className="w-5 h-5 text-emerald-600" /> Digital Product Download Ready
+                          <Download className="w-5 h-5 text-emerald-600" /> Digital Product Download
+                          Ready
                         </h4>
                         <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
-                          You can download your digital file ({order.digitalAsset.name}) instantly below.
+                          You can download your digital file ({order.digitalAsset.name}) instantly
+                          below.
                         </p>
                       </div>
                       <a
@@ -349,7 +358,7 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                 )}
 
                 {/* Order Metadata Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 py-2 border-y dark:border-slate-700 text-sm">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-2 border-y dark:border-slate-700 text-sm">
                   <div>
                     <span className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
                       <Calendar className="w-3.5 h-3.5" /> Date Purchased
@@ -360,6 +369,15 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                         month: 'short',
                         day: 'numeric',
                       })}
+                    </p>
+                  </div>
+
+                  <div>
+                    <span className="text-xs text-muted-foreground flex items-center gap-1 mb-1">
+                      <Package className="w-3.5 h-3.5" /> Units Ordered
+                    </span>
+                    <p className="font-medium text-slate-800 dark:text-slate-200">
+                      {order.quantity ?? 1}
                     </p>
                   </div>
 
@@ -393,11 +411,28 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                         const details = parseShippingDetails(order.shippingDetails)
                         return (
                           <>
-                            {details.fullName && <p><strong>Recipient:</strong> {details.fullName}</p>}
-                            {details.phone && <p><strong>Phone:</strong> {details.phone}</p>}
-                            {details.address && <p><strong>Address:</strong> {details.address}</p>}
+                            {details.fullName && (
+                              <p>
+                                <strong>Recipient:</strong> {details.fullName}
+                              </p>
+                            )}
+                            {details.phone && (
+                              <p>
+                                <strong>Phone:</strong> {details.phone}
+                              </p>
+                            )}
+                            {details.address && (
+                              <p>
+                                <strong>Address:</strong> {details.address}
+                              </p>
+                            )}
                             {(details.city || details.state || details.country) && (
-                              <p><strong>Location:</strong> {[details.city, details.state, details.country].filter(Boolean).join(', ')}</p>
+                              <p>
+                                <strong>Location:</strong>{' '}
+                                {[details.city, details.state, details.country]
+                                  .filter(Boolean)
+                                  .join(', ')}
+                              </p>
                             )}
                           </>
                         )
@@ -414,12 +449,17 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                     </div>
                     <div className="grid sm:grid-cols-2 gap-2 text-slate-600 dark:text-slate-300">
                       {order.vendor.businessName && (
-                        <p><strong>Business:</strong> {order.vendor.businessName}</p>
+                        <p>
+                          <strong>Business:</strong> {order.vendor.businessName}
+                        </p>
                       )}
                       {order.vendor.email && (
                         <p className="flex items-center gap-1">
-                          <Mail className="w-3 h-3 text-slate-400" /> 
-                          <a href={`mailto:${order.vendor.email}`} className="text-blue-600 hover:underline">
+                          <Mail className="w-3 h-3 text-slate-400" />
+                          <a
+                            href={`mailto:${order.vendor.email}`}
+                            className="text-blue-600 hover:underline"
+                          >
                             {order.vendor.email}
                           </a>
                         </p>
@@ -430,7 +470,9 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                         </p>
                       )}
                       {order.vendor.location && (
-                        <p><strong>Location:</strong> {order.vendor.location}</p>
+                        <p>
+                          <strong>Location:</strong> {order.vendor.location}
+                        </p>
                       )}
                     </div>
                   </div>
@@ -452,7 +494,8 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                   Need Help or Have a Complaint?
                 </CardTitle>
                 <CardDescription className="text-xs text-slate-300">
-                  Our customer support team is available to assist with order issues, refunds, or product inquiries.
+                  Our customer support team is available to assist with order issues, refunds, or
+                  product inquiries.
                 </CardDescription>
               </div>
             </div>
@@ -462,7 +505,9 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-white/80" />
                 <div>
-                  <span className="text-xs text-white/70 font-medium block">Official Customer Support Email</span>
+                  <span className="text-xs text-white/70 font-medium block">
+                    Official Customer Support Email
+                  </span>
                   <a
                     href={`mailto:${activeSupportEmail}?subject=Complaint/Inquiry regarding Order ${orderNumber ? '#' + orderNumber : ''}`}
                     className="text-base font-bold text-white hover:underline transition-colors"
@@ -479,7 +524,11 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                   onClick={handleCopyEmail}
                   className="gap-1.5 text-xs font-bold text-white border border-white/30 bg-white/15 hover:bg-white/25 transition-colors"
                 >
-                  {copiedEmail ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-white" />}
+                  {copiedEmail ? (
+                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  ) : (
+                    <Copy className="w-3.5 h-3.5 text-white" />
+                  )}
                   <span className="text-white">{copiedEmail ? 'Copied Email' : 'Copy Email'}</span>
                 </Button>
                 <a
@@ -487,7 +536,8 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                   className="px-4 py-2 rounded-lg text-white font-bold text-xs transition-opacity hover:opacity-90 inline-flex items-center gap-1.5 shadow-sm"
                   style={{ backgroundColor: '#81C14B' }}
                 >
-                  <Mail className="w-3.5 h-3.5 text-white" /> <span className="text-white">Email Support</span>
+                  <Mail className="w-3.5 h-3.5 text-white" />{' '}
+                  <span className="text-white">Email Support</span>
                 </a>
               </div>
             </div>

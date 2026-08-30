@@ -46,6 +46,24 @@ export default class AffiliateLinksController {
       return response.status(400).json({ error: 'Product is not approved for affiliate promotion' })
     }
 
+    const affiliateLinkExists = await AffiliateLink.query()
+      .where('affiliateId', user.id)
+      .where('productId', payload.productId)
+      .first()
+
+
+
+    if (affiliateLinkExists) {
+      return response.status(200).json({
+        success: true,
+        message: 'Affiliate link already exists',
+        data: {
+          ...affiliateLinkExists.serialize(),
+          linkCode: affiliateLinkExists.linkCode,
+        },
+      })
+    }
+
     // Generate a readable link code using affiliate name + random suffix
     const affiliateName = (user.fullName || user.email.split('@')[0] || 'affiliate')
       .toLowerCase()

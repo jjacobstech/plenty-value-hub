@@ -57,6 +57,7 @@ interface Order {
   status: 'pending' | 'completed' | 'cancelled' | 'refunded'
   paymentMethod: string | null
   currency: string
+  quantity?: number | null
   shippingDetails?: string | null
   createdAt: string
   product?: {
@@ -316,6 +317,9 @@ export default function VendorOrders({ user, orders: initialOrders = [] }: Vendo
                         <div className="min-w-0 flex-1">
                           <p className="font-semibold text-sm text-white truncate">{order.product?.name || 'Product'}</p>
                           <p className="text-xs text-slate-300 truncate">{order.buyerEmail}</p>
+                          {(order.quantity ?? 1) > 1 && (
+                            <p className="text-xs text-emerald-300 font-medium">Qty: {order.quantity}</p>
+                          )}
                         </div>
                       </div>
 
@@ -368,6 +372,7 @@ export default function VendorOrders({ user, orders: initialOrders = [] }: Vendo
                   <TableRow className="border-b border-white/20 hover:bg-transparent">
                     <TableHead className="font-bold text-white">Order Reference</TableHead>
                     <TableHead className="font-bold text-white">Product</TableHead>
+                    <TableHead className="font-bold text-white">Qty</TableHead>
                     <TableHead className="font-bold text-white">Buyer Email</TableHead>
                     <TableHead className="font-bold text-white">Vendor Payout</TableHead>
                     <TableHead className="font-bold text-white">Change Order Status</TableHead>
@@ -423,6 +428,10 @@ export default function VendorOrders({ user, orders: initialOrders = [] }: Vendo
                                 </Badge>
                               </div>
                             </div>
+                          </TableCell>
+
+                          <TableCell className="font-bold text-white text-center">
+                            {order.quantity ?? 1}
                           </TableCell>
 
                           <TableCell className="text-sm font-medium text-white">
