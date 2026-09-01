@@ -160,6 +160,11 @@ export default class PagesController {
       refundRate: toNumber(productRow.refundRate),
 
       imageUrl: resolveAssetUrl(productRow.imageUrl, origin),
+      galleryUrls: Array.isArray(productRow.galleryUrls)
+        ? (productRow.galleryUrls as string[])
+            .map((u) => resolveAssetUrl(u, origin))
+            .filter((u): u is string => u !== null)
+        : [],
       vendorName: productRow.vendorName ?? null,
       billingCycle: productRow.billingCycle ?? 'one_time',
       recurringBilling: Boolean(productRow.recurringBilling),

@@ -21,12 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Plus, Pencil, Trash2, Package, AlertCircle } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog'
+import { Plus, Pencil, Trash2, Package, AlertCircle, Images, X, Loader2 } from 'lucide-react'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
 import { validateProduct, getFieldError, hasFieldError } from '@/validators/productValidator'
+
+const MAX_GALLERY_IMAGES = 5
 
 const CATEGORIES = [
   { label: 'Health & Fitness', value: 'health_fitness' },
@@ -55,6 +57,7 @@ const defaultForm = {
   salePrice: '',
   commissionRate: '30',
   imageUrl: '',
+  galleryUrls: [] as string[],
   digitalAssetUrl: '',
   digitalAssetName: '',
   recurringBilling: false,
@@ -79,6 +82,168 @@ const num = (val: unknown): number => {
 type VendorProductsProps = {
   user: any
   products: any[]
+}
+
+// ---------------------------------------------------------------------------
+// GalleryDropZone – single upload zone that accepts multiple files at once
+// ---------------------------------------------------------------------------
+interface GalleryDropZoneProps {
+  currentCount: number
+  max: number
+  onUploaded: (urls: string[]) => void
+}
+
+function GalleryDropZone({ currentCount, max, onUploaded }: GalleryDropZoneProps) {
+  const inputRef = React.useRef<HTMLInputElement>(null)
+  const [dragActive, setDragActive] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const [progress, setProgress] = useState<{ done: number; total: number } | null>(null)
+  const [errors, setErrors] = useState<string[]>([])
+
+  const ALLOWED = ['jpg', 'jpeg', 'png', 'webp', 'gif']
+  const MAX_MB = 10
+  const remaining = max - currentCount
+
+  const uploadFiles = async (files: File[]) => {
+    // Slice to however many slots remain
+    const toUpload = files.slice(0, remaining)
+    if (toUpload.length === 0) return
+
+    // Validate each file
+    const invalid: string[] = []
+    const valid: File[] = []
+    for (const f of toUpload) {
+      const ext = f.name.split('.').pop()?.toLowerCase() ?? ''
+      if (!ALLOWED.includes(ext)) {
+        invalid.push(`"${f.name}" — unsupported type`)
+        continue
+      }
+      if (f.size > MAX_MB * 1024 * 1024) {
+        invalid.push(`"${f.name}" — exceeds ${MAX_MB}MB`)
+        continue
+      }
+      valid.push(f)
+    }
+    setErrors(invalid)
+
+    if (valid.length === 0) return
+
+    setUploading(true)
+    setProgress({ done: 0, total: valid.length })
+
+    const results: string[] = []
+    for (const file of valid) {
+      try {
+        const formData = new FormData()
+        formData.append('image', file)
+        const { data } = await api.post<{ success: boolean; url?: string; error?: string }>(
+          '/api/uploads/product-image',
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        )
+        if (data.success && data.url) {
+          results.push(data.url)
+        } else {
+          setErrors((prev) => [...prev, `"${file.name}" — ${data.error ?? 'upload failed'}`])
+        }
+      } catch (err: any) {
+        const msg = err.response?.data?.error ?? err.message ?? 'upload failed'
+        setErrors((prev) => [...prev, `"${file.name}" — ${msg}`])
+      }
+      setProgress((p) => p && { done: p.done + 1, total: p.total })
+    }
+
+    if (results.length > 0) {
+      onUploaded(results)
+      toast.success(
+        results.length === 1
+          ? '1 gallery image uploaded'
+          : `${results.length} gallery images uploaded`
+      )
+    }
+
+    setUploading(false)
+    setProgress(null)
+    if (inputRef.current) inputRef.current.value = ''
+  }
+
+  const handleDrag = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(e.type === 'dragenter' || e.type === 'dragover')
+  }
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setDragActive(false)
+    const files = Array.from(e.dataTransfer.files)
+    if (files.length) uploadFiles(files)
+  }
+
+  return (
+    <div className="space-y-2">
+      <div
+        onDragEnter={handleDrag}
+        onDragLeave={handleDrag}
+        onDragOver={handleDrag}
+        onDrop={handleDrop}
+        onClick={() => !uploading && inputRef.current?.click()}
+        className={`relative border-2 border-dashed rounded-lg p-4 sm:p-6 transition-all cursor-pointer text-center ${
+          dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 bg-gray-50 hover:border-gray-400'
+        } ${uploading ? 'pointer-events-none opacity-70' : ''}`}
+      >
+        <input
+          ref={inputRef}
+          type="file"
+          accept={ALLOWED.map((t) => `.${t}`).join(',')}
+          multiple
+          className="hidden"
+          onChange={(e) => {
+            const files = Array.from(e.target.files ?? [])
+            if (files.length) uploadFiles(files)
+          }}
+        />
+
+        {uploading && progress ? (
+          <div className="flex flex-col items-center gap-2">
+            <Loader2 className="w-6 h-6 text-blue-500 animate-spin" />
+            <p className="text-xs text-gray-600">
+              Uploading {progress.done}/{progress.total}…
+            </p>
+            <div className="w-full max-w-xs h-1.5 bg-gray-200 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-blue-500 transition-all duration-300"
+                style={{ width: `${(progress.done / progress.total) * 100}%` }}
+              />
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col items-center gap-2">
+            <Images className="w-7 h-7 text-gray-400" />
+            <p className="text-xs sm:text-sm font-medium text-gray-700">
+              Click or drag &amp; drop to upload gallery images
+            </p>
+            <p className="text-xs text-gray-500">
+              {ALLOWED.join(', ').toUpperCase()} · Max {MAX_MB}MB each ·{' '}
+              {remaining} slot{remaining !== 1 ? 's' : ''} remaining
+            </p>
+          </div>
+        )}
+      </div>
+
+      {errors.length > 0 && (
+        <div className="space-y-1">
+          {errors.map((e, i) => (
+            <p key={i} className="text-xs text-red-600 flex items-center gap-1">
+              <AlertCircle className="w-3 h-3 flex-shrink-0" />
+              {e}
+            </p>
+          ))}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function VendorProducts(props: VendorProductsProps) {
@@ -123,6 +288,7 @@ export default function VendorProducts(props: VendorProductsProps) {
         ...(form.shortDescription.trim() && { shortDescription: form.shortDescription.trim() }),
         ...(form.salePrice && { salePrice: Number.parseFloat(form.salePrice) }),
         ...(form.imageUrl && { imageUrl: form.imageUrl }),
+        ...(form.galleryUrls.length > 0 && { galleryUrls: form.galleryUrls }),
         ...(form.digitalAssetUrl && { digitalAssetUrl: form.digitalAssetUrl }),
         ...(form.digitalAssetName && { digitalAssetName: form.digitalAssetName }),
         ...(form.billingCycle && { billingCycle: form.billingCycle }),
@@ -208,6 +374,7 @@ export default function VendorProducts(props: VendorProductsProps) {
       salePrice: product.salePrice != null ? String(num(product.salePrice)) : '',
       commissionRate: product.commissionRate != null ? String(num(product.commissionRate)) : '30',
       imageUrl: product.imageUrl || '',
+      galleryUrls: Array.isArray(product.galleryUrls) ? product.galleryUrls : [],
       digitalAssetUrl: product.digitalAssetUrl || '',
       digitalAssetName: product.digitalAssetName || '',
       recurringBilling: product.recurringBilling || false,
@@ -262,11 +429,27 @@ export default function VendorProducts(props: VendorProductsProps) {
         </div>
 
         <Dialog open={showForm} onOpenChange={setShowForm}>
-          <DialogContent className="max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full">
+          <DialogContent
+            className="max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full"
+            onInteractOutside={(e) => e.preventDefault()}
+            onEscapeKeyDown={(e) => e.preventDefault()}
+          >
             <DialogHeader>
-              <DialogTitle className="text-base sm:text-lg md:text-xl">
-                {editId ? 'Edit Product' : 'Add New Product'}
-              </DialogTitle>
+              <div className="flex items-center justify-between gap-2">
+                <DialogTitle className="text-base sm:text-lg md:text-xl">
+                  {editId ? 'Edit Product' : 'Add New Product'}
+                </DialogTitle>
+                <DialogClose asChild>
+                  <button
+                    type="button"
+                    className="rounded-sm p-1 opacity-70 hover:opacity-100 hover:bg-gray-100 transition-all focus:outline-none focus:ring-2 focus:ring-ring flex-shrink-0"
+                    title="Close"
+                  >
+                    <X className="h-5 w-5" />
+                    <span className="sr-only">Close</span>
+                  </button>
+                </DialogClose>
+              </div>
             </DialogHeader>
 
             {/* Server/Validation Errors Summary */}
@@ -450,6 +633,68 @@ export default function VendorProducts(props: VendorProductsProps) {
                     showPreview={true}
                     helpText="Upload a product image (JPG, PNG, WebP, GIF • Max 10MB)"
                   />
+                </div>
+
+                {/* Gallery Images (up to MAX_GALLERY_IMAGES additional images) */}
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <Images className="w-4 h-4 text-muted-foreground" />
+                    <Label className="text-xs sm:text-sm md:text-base">
+                      Gallery Images{' '}
+                      <span className="text-muted-foreground font-normal">
+                        ({form.galleryUrls.length}/{MAX_GALLERY_IMAGES})
+                      </span>
+                    </Label>
+                  </div>
+                  <p className="text-xs text-muted-foreground -mt-1">
+                    Additional product photos shown in the product detail gallery. Drop multiple
+                    files at once or click to select.
+                  </p>
+
+                  {/* Multi-file drop zone */}
+                  {form.galleryUrls.length < MAX_GALLERY_IMAGES && (
+                    <GalleryDropZone
+                      currentCount={form.galleryUrls.length}
+                      max={MAX_GALLERY_IMAGES}
+                      onUploaded={(urls) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          galleryUrls: [...prev.galleryUrls, ...urls].slice(0, MAX_GALLERY_IMAGES),
+                        }))
+                      }
+                    />
+                  )}
+
+                  {/* Thumbnail strip */}
+                  {form.galleryUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-1">
+                      {form.galleryUrls.map((url, idx) => (
+                        <div key={idx} className="relative group w-20 h-20 flex-shrink-0">
+                          <img
+                            src={url}
+                            alt={`Gallery ${idx + 1}`}
+                            className="w-full h-full object-cover rounded-lg border border-gray-200"
+                          />
+                          <button
+                            type="button"
+                            title="Remove"
+                            onClick={() =>
+                              setForm((prev) => ({
+                                ...prev,
+                                galleryUrls: prev.galleryUrls.filter((_, i) => i !== idx),
+                              }))
+                            }
+                            className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition shadow"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                          <span className="absolute bottom-0.5 left-0.5 bg-black/50 text-white text-[10px] rounded px-1">
+                            {idx + 1}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 {/* Digital Product Asset Upload (for digital products) */}

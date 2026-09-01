@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, Loader2, Download, Package, Repeat, Minus, Plus } from 'lucide-react'
+import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, ChevronLeft, Loader2, Download, Package, Repeat, Minus, Plus, X, ZoomIn } from 'lucide-react'
 import { formatUSD } from '@/lib/currency'
 import PublicLayout from '@/components/layout/PublicLayout'
 
@@ -44,6 +44,7 @@ type ProductPayload = {
   refundRate: number
 
   imageUrl: string | null
+  galleryUrls: string[]
   vendorName: string | null
   billingCycle: string
   recurringBilling: boolean
@@ -155,6 +156,32 @@ export default function ProductDetail({
   const [selectedProvider, setSelectedProvider] = useState<string>(
     () => payment.activeProvider ?? payment.providers[0]?.key ?? ''
   )
+
+  // Gallery — all images: main first, then extras
+  const allImages = [
+    ...(product.imageUrl ? [product.imageUrl] : []),
+    ...(product.galleryUrls ?? []),
+  ]
+  const [activeIdx, setActiveIdx] = useState(0)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIdx, setLightboxIdx] = useState(0)
+
+  const openLightbox = (idx: number) => { setLightboxIdx(idx); setLightboxOpen(true) }
+  const closeLightbox = () => setLightboxOpen(false)
+  const lightboxPrev = () => setLightboxIdx((i) => (i - 1 + allImages.length) % allImages.length)
+  const lightboxNext = () => setLightboxIdx((i) => (i + 1) % allImages.length)
+
+  // Close lightbox on Escape, navigate with arrow keys
+  useEffect(() => {
+    if (!lightboxOpen) return
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeLightbox()
+      if (e.key === 'ArrowLeft') lightboxPrev()
+      if (e.key === 'ArrowRight') lightboxNext()
+    }
+    window.addEventListener('keydown', handler)
+    return () => window.removeEventListener('keydown', handler)
+  }, [lightboxOpen, allImages.length])
 
   const maxQty = product.unitCount != null ? product.unitCount : 99
   const effectiveTotalPrice = product.effectivePrice * quantity
@@ -349,26 +376,123 @@ export default function ProductDetail({
       </div>
 
       <div className="grid md:grid-cols-2 gap-12">
-        {/* Image */}
-        <div className="aspect-square rounded-2xl bg-muted overflow-hidden">
-          {product.imageUrl ? (
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              loading="lazy"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                e.currentTarget.style.display = 'none'
-              }}
-            />
-          ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
-              <span className="text-8xl font-display font-bold text-primary/15">
-                {product.name?.[0]}
-              </span>
+        {/* Image gallery */}
+        <div className="space-y-3">
+          {/* Main / active image */}
+          <div
+            className="relative aspect-square rounded-2xl bg-muted overflow-hidden group cursor-zoom-in"
+            onClick={() => allImages.length > 0 && openLightbox(activeIdx)}
+          >
+            {allImages.length > 0 ? (
+              <>
+                <img
+                  key={activeIdx}
+                  src={allImages[activeIdx]}
+                  alt={product.name}
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-opacity duration-200"
+                  onError={(e) => { e.currentTarget.style.display = 'none' }}
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity drop-shadow-lg" />
+                </div>
+                {allImages.length > 1 && (
+                  <span className="absolute bottom-2 right-2 bg-black/50 text-white text-xs rounded-full px-2 py-0.5">
+                    {activeIdx + 1} / {allImages.length}
+                  </span>
+                )}
+              </>
+            ) : (
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary/5 to-primary/15">
+                <span className="text-8xl font-display font-bold text-primary/15">
+                  {product.name?.[0]}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {/* Thumbnail strip — only shown when there's more than one image */}
+          {allImages.length > 1 && (
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {allImages.map((url, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setActiveIdx(idx)}
+                  className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                    idx === activeIdx
+                      ? 'border-primary ring-1 ring-primary'
+                      : 'border-transparent opacity-60 hover:opacity-100'
+                  }`}
+                >
+                  <img
+                    src={url}
+                    alt={`${product.name} — image ${idx + 1}`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.currentTarget.style.display = 'none' }}
+                  />
+                </button>
+              ))}
             </div>
           )}
         </div>
+
+        {/* Lightbox */}
+        {lightboxOpen && allImages.length > 0 && (
+          <div
+            className="fixed inset-0 z-50 bg-black/90 flex items-center justify-center"
+            onClick={closeLightbox}
+          >
+            {/* Close */}
+            <button
+              type="button"
+              onClick={closeLightbox}
+              className="absolute top-4 right-4 text-white/80 hover:text-white transition"
+              aria-label="Close"
+            >
+              <X className="w-7 h-7" />
+            </button>
+
+            {/* Prev */}
+            {allImages.length > 1 && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); lightboxPrev() }}
+                className="absolute left-4 text-white/80 hover:text-white transition p-2"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+            )}
+
+            {/* Image */}
+            <img
+              src={allImages[lightboxIdx]}
+              alt={`${product.name} — image ${lightboxIdx + 1}`}
+              className="max-h-[90vh] max-w-[90vw] object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            {/* Next */}
+            {allImages.length > 1 && (
+              <button
+                type="button"
+                onClick={(e) => { e.stopPropagation(); lightboxNext() }}
+                className="absolute right-4 text-white/80 hover:text-white transition p-2"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-8 h-8" />
+              </button>
+            )}
+
+            {/* Counter */}
+            {allImages.length > 1 && (
+              <span className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/70 text-sm">
+                {lightboxIdx + 1} / {allImages.length}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Details */}
         <div className="space-y-6">

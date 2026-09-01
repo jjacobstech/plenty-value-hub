@@ -11,6 +11,43 @@ export default class Product extends ProductSchema {
   @column()
   declare uuid: string
 
+  // JSON columns — serialize to string on write, parse on read
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare galleryUrls: string[] | null
+
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare tags: string[] | null
+
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare affiliateResources: any | null
+
   @beforeSave()
   static async generateUuid(product: Product) {
     if (!product.uuid) {
