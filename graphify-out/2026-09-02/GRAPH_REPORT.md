@@ -1,26 +1,26 @@
-# Graph Report - plenty-value-hub  (2026-09-02)
+# Graph Report - plenty-value-hub  (2026-08-30)
 
 ## Corpus Check
-- 349 files · ~3,420,862 words
+- 347 files · ~2,704,358 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 3783 nodes · 4976 edges · 442 communities (284 shown, 158 thin omitted)
+- 3738 nodes · 4936 edges · 441 communities (281 shown, 160 thin omitted)
 - Extraction: 100% EXTRACTED · 0% INFERRED · 0% AMBIGUOUS · INFERRED: 5 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `18660416`
+- Built from commit: `f8618211`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- AdminEmailCampaigns.tsx
+- VendorProducts.tsx
 - pages.d.ts
 - DashboardLayout.tsx
 - schema.d.ts
 - cn
-- Card
+- Marketplace.tsx
 - File Upload Error Handling - Enhancement Summary
 - imports
 - devDependencies
@@ -47,7 +47,7 @@
 - Session Error Handling & API Fixes
 - Vendor Notification System
 - ImageResizeModule
-- VendorProducts.tsx
+- card.tsx
 - Payout Methods - Dynamic Fields Update
 - Vendor In-App Notifications System
 - Payment Gateway Keys Migration to Database
@@ -74,7 +74,7 @@
 - PaymentGatewayKey
 - PaymentGateway
 - Payment Gateway Key Encryption/Decryption Flow
-- currency.ts
+- ProductDetail.tsx
 - Payment Gateway Configuration - Fixes & Improvements
 - console.ts
 - File Upload Fix - ImageUploadField Component
@@ -114,7 +114,7 @@
 - paymentProviders.ts
 - Encryption Import Fix
 - File Upload System Documentation
-- card.tsx
+- badge.tsx
 - ProtectedRoute.tsx
 - chart.tsx
 - normalize.ts
@@ -125,7 +125,7 @@
 - ProductsController
 - profile_controller.ts
 - SiteSettingsController
-- inertia_middleware.ts
+- pages_controller.ts
 - User
 - Wallet
 - 12. AdonisJS Rebuild Checklist
@@ -174,7 +174,7 @@
 - Review
 - SiteSetting
 - Core User Journeys
-- Use Cases & Edge Cases — Plenty Value Hub
+- toast.tsx
 - Transaction
 - auth.ts
 - 🎨 React Component: ImageUploadField
@@ -201,7 +201,7 @@
 - S3UrlService
 - 10. Frontend Routes & Pages
 - 9. Email Templates
-- pages_controller.ts
+- 📚 Document Details
 - logger.ts
 - config/payment.ts
 - alert.tsx
@@ -217,7 +217,7 @@
 - ✅ Final Verification
 - ✅ Code Quality Verification
 - ✅ Integration Verification
-- 🐛 Troubleshooting
+- breadcrumb.tsx
 - TransactionService
 - NewslettersController
 - HttpExceptionHandler
@@ -267,7 +267,7 @@
 - RoleMiddleware
 - SilentAuthMiddleware
 - SingleAdminMiddleware
-- 📊 Database Queries
+- NotificationService
 - UserTransformer
 - validators/newsletter.ts
 - validators/order.ts
@@ -295,7 +295,7 @@
 - overrides
 - 🎯 Site Settings Types
 - Extension Points
-- Fixes Deployed
+- 🔧 Database Schema
 - 🚀 Integration Guide
 - validator.ts
 - Known Limitations & Notes
@@ -310,7 +310,7 @@
 - autoprefixer
 - @aws-sdk/client-s3
 - @aws-sdk/s3-request-presigner
-- 🚀 Quick Start
+- 🚀 Common Tasks
 - class-variance-authority
 - clsx
 - bodyparser.ts
@@ -331,9 +331,10 @@
 - types.ts
 - lucide-react
 - PaymentController
-- 📞 Support Commands
+- @adonisjs/auth
 - @adonisjs/core
 - @adonisjs/inertia
+- 💡 Key Concepts
 - @adonisjs/session
 - @adonisjs/shield
 - @adonisjs/static
@@ -345,7 +346,7 @@
 - @paypal/checkout-server-sdk
 - @paypal/paypal-server-sdk
 - paystack-node
-- 🎨 Admin UI: Payment Settings Page
+- 🎯 Quick Navigation
 - quill
 - @radix-ui/react-select
 - @radix-ui/react-slot
@@ -398,7 +399,6 @@
 - sonner
 - @types/better-sqlite3
 - @adonisjs/shield
-- @adonisjs/ally
 - jspdf-autotable
 - @adonisjs/cors
 - quill-table-better
@@ -433,19 +433,19 @@
 ## Import Cycles
 - None detected.
 
-## Communities (442 total, 158 thin omitted)
+## Communities (441 total, 160 thin omitted)
 
-### Community 0 - "AdminEmailCampaigns.tsx"
-Cohesion: 0.10
-Nodes (16): StatsCard(), StatsCardProps, AdminConversions(), Link, Order, Props, SOURCE_COLORS, Campaign (+8 more)
+### Community 0 - "VendorProducts.tsx"
+Cohesion: 0.09
+Nodes (30): DialogContent, DialogDescription, DialogHeader(), DialogTitle, Input, SelectContent, SelectItem, SelectTrigger (+22 more)
 
 ### Community 1 - "pages.d.ts"
 Cohesion: 0.08
-Nodes (21): @adonisjs/inertia/types, ExtractProps, InertiaPages, AuthLayout(), GoogleIcon(), Button, ButtonProps, Input (+13 more)
+Nodes (19): @adonisjs/inertia/types, ExtractProps, InertiaPages, AuthLayout(), GoogleIcon(), BrandLogo(), BrandLogoProps, Button (+11 more)
 
 ### Community 2 - "DashboardLayout.tsx"
-Cohesion: 0.16
-Nodes (14): getActivePath(), getPathname(), isActivePath(), MenuItem, menuItems, Role, Sidebar(), NotificationCenter() (+6 more)
+Cohesion: 0.27
+Nodes (9): getActivePath(), getPathname(), isActivePath(), MenuItem, menuItems, Role, Sidebar(), Notification (+1 more)
 
 ### Community 3 - "schema.d.ts"
 Cohesion: 0.06
@@ -453,11 +453,11 @@ Nodes (11): placeholder, registry, routes, @tuyau/core/types, UserRegistry, Para
 
 ### Community 4 - "cn"
 Cohesion: 0.06
-Nodes (47): AccordionContent, AccordionItem, AccordionTrigger, Avatar, AvatarFallback, AvatarImage, Breadcrumb, BreadcrumbEllipsis() (+39 more)
+Nodes (42): AccordionContent, AccordionItem, AccordionTrigger, Avatar, AvatarFallback, AvatarImage, CardFooter, ContextMenuCheckboxItem (+34 more)
 
-### Community 5 - "Card"
-Cohesion: 0.05
-Nodes (48): Footer(), PublicLayout(), SEO(), SEOProps, truncate(), CATEGORY_LABELS, ProductCard(), Badge() (+40 more)
+### Community 5 - "Marketplace.tsx"
+Cohesion: 0.06
+Nodes (32): Footer(), PublicLayout(), SEO(), SEOProps, truncate(), ProductCard(), CURRENCY_SYMBOLS, AFFILIATE_BENEFITS (+24 more)
 
 ### Community 6 - "File Upload Error Handling - Enhancement Summary"
 Cohesion: 0.04
@@ -480,8 +480,8 @@ Cohesion: 0.05
 Nodes (43): API Endpoints (WalletController), Architecture Decisions Made, Auth System (Multi-Step Registration), Auth System (Multi-Step Registration), Business Logic (WalletService), Commands Reference, ✅ Completed (Phase 1-3), ✅ COMPLETED (Phase 1-3 Extended) (+35 more)
 
 ### Community 11 - "Plenty Value Hub — Documentation Index"
-Cohesion: 0.05
-Nodes (42): ADMIN_403_FIX_SUMMARY.md, ADMIN_AUTH_DEBUG_GUIDE.md, Admin Authentication, Admin Authentication Issues?, ADMIN_SETUP_CHECKLIST.md, Backend, Code Issues?, 🚀 Common Tasks (+34 more)
+Cohesion: 0.13
+Nodes (15): Backend, Code Issues?, Deployment Issues?, 📝 Document Metadata, Documentation Issues?, Existing (Already Implemented), 🔍 Files Modified in This Implementation, Frontend (+7 more)
 
 ### Community 12 - "Payment Provider Logo System - Setup Complete ✅"
 Cohesion: 0.05
@@ -524,8 +524,8 @@ Cohesion: 0.06
 Nodes (34): 1. Run Migration, 2. Restart Your App, 3. Test It, Actions, API Endpoints, Backend, Code Locations, Common Tasks (+26 more)
 
 ### Community 23 - "Wallet & Payout System — Quick Reference"
-Cohesion: 0.12
-Nodes (16): Admin API, Available Balance, 💰 Balance Mechanics, 🚀 Deployment Checklist, 📁 File Structure, 📋 Key Endpoints, 🔄 Payout Workflow, Pending Balance (+8 more)
+Cohesion: 0.06
+Nodes (35): 1. Run Migrations, 2. Check System Status, 3. Access Pages, Admin API, Available Balance, 💰 Balance Mechanics, Check Transaction Uniqueness, Check Wallet Balance (+27 more)
 
 ### Community 24 - "Wallet & Payout System — Documentation Index"
 Cohesion: 0.06
@@ -559,9 +559,9 @@ Nodes (30): 1. **Notifications Table**, 2. **Notification Model**, 3. **Notifica
 Cohesion: 0.12
 Nodes (10): QuillEditor, QuillEditorHandle, QuillEditorProps, PageEditorProps, BlockEmbed, createEditorOptions(), DividerBlot, ImageResizeModule (+2 more)
 
-### Community 32 - "VendorProducts.tsx"
-Cohesion: 0.10
-Nodes (47): api, DashboardLayout(), CardContent, DialogContent, DialogDescription, DialogFooter(), DialogHeader(), DialogTitle (+39 more)
+### Community 32 - "card.tsx"
+Cohesion: 0.07
+Nodes (62): DashboardLayout(), Card, CardContent, CardHeader, CardTitle, DialogFooter(), Table, TableBody (+54 more)
 
 ### Community 33 - "Payout Methods - Dynamic Fields Update"
 Cohesion: 0.07
@@ -596,12 +596,12 @@ Cohesion: 0.09
 Nodes (23): Admin Authentication Debug Guide, Common Issues & Solutions, Debug Logging, Environment Check, Fix Checklist, How to Create an Admin User, If Problem Persists, Issue 1: User is Not an Admin (+15 more)
 
 ### Community 42 - "use-toast.tsx"
-Cohesion: 0.15
-Nodes (19): Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, toastVariants, ToastViewport (+11 more)
+Cohesion: 0.24
+Nodes (11): Toaster(), actionTypes, addToRemoveQueue(), dispatch(), genId(), listeners, memoryState, reducer() (+3 more)
 
 ### Community 43 - "sheet.tsx"
-Cohesion: 0.09
-Nodes (22): Navbar(), BrandLogo(), BrandLogoProps, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioItem (+14 more)
+Cohesion: 0.12
+Nodes (18): Navbar(), DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuRadioItem, DropdownMenuSeparator, DropdownMenuShortcut() (+10 more)
 
 ### Community 44 - "Admin Setup Checklist"
 Cohesion: 0.11
@@ -628,8 +628,8 @@ Cohesion: 0.11
 Nodes (18): 1. Buyer's Order Confirmation Email, 2. Vendor's Sale Notification Email, 3. Admin Order Notification Email, 4. Affiliate Commission Notification Email, Clickable links:, Color Reference, Conditional rendering:, Database Schema (+10 more)
 
 ### Community 50 - "utils.ts"
-Cohesion: 0.08
-Nodes (15): Checkbox, HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, PopoverContent, Progress (+7 more)
+Cohesion: 0.09
+Nodes (13): Checkbox, HoverCardContent, InputOTP, InputOTPGroup, InputOTPSeparator, InputOTPSlot, PopoverContent, Progress (+5 more)
 
 ### Community 51 - "imports"
 Cohesion: 0.11
@@ -648,8 +648,8 @@ Cohesion: 0.11
 Nodes (17): 1. **Buyer's Receipt Email** (`resources/views/emails/order_confirmation.edge`), 2. **Vendor's Sale Notification Email** (`resources/views/emails/vendor_order_notification.edge`), 3. **NotificationService Enhancement** (`app/services/notification_service.ts`), Buyer Email Template Requires:, Data Fields Used, Email Flow, Error Handling, Future Enhancements (+9 more)
 
 ### Community 56 - "Admin 403 Permission Denied — Fix Summary"
-Cohesion: 0.12
-Nodes (17): Admin 403 Permission Denied — Fix Summary, Common Questions, Expected Behavior After Fix, Files Modified, How to Fix, Most Likely Causes (in order):, Next Steps, Step 1: Check Your Current Role (+9 more)
+Cohesion: 0.10
+Nodes (21): 1. ✅ Enhanced Error Logging, 2. ✅ Diagnostic Endpoint, 3. ✅ Route Configuration, Admin 403 Permission Denied — Fix Summary, Common Questions, Expected Behavior After Fix, Files Modified, Fixes Deployed (+13 more)
 
 ### Community 57 - "PaymentGatewayKey"
 Cohesion: 0.16
@@ -659,9 +659,9 @@ Nodes (7): decrypt(), derivedKey, encrypt(), PaymentGatewayKey, beforeSave, colu
 Cohesion: 0.12
 Nodes (16): 1. **Storing Keys (Encryption)**, 2. **Retrieving Keys (Decryption)**, 3. **Real-World Examples**, Critical: APP_KEY Must Match, Database vs Memory, Example A: In a Controller, Example B: In Payment Provider, Example C: Getting All Configs (+8 more)
 
-### Community 60 - "currency.ts"
-Cohesion: 0.07
-Nodes (31): formatCurrency(), formatNGN, formatNGNDecimal, formatUSD(), formatUSDDecimal(), getActiveCurrency(), getActiveCurrencySymbol(), AdminAnalytics() (+23 more)
+### Community 60 - "ProductDetail.tsx"
+Cohesion: 0.10
+Nodes (19): api, ImageUploadField(), ImageUploadFieldProps, Textarea, MOBILE_MONEY_PROVIDERS, PAYOUT_METHODS, AffiliateProfileProps, AffiliateRedirectProps (+11 more)
 
 ### Community 61 - "Payment Gateway Configuration - Fixes & Improvements"
 Cohesion: 0.12
@@ -705,7 +705,7 @@ Nodes (13): compilerOptions, jsx, module, paths, extends, include, @generated/*,
 
 ### Community 71 - "dependencies"
 Cohesion: 0.13
-Nodes (15): jspdf, nanoid, dependencies, @adonisjs/auth, @adonisjs/lucid, jspdf, nanoid, pg (+7 more)
+Nodes (15): @adonisjs/ally, jspdf, nanoid, dependencies, @adonisjs/ally, @adonisjs/lucid, jspdf, nanoid (+7 more)
 
 ### Community 73 - "Payment Provider Logos"
 Cohesion: 0.15
@@ -771,9 +771,9 @@ Nodes (8): Encryption Import Fix, Impact, Problem, Security Notes, Solution, Tec
 Cohesion: 0.22
 Nodes (8): Common Errors, ✅ Deployment Checklist, 🐛 Error Handling, File Upload System Documentation, Optimization Tips, 📋 Overview, 📈 Performance, 📚 Related Files
 
-### Community 100 - "card.tsx"
-Cohesion: 0.10
-Nodes (22): ImageUploadField(), ImageUploadFieldProps, Notification, PageEditor(), CardDescription, CardHeader, CardTitle, Textarea (+14 more)
+### Community 100 - "badge.tsx"
+Cohesion: 0.06
+Nodes (31): PageEditor(), CATEGORY_LABELS, StatsCard(), StatsCardProps, Badge(), BadgeProps, badgeVariants, CardDescription (+23 more)
 
 ### Community 101 - "ProtectedRoute.tsx"
 Cohesion: 0.31
@@ -801,15 +801,15 @@ Nodes (9): 📚 Complete Controller Implementation Guide, Constants, Database Op
 
 ### Community 107 - "Site Settings Documentation"
 Cohesion: 0.22
-Nodes (9): 🔧 Database Schema, 📦 Model: SiteSetting, 📝 Notes, 📝 Notes, 📋 Overview, 🔗 Routes Configuration, Sample Data, Site Settings Documentation (+1 more)
+Nodes (9): 🎨 Admin UI: Payment Settings Page, Features, Key Code Sections, 📦 Model: SiteSetting, 📝 Notes, 📝 Notes, 📋 Overview, 🔗 Routes Configuration (+1 more)
 
 ### Community 110 - "profile_controller.ts"
 Cohesion: 0.32
 Nodes (4): ALLOWED_IMAGE_TYPES, pickPresent(), ProfileController, storageDisk
 
-### Community 112 - "inertia_middleware.ts"
+### Community 112 - "pages_controller.ts"
 Cohesion: 0.18
-Nodes (7): @adonisjs/inertia/types, InertiaMiddleware, MiddlewareSharedProps, SharedProps, CURRENCY_SYMBOLS, getCurrencySymbol(), NotificationService
+Nodes (8): resolveAssetUrl(), RETIRED_PROVIDERS, toNumber(), toNumberOrNull(), @adonisjs/inertia/types, InertiaMiddleware, MiddlewareSharedProps, SharedProps
 
 ### Community 113 - "User"
 Cohesion: 0.25
@@ -963,9 +963,9 @@ Nodes (4): SiteSetting, beforeSave, column, dateTime
 Cohesion: 0.33
 Nodes (6): 1. Platform Overview, Admin, Affiliate, Buyer / Consumer, Core User Journeys, Vendor
 
-### Community 161 - "Use Cases & Edge Cases — Plenty Value Hub"
-Cohesion: 0.06
-Nodes (35): 10. Admin, 11. Webhooks, 1. Authentication & Accounts, 2. Vendor — Products, 3. Marketplace & Product Detail, 4. Checkout & Payments, 5. Orders, 6. Affiliate System (+27 more)
+### Community 161 - "toast.tsx"
+Cohesion: 0.36
+Nodes (8): Toast, ToastAction, ToastClose, ToastDescription, ToastProvider, ToastTitle, toastVariants, ToastViewport
 
 ### Community 162 - "Transaction"
 Cohesion: 0.22
@@ -982,7 +982,8 @@ Nodes (6): Advanced Usage, Basic Usage, Features, Installation, Props, 🎨 Reac
 ### Community 165 - "🔐 Security"
 Cohesion: 0.33
 Nodes (6): Authentication & Authorization, CORS & HTTPS, File Size Limits, File Type Validation, 🔐 Security, Storage Path Isolation
-
+ 
+ 
 ### Community 166 - "Architecture Patterns"
 Cohesion: 0.33
 Nodes (6): 1. Strategy Pattern, 2. Factory Pattern, 3. Adapter Pattern, 4. Service Layer Pattern, 5. Repository Pattern, Architecture Patterns
@@ -1043,9 +1044,9 @@ Nodes (5): 10. Frontend Routes & Pages, Admin Dashboard (requires `admin` role),
 Cohesion: 0.40
 Nodes (5): 9.1 Welcome Email (role-based), 9.2 Newsletter Confirmation Email, 9.3 Order Confirmation Email, 9.4 Refund Notification Email, 9. Email Templates
 
-### Community 188 - "pages_controller.ts"
-Cohesion: 0.47
-Nodes (4): resolveAssetUrl(), RETIRED_PROVIDERS, toNumber(), toNumberOrNull()
+### Community 188 - "📚 Document Details"
+Cohesion: 0.20
+Nodes (10): ADMIN_403_FIX_SUMMARY.md, ADMIN_AUTH_DEBUG_GUIDE.md, ADMIN_SETUP_CHECKLIST.md, COMPLETION_SUMMARY.md, 📚 Document Details, SITE_SETTINGS_DOCUMENTATION.md, WALLET_PAYOUT_GUIDE.md, WALLET_QUICK_REFERENCE.md (+2 more)
 
 ### Community 189 - "logger.ts"
 Cohesion: 0.40
@@ -1107,13 +1108,9 @@ Nodes (5): Best Practices, Code Organization, ✅ Code Quality Verification, Err
 Cohesion: 0.40
 Nodes (5): ✅ Integration Verification, With Pages Controller, With Profile Controller, With Routes, With User Model
 
-### Community 204 - "🐛 Troubleshooting"
-Cohesion: 0.33
-Nodes (6): Duplicate transactions showing, "Insufficient available balance", "Payout method not configured", Payout not appearing, 🐛 Troubleshooting, Wallet balance doesn't update
-
-### Community 208 - "revenue_service.ts"
-Cohesion: 0.47
-Nodes (3): getPlatformCommissionRate(), RevenueBreakdown, RevenueService
+### Community 204 - "breadcrumb.tsx"
+Cohesion: 0.25
+Nodes (7): Breadcrumb, BreadcrumbEllipsis(), BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator()
 
 ### Community 209 - "validators/affiliate_link.ts"
 Cohesion: 0.50
@@ -1259,10 +1256,6 @@ Nodes (4): Constraints, ✅ Database Verification, Relationships, Tables
 Cohesion: 0.50
 Nodes (4): ✅ Files Summary, Modified Files (2), New Files Created (12), Verified Existing Files (5)
 
-### Community 255 - "📊 Database Queries"
-Cohesion: 0.40
-Nodes (5): Check Transaction Uniqueness, Check Wallet Balance, 📊 Database Queries, List Pending Payouts, View Recent Transactions
-
 ### Community 285 - "🏗️ Architecture"
 Cohesion: 0.67
 Nodes (3): 🏗️ Architecture, Data Flow, System Components
@@ -1331,9 +1324,9 @@ Nodes (3): Custom Settings, Payment Settings, 🎯 Site Settings Types
 Cohesion: 0.67
 Nodes (3): Adding New Methods, Adding Validation, Extension Points
 
-### Community 304 - "Fixes Deployed"
-Cohesion: 0.50
-Nodes (4): 1. ✅ Enhanced Error Logging, 2. ✅ Diagnostic Endpoint, 3. ✅ Route Configuration, Fixes Deployed
+### Community 304 - "🔧 Database Schema"
+Cohesion: 0.67
+Nodes (3): 🔧 Database Schema, Sample Data, site_settings table
 
 ### Community 305 - "🚀 Integration Guide"
 Cohesion: 0.67
@@ -1351,37 +1344,37 @@ Nodes (3): Scenarios Documented, SQL Verification Provided, Test Coverage
 Cohesion: 0.67
 Nodes (3): Database Indexes, ✅ Performance Verification, Query Optimization
 
-### Community 320 - "🚀 Quick Start"
-Cohesion: 0.50
-Nodes (4): 1. Run Migrations, 2. Check System Status, 3. Access Pages, 🚀 Quick Start
+### Community 320 - "🚀 Common Tasks"
+Cohesion: 0.29
+Nodes (7): 🚀 Common Tasks, "I'm getting 403: permission denied", "I need to set up admin for the first time", "I need to test the wallet/payout system", "I want to deploy this", "I want to understand the wallet system", "Payment settings won't save"
 
-### Community 345 - "📞 Support Commands"
-Cohesion: 0.50
-Nodes (4): Check Wallet Health, Generate Test Data, Manual Test Order Creation, 📞 Support Commands
+### Community 348 - "💡 Key Concepts"
+Cohesion: 0.40
+Nodes (5): Admin Authentication, Dual-Balance Wallet, Error Handling, 💡 Key Concepts, Payout States
 
-### Community 360 - "🎨 Admin UI: Payment Settings Page"
-Cohesion: 0.67
-Nodes (3): 🎨 Admin UI: Payment Settings Page, Features, Key Code Sections
+### Community 360 - "🎯 Quick Navigation"
+Cohesion: 0.40
+Nodes (5): Admin Authentication Issues?, 🎯 Quick Navigation, Site Settings & Payment Providers, Start Here, Wallet & Payout System
 
 ## Knowledge Gaps
-- **1797 isolated node(s):** `Data`, `User`, `Variants`, `SharedProps`, `placeholder` (+1792 more)
+- **1772 isolated node(s):** `Data`, `User`, `Variants`, `SharedProps`, `placeholder` (+1767 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **158 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **160 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `cn` to `AdminEmailCampaigns.tsx`, `pages.d.ts`, `DashboardLayout.tsx`, `Card`, `sidebar.tsx`, `VendorProducts.tsx`, `use-toast.tsx`, `sheet.tsx`, `alert-dialog.tsx`, `utils.ts`, `toggle-group.tsx`, `alert.tsx`, `drawer.tsx`, `form.tsx`, `card.tsx`, `chart.tsx`, `command.tsx`, `carousel.tsx`, `navigation-menu.tsx`?**
-  _High betweenness centrality (0.013) - this node is a cross-community bridge._
-- **Why does `Site Settings Documentation` connect `Site Settings Documentation` to `📋 Common Tasks`, `🐛 Troubleshooting`, `🔐 Authentication & Authorization`, `💰 Payment Settings Details`, `🎨 Admin UI: Payment Settings Page`, `📚 Complete Controller Implementation Guide`, `🔗 API Endpoints`, `DOCUMENTATION_INDEX.md`, `Methods Breakdown`, `🎯 Site Settings Types`, `🧪 Testing Site Settings`, `🚀 Integration Guide`?**
+- **Why does `cn()` connect `cn` to `VendorProducts.tsx`, `pages.d.ts`, `DashboardLayout.tsx`, `Marketplace.tsx`, `sidebar.tsx`, `card.tsx`, `toast.tsx`, `sheet.tsx`, `alert-dialog.tsx`, `utils.ts`, `toggle-group.tsx`, `ProductDetail.tsx`, `alert.tsx`, `breadcrumb.tsx`, `drawer.tsx`, `form.tsx`, `badge.tsx`, `chart.tsx`, `command.tsx`, `carousel.tsx`, `navigation-menu.tsx`?**
+  _High betweenness centrality (0.015) - this node is a cross-community bridge._
+- **Why does `Site Settings Documentation` connect `Site Settings Documentation` to `📋 Common Tasks`, `🐛 Troubleshooting`, `🔐 Authentication & Authorization`, `💰 Payment Settings Details`, `📚 Complete Controller Implementation Guide`, `🔗 API Endpoints`, `DOCUMENTATION_INDEX.md`, `Methods Breakdown`, `🎯 Site Settings Types`, `🧪 Testing Site Settings`, `🔧 Database Schema`, `🚀 Integration Guide`?**
   _High betweenness centrality (0.005) - this node is a cross-community bridge._
-- **Why does `Plenty Value Hub — Documentation Index` connect `Plenty Value Hub — Documentation Index` to `DOCUMENTATION_INDEX.md`?**
+- **Why does `Wallet & Payout System Guide` connect `Wallet & Payout System Guide` to `Pages & UI`, `Troubleshooting`, `DOCUMENTATION_INDEX.md`, `Architecture & Key Features`, `Security Considerations`, `Admin Endpoints`, `Common Workflows`, `Configuration & Deployment`, `Database Schema`, `Private Methods (Transaction Helpers)`, `Testing Checklist`?**
   _High betweenness centrality (0.004) - this node is a cross-community bridge._
 - **What connects `Data`, `User`, `Variants` to the rest of the system?**
-  _1797 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `AdminEmailCampaigns.tsx` be split into smaller, more focused modules?**
-  _Cohesion score 0.1038961038961039 - nodes in this community are weakly interconnected._
+  _1772 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `VendorProducts.tsx` be split into smaller, more focused modules?**
+  _Cohesion score 0.09191583610188261 - nodes in this community are weakly interconnected._
 - **Should `pages.d.ts` be split into smaller, more focused modules?**
-  _Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.07922705314009662 - nodes in this community are weakly interconnected._
 - **Should `schema.d.ts` be split into smaller, more focused modules?**
   _Cohesion score 0.06448979591836734 - nodes in this community are weakly interconnected._

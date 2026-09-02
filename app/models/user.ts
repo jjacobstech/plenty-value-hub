@@ -20,6 +20,9 @@ export default class User extends compose(UserSchema, withAuthFinder(hash)) {
   @column()
   declare role: 'admin' | 'vendor' | 'affiliate' | 'consumer'
 
+  @column()
+  declare status: 'active' | 'inactive'
+
   @column.dateTime()
   declare emailVerifiedAt: DateTime | null
 

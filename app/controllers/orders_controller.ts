@@ -256,12 +256,13 @@ export default class OrdersController {
       }
     }
 
-    const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
-      productPrice * quantity,
-      salePrice,
-      Number(product.commissionRate),
-      !!affiliateLink
-    )
+    const { platformFee, commissionAmount, vendorPayout } =
+      await RevenueService.calculateWithSettings(
+        productPrice * quantity,
+        salePrice,
+        Number(product.commissionRate),
+        !!affiliateLink
+      )
 
     const paymentConfig = await PaymentService.resolveCheckoutMethod()
     const paymentMethod = payload.paymentMethod || paymentConfig.provider.key
@@ -544,12 +545,19 @@ export default class OrdersController {
       } else {
         // Handle refund notifications
         try {
+          const { NotificationService } = await import('#services/notification_service')
+          const currencySymbol =
+            (await (NotificationService as any).getCurrencySymbolPublic?.()) ??
+            (await PaymentService.getConfig()
+              .then((c) => c.currencySymbol || '$')
+              .catch(() => '$'))
           await mail.send((message) => {
             message
               .to(order.buyerEmail!)
               .subject(`Refund Processed for Order ${order.orderNumber}`)
               .htmlView('emails/refund_notification', {
                 order: order.serialize(),
+                currencySymbol,
               })
           })
 

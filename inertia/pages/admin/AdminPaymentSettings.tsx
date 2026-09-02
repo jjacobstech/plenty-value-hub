@@ -66,6 +66,8 @@ export default function AdminPaymentSettings() {
   const [saving, setSaving] = useState(false)
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({})
   const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [platformCommission, setPlatformCommission] = useState<string>('10')
+  const [savingCommission, setSavingCommission] = useState(false)
 
   const [form, setForm] = useState<FormData>({
     gateway: '',
@@ -83,18 +85,44 @@ export default function AdminPaymentSettings() {
 
   const loadSystemSettings = async () => {
     try {
-      const { data } = await api.get<{ currency?: string; activeProvider?: string }>(
-        '/api/payment-settings'
-      )
-      if (data) {
+      const [paymentRes, commissionRes] = await Promise.all([
+        api.get<{ currency?: string; activeProvider?: string }>('/api/payment-settings'),
+        api.get<any[]>('/api/site-settings/platform_commission').catch(() => ({ data: [] })),
+      ])
+      if (paymentRes.data) {
         setForm((prev) => ({
           ...prev,
-          currency: data.currency || 'USD',
-          activeProvider: data.activeProvider || 'manual',
+          currency: paymentRes.data.currency || 'USD',
+          activeProvider: paymentRes.data.activeProvider || 'manual',
         }))
+      }
+      const commissionData = Array.isArray(commissionRes.data) ? commissionRes.data : []
+      if (commissionData.length > 0 && commissionData[0]?.value != null) {
+        setPlatformCommission(String(commissionData[0].value))
       }
     } catch (err) {
       console.error('Failed to load site payment settings:', err)
+    }
+  }
+
+  const savePlatformCommission = async () => {
+    const val = parseFloat(platformCommission)
+    if (isNaN(val) || val < 0 || val > 100) {
+      toast.error('Commission must be a number between 0 and 100')
+      return
+    }
+    setSavingCommission(true)
+    try {
+      await api.post('/api/site-settings', {
+        key: 'platform_commission',
+        label: 'Platform Commission (%)',
+        value: val.toString(),
+      })
+      toast.success(`Platform commission set to ${val}%`)
+    } catch {
+      toast.error('Failed to save platform commission')
+    } finally {
+      setSavingCommission(false)
     }
   }
 
@@ -237,7 +265,6 @@ export default function AdminPaymentSettings() {
             </p>
           </div>
         </div>
-
         {/* Currency & General Settings Card */}
         <Card className="border border-gray-200">
           <CardContent className="p-5 space-y-4">
@@ -315,7 +342,33 @@ export default function AdminPaymentSettings() {
             </div>
           </CardContent>
         </Card>
-
+        <Card className="border border-gray-200">
+          <CardContent className="p-5 space-y-4">
+            <div>
+              <h2 className="font-semibold text-base">Platform Commission</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                This percentage is deducted from every sale before vendor and affiliate payouts.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3 max-w-md">
+              <div className="flex-1">
+                <Label htmlFor="platform-commission">Commission (%)</Label>
+                <Input
+                  id="platform-commission"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  value={platformCommission}
+                  onChange={(e) => setPlatformCommission(e.target.value)}
+                />
+              </div>
+              <Button type="button" onClick={savePlatformCommission} disabled={savingCommission}>
+                {savingCommission ? 'Saving...' : 'Save Commission'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
         {/* Alert Info */}
         <Card className="bg-blue-50 border border-blue-200">
           <CardContent className="p-4 flex gap-3">
@@ -328,8 +381,7 @@ export default function AdminPaymentSettings() {
               </p>
             </div>
           </CardContent>
-        </Card>
-
+        </Card>{' '}
         {/* Gateway Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {SUPPORTED_GATEWAYS.map((gateway) => {
@@ -392,7 +444,6 @@ export default function AdminPaymentSettings() {
             )
           })}
         </div>
-
         {/* Configured Gateways Table */}
         {gateways.length > 0 && (
           <Card>
@@ -458,7 +509,6 @@ export default function AdminPaymentSettings() {
             </CardContent>
           </Card>
         )}
-
         {/* Edit/Create Dialog */}
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">

@@ -125,12 +125,13 @@ export default class PaymentController {
         }
       }
 
-      const { platformFee, commissionAmount, vendorPayout } = RevenueService.calculate(
-        productPrice * quantity,
-        salePrice,
-        Number(product.commissionRate),
-        !!affiliateLink
-      )
+      const { platformFee, commissionAmount, vendorPayout } =
+        await RevenueService.calculateWithSettings(
+          productPrice * quantity,
+          salePrice,
+          Number(product.commissionRate),
+          !!affiliateLink
+        )
 
       const orderNumber = generateOrderNumber()
       const callbackUrl =

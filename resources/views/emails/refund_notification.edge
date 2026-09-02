@@ -79,7 +79,7 @@
           </div>
           <div class="detail-row">
             <strong>Refund Amount:</strong>
-            <span>${{ order.amount }}</span>
+            <span>{{ currencySymbol || '$' }}{{ order.amount }}</span>
           </div>
         </div>
         <p>Please allow 5–10 business days for the refund to appear in your account.</p>

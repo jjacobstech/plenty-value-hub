@@ -187,6 +187,13 @@ export default class NewAccountController {
       return response.redirect('/auth/verify-email')
     }
 
+    if (user.status === 'inactive') {
+      session.flash('errors', {
+        email: 'Your account has been deactivated. Please contact support.',
+      })
+      return response.redirect().back()
+    }
+
     await auth.use('web').login(user)
     return response.redirect(dashboardForRole(user.role))
   }

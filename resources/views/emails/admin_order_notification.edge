@@ -88,20 +88,20 @@
         </div>
         <div class="row">
           <span class="label">Total Amount</span>
-          <span class="value">${{ order.amount }}</span>
+          <span class="value">{{ currencySymbol || '$' }}{{ order.amount }}</span>
         </div>
         <div class="row">
           <span class="label">Platform Fee</span>
-          <span class="value" style="color: #16a34a;">+${{ order.platformFee }}</span>
+          <span class="value" style="color: #16a34a;">+{{ currencySymbol || '$' }}{{ order.platformFee }}</span>
         </div>
         <div class="row">
           <span class="label">Vendor Payout</span>
-          <span class="value">${{ order.vendorPayout }}</span>
+          <span class="value">{{ currencySymbol || '$' }}{{ order.vendorPayout }}</span>
         </div>
         @if(order.commissionAmount && order.commissionAmount > 0)
           <div class="row">
             <span class="label">Affiliate Commission</span>
-            <span class="value">${{ order.commissionAmount }}</span>
+            <span class="value">{{ currencySymbol || '$' }}{{ order.commissionAmount }}</span>
           </div>
         @end
 

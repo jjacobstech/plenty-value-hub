@@ -5,6 +5,25 @@ import type Product from '#models/product'
 import mail from '@adonisjs/mail/services/main'
 import env from '#start/env'
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+  USD: '$', NGN: '₦', EUR: '€', GBP: '£',
+  KES: 'KSh', GHS: 'GH₵', CAD: 'CA$', AUD: 'A$',
+}
+
+/**
+ * Resolves the platform currency symbol from site_settings (payment_settings key).
+ * Falls back to '$' if not configured.
+ */
+async function getCurrencySymbol(): Promise<string> {
+  try {
+    const { PaymentService } = await import('#services/payment_service')
+    const config = await PaymentService.getConfig()
+    return config.currencySymbol || CURRENCY_SYMBOLS[config.currency] || '$'
+  } catch {
+    return '$'
+  }
+}
+
 export class NotificationService {
   /**
    * Send comprehensive notifications to Admin, Vendor, Affiliate, and Buyer when an order completes.
@@ -12,6 +31,7 @@ export class NotificationService {
   static async notifyOrderCompleted(order: Order, product: Product) {
     const serializedOrder = order.serialize()
     const serializedProduct = product.serialize()
+    const currencySymbol = await getCurrencySymbol()
 
     const vendor = order.vendorId ? await User.find(order.vendorId) : null
     const isManualPayment = String(order.paymentMethod || '').toLowerCase() === 'manual'
@@ -67,6 +87,7 @@ export class NotificationService {
               isManualPayment,
               digitalAsset,
               trackOrderUrl,
+              currencySymbol,
             })
         })
         console.log(`[NotificationService] Buyer confirmation sent to ${order.buyerEmail} (order ${order.orderNumber}) - Digital asset included: ${!!digitalAsset}`)
@@ -95,6 +116,7 @@ export class NotificationService {
             .htmlView('emails/admin_order_notification', {
               order: serializedOrder,
               product: serializedProduct,
+              currencySymbol,
             })
         })
       }
@@ -117,6 +139,7 @@ export class NotificationService {
                 order: serializedOrder,
                 product: serializedProduct,
                 shippingDetails,
+                currencySymbol,
               })
           })
 
@@ -152,6 +175,7 @@ export class NotificationService {
               .htmlView('emails/affiliate_commission_notification', {
                 order: serializedOrder,
                 product: serializedProduct,
+                currencySymbol,
               })
           })
         }
@@ -168,6 +192,7 @@ export class NotificationService {
   static async notifyOrderProcessing(order: Order, product: Product) {
     const serializedOrder = order.serialize()
     const serializedProduct = product.serialize()
+    const currencySymbol = await getCurrencySymbol()
 
     const vendor = order.vendorId ? await User.find(order.vendorId) : null
 
@@ -200,6 +225,7 @@ export class NotificationService {
               vendor,
               shippingDetails,
               trackOrderUrl,
+              currencySymbol,
             })
         })
         console.log(`[NotificationService] Processing notification sent to buyer ${order.buyerEmail} (order ${order.orderNumber})`)
@@ -226,6 +252,7 @@ export class NotificationService {
             .htmlView('emails/admin_order_notification', {
               order: serializedOrder,
               product: serializedProduct,
+              currencySymbol,
             })
         })
       }
@@ -248,6 +275,7 @@ export class NotificationService {
                 order: serializedOrder,
                 product: serializedProduct,
                 shippingDetails,
+                currencySymbol,
               })
           })
 

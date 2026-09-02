@@ -135,8 +135,16 @@ export default class AdminController {
       return response.status(403).json({ error: 'Forbidden' })
     }
     const user = await User.findOrFail(params.id)
-    const { role } = request.only(['role'])
-    user.role = role
+    const { role, status } = request.only(['role', 'status'])
+    if (role !== undefined) {
+      user.role = role
+    }
+    if (status !== undefined) {
+      if (!['active', 'inactive'].includes(status)) {
+        return response.status(400).json({ error: 'Invalid status. Must be active or inactive.' })
+      }
+      user.status = status
+    }
     await user.save()
     return response.json(user)
   }
@@ -146,13 +154,15 @@ export default class AdminController {
     if (currentUser.role !== 'admin') {
       return response.status(403).json({ error: 'Forbidden' })
     }
-    // Prevent self-deletion
+    // Prevent self-deactivation
     if (currentUser.id === Number(params.id)) {
-      return response.status(400).json({ error: 'You cannot delete your own account' })
+      return response.status(400).json({ error: 'You cannot deactivate your own account' })
     }
     const user = await User.findOrFail(params.id)
-    await user.delete()
-    return response.json({ success: true, message: 'User deleted' })
+    // Soft delete: mark user inactive, preserve all data
+    user.status = 'inactive'
+    await user.save()
+    return response.json({ success: true, message: 'User deactivated' })
   }
 
   /**

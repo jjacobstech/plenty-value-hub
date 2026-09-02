@@ -92,7 +92,7 @@
 
       <div class="highlight">
         <div style="font-size: 13px; color: #166534; font-weight: 600;">YOUR PAYOUT</div>
-        <div class="amount">+${{ order.vendorPayout }}</div>
+        <div class="amount">+{{ currencySymbol || '$' }}{{ order.vendorPayout }}</div>
       </div>
 
       <div class="details">
@@ -106,7 +106,7 @@
         </div>
         <div class="row">
           <span class="label">Product Price</span>
-          <span class="value">${{ order.amount }}</span>
+          <span class="value">{{ currencySymbol || '$' }}{{ order.amount }}</span>
         </div>
         <div class="row">
           <span class="label">Buyer</span>

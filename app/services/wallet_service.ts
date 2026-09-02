@@ -402,7 +402,7 @@ export class WalletService {
       await TransactionService.record({
         userId: payout.userId,
         type: 'payout',
-        category: 'vendor_payout',
+        category: user.role === 'affiliate' ? 'affiliate_payout' : 'vendor_payout',
         status:
           payout.status === 'paid'
             ? 'completed'
@@ -414,7 +414,7 @@ export class WalletService {
         paymentMethod: payout.payoutMethod,
         payoutRequestId: payout.id,
         transactionReference: payout.transferReference || `PO_${payout.id}`,
-        description: `Payout request #${payout.id} via ${payout.payoutMethod}`,
+        description: `${user.role === 'affiliate' ? 'Affiliate' : 'Vendor'} payout request #${payout.id} via ${payout.payoutMethod}`,
       })
     } catch (txErr) {
       console.error('[WalletService] Error recording payout transaction:', txErr)

@@ -145,12 +145,14 @@ const NEWSLETTER_BENEFITS = [
 type HomeProps = {
   featuredProducts: any[]
   trendingProducts: any[]
+  categoryProducts?: Record<string, any[]>
   heroBannerImage?: string
 }
 
 export default function Home({
   featuredProducts = [],
   trendingProducts = [],
+  categoryProducts = {},
   heroBannerImage = '/hero-banner.png',
 }: HomeProps) {
   const [email, setEmail] = useState('')
@@ -309,7 +311,7 @@ export default function Home({
                   <CardContent className="p-0">
                     <div className="relative h-36 overflow-hidden">
                       <img
-                        src={cat.img}
+                        src={categoryProducts[cat.value]?.[0]?.imageUrl || cat.img}
                         alt={cat.label}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
@@ -317,6 +319,19 @@ export default function Home({
                       <span className="absolute bottom-3 left-3 font-semibold text-white text-sm drop-shadow transition-colors duration-300 group-hover:text-[#81C14B]">
                         {cat.label}
                       </span>
+                    </div>
+                    <div className="p-3 space-y-1">
+                      {(categoryProducts[cat.value] || []).slice(0, 2).map((product) => (
+                        <p
+                          key={product.id}
+                          className="text-xs font-medium text-foreground truncate"
+                        >
+                          {product.name}
+                        </p>
+                      ))}
+                      <p className="text-xs text-muted-foreground">
+                        {categoryProducts[cat.value]?.length || 0} products available
+                      </p>
                     </div>
                   </CardContent>
                 </Card>

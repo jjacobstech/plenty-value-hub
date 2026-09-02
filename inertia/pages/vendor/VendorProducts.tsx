@@ -82,6 +82,7 @@ const num = (val: unknown): number => {
 type VendorProductsProps = {
   user: any
   products: any[]
+  platformCommission?: number
 }
 
 // ---------------------------------------------------------------------------
@@ -247,7 +248,7 @@ function GalleryDropZone({ currentCount, max, onUploaded }: GalleryDropZoneProps
 }
 
 export default function VendorProducts(props: VendorProductsProps) {
-  const { user, products: initialProducts } = props
+  const { user, products: initialProducts, platformCommission = 10 } = props
   const [products, setProducts] = useState(initialProducts)
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<number | null>(null)
@@ -604,6 +605,9 @@ export default function VendorProducts(props: VendorProductsProps) {
                       per sale
                     </p>
                   )}
+                  <p className="text-xs text-muted-foreground mt-1">
+                    The platform deducts {platformCommission}% from each sale before your payout.
+                  </p>
                 </div>
 
                 {/* Unit count */}
@@ -869,7 +873,9 @@ export default function VendorProducts(props: VendorProductsProps) {
                         </TableCell>
                         <TableCell className="text-sm">
                           {p.unitCount != null ? (
-                            <span className={`font-medium ${p.unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}>
+                            <span
+                              className={`font-medium ${p.unitCount === 0 ? 'text-red-600' : 'text-slate-700'}`}
+                            >
                               {p.unitCount}
                             </span>
                           ) : (

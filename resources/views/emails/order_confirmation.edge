@@ -77,7 +77,7 @@
             <strong>Product:</strong>
             <span>{{ order.productName }}</span>
           </div>
-          <div class="detail-row"><strong>Amount:</strong> <span>${{ order.amount }}</span></div>
+          <div class="detail-row"><strong>Amount:</strong> <span>{{ currencySymbol || '$' }}{{ order.amount }}</span></div>
           <div class="detail-row"><strong>Status:</strong> <span>{{ order.status }}</span></div>
         </div>
 

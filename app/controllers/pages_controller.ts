@@ -54,19 +54,29 @@ function resolveAssetUrl(raw: unknown, origin: string): string | null {
 export default class PagesController {
   // Public pages - Home
   async home({ inertia }: HttpContext) {
-    const [featuredProducts, trendingProducts, heroBanner] = await Promise.all([
+    const [featuredProducts, trendingProducts, categoryProducts, heroBanner] = await Promise.all([
       Product.query()
         .where('status', 'approved')
         .where('is_featured', true)
         .orderBy('created_at', 'desc')
         .limit(8),
       Product.query().where('status', 'approved').orderBy('gravity_score', 'desc').limit(4),
+      Product.query().where('status', 'approved').orderBy('created_at', 'desc').limit(100),
       SiteSetting.findBy('key', 'hero_banner'),
     ])
+
+    const productsByCategory: Record<string, any[]> = {}
+    for (const product of categoryProducts) {
+      if (!productsByCategory[product.category]) productsByCategory[product.category] = []
+      if (productsByCategory[product.category].length < 3) {
+        productsByCategory[product.category].push(product.serialize())
+      }
+    }
 
     return inertia.render('Home', {
       featuredProducts,
       trendingProducts,
+      categoryProducts: productsByCategory,
       heroBannerImage: heroBanner?.value || '/hero-banner.png',
     })
   }
@@ -595,8 +605,17 @@ export default class PagesController {
   }
 
   async vendorProducts({ inertia, auth }: HttpContext) {
-    const products = await Product.query().where('vendor_id', auth.user!.id)
-    return inertia.render('vendor/VendorProducts', { user: auth.user, products })
+    const [products, commissionSetting] = await Promise.all([
+      Product.query().where('vendor_id', auth.user!.id),
+      SiteSetting.findBy('key', 'platform_commission'),
+    ])
+    const commission = Number(commissionSetting?.value)
+    return inertia.render('vendor/VendorProducts', {
+      user: auth.user,
+      products,
+      platformCommission:
+        Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
+    })
   }
 
   async vendorOrders({ inertia, auth }: HttpContext) {
@@ -813,10 +832,16 @@ export default class PagesController {
 
   async adminPaymentSettings({ inertia, auth }: HttpContext) {
     const { PaymentService } = await import('#services/payment_service')
-    const paymentConfig = await PaymentService.getConfig()
+    const [paymentConfig, commissionSetting] = await Promise.all([
+      PaymentService.getConfig(),
+      SiteSetting.findBy('key', 'platform_commission'),
+    ])
+    const commission = Number(commissionSetting?.value)
     return inertia.render('admin/AdminPaymentSettings', {
       user: auth.user,
       paymentConfig,
+      platformCommission:
+        Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
     })
   }
 

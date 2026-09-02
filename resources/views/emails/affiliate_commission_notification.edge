@@ -95,7 +95,7 @@
 
       <div class="highlight">
         <div style="font-size: 13px; color: #b45309; font-weight: 600;">COMMISSION EARNED</div>
-        <div class="amount">+${{ order.commissionAmount }}</div>
+        <div class="amount">+{{ currencySymbol || '$' }}{{ order.commissionAmount }}</div>
       </div>
 
       <div class="details">
@@ -109,7 +109,7 @@
         </div>
         <div class="row">
           <span class="label">Sale Amount</span>
-          <span class="value">${{ order.amount }}</span>
+          <span class="value">{{ currencySymbol || '$' }}{{ order.amount }}</span>
         </div>
       </div>
 
