@@ -19,9 +19,11 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Input } from '@/components/ui/input'
-import { Search, CheckCircle, XCircle, Star, Trash2 } from 'lucide-react'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Search, CheckCircle, XCircle, Star, Trash2, Eye } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
+import { getActiveCurrencySymbol, formatUSD } from '@/lib/currency'
 
 const CATEGORY_LABELS: Record<string, string> = {
   health_fitness: 'Health',
@@ -112,6 +114,8 @@ export default function AdminProducts(props: AdminProductsProps) {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [loading, setLoading] = useState<number | null>(null)
+  const [currencySymbol] = useState(() => getActiveCurrencySymbol())
+  const [previewProduct, setPreviewProduct] = useState<Product | null>(null)
 
   const updateProduct = async (id: number, data: Record<string, any>) => {
     setLoading(id)
@@ -217,7 +221,7 @@ export default function AdminProducts(props: AdminProductsProps) {
                         {CATEGORY_LABELS[p.category] || p.category}
                       </Badge>
                     </TableCell>
-                    <TableCell>${p.price}</TableCell>
+                    <TableCell>{formatUSD(p.price, false, currencySymbol)}</TableCell>
                     <TableCell>{p.commissionRate}%</TableCell>
                     <TableCell className="text-sm">
                       {(p as any).unitCount != null ? (
@@ -249,6 +253,16 @@ export default function AdminProducts(props: AdminProductsProps) {
                     </TableCell>
                     <TableCell>
                       <div className="flex gap-1">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-8 px-2 text-blue-600"
+                          disabled={loading === p.id}
+                          onClick={() => setPreviewProduct(p)}
+                          title="Preview product"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </Button>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -285,6 +299,138 @@ export default function AdminProducts(props: AdminProductsProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Product Preview Modal */}
+      <Dialog open={!!previewProduct} onOpenChange={(open) => !open && setPreviewProduct(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-lg font-bold">{previewProduct?.name}</DialogTitle>
+          </DialogHeader>
+
+          {previewProduct && (
+            <div className="space-y-6">
+              {/* Product Image */}
+              {previewProduct.imageUrl && (
+                <div className="w-full">
+                  <h3 className="text-sm font-semibold mb-2">Product Image</h3>
+                  <img
+                    src={previewProduct.imageUrl}
+                    alt={previewProduct.name}
+                    className="w-full max-h-96 object-cover rounded-lg border border-gray-200"
+                  />
+                </div>
+              )}
+
+              {/* Product Details Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Category</p>
+                  <p className="text-sm font-medium mt-1">{CATEGORY_LABELS[previewProduct.category] || previewProduct.category}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Type</p>
+                  <p className="text-sm font-medium mt-1 capitalize">{previewProduct.productType}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Price</p>
+                  <p className="text-sm font-medium mt-1">{formatUSD(previewProduct.price, false, currencySymbol)}</p>
+                </div>
+                {previewProduct.salePrice && (
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wide">Sale Price</p>
+                    <p className="text-sm font-medium mt-1">{formatUSD(previewProduct.salePrice, false, currencySymbol)}</p>
+                  </div>
+                )}
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Commission Rate</p>
+                  <p className="text-sm font-medium mt-1">{previewProduct.commissionRate}%</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Vendor</p>
+                  <p className="text-sm font-medium mt-1">{previewProduct.vendorName || '—'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Status</p>
+                  <p className="text-sm font-medium mt-1">
+                    <Badge variant={(statusColors[previewProduct.status!] as any) ?? 'secondary'} className="capitalize">
+                      {previewProduct.status}
+                    </Badge>
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Total Sales</p>
+                  <p className="text-sm font-medium mt-1">{previewProduct.totalSales || 0}</p>
+                </div>
+              </div>
+
+              {/* Short Description */}
+              {previewProduct.shortDescription && (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Short Description</p>
+                  <p className="text-sm mt-1 text-foreground">{previewProduct.shortDescription}</p>
+                </div>
+              )}
+
+              {/* Full Description */}
+              {previewProduct.description && (
+                <div>
+                  <p className="text-xs text-muted-foreground uppercase tracking-wide">Description</p>
+                  <p className="text-sm mt-1 text-foreground whitespace-pre-wrap">{previewProduct.description}</p>
+                </div>
+              )}
+
+              {/* Digital Asset Info */}
+              {previewProduct.productType === 'digital' && previewProduct.digitalAssetUrl && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs font-semibold text-blue-900">📥 Digital Asset</p>
+                  <p className="text-sm text-blue-800 mt-1">{previewProduct.digitalAssetName || 'Digital Asset'}</p>
+                  <a
+                    href={previewProduct.digitalAssetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-600 hover:text-blue-800 underline mt-2 inline-block"
+                  >
+                    View/Download File
+                  </a>
+                </div>
+              )}
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 pt-4 border-t">
+                <Button
+                  className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                  onClick={() => {
+                    if (previewProduct) {
+                      updateProduct(previewProduct.id, { status: 'approved' })
+                      setPreviewProduct(null)
+                    }
+                  }}
+                  disabled={loading === previewProduct?.id}
+                >
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  Approve
+                </Button>
+                <Button
+                  className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+                  onClick={() => {
+                    if (previewProduct) {
+                      updateProduct(previewProduct.id, { status: 'rejected' })
+                      setPreviewProduct(null)
+                    }
+                  }}
+                  disabled={loading === previewProduct?.id}
+                >
+                  <XCircle className="w-4 h-4 mr-2" />
+                  Reject
+                </Button>
+                <Button variant="outline" onClick={() => setPreviewProduct(null)}>
+                  Close
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   )
 }

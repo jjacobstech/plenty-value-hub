@@ -514,7 +514,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                 {/* Two column grid on desktop */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 md:gap-5">
                   <div>
-                    <Label className="text-xs sm:text-sm md:text-base">Category</Label>
+                    <Label className="text-xs sm:text-sm md:text-base">Category *</Label>
                     <Select
                       value={form.category}
                       onValueChange={(v) => setForm({ ...form, category: v })}
@@ -532,7 +532,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                     </Select>
                   </div>
                   <div>
-                    <Label className="text-xs sm:text-sm md:text-base">Product Type</Label>
+                    <Label className="text-xs sm:text-sm md:text-base">Product Type *</Label>
                     <Select
                       value={form.productType}
                       onValueChange={(v) => setForm({ ...form, productType: v })}
@@ -636,7 +636,15 @@ export default function VendorProducts(props: VendorProductsProps) {
                     endpoint="/api/uploads/product-image"
                     showPreview={true}
                     helpText="Upload a product image (JPG, PNG, WebP, GIF • Max 10MB)"
+                    required={true}
                   />
+                  <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-2">
+                    <div className="text-amber-600 font-semibold text-xs flex-shrink-0">⚠️</div>
+                    <p className="text-xs text-amber-800">
+                      <strong>Quality matters:</strong> Products with low-quality, blurry, or poorly formatted images may not be approved.
+                      Please ensure your image is clear, well-lit, and at least 800×600px for best results.
+                    </p>
+                  </div>
                 </div>
 
                 {/* Gallery Images (up to MAX_GALLERY_IMAGES additional images) */}
@@ -756,7 +764,7 @@ export default function VendorProducts(props: VendorProductsProps) {
 
                 {/* Billing */}
                 <div>
-                  <Label className="text-xs sm:text-sm md:text-base">Billing</Label>
+                  <Label className="text-xs sm:text-sm md:text-base">Billing *</Label>
                   <Select
                     value={form.billingCycle}
                     onValueChange={(v) => setForm({ ...form, billingCycle: v })}
@@ -774,22 +782,24 @@ export default function VendorProducts(props: VendorProductsProps) {
 
                 {/* Descriptions - Full width */}
                 <div>
-                  <Label className="text-xs sm:text-sm md:text-base">Short Description</Label>
+                  <Label className="text-xs sm:text-sm md:text-base">Short Description *</Label>
                   <Input
                     value={form.shortDescription}
                     onChange={(e) => setForm({ ...form, shortDescription: e.target.value })}
                     placeholder="Brief product tagline"
                     className="text-xs sm:text-sm md:text-base"
+                    required
                   />
                 </div>
                 <div>
-                  <Label className="text-xs sm:text-sm md:text-base">Full Description</Label>
+                  <Label className="text-xs sm:text-sm md:text-base">Full Description *</Label>
                   <Textarea
                     rows={4}
                     value={form.description}
                     onChange={(e) => setForm({ ...form, description: e.target.value })}
                     placeholder="Detailed product description..."
                     className="text-xs sm:text-sm md:text-base resize-none"
+                    required
                   />
                 </div>
               </div>
