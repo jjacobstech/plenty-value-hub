@@ -22,6 +22,9 @@ import {
   Check,
   MapPin,
   Phone,
+  Truck,
+  AlertTriangle,
+  Flag,
 } from 'lucide-react'
 
 interface OrderTrackingProps {
@@ -188,6 +191,16 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
     } catch {
       return null
     }
+  }
+
+  // Returns true if a physical order was placed > 3 business days ago and is still processing
+  const isPhysicalOrderOverdue = (ord: OrderData): boolean => {
+    if (!ord || ord.product?.productType !== 'physical') return false
+    if (ord.status !== 'processing' && ord.status !== 'pending') return false
+    const placed = new Date(ord.createdAt).getTime()
+    const now = Date.now()
+    const threeDaysMs = 3 * 24 * 60 * 60 * 1000
+    return now - placed > threeDaysMs
   }
 
   return (
@@ -357,6 +370,52 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                   </div>
                 )}
 
+                {/* 3-Day Shipping Notice — physical products currently in progress */}
+                {order.product?.productType === 'physical' &&
+                  (order.status === 'processing' || order.status === 'pending') && (
+                    <div
+                      className={`p-4 rounded-xl border-2 flex items-start gap-3 ${
+                        isPhysicalOrderOverdue(order)
+                          ? 'border-red-400 bg-red-50'
+                          : 'border-amber-300 bg-amber-50'
+                      }`}
+                    >
+                      {isPhysicalOrderOverdue(order) ? (
+                        <AlertTriangle className="w-5 h-5 mt-0.5 shrink-0 text-red-600" />
+                      ) : (
+                        <Truck className="w-5 h-5 mt-0.5 shrink-0 text-amber-600" />
+                      )}
+                      <div className="space-y-1">
+                        {isPhysicalOrderOverdue(order) ? (
+                          <>
+                            <p className="text-sm font-semibold text-red-900 flex items-center gap-1.5">
+                              <Flag className="w-4 h-4" /> Shipping may be overdue
+                            </p>
+                            <p className="text-xs text-red-800 leading-relaxed">
+                              This order was placed more than <strong>3 business days</strong> ago
+                              and is still marked as <strong>processing</strong>. Vendors are required
+                              to ship all physical orders within 3 business days of confirmed
+                              payment. If you have not received a tracking update or your item, please
+                              report this to our support team immediately using the button below.
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-sm font-semibold text-amber-900 flex items-center gap-1.5">
+                              <Truck className="w-4 h-4" /> Shipping within 3 business days
+                            </p>
+                            <p className="text-xs text-amber-800 leading-relaxed">
+                              Your order is being prepared. Vendors on Plenty Value are committed to
+                              shipping physical orders within <strong>3 business days</strong> of
+                              confirmed payment. If you do not receive a shipping update within this
+                              window, please report the issue using the support channel below.
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
                 {/* Order Metadata Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 py-2 border-y dark:border-slate-700 text-sm">
                   <div>
@@ -501,6 +560,27 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Complaint channel explanation */}
+            <div className="p-4 rounded-xl bg-white/5 border border-white/10 text-xs text-slate-300 leading-relaxed space-y-2">
+              <p className="flex items-start gap-2">
+                <Truck className="w-4 h-4 mt-0.5 shrink-0 text-amber-400" />
+                <span>
+                  <strong className="text-white">Physical orders not shipped within 3 days?</strong>{' '}
+                  Vendors are required to dispatch physical products within 3 business days of a
+                  confirmed order. If yours was not, report it — we take shipping violations
+                  seriously.
+                </span>
+              </p>
+              <p className="flex items-start gap-2">
+                <Flag className="w-4 h-4 mt-0.5 shrink-0 text-red-400" />
+                <span>
+                  <strong className="text-white">Other issues?</strong> Wrong item received, damaged
+                  product, no download link, or payment dispute — email us and include your order
+                  number.
+                </span>
+              </p>
+            </div>
+
             <div className="p-4 rounded-xl bg-white/10 border border-white/20 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <Mail className="w-5 h-5 text-white/80" />
@@ -517,7 +597,7 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                 </div>
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <Button
                   type="button"
                   size="sm"
@@ -541,6 +621,17 @@ export default function OrderTracking({ supportEmail = 'support@plentyvalue.com'
                 </a>
               </div>
             </div>
+
+            {/* Prominent Report Shipping Issue button — shown when a physical order may be overdue */}
+            {order && isPhysicalOrderOverdue(order) && (
+              <a
+                href={`mailto:${activeSupportEmail}?subject=Shipping%20Complaint%20–%20Order%20%23${order.orderNumber}&body=Hi%20Support%2C%0A%0AI%20placed%20order%20%23${order.orderNumber}%20on%20${new Date(order.createdAt).toLocaleDateString()}%20and%20my%20physical%20item%20has%20not%20shipped%20within%20the%203-day%20window.%20Please%20investigate.%0A%0ABuyer%20email%3A%20${order.buyerEmail}`}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-sm text-white bg-red-600 hover:bg-red-700 transition-colors shadow-md"
+              >
+                <AlertTriangle className="w-4 h-4" />
+                Report Shipping Delay — Order #{order.orderNumber}
+              </a>
+            )}
           </CardContent>
         </Card>
       </div>

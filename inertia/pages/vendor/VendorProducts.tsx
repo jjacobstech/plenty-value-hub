@@ -22,7 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog'
-import { Plus, Pencil, Trash2, Package, AlertCircle, Images, X, Loader2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, Package, AlertCircle, Images, X, Loader2, Truck } from 'lucide-react'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
@@ -63,6 +63,7 @@ const defaultForm = {
   recurringBilling: false,
   billingCycle: 'one_time',
   unitCount: '',
+  shippingAgreement: false,
 }
 
 const statusStyles: Record<string, string> = {
@@ -264,6 +265,14 @@ export default function VendorProducts(props: VendorProductsProps) {
     setValidationErrors(null)
     setServerErrors(null)
 
+    // Physical products require shipping agreement
+    if (form.productType === 'physical' && !form.shippingAgreement) {
+      toast.error('Shipping Agreement Required', {
+        description: 'You must agree to ship physical orders within 3 business days before submitting.',
+      })
+      return
+    }
+
     // Validate form data on frontend
     const validation = validateProduct(form, editId ? true : false)
     if (!validation.success) {
@@ -381,6 +390,7 @@ export default function VendorProducts(props: VendorProductsProps) {
       recurringBilling: product.recurringBilling || false,
       billingCycle: product.billingCycle || 'one_time',
       unitCount: product.unitCount != null ? String(product.unitCount) : '',
+      shippingAgreement: false,
     })
     setShowForm(true)
   }
@@ -804,6 +814,43 @@ export default function VendorProducts(props: VendorProductsProps) {
                 </div>
               </div>
 
+              {/* Shipping Agreement — physical products only */}
+              {form.productType === 'physical' && (
+                <div
+                  className={`p-4 rounded-xl border-2 transition-colors ${
+                    form.shippingAgreement
+                      ? 'border-green-500 bg-green-50'
+                      : 'border-amber-400 bg-amber-50'
+                  }`}
+                >
+                  <label className="flex items-start gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={form.shippingAgreement}
+                      onChange={(e) => setForm({ ...form, shippingAgreement: e.target.checked })}
+                      className="mt-0.5 h-4 w-4 rounded border-amber-400 accent-green-600 flex-shrink-0"
+                    />
+                    <span className="text-xs sm:text-sm leading-snug text-slate-800">
+                      <strong className="flex items-center gap-1.5 mb-1 text-slate-900">
+                        <Truck className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                        3-Day Shipping Commitment — Required for Physical Products
+                      </strong>
+                      I agree to ship this physical product to buyers within{' '}
+                      <strong>3 business days</strong> of receiving a confirmed order. I understand
+                      that failure to fulfil orders within this timeframe may result in buyer
+                      complaints, order cancellations, and potential suspension of my vendor
+                      account.
+                    </span>
+                  </label>
+                  {!form.shippingAgreement && (
+                    <p className="mt-2 text-xs text-amber-700 font-medium flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+                      You must accept this commitment before you can submit a physical product.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Buttons - Responsive */}
               <div className="flex flex-col-reverse xs:flex-row gap-2 sm:gap-3 md:gap-4 pt-2 sm:pt-3 md:pt-4 justify-end">
                 <Button
@@ -816,9 +863,9 @@ export default function VendorProducts(props: VendorProductsProps) {
                 </Button>
                 <Button
                   type="submit"
-                  disabled={saving}
+                  disabled={saving || (form.productType === 'physical' && !form.shippingAgreement)}
                   style={{ backgroundColor: '#001845' }}
-                  className="text-white text-xs sm:text-sm md:text-base w-full xs:w-auto hover:opacity-90"
+                  className="text-white text-xs sm:text-sm md:text-base w-full xs:w-auto hover:opacity-90 disabled:opacity-50"
                 >
                   {saving ? 'Saving...' : editId ? 'Update Product' : 'Submit for Approval'}
                 </Button>

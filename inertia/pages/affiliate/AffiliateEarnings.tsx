@@ -12,7 +12,13 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from '@/components/ui/dialog'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { format } from 'date-fns'
 import { Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
@@ -298,7 +304,11 @@ export default function AffiliateEarnings(props: AffiliateEarningsProps) {
                     <TableRow key={order.id}>
                       <TableCell className="font-medium">{order.productName}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">
-                        {formatDateSafe(order.createdAt || (order as any).created_at || (order as any).created_date)}
+                        {formatDateSafe(
+                          order.createdAt ||
+                            (order as any).created_at ||
+                            (order as any).created_date
+                        )}
                       </TableCell>
                       <TableCell>{formatNGN(order.amount)}</TableCell>
                       <TableCell className="text-green-600 font-semibold">

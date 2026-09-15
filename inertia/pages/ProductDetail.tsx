@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
-import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, ChevronLeft, Loader2, Download, Package, Repeat, Minus, Plus, X, ZoomIn } from 'lucide-react'
+import { Star, TrendingUp, ShoppingCart, Link2, ChevronRight, ChevronLeft, Loader2, Download, Package, Repeat, Minus, Plus, X, ZoomIn, Truck } from 'lucide-react'
 import { formatUSD } from '@/lib/currency'
 import PublicLayout from '@/components/layout/PublicLayout'
 
@@ -583,6 +583,30 @@ export default function ProductDetail({
               </div>
             )
           })()}
+
+          {/* 3-Day Shipping Notice — physical products only */}
+          {product.productType === 'physical' && (
+            <div className="flex items-start gap-3 p-4 rounded-xl border-2 border-amber-300 bg-amber-50">
+              <Truck className="w-5 h-5 mt-0.5 shrink-0 text-amber-600" />
+              <div className="space-y-1">
+                <p className="text-sm font-semibold text-amber-900">
+                  Ships within 3 business days
+                </p>
+                <p className="text-xs text-amber-800 leading-relaxed">
+                  Vendors on Plenty Value are committed to dispatching all physical orders within
+                  <strong> 3 business days</strong> of confirmed payment. If your order has not
+                  shipped or arrived within this window, please{' '}
+                  <a
+                    href={`/track-order`}
+                    className="underline font-semibold text-amber-900 hover:text-amber-700"
+                  >
+                    track your order
+                  </a>{' '}
+                  and report the issue to our support team — we will investigate immediately.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Quantity Selector — shown when checkout is available and product is physical */}
           {checkoutAvailable && product.productType === 'physical' && (
