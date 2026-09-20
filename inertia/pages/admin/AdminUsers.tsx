@@ -25,8 +25,12 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
+import {
+  Sheet,
+  SheetContent,
+} from '@/components/ui/sheet'
 import { Input } from '@/components/ui/input'
-import { Search, CheckCircle, UserX, UserCheck } from 'lucide-react'
+import { Search, CheckCircle, UserX, UserCheck, Eye } from 'lucide-react'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import api from '@/api/http-client'
@@ -34,6 +38,266 @@ import api from '@/api/http-client'
 type AdminUsersProps = {
   users: any[]
 }
+
+// ─── User Detail Sheet ────────────────────────────────────────────────────────
+
+function DetailRow({ label, value }: { label: string; value: React.ReactNode }) {
+  if (value === null || value === undefined || value === '') return null
+  return (
+    <div className="grid grid-cols-2 gap-2 py-1.5">
+      <span className="text-xs text-muted-foreground">{label}</span>
+      <span className="text-xs font-medium break-all">{value}</span>
+    </div>
+  )
+}
+
+function SectionHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="text-[11px] font-semibold uppercase tracking-widest text-muted-foreground mt-4 mb-1">
+      {children}
+    </p>
+  )
+}
+
+function UserDetailSheet({
+  user,
+  open,
+  onClose,
+}: {
+  user: any | null
+  open: boolean
+  onClose: () => void
+}) {
+  if (!user) return null
+
+  const isInactive = user.status === 'inactive'
+  const roleColors: Record<string, string> = {
+    admin: 'destructive',
+    vendor: 'default',
+    affiliate: 'secondary',
+    consumer: 'outline',
+  }
+
+  const fmtDate = (val: string | null | undefined) =>
+    val ? format(new Date(val), 'MMM d, yyyy HH:mm') : null
+
+  // Derive initials from name or email
+  const initials = user.fullName
+    ? user.fullName.split(' ').map((n: string) => n[0]).join('').slice(0, 2).toUpperCase()
+    : user.email.slice(0, 2).toUpperCase()
+
+  // Check if vendor or affiliate role has any non-null profile data to show
+  const hasBusinessData =
+    user.businessName || user.businessType || user.businessDescription ||
+    user.productCategories || user.businessLogo || user.coverBanner
+
+  const hasAffiliateData = user.niche || user.marketingChannels
+
+  const hasPayoutData =
+    user.payoutMethod || user.payoutBankName || user.payoutAccountNumber ||
+    user.payoutAccountName || user.payoutEmail || user.payoutMobileNumber ||
+    user.payoutAccountId || user.payoutMetadata
+
+  const hasPaystackData =
+    user.paystackRecipientCode || user.paystackBankCode ||
+    user.paystackRecipientVerified === true
+
+  return (
+    <Sheet open={open} onOpenChange={onClose}>
+      <SheetContent side="right" className="w-full sm:max-w-lg p-0 flex flex-col">
+        {/* ── Header ── */}
+        <div className="px-6 pt-6 pb-4 border-b shrink-0">
+          <div className="flex items-start gap-3">
+            {/* Avatar */}
+            {user.profilePicture ? (
+              <img
+                src={user.profilePicture}
+                alt={user.fullName || user.email}
+                className="w-10 h-10 rounded-full object-cover shrink-0"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center text-sm font-semibold shrink-0">
+                {initials}
+              </div>
+            )}
+
+            <div className="min-w-0 flex-1">
+              <p className="text-base font-semibold leading-tight">
+                {user.fullName || '(no name)'}
+              </p>
+              <p className="text-xs text-muted-foreground break-all">{user.email}</p>
+            </div>
+
+            <div className="flex flex-col gap-1 items-end shrink-0">
+              <Badge
+                variant={(roleColors[user.role] as any) ?? 'outline'}
+                className="text-xs capitalize"
+              >
+                {user.role || 'consumer'}
+              </Badge>
+              {isInactive ? (
+                <Badge variant="outline" className="text-xs text-red-600 border-red-300 bg-red-50">
+                  Inactive
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs text-green-600 border-green-300 bg-green-50">
+                  Active
+                </Badge>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ── Scrollable body ── */}
+        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-0">
+
+          {/* Account */}
+          <SectionHeading>Account</SectionHeading>
+          <div className="h-px w-full bg-border mb-2" />
+          <DetailRow label="ID" value={user.id} />
+          <DetailRow label="UUID" value={<span className="font-mono text-[11px]">{user.uuid}</span>} />
+          <DetailRow
+            label="Email verified"
+            value={
+              user.emailVerifiedAt ? (
+                <span className="text-green-600">✓ {fmtDate(user.emailVerifiedAt)}</span>
+              ) : (
+                <span className="text-muted-foreground">Not verified</span>
+              )
+            }
+          />
+          <DetailRow label="Joined" value={fmtDate(user.createdAt)} />
+          <DetailRow label="Last updated" value={fmtDate(user.updatedAt)} />
+
+          {/* Profile — only show section if any field is non-null */}
+          {(user.phone || user.country || user.location || user.bio ||
+            user.website || user.instagram || user.twitter || user.youtube ||
+            user.heardAbout) && (
+            <>
+              <SectionHeading>Profile</SectionHeading>
+              <div className="h-px w-full bg-border mb-2" />
+              <DetailRow label="Phone" value={user.phone} />
+              <DetailRow label="Country" value={user.country} />
+              <DetailRow label="Location" value={user.location} />
+              <DetailRow label="Bio" value={user.bio} />
+              <DetailRow label="Website" value={user.website} />
+              <DetailRow label="Instagram" value={user.instagram} />
+              <DetailRow label="Twitter" value={user.twitter} />
+              <DetailRow label="YouTube" value={user.youtube} />
+              <DetailRow label="Heard about us" value={user.heardAbout} />
+            </>
+          )}
+
+          {/* Business */}
+          {hasBusinessData && (
+            <>
+              <SectionHeading>Business</SectionHeading>
+              <div className="h-px w-full bg-border mb-2" />
+              <DetailRow label="Business name" value={user.businessName} />
+              <DetailRow label="Business type" value={user.businessType} />
+              <DetailRow label="Description" value={user.businessDescription} />
+              <DetailRow label="Product categories" value={user.productCategories} />
+              {user.businessLogo && (
+                <div className="grid grid-cols-2 gap-2 py-1.5">
+                  <span className="text-xs text-muted-foreground">Business logo</span>
+                  <img
+                    src={user.businessLogo}
+                    alt="Business logo"
+                    className="h-10 w-10 rounded object-cover"
+                  />
+                </div>
+              )}
+              {user.coverBanner && (
+                <div className="grid grid-cols-2 gap-2 py-1.5">
+                  <span className="text-xs text-muted-foreground">Cover banner</span>
+                  <img
+                    src={user.coverBanner}
+                    alt="Cover banner"
+                    className="h-10 w-24 rounded object-cover"
+                  />
+                </div>
+              )}
+            </>
+          )}
+
+          {/* Affiliate */}
+          {hasAffiliateData && (
+            <>
+              <SectionHeading>Affiliate Info</SectionHeading>
+              <div className="h-px w-full bg-border mb-2" />
+              <DetailRow label="Niche" value={user.niche} />
+              <DetailRow label="Marketing channels" value={user.marketingChannels} />
+            </>
+          )}
+
+          {/* Payout Configuration */}
+          {hasPayoutData && (
+            <>
+              <SectionHeading>Payout Configuration</SectionHeading>
+              <div className="h-px w-full bg-border mb-2" />
+              <DetailRow label="Method" value={user.payoutMethod} />
+              <DetailRow label="Bank name" value={user.payoutBankName} />
+              <DetailRow label="Account number" value={user.payoutAccountNumber} />
+              <DetailRow label="Account name" value={user.payoutAccountName} />
+              <DetailRow label="Routing number" value={user.payoutRoutingNumber} />
+              <DetailRow label="SWIFT code" value={user.payoutSwiftCode} />
+              <DetailRow label="Mobile provider" value={user.payoutMobileProvider} />
+              <DetailRow label="Mobile number" value={user.payoutMobileNumber} />
+              <DetailRow label="Payout email" value={user.payoutEmail} />
+              <DetailRow label="Account ID" value={user.payoutAccountId} />
+              <DetailRow label="Payout details" value={user.payoutDetails} />
+              {user.payoutMetadata && (
+                <DetailRow
+                  label="Metadata"
+                  value={
+                    <span className="font-mono text-[11px] break-all">
+                      {typeof user.payoutMetadata === 'string'
+                        ? user.payoutMetadata
+                        : JSON.stringify(user.payoutMetadata)}
+                    </span>
+                  }
+                />
+              )}
+            </>
+          )}
+
+          {/* Paystack Transfer */}
+          {hasPaystackData && (
+            <>
+              <SectionHeading>Paystack Transfer</SectionHeading>
+              <div className="h-px w-full bg-border mb-2" />
+              <DetailRow label="Recipient code" value={user.paystackRecipientCode} />
+              <DetailRow label="Bank code" value={user.paystackBankCode} />
+              <DetailRow label="Bank name" value={user.paystackBankName} />
+              <DetailRow
+                label="Recipient verified"
+                value={
+                  user.paystackRecipientVerified ? (
+                    <span className="text-green-600">✓ Verified</span>
+                  ) : (
+                    <span className="text-muted-foreground">Not verified</span>
+                  )
+                }
+              />
+              <DetailRow label="Last transfer ref" value={user.lastTransferReference} />
+              <DetailRow label="Last transfer at" value={fmtDate(user.lastTransferAt)} />
+            </>
+          )}
+
+          {/* Empty state — user has barely any data filled in */}
+          {!user.phone && !user.country && !hasBusinessData && !hasAffiliateData &&
+            !hasPayoutData && !hasPaystackData && (
+            <p className="text-xs text-muted-foreground mt-4">
+              This user has not filled in any additional profile details yet.
+            </p>
+          )}
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}
+
+// ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function AdminUsers(props: AdminUsersProps) {
   const [users, setUsers] = useState(props.users)
@@ -43,6 +307,7 @@ export default function AdminUsers(props: AdminUsersProps) {
   const [actionTarget, setActionTarget] = useState<any | null>(null)
   const [actionType, setActionType] = useState<'deactivate' | 'reactivate' | null>(null)
   const [processing, setProcessing] = useState(false)
+  const [viewUser, setViewUser] = useState<any | null>(null)
 
   const updateRole = async (id: number, role: string) => {
     try {
@@ -195,6 +460,15 @@ export default function AdminUsers(props: AdminUsersProps) {
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                            onClick={() => setViewUser(user)}
+                            title="View user details"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
                           {!isInactive && (
                             <Select
                               value={user.role || 'consumer'}
@@ -307,6 +581,13 @@ export default function AdminUsers(props: AdminUsersProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* User Detail Sheet */}
+      <UserDetailSheet
+        user={viewUser}
+        open={!!viewUser}
+        onClose={() => setViewUser(null)}
+      />
     </DashboardLayout>
   )
 }

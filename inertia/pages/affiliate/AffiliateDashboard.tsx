@@ -34,6 +34,7 @@ import {
   Zap,
   Link2,
   Star,
+  AlertCircle,
 } from 'lucide-react'
 import { Link } from '@adonisjs/inertia/react'
 import { Button } from '@/components/ui/button'
@@ -64,10 +65,11 @@ type AffiliateDashboardProps = {
   user: any
   links: any[]
   orders: any[]
+  profileComplete?: boolean
 }
 
 export default function AffiliateDashboard(props: AffiliateDashboardProps) {
-  const { user, links, orders } = props
+  const { user, links, orders, profileComplete = true } = props
 
   const totalClicks = links.reduce((sum, l) => sum + (l.clicks || 0), 0)
   const totalConversions = links.reduce((sum, l) => sum + (l.conversions || 0), 0)
@@ -106,6 +108,28 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
   return (
     <DashboardLayout role="affiliate">
       <div className="space-y-6">
+        {/* ── Incomplete profile banner ── */}
+        {!profileComplete && (
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-800">Your profile is incomplete</p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                Complete your profile to start earning commissions. Add your niche, marketing
+                channels, and payout information so we can pay you.
+              </p>
+            </div>
+            <Link href="/affiliate/profile">
+              <Button
+                size="sm"
+                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white text-xs h-8"
+              >
+                Complete Profile
+              </Button>
+            </Link>
+          </div>
+        )}
+
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>

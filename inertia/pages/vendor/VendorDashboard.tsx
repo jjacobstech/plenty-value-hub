@@ -33,6 +33,8 @@ import {
   Store,
   AlertCircle,
 } from 'lucide-react'
+import { Link } from '@adonisjs/inertia/react'
+import { Button } from '@/components/ui/button'
 
 function KpiCard({ title, value, sub, icon: Icon, color = 'primary', trend }: any) {
   const colorMap: Record<string, string> = {
@@ -70,10 +72,11 @@ type VendorDashboardProps = {
   products: any[]
   orders: any[]
   wallet?: { balance: number; currency: string } | null
+  profileComplete?: boolean
 }
 
 export default function VendorDashboard(props: VendorDashboardProps) {
-  const { user, products, orders, wallet } = props
+  const { user, products, orders, wallet, profileComplete = true } = props
 
   const completedOrders = orders.filter((o) => o.status === 'completed')
   const pendingOrders = orders.filter((o) => o.status === 'pending')
@@ -113,6 +116,28 @@ export default function VendorDashboard(props: VendorDashboardProps) {
   return (
     <DashboardLayout role="vendor">
       <div className="space-y-6">
+        {/* ── Incomplete profile banner ── */}
+        {!profileComplete && (
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-800">Your profile is incomplete</p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                Complete your profile to unlock product uploads and payouts. Add your business
+                details and payout information to get started.
+              </p>
+            </div>
+            <Link href="/vendor/profile">
+              <Button
+                size="sm"
+                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white text-xs h-8"
+              >
+                Complete Profile
+              </Button>
+            </Link>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">

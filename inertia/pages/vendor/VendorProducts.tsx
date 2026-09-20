@@ -84,6 +84,7 @@ type VendorProductsProps = {
   user: any
   products: any[]
   platformCommission?: number
+  profileComplete?: boolean
 }
 
 // ---------------------------------------------------------------------------
@@ -249,7 +250,7 @@ function GalleryDropZone({ currentCount, max, onUploaded }: GalleryDropZoneProps
 }
 
 export default function VendorProducts(props: VendorProductsProps) {
-  const { user, products: initialProducts, platformCommission = 10 } = props
+  const { user, products: initialProducts, platformCommission = 10, profileComplete = true } = props
   const [products, setProducts] = useState(initialProducts)
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<number | null>(null)
@@ -257,6 +258,18 @@ export default function VendorProducts(props: VendorProductsProps) {
   const [saving, setSaving] = useState(false)
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]> | null>(null)
   const [serverErrors, setServerErrors] = useState<Record<string, string> | null>(null)
+  const [showIncompleteDialog, setShowIncompleteDialog] = useState(false)
+
+  // Guard: only open the product form if profile is complete
+  const handleAddProduct = () => {
+    if (!profileComplete) {
+      setShowIncompleteDialog(true)
+      return
+    }
+    setShowForm(true)
+    setEditId(null)
+    setForm(defaultForm)
+  }
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -401,6 +414,28 @@ export default function VendorProducts(props: VendorProductsProps) {
   return (
     <DashboardLayout role="vendor">
       <div className="space-y-6">
+        {/* ── Incomplete profile banner ── */}
+        {!profileComplete && (
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-amber-800">Complete your profile before uploading products</p>
+              <p className="text-xs text-amber-700 mt-0.5">
+                You need to add your business details and payout information before you can list
+                products on the platform.
+              </p>
+            </div>
+            <a href="/vendor/profile">
+              <Button
+                size="sm"
+                className="shrink-0 bg-amber-600 hover:bg-amber-700 text-white text-xs h-8"
+              >
+                Complete Profile
+              </Button>
+            </a>
+          </div>
+        )}
+
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold flex items-center gap-2">
@@ -412,13 +447,10 @@ export default function VendorProducts(props: VendorProductsProps) {
             </p>
           </div>
           <Button
-            onClick={() => {
-              setShowForm(true)
-              setEditId(null)
-              setForm(defaultForm)
-            }}
-            style={{ backgroundColor: '#001845' }}
-            className="text-white hover:opacity-90 self-start sm:self-auto"
+            onClick={handleAddProduct}
+            style={profileComplete ? { backgroundColor: '#001845' } : undefined}
+            variant={profileComplete ? undefined : 'outline'}
+            className={profileComplete ? 'text-white hover:opacity-90 self-start sm:self-auto' : 'self-start sm:self-auto opacity-60'}
           >
             <Plus className="w-4 h-4 mr-2" /> Add Product
           </Button>
@@ -986,7 +1018,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                   No products yet. Add your first listing!
                 </p>
                 <Button
-                  onClick={() => setShowForm(true)}
+                  onClick={handleAddProduct}
                   style={{ backgroundColor: '#001845' }}
                   className="text-white text-xs sm:text-sm md:text-base"
                 >
@@ -997,6 +1029,46 @@ export default function VendorProducts(props: VendorProductsProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* ── Profile incomplete restriction dialog ── */}
+      <Dialog open={showIncompleteDialog} onOpenChange={setShowIncompleteDialog}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="w-5 h-5 text-amber-500" />
+              Profile Incomplete
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 text-sm text-muted-foreground">
+            <p>
+              You can't upload products until your vendor profile is complete. Please add the
+              following before listing products:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-xs">
+              <li>Business name &amp; description</li>
+              <li>Phone number</li>
+              <li>Payout method &amp; account details</li>
+            </ul>
+            <p className="text-xs">
+              Once your profile is complete, you'll be able to start listing and selling products
+              immediately.
+            </p>
+          </div>
+          <div className="flex gap-2 justify-end pt-1">
+            <Button variant="outline" size="sm" onClick={() => setShowIncompleteDialog(false)}>
+              Maybe Later
+            </Button>
+            <a href="/vendor/profile">
+              <Button
+                size="sm"
+                className="bg-amber-600 hover:bg-amber-700 text-white"
+              >
+                Complete Profile
+              </Button>
+            </a>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   )
 }

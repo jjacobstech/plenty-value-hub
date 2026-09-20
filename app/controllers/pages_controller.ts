@@ -32,6 +32,35 @@ function toNumberOrNull(value: unknown): number | null {
   return Number.isFinite(n) ? n : null
 }
 
+/** Compute whether a vendor or affiliate profile is complete enough to use the platform. */
+function computeProfileComplete(user: User): boolean {
+  const hasPayout =
+    (user.payoutBankName && user.payoutAccountNumber && user.payoutAccountName) ||
+    (user.payoutMobileProvider && user.payoutMobileNumber) ||
+    !!user.payoutEmail?.trim() ||
+    !!user.payoutAccountId?.trim()
+
+  if (user.role === 'vendor') {
+    return !!(
+      user.businessName?.trim() &&
+      user.businessDescription?.trim() &&
+      user.phone?.trim() &&
+      user.payoutMethod &&
+      hasPayout
+    )
+  }
+  if (user.role === 'affiliate') {
+    return !!(
+      user.niche?.trim() &&
+      user.marketingChannels?.trim() &&
+      user.phone?.trim() &&
+      user.payoutMethod &&
+      hasPayout
+    )
+  }
+  return true
+}
+
 /**
  * Stored image URLs may be absolute with a baked-in host (e.g. localhost from
  * a dev upload). Keep only the path and re-host it on the current origin so
@@ -492,7 +521,11 @@ export default class PagesController {
   }
 
   async adminUsers({ inertia, auth }: HttpContext) {
-    const users = await User.query().orderBy('created_at', 'desc').limit(200)
+    const users = await User.query()
+      .where('id', '!=', auth.user?.id as number)
+      .orderBy('created_at', 'desc')
+      .limit(200)
+
     return inertia.render('admin/AdminUsers', { user: auth.user, users })
   }
 
@@ -601,6 +634,7 @@ export default class PagesController {
       products: vendorProducts,
       orders: serializedOrders,
       wallet: walletSummary.wallet,
+      profileComplete: computeProfileComplete(auth.user!),
     })
   }
 
@@ -615,6 +649,7 @@ export default class PagesController {
       products,
       platformCommission:
         Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
+      profileComplete: computeProfileComplete(auth.user!),
     })
   }
 
@@ -719,6 +754,7 @@ export default class PagesController {
       user: auth.user,
       links,
       orders,
+      profileComplete: computeProfileComplete(auth.user!),
     })
   }
 
