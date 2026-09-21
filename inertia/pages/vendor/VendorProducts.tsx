@@ -84,6 +84,7 @@ type VendorProductsProps = {
   user: any
   products: any[]
   platformCommission?: number
+  affiliateCommission?: number
   profileComplete?: boolean
 }
 
@@ -250,7 +251,7 @@ function GalleryDropZone({ currentCount, max, onUploaded }: GalleryDropZoneProps
 }
 
 export default function VendorProducts(props: VendorProductsProps) {
-  const { user, products: initialProducts, platformCommission = 10, profileComplete = true } = props
+  const { user, products: initialProducts, platformCommission = 10, affiliateCommission = 7, profileComplete = true } = props
   const [products, setProducts] = useState(initialProducts)
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<number | null>(null)
@@ -471,6 +472,22 @@ export default function VendorProducts(props: VendorProductsProps) {
           ))}
         </div>
 
+        {/* ── Platform commission notice ── */}
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-blue-50 border border-blue-200">
+          <AlertCircle className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-blue-900">Commission Deductions Notice</p>
+            <p className="text-xs text-blue-800 mt-0.5">
+              Two deductions apply to every sale:{' '}
+              <strong>{platformCommission}% platform commission</strong> and a{' '}
+              <strong>{affiliateCommission}% affiliate commission</strong> (when a sale is referred
+              by an affiliate). Your net payout per sale = Sale Price − {platformCommission}%
+              platform fee − {affiliateCommission}% affiliate fee. These rates are set by the
+              platform admin.
+            </p>
+          </div>
+        </div>
+
         <Dialog open={showForm} onOpenChange={setShowForm}>
           <DialogContent
             className="max-w-sm sm:max-w-md md:max-w-2xl max-h-[90vh] overflow-y-auto w-[95vw] sm:w-full"
@@ -529,6 +546,17 @@ export default function VendorProducts(props: VendorProductsProps) {
               )}
 
             <form onSubmit={handleSave} className="space-y-3 sm:space-y-4 md:space-y-5">
+              {/* Commission disclaimer */}
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                <AlertCircle className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
+                <p className="text-xs text-blue-800 leading-relaxed">
+                  <strong>{platformCommission}% platform commission</strong> +{' '}
+                  <strong>{affiliateCommission}% affiliate commission</strong> are deducted from
+                  each sale. Your net payout = Sale Price − {platformCommission}% platform fee −{' '}
+                  {affiliateCommission}% affiliate fee. Both rates are set by the platform admin.
+                </p>
+              </div>
+
               <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-5">
                 {/* Full width fields */}
                 <div>
@@ -648,7 +676,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                     </p>
                   )}
                   <p className="text-xs text-muted-foreground mt-1">
-                    The platform deducts {platformCommission}% from each sale before your payout.
+                    This is the affiliate referral rate vendors set per-product. The platform also deducts {platformCommission}% (platform fee) and {affiliateCommission}% (affiliate fee) from every sale.
                   </p>
                 </div>
 

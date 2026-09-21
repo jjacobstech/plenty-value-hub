@@ -639,16 +639,22 @@ export default class PagesController {
   }
 
   async vendorProducts({ inertia, auth }: HttpContext) {
-    const [products, commissionSetting] = await Promise.all([
+    const [products, commissionSetting, affiliateCommissionSetting] = await Promise.all([
       Product.query().where('vendor_id', auth.user!.id),
       SiteSetting.findBy('key', 'platform_commission'),
+      SiteSetting.findBy('key', 'affiliate_commission'),
     ])
     const commission = Number(commissionSetting?.value)
+    const affiliateCommission = Number(affiliateCommissionSetting?.value)
     return inertia.render('vendor/VendorProducts', {
       user: auth.user,
       products,
       platformCommission:
         Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
+      affiliateCommission:
+        Number.isFinite(affiliateCommission) && affiliateCommission >= 0 && affiliateCommission <= 100
+          ? affiliateCommission
+          : 7,
       profileComplete: computeProfileComplete(auth.user!),
     })
   }

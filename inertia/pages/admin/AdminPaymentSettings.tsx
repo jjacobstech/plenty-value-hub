@@ -68,6 +68,8 @@ export default function AdminPaymentSettings() {
   const [copiedField, setCopiedField] = useState<string | null>(null)
   const [platformCommission, setPlatformCommission] = useState<string>('10')
   const [savingCommission, setSavingCommission] = useState(false)
+  const [affiliateCommission, setAffiliateCommission] = useState<string>('7')
+  const [savingAffiliateCommission, setSavingAffiliateCommission] = useState(false)
 
   const [form, setForm] = useState<FormData>({
     gateway: '',
@@ -85,9 +87,10 @@ export default function AdminPaymentSettings() {
 
   const loadSystemSettings = async () => {
     try {
-      const [paymentRes, commissionRes] = await Promise.all([
+      const [paymentRes, commissionRes, affiliateCommissionRes] = await Promise.all([
         api.get<{ currency?: string; activeProvider?: string }>('/api/payment-settings'),
         api.get<any[]>('/api/site-settings/platform_commission').catch(() => ({ data: [] })),
+        api.get<any[]>('/api/site-settings/affiliate_commission').catch(() => ({ data: [] })),
       ])
       if (paymentRes.data) {
         setForm((prev) => ({
@@ -99,6 +102,12 @@ export default function AdminPaymentSettings() {
       const commissionData = Array.isArray(commissionRes.data) ? commissionRes.data : []
       if (commissionData.length > 0 && commissionData[0]?.value != null) {
         setPlatformCommission(String(commissionData[0].value))
+      }
+      const affiliateCommissionData = Array.isArray(affiliateCommissionRes.data)
+        ? affiliateCommissionRes.data
+        : []
+      if (affiliateCommissionData.length > 0 && affiliateCommissionData[0]?.value != null) {
+        setAffiliateCommission(String(affiliateCommissionData[0].value))
       }
     } catch (err) {
       console.error('Failed to load site payment settings:', err)
@@ -123,6 +132,27 @@ export default function AdminPaymentSettings() {
       toast.error('Failed to save platform commission')
     } finally {
       setSavingCommission(false)
+    }
+  }
+
+  const saveAffiliateCommission = async () => {
+    const val = parseFloat(affiliateCommission)
+    if (isNaN(val) || val < 0 || val > 100) {
+      toast.error('Affiliate commission must be a number between 0 and 100')
+      return
+    }
+    setSavingAffiliateCommission(true)
+    try {
+      await api.post('/api/site-settings', {
+        key: 'affiliate_commission',
+        label: 'Affiliate Commission (%)',
+        value: val.toString(),
+      })
+      toast.success(`Affiliate commission set to ${val}%`)
+    } catch {
+      toast.error('Failed to save affiliate commission')
+    } finally {
+      setSavingAffiliateCommission(false)
     }
   }
 
@@ -365,6 +395,38 @@ export default function AdminPaymentSettings() {
               </div>
               <Button type="button" onClick={savePlatformCommission} disabled={savingCommission}>
                 {savingCommission ? 'Saving...' : 'Save Commission'}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="border border-gray-200">
+          <CardContent className="p-5 space-y-4">
+            <div>
+              <h2 className="font-semibold text-base">Affiliate Commission</h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Fixed percentage paid to affiliates from each sale they refer. Defaults to 7%.
+                This is shown to vendors as a disclosure on their products page.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row sm:items-end gap-3 max-w-md">
+              <div className="flex-1">
+                <Label htmlFor="affiliate-commission">Commission (%)</Label>
+                <Input
+                  id="affiliate-commission"
+                  type="number"
+                  min="0"
+                  max="100"
+                  step="0.01"
+                  value={affiliateCommission}
+                  onChange={(e) => setAffiliateCommission(e.target.value)}
+                />
+              </div>
+              <Button
+                type="button"
+                onClick={saveAffiliateCommission}
+                disabled={savingAffiliateCommission}
+              >
+                {savingAffiliateCommission ? 'Saving...' : 'Save Commission'}
               </Button>
             </div>
           </CardContent>
