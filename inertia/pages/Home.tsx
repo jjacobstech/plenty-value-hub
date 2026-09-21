@@ -255,7 +255,7 @@ export default function Home({
                   variant="outline"
                   className="text-base px-8 w-full sm:w-auto border-white/60 text-white hover:bg-white/10 hover:text-white"
                 >
-                  Become an Affiliate
+                  Get Started
                 </Button>
               </Link>
             </motion.div>
