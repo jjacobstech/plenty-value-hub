@@ -775,6 +775,77 @@ export class UserSchema extends BaseModel {
   declare youtube: string | null
 }
 
+export class VendorConversionSchema extends BaseModel {
+  static $columns = ['affiliateId', 'affiliateLinkCode', 'affiliateLinkId', 'amount', 'approvedAt', 'approvedBy', 'campaignId', 'commissionAmount', 'commissionStatus', 'createdAt', 'currency', 'customerEmail', 'customerIdentifier', 'customerPhone', 'disputeReason', 'externalOrderId', 'externalReference', 'flaggedForReview', 'fraudFlags', 'holdUntil', 'holdingDays', 'id', 'metadata', 'rejectionReason', 'reversalReason', 'reversedAt', 'source', 'sourceReference', 'status', 'updatedAt', 'uuid', 'validationErrors', 'vendorId'] as const
+  $columns = VendorConversionSchema.$columns
+  @column()
+  declare affiliateId: number | null
+  @column()
+  declare affiliateLinkCode: string | null
+  @column()
+  declare affiliateLinkId: number | null
+  @column()
+  declare amount: string
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedBy: number | null
+  @column()
+  declare campaignId: number
+  @column()
+  declare commissionAmount: string | null
+  @column()
+  declare commissionStatus: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare currency: string | null
+  @column()
+  declare customerEmail: string | null
+  @column()
+  declare customerIdentifier: string | null
+  @column()
+  declare customerPhone: string | null
+  @column()
+  declare disputeReason: string | null
+  @column()
+  declare externalOrderId: string
+  @column()
+  declare externalReference: string | null
+  @column()
+  declare flaggedForReview: boolean | null
+  @column()
+  declare fraudFlags: string | null
+  @column.dateTime()
+  declare holdUntil: DateTime | null
+  @column()
+  declare holdingDays: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare rejectionReason: string | null
+  @column()
+  declare reversalReason: string | null
+  @column.dateTime()
+  declare reversedAt: DateTime | null
+  @column()
+  declare source: string | null
+  @column()
+  declare sourceReference: string | null
+  @column()
+  declare status: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string
+  @column()
+  declare validationErrors: any | null
+  @column()
+  declare vendorId: number
+}
+
 export class WalletTransactionSchema extends BaseModel {
   static $columns = ['amount', 'balanceAfter', 'category', 'createdAt', 'description', 'id', 'referenceId', 'referenceType', 'type', 'uuid', 'walletId'] as const
   $columns = WalletTransactionSchema.$columns

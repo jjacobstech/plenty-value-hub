@@ -28,6 +28,7 @@ export const controllers = {
   Session: () => import('#controllers/session_controller'),
   SiteSettings: () => import('#controllers/site_settings_controller'),
   Upload: () => import('#controllers/upload_controller'),
+  VendorConversions: () => import('#controllers/vendor_conversions_controller'),
   Wallet: () => import('#controllers/wallet_controller'),
   Webhook: () => import('#controllers/webhook_controller'),
 }

@@ -234,6 +234,13 @@ router
         // External conversion reporting (vendor webhook endpoint)
         router.post('/campaigns/:campaignId/report-conversion', [controllers.PurchaseDestinations, 'recordConversion'])
 
+        // Vendor conversion reporting API
+        router.post('/campaigns/:campaignId/conversions', [controllers.VendorConversions, 'reportConversion'])
+        router.get('/campaigns/:campaignId/conversions', [controllers.VendorConversions, 'index'])
+        router.get('/conversions/:id', [controllers.VendorConversions, 'show'])
+        router.post('/conversions/:id/dispute', [controllers.VendorConversions, 'dispute'])
+        router.get('/campaigns/:campaignId/conversions/stats', [controllers.VendorConversions, 'getStats'])
+
         // Payments
 
         // Orders
@@ -294,6 +301,11 @@ router
             router.put('/campaigns/:id/reject', [controllers.Campaigns, 'reject'])
             router.post('/campaigns/:id/suspend', [controllers.Campaigns, 'suspend'])
             router.post('/campaigns/:id/unsuspend', [controllers.Campaigns, 'unsuspend'])
+
+            // Conversion management (admin approval/rejection)
+            router.put('/conversions/:id/approve', [controllers.VendorConversions, 'approve'])
+            router.put('/conversions/:id/reject', [controllers.VendorConversions, 'reject'])
+            router.post('/conversions/:id/reverse', [controllers.VendorConversions, 'reverse'])
 
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
