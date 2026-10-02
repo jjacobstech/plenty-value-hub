@@ -185,6 +185,9 @@ router
     router.get('/campaigns', [controllers.Campaigns, 'index'])
     router.get('/campaigns/:id', [controllers.Campaigns, 'show'])
 
+    // Purchase destination redirects (public)
+    router.get('/purchase-destinations/:token/redirect', [controllers.PurchaseDestinations, 'handleRedirect'])
+
     router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
     router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
@@ -222,6 +225,14 @@ router
         router.post('/campaigns/:id/pause', [controllers.Campaigns, 'pause'])
         router.post('/campaigns/:id/resume', [controllers.Campaigns, 'resume'])
         router.post('/campaigns/:id/archive', [controllers.Campaigns, 'archive'])
+
+        // Purchase destinations (vendor configuration)
+        router.put('/campaigns/:campaignId/purchase-destination', [controllers.PurchaseDestinations, 'configureCampaignDestination'])
+        router.post('/campaigns/:campaignId/purchase-destination-link', [controllers.PurchaseDestinations, 'generateRedirectLink'])
+        router.get('/campaigns/:campaignId/purchase-destination-stats', [controllers.PurchaseDestinations, 'getStats'])
+
+        // External conversion reporting (vendor webhook endpoint)
+        router.post('/campaigns/:campaignId/report-conversion', [controllers.PurchaseDestinations, 'recordConversion'])
 
         // Payments
 

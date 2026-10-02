@@ -22,6 +22,7 @@ export const controllers = {
   PaymentSettings: () => import('#controllers/payment_settings_controller'),
   Products: () => import('#controllers/products_controller'),
   Profile: () => import('#controllers/profile_controller'),
+  PurchaseDestinations: () => import('#controllers/purchase_destinations_controller'),
   Reviews: () => import('#controllers/reviews_controller'),
   Seo: () => import('#controllers/seo_controller'),
   Session: () => import('#controllers/session_controller'),

@@ -146,6 +146,37 @@ export default class Campaign extends BaseModel {
   @column()
   declare suspensionReason: string | null
 
+  // External purchase destination
+  @column()
+  declare purchaseDestinationUrl: string | null
+
+  @column()
+  declare purchaseDestinationType: 'external_url' | 'shopify' | 'woocommerce' | 'paystack' | 'flutterwave' | 'internal'
+
+  @column()
+  declare totalRedirects: number
+
+  @column()
+  declare totalExternalConversions: number
+
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare externalIntegrationConfig: any | null
+
+  @column()
+  declare webhookUrl: string | null
+
+  @column()
+  declare webhookSecret: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 

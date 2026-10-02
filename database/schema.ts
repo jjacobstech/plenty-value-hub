@@ -117,7 +117,7 @@ export class BlogPostSchema extends BaseModel {
 }
 
 export class CampaignSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'approvalNotes', 'approvedAt', 'attributionWindowDays', 'averageCommissionPerSale', 'category', 'commissionType', 'commissionValue', 'conversionRate', 'createdAt', 'description', 'endDate', 'featuredImageUrl', 'fixedFee', 'galleryUrls', 'id', 'isFeatured', 'name', 'promotionGuidelines', 'slug', 'startDate', 'status', 'suspendedAt', 'suspensionReason', 'tags', 'termsAndConditions', 'tieredCommissionStructure', 'totalClicks', 'totalCommissionPaid', 'totalConversions', 'updatedAt', 'uuid', 'vendorId', 'vendorName', 'visibilityRank'] as const
+  static $columns = ['affiliateResources', 'approvalNotes', 'approvedAt', 'attributionWindowDays', 'averageCommissionPerSale', 'category', 'commissionType', 'commissionValue', 'conversionRate', 'createdAt', 'description', 'endDate', 'externalIntegrationConfig', 'featuredImageUrl', 'fixedFee', 'galleryUrls', 'id', 'isFeatured', 'name', 'promotionGuidelines', 'purchaseDestinationType', 'purchaseDestinationUrl', 'slug', 'startDate', 'status', 'suspendedAt', 'suspensionReason', 'tags', 'termsAndConditions', 'tieredCommissionStructure', 'totalClicks', 'totalCommissionPaid', 'totalConversions', 'totalExternalConversions', 'totalRedirects', 'updatedAt', 'uuid', 'vendorId', 'vendorName', 'visibilityRank', 'webhookSecret', 'webhookUrl'] as const
   $columns = CampaignSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -144,6 +144,8 @@ export class CampaignSchema extends BaseModel {
   @column.dateTime()
   declare endDate: DateTime | null
   @column()
+  declare externalIntegrationConfig: any | null
+  @column()
   declare featuredImageUrl: string | null
   @column()
   declare fixedFee: string | null
@@ -157,6 +159,10 @@ export class CampaignSchema extends BaseModel {
   declare name: string
   @column()
   declare promotionGuidelines: string | null
+  @column()
+  declare purchaseDestinationType: string | null
+  @column()
+  declare purchaseDestinationUrl: string | null
   @column()
   declare slug: string | null
   @column.dateTime()
@@ -179,6 +185,10 @@ export class CampaignSchema extends BaseModel {
   declare totalCommissionPaid: string | null
   @column()
   declare totalConversions: number | null
+  @column()
+  declare totalExternalConversions: number | null
+  @column()
+  declare totalRedirects: number | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
   @column()
@@ -189,6 +199,10 @@ export class CampaignSchema extends BaseModel {
   declare vendorName: string | null
   @column()
   declare visibilityRank: number | null
+  @column()
+  declare webhookSecret: string | null
+  @column()
+  declare webhookUrl: string | null
 }
 
 export class EmailCampaignSchema extends BaseModel {
@@ -429,7 +443,7 @@ export class PayoutRequestSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'campaignId', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
+  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'campaignId', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'purchaseDestinationType', 'purchaseDestinationUrl', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -470,6 +484,10 @@ export class ProductSchema extends BaseModel {
   @column()
   declare productType: string
   @column()
+  declare purchaseDestinationType: string | null
+  @column()
+  declare purchaseDestinationUrl: string | null
+  @column()
   declare rating: string | null
   @column()
   declare recurringBilling: boolean | null
@@ -501,6 +519,49 @@ export class ProductSchema extends BaseModel {
   declare vendorId: number | null
   @column()
   declare vendorName: string | null
+}
+
+export class PurchaseDestinationSchema extends BaseModel {
+  static $columns = ['affiliateId', 'affiliateLinkId', 'campaignId', 'createdAt', 'customerEmail', 'customerIdentifier', 'destinationUrl', 'expiresAt', 'externalAmount', 'externalOrderId', 'externalReference', 'id', 'metadata', 'productId', 'redirectToken', 'redirectedAt', 'status', 'updatedAt', 'uuid'] as const
+  $columns = PurchaseDestinationSchema.$columns
+  @column()
+  declare affiliateId: number | null
+  @column()
+  declare affiliateLinkId: number | null
+  @column()
+  declare campaignId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare customerEmail: string | null
+  @column()
+  declare customerIdentifier: string | null
+  @column()
+  declare destinationUrl: string
+  @column.dateTime()
+  declare expiresAt: DateTime
+  @column()
+  declare externalAmount: string | null
+  @column()
+  declare externalOrderId: string | null
+  @column()
+  declare externalReference: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare productId: number | null
+  @column()
+  declare redirectToken: string
+  @column.dateTime()
+  declare redirectedAt: DateTime
+  @column()
+  declare status: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string
 }
 
 export class RateLimitSchema extends BaseModel {

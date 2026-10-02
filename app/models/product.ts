@@ -15,6 +15,12 @@ export default class Product extends ProductSchema {
   @column()
   declare campaignId: number | null
 
+  @column()
+  declare purchaseDestinationUrl: string | null
+
+  @column()
+  declare purchaseDestinationType: 'external_url' | 'shopify' | 'woocommerce' | 'paystack' | 'flutterwave' | 'internal'
+
   // JSON columns — serialize to string on write, parse on read
   @column({
     prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
