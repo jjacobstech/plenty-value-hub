@@ -2,7 +2,6 @@ import CommissionLedger from '#models/commission_ledger'
 import VendorConversion from '#models/vendor_conversion'
 import Campaign from '#models/campaign'
 import type { HttpContext } from '@adonisjs/core/http'
-import { DateTime } from 'luxon'
 
 export default class CommissionLedgerController {
   /**
@@ -13,7 +12,7 @@ export default class CommissionLedgerController {
 
     const commission = await CommissionLedger.create({
       vendorId: conversion.vendorId,
-      affiliateId: conversion.affiliateId,
+      affiliateId: conversion.affiliateId || undefined,
       campaignId: conversion.campaignId,
       vendorConversionId: conversion.id,
       affiliateLinkId: conversion.affiliateLinkId,

@@ -333,6 +333,16 @@ router
             router.post('/refunds-chargebacks/:id/reject', [controllers.RefundsChargebacks, 'reject'])
             router.post('/refunds-chargebacks/:id/complete', [controllers.RefundsChargebacks, 'complete'])
 
+            // Fraud analytics (admin & vendor)
+            router.get('/fraud/stats', [controllers.FraudAnalytics, 'getStats'])
+            router.get('/fraud/flagged', [controllers.FraudAnalytics, 'listFlagged'])
+            router.get('/fraud/:id/details', [controllers.FraudAnalytics, 'getFraudDetails'])
+            router.post('/fraud/:id/approve-flag', [controllers.FraudAnalytics, 'approveFraudFlag'])
+            router.post('/fraud/:id/reject-flag', [controllers.FraudAnalytics, 'rejectFraudFlag'])
+            router.post('/fraud/auto-reject-high-risk', [controllers.FraudAnalytics, 'autoRejectHighRisk'])
+            router.get('/fraud/trends', [controllers.FraudAnalytics, 'getTrends'])
+            router.get('/fraud/top-flags', [controllers.FraudAnalytics, 'getTopFlags'])
+
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])

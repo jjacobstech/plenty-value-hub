@@ -1,6 +1,7 @@
 import { OrderSchema } from '#database/schema'
 import { belongsTo, column, beforeSave } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { DateTime } from 'luxon'
 import User from '#models/user'
 import Product from '#models/product'
 import AffiliateLink from '#models/affiliate_link'
@@ -20,8 +21,8 @@ export default class Order extends OrderSchema {
   @column()
   declare conversionVerified: boolean
 
-  @column()
-  declare conversionVerifiedAt: Date | null
+  @column.dateTime()
+  declare conversionVerifiedAt: DateTime | null
 
   @column()
   declare conversionVerificationMethod: string | null
@@ -29,8 +30,8 @@ export default class Order extends OrderSchema {
   @column()
   declare isReversed: boolean
 
-  @column()
-  declare reversedAt: Date | null
+  @column.dateTime()
+  declare reversedAt: DateTime | null
 
   @column()
   declare reversalReason: string | null
@@ -38,8 +39,8 @@ export default class Order extends OrderSchema {
   @column()
   declare isDisputed: boolean
 
-  @column()
-  declare disputedAt: Date | null
+  @column.dateTime()
+  declare disputedAt: DateTime | null
 
   @column()
   declare disputeReason: string | null
@@ -47,8 +48,8 @@ export default class Order extends OrderSchema {
   @column()
   declare attributionWindowDays: number
 
-  @column()
-  declare attributionExpiresAt: Date | null
+  @column.dateTime()
+  declare attributionExpiresAt: DateTime | null
 
   @column({
     prepare: (v: any) => (v == null ? null : JSON.stringify(v)),

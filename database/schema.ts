@@ -958,7 +958,7 @@ export class UserSchema extends BaseModel {
 }
 
 export class VendorConversionSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkCode', 'affiliateLinkId', 'amount', 'approvedAt', 'approvedBy', 'attributionExpiresAt', 'campaignId', 'commissionAmount', 'commissionStatus', 'conversionVerified', 'conversionVerifiedAt', 'createdAt', 'currency', 'customerEmail', 'customerIdentifier', 'customerPhone', 'disputeReason', 'externalOrderId', 'externalReference', 'flaggedForReview', 'fraudFlags', 'holdUntil', 'holdingDays', 'id', 'metadata', 'rejectionReason', 'reversalReason', 'reversedAt', 'source', 'sourceReference', 'status', 'updatedAt', 'uuid', 'validationErrors', 'vendorId'] as const
+  static $columns = ['affiliateId', 'affiliateLinkCode', 'affiliateLinkId', 'amount', 'approvedAt', 'approvedBy', 'attributionExpiresAt', 'campaignId', 'commissionAmount', 'commissionStatus', 'conversionVerified', 'conversionVerifiedAt', 'createdAt', 'currency', 'customerEmail', 'customerIdentifier', 'customerPhone', 'deviceId', 'disputeReason', 'externalOrderId', 'externalReference', 'flaggedForReview', 'fraudFlags', 'fraudReviewAt', 'fraudReviewNotes', 'fraudRiskLevel', 'fraudScore', 'holdUntil', 'holdingDays', 'id', 'ipAddress', 'isFraudFlagged', 'metadata', 'rejectionReason', 'reversalReason', 'reversedAt', 'reviewedBy', 'source', 'sourceReference', 'status', 'updatedAt', 'userAgent', 'uuid', 'validationErrors', 'vendorId'] as const
   $columns = VendorConversionSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -995,6 +995,8 @@ export class VendorConversionSchema extends BaseModel {
   @column()
   declare customerPhone: string | null
   @column()
+  declare deviceId: string | null
+  @column()
   declare disputeReason: string | null
   @column()
   declare externalOrderId: string
@@ -1005,11 +1007,23 @@ export class VendorConversionSchema extends BaseModel {
   @column()
   declare fraudFlags: string | null
   @column.dateTime()
+  declare fraudReviewAt: DateTime | null
+  @column()
+  declare fraudReviewNotes: string | null
+  @column()
+  declare fraudRiskLevel: string | null
+  @column()
+  declare fraudScore: number | null
+  @column.dateTime()
   declare holdUntil: DateTime | null
   @column()
   declare holdingDays: number | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare ipAddress: string | null
+  @column()
+  declare isFraudFlagged: boolean | null
   @column()
   declare metadata: any | null
   @column()
@@ -1019,6 +1033,8 @@ export class VendorConversionSchema extends BaseModel {
   @column.dateTime()
   declare reversedAt: DateTime | null
   @column()
+  declare reviewedBy: number | null
+  @column()
   declare source: string | null
   @column()
   declare sourceReference: string | null
@@ -1026,6 +1042,8 @@ export class VendorConversionSchema extends BaseModel {
   declare status: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime | null
+  @column()
+  declare userAgent: string | null
   @column()
   declare uuid: string
   @column()

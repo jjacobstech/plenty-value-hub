@@ -1,15 +1,14 @@
 import RefundChargeback from '#models/refund_chargeback'
 import CommissionLedger from '#models/commission_ledger'
-import VendorConversion from '#models/vendor_conversion'
-import Order from '#models/order'
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 
 export default class RefundsChargebacksController {
   /**
    * Report a refund or chargeback
    * Vendors use this endpoint to report refunds from their systems
    */
-  async report({ params, request, auth, response }: HttpContext) {
+  async report({ request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
 
     if (user.role !== 'vendor') {
@@ -60,7 +59,7 @@ export default class RefundsChargebacksController {
       customerReason: customer_reason,
       orderId: order_id,
       vendorConversionId: vendor_conversion_id,
-      initiatedAt: new Date(),
+      initiatedAt: DateTime.now(),
       metadata,
       currency: 'NGN',
     })
@@ -75,7 +74,7 @@ export default class RefundsChargebacksController {
   /**
    * List refunds and chargebacks
    */
-  async index({ params, request, auth, response }: HttpContext) {
+  async index({ request, auth, response }: HttpContext) {
     const user = auth.use('web').user!
     const page = request.input('page', 1)
     const limit = request.input('limit', 20)

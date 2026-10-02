@@ -14,7 +14,7 @@ import { PaymentGatewayService } from '#services/payment_gateway_service'
 export class PayPalProvider implements PaymentProvider {
   private client: AxiosInstance
   private config: Record<string, any>
-  private accessToken: string | null = nullcontinue
+  private accessToken: string | null = null
   private tokenExpiry: number = 0
 
   constructor() {

@@ -1,10 +1,8 @@
 import VendorConversion from '#models/vendor_conversion'
 import Campaign from '#models/campaign'
 import AffiliateLink from '#models/affiliate_link'
-import User from '#models/user'
+import FraudDetectionService from '#services/fraud_detection_service'
 import type { HttpContext } from '@adonisjs/core/http'
-import { DateTime } from 'luxon'
-import crypto from 'node:crypto'
 
 export default class VendorConversionsController {
   /**
@@ -166,55 +164,23 @@ export default class VendorConversionsController {
    * Perform fraud detection on conversion
    */
   private async performFraudDetection(conversion: VendorConversion): Promise<void> {
-    const fraudFlags: string[] = []
+    const fraudFlags = await FraudDetectionService.detectFraud(
+      conversion.campaignId,
+      conversion.affiliateId || 0,
+      conversion.affiliateLinkId || 0,
+      conversion.amount,
+      conversion.customerEmail || '',
+      conversion.customerPhone || undefined,
+      conversion.ipAddress || undefined,
+      conversion.userAgent || undefined,
+      conversion.deviceId || undefined
+    )
 
-    // Check 1: Duplicate conversions from same customer in short time
-    const recentDuplicates = await VendorConversion.query()
-      .where('campaign_id', conversion.campaignId)
-      .where('customer_email', conversion.customerEmail)
-      .where('status', 'approved')
-      .where('created_at', '>', DateTime.now().minus({ hours: 1 }).toSQL())
-      .count('*', 'count')
-
-    if (recentDuplicates[0].$extras.count > 0) {
-      fraudFlags.push('duplicate_customer_recently')
-    }
-
-    // Check 2: High amount compared to average
-    const avgAmount = await VendorConversion.query()
-      .where('campaign_id', conversion.campaignId)
-      .where('status', 'approved')
-      .avg('amount', 'avgAmount')
-
-    const avgValue = avgAmount[0].$extras.avgAmount || 0
-    if (conversion.amount > avgValue * 3) {
-      fraudFlags.push('amount_unusually_high')
-    }
-
-    // Check 3: Multiple conversions from same affiliate in short time
-    if (conversion.affiliateId) {
-      const recentAffiliateConversions = await VendorConversion.query()
-        .where('campaign_id', conversion.campaignId)
-        .where('affiliate_id', conversion.affiliateId)
-        .where('status', 'approved')
-        .where('created_at', '>', DateTime.now().minus({ minutes: 30 }).toSQL())
-        .count('*', 'count')
-
-      if (recentAffiliateConversions[0].$extras.count > 5) {
-        fraudFlags.push('affiliate_suspicious_activity')
-      }
-    }
-
-    // Check 4: Missing or suspicious customer info
-    if (!conversion.customerEmail && !conversion.customerPhone && !conversion.customerIdentifier) {
-      fraudFlags.push('missing_customer_info')
-    }
-
-    // Update conversion if fraud flags found
-    if (fraudFlags.length > 0) {
-      conversion.fraudFlags = fraudFlags.join(',')
-      conversion.flaggedForReview = true
-    }
+    // Store fraud detection results
+    conversion.fraudFlags = JSON.stringify(fraudFlags)
+    conversion.fraudScore = fraudFlags.fraudScore
+    conversion.fraudRiskLevel = fraudFlags.riskLevel
+    conversion.isFraudFlagged = fraudFlags.fraudScore > 30 // Flag if score > 30
 
     await conversion.save()
   }

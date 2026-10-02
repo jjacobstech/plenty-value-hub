@@ -12,6 +12,7 @@ export const controllers = {
   Campaigns: () => import('#controllers/campaigns_controller'),
   CommissionLedger: () => import('#controllers/commission_ledger_controller'),
   EmailCampaigns: () => import('#controllers/email_campaigns_controller'),
+  FraudAnalytics: () => import('#controllers/fraud_analytics_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   NewsletterAdmin: () => import('#controllers/newsletter_admin_controller'),
   Newsletters: () => import('#controllers/newsletters_controller'),

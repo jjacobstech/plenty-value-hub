@@ -70,8 +70,44 @@ export default class VendorConversion extends BaseModel {
   @column()
   declare flaggedForReview: boolean
 
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare fraudFlags: any | null
+
   @column()
-  declare fraudFlags: string | null
+  declare fraudRiskLevel: 'low' | 'medium' | 'high' | 'critical'
+
+  @column()
+  declare fraudScore: number
+
+  @column()
+  declare isFraudFlagged: boolean
+
+  @column()
+  declare ipAddress: string | null
+
+  @column()
+  declare deviceId: string | null
+
+  @column()
+  declare userAgent: string | null
+
+  @column.dateTime()
+  declare fraudReviewAt: DateTime | null
+
+  @column()
+  declare reviewedBy: number | null
+
+  @column()
+  declare fraudReviewNotes: string | null
 
   @column()
   declare rejectionReason: string | null
