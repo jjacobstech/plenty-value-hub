@@ -117,7 +117,7 @@ export class BlogPostSchema extends BaseModel {
 }
 
 export class CampaignSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'approvalNotes', 'approvedAt', 'attributionWindowDays', 'averageCommissionPerSale', 'category', 'commissionType', 'commissionValue', 'conversionRate', 'createdAt', 'description', 'endDate', 'externalIntegrationConfig', 'featuredImageUrl', 'fixedFee', 'galleryUrls', 'id', 'isFeatured', 'name', 'promotionGuidelines', 'purchaseDestinationType', 'purchaseDestinationUrl', 'slug', 'startDate', 'status', 'suspendedAt', 'suspensionReason', 'tags', 'termsAndConditions', 'tieredCommissionStructure', 'totalClicks', 'totalCommissionPaid', 'totalConversions', 'totalExternalConversions', 'totalRedirects', 'updatedAt', 'uuid', 'vendorId', 'vendorName', 'visibilityRank', 'webhookSecret', 'webhookUrl'] as const
+  static $columns = ['affiliateResources', 'approvalNotes', 'approvedAt', 'attributionWindowDays', 'averageCommissionPerSale', 'category', 'commissionApprovalThreshold', 'commissionTiers', 'commissionType', 'commissionValue', 'conversionRate', 'createdAt', 'description', 'endDate', 'externalIntegrationConfig', 'featuredImageUrl', 'fixedFee', 'galleryUrls', 'id', 'isFeatured', 'maxCommission', 'minCommission', 'name', 'promotionGuidelines', 'purchaseDestinationType', 'purchaseDestinationUrl', 'requireCommissionApproval', 'slug', 'startDate', 'status', 'suspendedAt', 'suspensionReason', 'tags', 'termsAndConditions', 'tieredCommissionStructure', 'totalClicks', 'totalCommissionPaid', 'totalConversions', 'totalExternalConversions', 'totalRedirects', 'updatedAt', 'uuid', 'vendorId', 'vendorName', 'visibilityRank', 'volumeBonuses', 'webhookSecret', 'webhookUrl'] as const
   $columns = CampaignSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -131,6 +131,10 @@ export class CampaignSchema extends BaseModel {
   declare averageCommissionPerSale: string | null
   @column()
   declare category: string
+  @column()
+  declare commissionApprovalThreshold: number | null
+  @column()
+  declare commissionTiers: any | null
   @column()
   declare commissionType: string | null
   @column()
@@ -156,6 +160,10 @@ export class CampaignSchema extends BaseModel {
   @column()
   declare isFeatured: boolean | null
   @column()
+  declare maxCommission: string | null
+  @column()
+  declare minCommission: string | null
+  @column()
   declare name: string
   @column()
   declare promotionGuidelines: string | null
@@ -163,6 +171,8 @@ export class CampaignSchema extends BaseModel {
   declare purchaseDestinationType: string | null
   @column()
   declare purchaseDestinationUrl: string | null
+  @column()
+  declare requireCommissionApproval: boolean | null
   @column()
   declare slug: string | null
   @column.dateTime()
@@ -199,6 +209,8 @@ export class CampaignSchema extends BaseModel {
   declare vendorName: string | null
   @column()
   declare visibilityRank: number | null
+  @column()
+  declare volumeBonuses: any | null
   @column()
   declare webhookSecret: string | null
   @column()
@@ -401,7 +413,7 @@ export class NotificationSchema extends BaseModel {
 }
 
 export class OrderSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'campaignId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'quantity', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
+  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'attributionExpiresAt', 'attributionWindowDays', 'buyerEmail', 'buyerId', 'campaignId', 'commissionAmount', 'conversionStatus', 'conversionValidationMetadata', 'conversionVerificationMethod', 'conversionVerified', 'conversionVerifiedAt', 'createdAt', 'currency', 'disputeReason', 'disputedAt', 'id', 'isDisputed', 'isReversed', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'quantity', 'reversalReason', 'reversedAt', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
   $columns = OrderSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -409,6 +421,10 @@ export class OrderSchema extends BaseModel {
   declare affiliateLinkId: number | null
   @column()
   declare amount: string
+  @column.dateTime()
+  declare attributionExpiresAt: DateTime | null
+  @column()
+  declare attributionWindowDays: number | null
   @column()
   declare buyerEmail: string | null
   @column()
@@ -417,12 +433,30 @@ export class OrderSchema extends BaseModel {
   declare campaignId: number | null
   @column()
   declare commissionAmount: string | null
+  @column()
+  declare conversionStatus: string | null
+  @column()
+  declare conversionValidationMetadata: any | null
+  @column()
+  declare conversionVerificationMethod: string | null
+  @column()
+  declare conversionVerified: boolean | null
+  @column.dateTime()
+  declare conversionVerifiedAt: DateTime | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()
   declare currency: string | null
+  @column()
+  declare disputeReason: string | null
+  @column.dateTime()
+  declare disputedAt: DateTime | null
   @column({ isPrimary: true })
   declare id: number
+  @column()
+  declare isDisputed: boolean | null
+  @column()
+  declare isReversed: boolean | null
   @column()
   declare orderNumber: string
   @column()
@@ -435,6 +469,10 @@ export class OrderSchema extends BaseModel {
   declare productName: string | null
   @column()
   declare quantity: number
+  @column()
+  declare reversalReason: string | null
+  @column.dateTime()
+  declare reversedAt: DateTime | null
   @column()
   declare shippingDetails: any | null
   @column()
@@ -516,7 +554,7 @@ export class PayoutRequestSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'campaignId', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'purchaseDestinationType', 'purchaseDestinationUrl', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
+  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'campaignId', 'category', 'commissionRate', 'commissionTiers', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'maxCommission', 'minCommission', 'name', 'price', 'productType', 'purchaseDestinationType', 'purchaseDestinationUrl', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -530,6 +568,8 @@ export class ProductSchema extends BaseModel {
   declare category: string
   @column()
   declare commissionRate: string
+  @column()
+  declare commissionTiers: any | null
   @column()
   declare conversionRate: string | null
   @column.dateTime({ autoCreate: true })
@@ -550,6 +590,10 @@ export class ProductSchema extends BaseModel {
   declare imageUrl: string | null
   @column()
   declare isFeatured: boolean | null
+  @column()
+  declare maxCommission: string | null
+  @column()
+  declare minCommission: string | null
   @column()
   declare name: string
   @column()
@@ -646,6 +690,71 @@ export class RateLimitSchema extends BaseModel {
   declare key: string
   @column()
   declare points: number
+}
+
+export class RefundsChargebackSchema extends BaseModel {
+  static $columns = ['approvalNotes', 'approvedAt', 'approvedBy', 'commissionAmountReversed', 'commissionLedgerId', 'commissionReversed', 'commissionReversedAt', 'commissionToReverse', 'completedAt', 'createdAt', 'currency', 'customerReason', 'externalId', 'externalReference', 'id', 'initiatedAt', 'internalNotes', 'metadata', 'orderId', 'originalAmount', 'reason', 'refundAmount', 'rejectedAt', 'status', 'type', 'updatedAt', 'uuid', 'vendorConversionId', 'vendorId', 'verifiedAt'] as const
+  $columns = RefundsChargebackSchema.$columns
+  @column()
+  declare approvalNotes: string | null
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedBy: number | null
+  @column()
+  declare commissionAmountReversed: string | null
+  @column()
+  declare commissionLedgerId: number | null
+  @column()
+  declare commissionReversed: boolean | null
+  @column.dateTime()
+  declare commissionReversedAt: DateTime | null
+  @column()
+  declare commissionToReverse: string | null
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare currency: string | null
+  @column()
+  declare customerReason: string | null
+  @column()
+  declare externalId: string
+  @column()
+  declare externalReference: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime()
+  declare initiatedAt: DateTime
+  @column()
+  declare internalNotes: string | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare orderId: number | null
+  @column()
+  declare originalAmount: string
+  @column()
+  declare reason: string | null
+  @column()
+  declare refundAmount: string
+  @column.dateTime()
+  declare rejectedAt: DateTime | null
+  @column()
+  declare status: string | null
+  @column()
+  declare type: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string
+  @column()
+  declare vendorConversionId: number | null
+  @column()
+  declare vendorId: number
+  @column.dateTime()
+  declare verifiedAt: DateTime | null
 }
 
 export class ReviewSchema extends BaseModel {
@@ -849,7 +958,7 @@ export class UserSchema extends BaseModel {
 }
 
 export class VendorConversionSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkCode', 'affiliateLinkId', 'amount', 'approvedAt', 'approvedBy', 'campaignId', 'commissionAmount', 'commissionStatus', 'createdAt', 'currency', 'customerEmail', 'customerIdentifier', 'customerPhone', 'disputeReason', 'externalOrderId', 'externalReference', 'flaggedForReview', 'fraudFlags', 'holdUntil', 'holdingDays', 'id', 'metadata', 'rejectionReason', 'reversalReason', 'reversedAt', 'source', 'sourceReference', 'status', 'updatedAt', 'uuid', 'validationErrors', 'vendorId'] as const
+  static $columns = ['affiliateId', 'affiliateLinkCode', 'affiliateLinkId', 'amount', 'approvedAt', 'approvedBy', 'attributionExpiresAt', 'campaignId', 'commissionAmount', 'commissionStatus', 'conversionVerified', 'conversionVerifiedAt', 'createdAt', 'currency', 'customerEmail', 'customerIdentifier', 'customerPhone', 'disputeReason', 'externalOrderId', 'externalReference', 'flaggedForReview', 'fraudFlags', 'holdUntil', 'holdingDays', 'id', 'metadata', 'rejectionReason', 'reversalReason', 'reversedAt', 'source', 'sourceReference', 'status', 'updatedAt', 'uuid', 'validationErrors', 'vendorId'] as const
   $columns = VendorConversionSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -863,12 +972,18 @@ export class VendorConversionSchema extends BaseModel {
   declare approvedAt: DateTime | null
   @column()
   declare approvedBy: number | null
+  @column.dateTime()
+  declare attributionExpiresAt: DateTime | null
   @column()
   declare campaignId: number
   @column()
   declare commissionAmount: string | null
   @column()
   declare commissionStatus: string | null
+  @column()
+  declare conversionVerified: boolean | null
+  @column.dateTime()
+  declare conversionVerifiedAt: DateTime | null
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
   @column()

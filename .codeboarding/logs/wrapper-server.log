@@ -165,3 +165,34 @@ INFO:     127.0.0.1:45886 - "GET /health HTTP/1.1" 200 OK
 [stderr] 2026-10-02 17:51:44 INFO     [watchfiles.main:308] 1 change detected
 [stderr] 2026-10-02 17:51:45 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
 [stderr] 2026-10-02 17:51:45 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:10:26 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:10:27 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:10:27 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:10:35 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:10:36 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:10:36 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:10:40 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:10:41 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:10:41 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:10:46 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:10:46 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:10:46 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:11:03 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:11:04 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:11:04 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:11:07 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:11:08 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:11:08 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:11:12 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:11:12 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:11:12 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:11:16 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:11:16 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:11:16 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:11:22 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:11:22 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:11:22 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-02 18:27:10 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-02 18:27:43 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-02 18:27:44 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-02 18:27:44 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report

@@ -247,6 +247,12 @@ router
         router.post('/commissions/:id/dispute', [controllers.CommissionLedger, 'dispute'])
         router.get('/commissions/stats', [controllers.CommissionLedger, 'getStats'])
 
+        // Refunds and chargebacks (vendor reporting)
+        router.post('/refunds-chargebacks/report', [controllers.RefundsChargebacks, 'report'])
+        router.get('/refunds-chargebacks', [controllers.RefundsChargebacks, 'index'])
+        router.get('/refunds-chargebacks/:id', [controllers.RefundsChargebacks, 'show'])
+        router.get('/refunds-chargebacks/stats', [controllers.RefundsChargebacks, 'getStats'])
+
         // Payments
 
         // Orders
@@ -320,6 +326,12 @@ router
             router.post('/commissions/:id/release-hold', [controllers.CommissionLedger, 'releaseFromHold'])
             router.post('/commissions/:id/resolve-dispute', [controllers.CommissionLedger, 'resolveDispute'])
             router.post('/commissions/bulk-approve', [controllers.CommissionLedger, 'bulkApprove'])
+
+            // Refund and chargeback management (admin)
+            router.post('/refunds-chargebacks/:id/verify', [controllers.RefundsChargebacks, 'verify'])
+            router.post('/refunds-chargebacks/:id/approve', [controllers.RefundsChargebacks, 'approve'])
+            router.post('/refunds-chargebacks/:id/reject', [controllers.RefundsChargebacks, 'reject'])
+            router.post('/refunds-chargebacks/:id/complete', [controllers.RefundsChargebacks, 'complete'])
 
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])

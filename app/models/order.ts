@@ -14,6 +14,54 @@ export default class Order extends OrderSchema {
   @column()
   declare campaignId: number | null
 
+  @column()
+  declare conversionStatus: 'pending' | 'approved' | 'rejected' | 'reversed' | 'disputed'
+
+  @column()
+  declare conversionVerified: boolean
+
+  @column()
+  declare conversionVerifiedAt: Date | null
+
+  @column()
+  declare conversionVerificationMethod: string | null
+
+  @column()
+  declare isReversed: boolean
+
+  @column()
+  declare reversedAt: Date | null
+
+  @column()
+  declare reversalReason: string | null
+
+  @column()
+  declare isDisputed: boolean
+
+  @column()
+  declare disputedAt: Date | null
+
+  @column()
+  declare disputeReason: string | null
+
+  @column()
+  declare attributionWindowDays: number
+
+  @column()
+  declare attributionExpiresAt: Date | null
+
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare conversionValidationMetadata: any | null
+
   @beforeSave()
   static async generateUuid(order: Order) {
     if (!order.uuid) {

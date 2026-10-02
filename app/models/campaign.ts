@@ -146,6 +146,43 @@ export default class Campaign extends BaseModel {
   @column()
   declare suspensionReason: string | null
 
+  // Advanced commission configuration
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare commissionTiers: any | null
+
+  @column({
+    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
+    consume: (v: any) => {
+      if (v == null) return null
+      if (typeof v === 'string') {
+        try { return JSON.parse(v) } catch { return v }
+      }
+      return v
+    },
+  })
+  declare volumeBonuses: any | null
+
+  @column()
+  declare minCommission: number | null
+
+  @column()
+  declare maxCommission: number | null
+
+  @column()
+  declare requireCommissionApproval: boolean
+
+  @column()
+  declare commissionApprovalThreshold: number | null
+
   // External purchase destination
   @column()
   declare purchaseDestinationUrl: string | null
