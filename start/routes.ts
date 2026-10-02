@@ -343,6 +343,18 @@ router
             router.get('/fraud/trends', [controllers.FraudAnalytics, 'getTrends'])
             router.get('/fraud/top-flags', [controllers.FraudAnalytics, 'getTopFlags'])
 
+            // Analytics dashboard (admin & vendor)
+            router.get('/analytics/metrics', [controllers.Analytics, 'getMetrics'])
+            router.get('/analytics/summary', [controllers.Analytics, 'getSummary'])
+            router.get('/analytics/campaigns', [controllers.Analytics, 'listCampaigns'])
+            router.get('/analytics/campaigns/:id', [controllers.Analytics, 'getCampaignMetrics'])
+            router.get('/analytics/affiliates', [controllers.Analytics, 'listAffiliates'])
+            router.get('/analytics/affiliates/:id', [controllers.Analytics, 'getAffiliateMetrics'])
+            router.get('/analytics/commissions', [controllers.Analytics, 'getCommissions'])
+            router.get('/analytics/commission-schedule', [controllers.Analytics, 'getCommissionSchedule'])
+            router.get('/analytics/export/conversions', [controllers.Analytics, 'exportConversions'])
+            router.get('/analytics/export/commissions', [controllers.Analytics, 'exportCommissions'])
+
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])

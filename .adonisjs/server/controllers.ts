@@ -7,6 +7,7 @@ export const controllers = {
   AdminAuth: () => import('#controllers/admin_auth_controller'),
   Admin: () => import('#controllers/admin_controller'),
   AffiliateLinks: () => import('#controllers/affiliate_links_controller'),
+  Analytics: () => import('#controllers/analytics_controller'),
   Api: () => import('#controllers/api_controller'),
   BlogPosts: () => import('#controllers/blog_posts_controller'),
   Campaigns: () => import('#controllers/campaigns_controller'),
