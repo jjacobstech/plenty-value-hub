@@ -79,11 +79,48 @@ Implementing Priority 2 features for Plenty Value Hub affiliate marketing platfo
 
 **Build Status**: ✅ Passing (0 TypeScript errors)
 
-## Pending Priority 2 Tasks
-- Influencer profiles and management
-- Content collaboration tools
-- Revenue sharing agreements
-- Performance tracking for creators
+## RESTRUCTURED PRIORITY 2 TASKS (Phase 1 MVP Focus)
+
+### Phase 1 - Core Affiliate Network (MVP - 9 tasks)
+1. Campaign Management System
+2. Affiliate Link & Tracking System
+3. Click & Conversion Tracking
+4. Commission Ledger System
+5. Payout Management System
+6. Vendor Dashboard
+7. Affiliate Dashboard
+8. Admin Dashboard
+9. Campaign Discovery System
+
+### Phase 2 - Integrations (Keep)
+- Shopify Integration (Task 4) ✅
+- WooCommerce Integration (Task 5) ✅
+- API/Webhook/Tracking Pixel Framework
+
+### Phase 3 - Creator Network (Defer)
+- Creator/Influencer Features (Task 3)
+- Creator discovery
+- UGC campaigns
+- Hybrid campaigns
+
+### Phase 4 - Advanced Performance (Defer)
+- Advanced Fraud Detection (Task 1)
+- Advanced Reporting & Exports (Task 8)
+- Commission Disputes Resolution (Task 9)
+- Fraud monitoring
+- Smart recommendations
+
+### Phase 5 - Regional Expansion (Defer)
+- Multi-Currency Support (Task 6)
+- Multiple countries support
+- Local payment methods
+
+### Removed Tasks
+- ❌ Task 11: Mobile API (not applicable - web platform only)
+- ❌ Task 10: Affiliate Tier System (not in PRD scope)
+
+### Tasks to Simplify
+- Task 7: Advanced KYC → Basic Vendor Verification only
 
 ### Task 4: Shopify Integration ✅
 **Status**: Complete
@@ -290,22 +327,34 @@ Implementing Priority 2 features for Plenty Value Hub affiliate marketing platfo
 - Role-based access control
 - JSON serialization for complex data
 
-## Next Steps
+## RESTRUCTURING NOTICE
 
-Proceed to **Task 11: Mobile API (iOS/Android)** which includes:
-- RESTful API optimization for mobile
-- Native app endpoints
-- Mobile authentication flow
-- Estimated effort: 20 hours, High complexity
+**Priority 2 has been restructured to align with PRD Phase 1 MVP requirements.**
+
+Previous approach focused on advanced features (Phases 2-4) before completing MVP core.
+
+New approach:
+- **Phase 1 (MVP)**: 9 core tasks - Campaign management, tracking, dashboards, payouts
+- **Phase 2**: Integrations (Shopify, WooCommerce already done)
+- **Phase 3+**: Creator network, advanced features, regional expansion
+
+**Removed Tasks**: 2
+- Mobile API (not applicable to web platform)
+- Affiliate Tier System (not in PRD spec)
+
+**Completed but Out of Phase**:
+- Tasks 1-10 implemented advanced features before MVP core was complete
+- Task 4-5 (Integrations) belong in Phase 2 but acceptable
+- Tasks 1, 6, 8 belong in Phase 4-5 but can remain for Priority 2 value-add
 
 ---
 **Last Updated**: 2026-10-02
+**Current Status**: Restructuring Priority 2 to match PRD Phases
 **Build Status**: ✅ Passing (0 TypeScript errors)
-**Total Progress**: 10/18 tasks complete (56%)
-**Lines of Code Added This Session**: ~12,000+
-**Database Migrations**: 8
-**Models Created**: 34
-**Services**: 9
-**Controllers**: 9
-**API Endpoints**: 116 total
-**New Endpoints This Task**: 19 (affiliate recruitment, tiering, referrals, campaigns)
+**Completed Tasks**: 10 (advanced features)
+**Pending Core MVP Tasks**: 9 (must build next)
+**Total Lines of Code**: ~12,000+
+**Total Models**: 34 (includes out-of-scope tier system)
+**Total Services**: 9
+**Total Controllers**: 9
+**Total API Endpoints**: 116
