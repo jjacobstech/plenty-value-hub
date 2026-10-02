@@ -31,6 +31,7 @@ export const controllers = {
   Reviews: () => import('#controllers/reviews_controller'),
   Seo: () => import('#controllers/seo_controller'),
   Session: () => import('#controllers/session_controller'),
+  Shopify: () => import('#controllers/shopify_controller'),
   SiteSettings: () => import('#controllers/site_settings_controller'),
   Upload: () => import('#controllers/upload_controller'),
   VendorConversions: () => import('#controllers/vendor_conversions_controller'),

@@ -185,6 +185,9 @@ router
     router.get('/campaigns', [controllers.Campaigns, 'index'])
     router.get('/campaigns/:id', [controllers.Campaigns, 'show'])
 
+    // Shopify OAuth callback
+    router.get('/shopify/callback', [controllers.Shopify, 'handleCallback'])
+
     // Purchase destination redirects (public)
     router.get('/purchase-destinations/:token/redirect', [controllers.PurchaseDestinations, 'handleRedirect'])
 
@@ -378,6 +381,19 @@ router
             router.get('/admin/influencers/:id', [controllers.Influencers, 'viewInfluencer'])
             router.post('/admin/influencers/:id/verify', [controllers.Influencers, 'verifyInfluencer'])
             router.post('/admin/influencers/:id/reject', [controllers.Influencers, 'rejectInfluencer'])
+
+            // Shopify integration (vendor)
+            router.post('/shopify/auth-url', [controllers.Shopify, 'getAuthUrl'])
+            router.get('/shopify/store', [controllers.Shopify, 'getStore'])
+            router.post('/shopify/disconnect', [controllers.Shopify, 'disconnect'])
+            router.post('/shopify/sync/products', [controllers.Shopify, 'syncProducts'])
+            router.post('/shopify/sync/orders', [controllers.Shopify, 'syncOrders'])
+            router.get('/shopify/products', [controllers.Shopify, 'listProducts'])
+            router.put('/shopify/products/:id', [controllers.Shopify, 'updateProduct'])
+            router.get('/shopify/orders', [controllers.Shopify, 'listOrders'])
+            router.get('/shopify/orders/:id', [controllers.Shopify, 'getOrder'])
+            router.post('/shopify/commissions/calculate', [controllers.Shopify, 'calculateCommissions'])
+            router.get('/shopify/analytics', [controllers.Shopify, 'getAnalytics'])
 
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
