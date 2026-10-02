@@ -355,6 +355,30 @@ router
             router.get('/analytics/export/conversions', [controllers.Analytics, 'exportConversions'])
             router.get('/analytics/export/commissions', [controllers.Analytics, 'exportCommissions'])
 
+            // Influencer profiles (affiliate)
+            router.post('/influencers/profile', [controllers.Influencers, 'createProfile'])
+            router.get('/influencers/profile', [controllers.Influencers, 'getProfile'])
+            router.put('/influencers/profile', [controllers.Influencers, 'updateProfile'])
+            router.get('/influencers/stats', [controllers.Influencers, 'getStats'])
+
+            // Collaborations (affiliate)
+            router.get('/influencers/collaborations', [controllers.Influencers, 'listCollaborations'])
+            router.get('/influencers/collaborations/:id', [controllers.Influencers, 'getCollaboration'])
+            router.post('/influencers/collaborations/:id/accept', [controllers.Influencers, 'acceptCollaboration'])
+
+            // Content (affiliate)
+            router.post('/influencers/content', [controllers.Influencers, 'createContent'])
+            router.get('/influencers/content', [controllers.Influencers, 'listContent'])
+            router.get('/influencers/content/:id/analytics', [controllers.Influencers, 'getContentAnalytics'])
+            router.get('/influencers/content/performance', [controllers.Influencers, 'getContentPerformance'])
+            router.put('/influencers/content/:id', [controllers.Influencers, 'updateContent'])
+
+            // Admin: Influencer management
+            router.get('/admin/influencers', [controllers.Influencers, 'listInfluencers'])
+            router.get('/admin/influencers/:id', [controllers.Influencers, 'viewInfluencer'])
+            router.post('/admin/influencers/:id/verify', [controllers.Influencers, 'verifyInfluencer'])
+            router.post('/admin/influencers/:id/reject', [controllers.Influencers, 'rejectInfluencer'])
+
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
