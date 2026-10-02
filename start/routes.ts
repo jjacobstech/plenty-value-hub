@@ -180,6 +180,11 @@ router
     // ── Public endpoints ──────────────────────────────────────────────
     router.get('/products', [controllers.Products, 'index'])
     router.get('/products/:id', [controllers.Products, 'show'])
+
+    // Campaigns (public endpoints)
+    router.get('/campaigns', [controllers.Campaigns, 'index'])
+    router.get('/campaigns/:id', [controllers.Campaigns, 'show'])
+
     router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
     router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
@@ -208,6 +213,15 @@ router
         router.post('/products', [controllers.Products, 'store'])
         router.put('/products/:id', [controllers.Products, 'update'])
         router.delete('/products/:id', [controllers.Products, 'destroy'])
+
+        // Campaigns (vendor)
+        router.post('/campaigns', [controllers.Campaigns, 'store'])
+        router.put('/campaigns/:id', [controllers.Campaigns, 'update'])
+        router.delete('/campaigns/:id', [controllers.Campaigns, 'destroy'])
+        router.post('/campaigns/:id/submit', [controllers.Campaigns, 'submit'])
+        router.post('/campaigns/:id/pause', [controllers.Campaigns, 'pause'])
+        router.post('/campaigns/:id/resume', [controllers.Campaigns, 'resume'])
+        router.post('/campaigns/:id/archive', [controllers.Campaigns, 'archive'])
 
         // Payments
 
@@ -263,6 +277,13 @@ router
             router.get('/debug/banks', [controllers.Admin, 'debugPaystackBanks'])
             router.post('/debug/test-email', [controllers.Admin, 'testEmail'])
             router.put('/products/:id/approve', [controllers.Products, 'approve'])
+
+            // Campaign management (admin approval/suspension)
+            router.put('/campaigns/:id/approve', [controllers.Campaigns, 'approve'])
+            router.put('/campaigns/:id/reject', [controllers.Campaigns, 'reject'])
+            router.post('/campaigns/:id/suspend', [controllers.Campaigns, 'suspend'])
+            router.post('/campaigns/:id/unsuspend', [controllers.Campaigns, 'unsuspend'])
+
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
