@@ -5,11 +5,15 @@ import User from '#models/user'
 import Order from '#models/order'
 import AffiliateLink from '#models/affiliate_link'
 import Review from '#models/review'
+import Campaign from '#models/campaign'
 import crypto from 'node:crypto'
 
 export default class Product extends ProductSchema {
   @column()
   declare uuid: string
+
+  @column()
+  declare campaignId: number | null
 
   // JSON columns — serialize to string on write, parse on read
   @column({
@@ -57,6 +61,9 @@ export default class Product extends ProductSchema {
 
   @belongsTo(() => User, { foreignKey: 'vendorId' })
   declare vendor: BelongsTo<typeof User>
+
+  @belongsTo(() => Campaign, { foreignKey: 'campaignId' })
+  declare campaign: BelongsTo<typeof Campaign>
 
   @hasMany(() => Order, { foreignKey: 'productId' })
   declare orders: HasMany<typeof Order>

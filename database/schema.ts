@@ -39,10 +39,12 @@ export class ActivityLogSchema extends BaseModel {
 }
 
 export class AffiliateLinkSchema extends BaseModel {
-  static $columns = ['affiliateId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt', 'uuid'] as const
+  static $columns = ['affiliateId', 'campaignId', 'campaignName', 'clicks', 'commissionEarned', 'conversions', 'createdAt', 'id', 'linkCode', 'productId', 'productName', 'revenue', 'status', 'subId', 'updatedAt', 'uuid'] as const
   $columns = AffiliateLinkSchema.$columns
   @column()
   declare affiliateId: number
+  @column()
+  declare campaignId: number | null
   @column()
   declare campaignName: string | null
   @column()
@@ -112,6 +114,81 @@ export class BlogPostSchema extends BaseModel {
   declare uuid: string | null
   @column()
   declare viewCount: number | null
+}
+
+export class CampaignSchema extends BaseModel {
+  static $columns = ['affiliateResources', 'approvalNotes', 'approvedAt', 'attributionWindowDays', 'averageCommissionPerSale', 'category', 'commissionType', 'commissionValue', 'conversionRate', 'createdAt', 'description', 'endDate', 'featuredImageUrl', 'fixedFee', 'galleryUrls', 'id', 'isFeatured', 'name', 'promotionGuidelines', 'slug', 'startDate', 'status', 'suspendedAt', 'suspensionReason', 'tags', 'termsAndConditions', 'tieredCommissionStructure', 'totalClicks', 'totalCommissionPaid', 'totalConversions', 'updatedAt', 'uuid', 'vendorId', 'vendorName', 'visibilityRank'] as const
+  $columns = CampaignSchema.$columns
+  @column()
+  declare affiliateResources: any | null
+  @column()
+  declare approvalNotes: string | null
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare attributionWindowDays: number | null
+  @column()
+  declare averageCommissionPerSale: string | null
+  @column()
+  declare category: string
+  @column()
+  declare commissionType: string | null
+  @column()
+  declare commissionValue: string
+  @column()
+  declare conversionRate: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare description: string | null
+  @column.dateTime()
+  declare endDate: DateTime | null
+  @column()
+  declare featuredImageUrl: string | null
+  @column()
+  declare fixedFee: string | null
+  @column()
+  declare galleryUrls: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isFeatured: boolean | null
+  @column()
+  declare name: string
+  @column()
+  declare promotionGuidelines: string | null
+  @column()
+  declare slug: string | null
+  @column.dateTime()
+  declare startDate: DateTime | null
+  @column()
+  declare status: string | null
+  @column.dateTime()
+  declare suspendedAt: DateTime | null
+  @column()
+  declare suspensionReason: string | null
+  @column()
+  declare tags: any | null
+  @column()
+  declare termsAndConditions: string | null
+  @column()
+  declare tieredCommissionStructure: any | null
+  @column()
+  declare totalClicks: number | null
+  @column()
+  declare totalCommissionPaid: string | null
+  @column()
+  declare totalConversions: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string
+  @column()
+  declare vendorId: number
+  @column()
+  declare vendorName: string | null
+  @column()
+  declare visibilityRank: number | null
 }
 
 export class EmailCampaignSchema extends BaseModel {
@@ -237,7 +314,7 @@ export class NotificationSchema extends BaseModel {
 }
 
 export class OrderSchema extends BaseModel {
-  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'quantity', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
+  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'buyerEmail', 'buyerId', 'campaignId', 'commissionAmount', 'createdAt', 'currency', 'id', 'orderNumber', 'paymentMethod', 'platformFee', 'productId', 'productName', 'quantity', 'shippingDetails', 'status', 'updatedAt', 'uuid', 'vendorId', 'vendorPayout'] as const
   $columns = OrderSchema.$columns
   @column()
   declare affiliateId: number | null
@@ -249,6 +326,8 @@ export class OrderSchema extends BaseModel {
   declare buyerEmail: string | null
   @column()
   declare buyerId: number | null
+  @column()
+  declare campaignId: number | null
   @column()
   declare commissionAmount: string | null
   @column.dateTime({ autoCreate: true })
@@ -350,7 +429,7 @@ export class PayoutRequestSchema extends BaseModel {
 }
 
 export class ProductSchema extends BaseModel {
-  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
+  static $columns = ['affiliateResources', 'avgEarningsPerSale', 'billingCycle', 'campaignId', 'category', 'commissionRate', 'conversionRate', 'createdAt', 'description', 'digitalAssetName', 'digitalAssetUrl', 'galleryUrls', 'gravityScore', 'id', 'imageUrl', 'isFeatured', 'name', 'price', 'productType', 'rating', 'recurringBilling', 'refundRate', 'reviewCount', 'salePrice', 'shortDescription', 'slug', 'status', 'tags', 'totalRevenue', 'totalSales', 'unitCount', 'updatedAt', 'uuid', 'vendorId', 'vendorName'] as const
   $columns = ProductSchema.$columns
   @column()
   declare affiliateResources: any | null
@@ -358,6 +437,8 @@ export class ProductSchema extends BaseModel {
   declare avgEarningsPerSale: string | null
   @column()
   declare billingCycle: string | null
+  @column()
+  declare campaignId: number | null
   @column()
   declare category: string
   @column()
@@ -529,7 +610,7 @@ export class TransactionSchema extends BaseModel {
 }
 
 export class UserSchema extends BaseModel {
-  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'lastTransferAt', 'lastTransferReference', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutAccountNumber', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMetadata', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'paystackBankCode', 'paystackBankName', 'paystackRecipientCode', 'paystackRecipientVerified', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
+  static $columns = ['bio', 'businessDescription', 'businessLogo', 'businessName', 'businessType', 'country', 'coverBanner', 'createdAt', 'email', 'emailVerifiedAt', 'fullName', 'heardAbout', 'id', 'instagram', 'lastTransferAt', 'lastTransferReference', 'location', 'marketingChannels', 'niche', 'otpCode', 'otpExpiresAt', 'password', 'payoutAccountId', 'payoutAccountName', 'payoutAccountNumber', 'payoutBankName', 'payoutDetails', 'payoutEmail', 'payoutMetadata', 'payoutMethod', 'payoutMobileNumber', 'payoutMobileProvider', 'payoutRoutingNumber', 'payoutSwiftCode', 'paystackBankCode', 'paystackBankName', 'paystackRecipientCode', 'paystackRecipientVerified', 'phone', 'productCategories', 'profilePicture', 'resetToken', 'resetTokenExpiresAt', 'role', 'status', 'twitter', 'updatedAt', 'uuid', 'website', 'youtube'] as const
   $columns = UserSchema.$columns
   @column()
   declare bio: string | null
@@ -619,6 +700,8 @@ export class UserSchema extends BaseModel {
   declare resetTokenExpiresAt: DateTime | null
   @column()
   declare role: string
+  @column()
+  declare status: string
   @column()
   declare twitter: string | null
   @column.dateTime({ autoCreate: true, autoUpdate: true })

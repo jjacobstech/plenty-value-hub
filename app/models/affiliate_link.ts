@@ -4,11 +4,15 @@ import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import Product from '#models/product'
 import Order from '#models/order'
+import Campaign from '#models/campaign'
 import crypto from 'node:crypto'
 
 export default class AffiliateLink extends AffiliateLinkSchema {
   @column()
   declare uuid: string
+
+  @column()
+  declare campaignId: number | null
 
   @beforeSave()
   static async generateUuid(model: AffiliateLink) {
@@ -22,6 +26,9 @@ export default class AffiliateLink extends AffiliateLinkSchema {
 
   @belongsTo(() => Product, { foreignKey: 'productId' })
   declare product: BelongsTo<typeof Product>
+
+  @belongsTo(() => Campaign, { foreignKey: 'campaignId' })
+  declare campaign: BelongsTo<typeof Campaign>
 
   @hasMany(() => Order, { foreignKey: 'affiliateLinkId' })
   declare orders: HasMany<typeof Order>
