@@ -16,6 +16,7 @@ export const controllers = {
   EmailCampaigns: () => import('#controllers/email_campaigns_controller'),
   FraudAnalytics: () => import('#controllers/fraud_analytics_controller'),
   Influencers: () => import('#controllers/influencers_controller'),
+  Kyc: () => import('#controllers/kyc_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   NewsletterAdmin: () => import('#controllers/newsletter_admin_controller'),
   Newsletters: () => import('#controllers/newsletters_controller'),

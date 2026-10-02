@@ -1,0 +1,2889 @@
+{
+  "nodes": [
+    {
+      "id": "admin_auth_system",
+      "type": "concept",
+      "label": "Admin Authentication System",
+      "description": "Middleware-based authentication system for admin routes with role checking and diagnostic capabilities",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/ADMIN_403_FIX_SUMMARY.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "middleware_chain": [
+          "auth()",
+          "role(['admin'])",
+          "adminThrottle"
+        ],
+        "diagnostic_endpoint": "/api/auth-status",
+        "error_logging_enabled": true,
+        "rationale": "Enhanced error logging to help identify permission issues and provide clear diagnostic output for admin authentication failures"
+      }
+    },
+    {
+      "id": "role_middleware",
+      "type": "code",
+      "label": "Role Middleware",
+      "description": "Middleware that validates user role matches required roles for a route",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/ADMIN_403_FIX_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/middleware/role_middleware.ts",
+        "purpose": "Checks user.role against required roles",
+        "failure_status": 403,
+        "logging": "Detailed error logging with userId, userRole, requiredRoles, path, method"
+      }
+    },
+    {
+      "id": "auth_status_endpoint",
+      "type": "code",
+      "label": "Auth Status Diagnostic Endpoint",
+      "description": "Public diagnostic endpoint that returns current authentication status",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/ADMIN_403_FIX_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "endpoint": "GET /api/auth-status",
+        "file": "app/controllers/admin_controller.ts",
+        "response_fields": [
+          "isAuthenticated",
+          "user.id",
+          "user.email",
+          "user.role",
+          "user.fullName"
+        ],
+        "public": true,
+        "purpose": "Allow users to diagnose their current authentication state"
+      }
+    },
+    {
+      "id": "wallet_system",
+      "type": "concept",
+      "label": "Wallet & Payout System",
+      "description": "Comprehensive wallet management with dual-balance ledger and payout workflow",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/COMPLETION_SUMMARY.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "dual_balance": [
+          "available",
+          "held"
+        ],
+        "payout_states": [
+          "pending",
+          "approved",
+          "paid",
+          "rejected"
+        ],
+        "ledger_tracking": true,
+        "rationale": "Dual-balance design prevents overselling; transaction ledger provides audit trail; status workflow ensures clear approval process"
+      }
+    },
+    {
+      "id": "wallet_service",
+      "type": "code",
+      "label": "WalletService",
+      "description": "Core wallet business logic with 500+ lines implementing payout and transaction management",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/COMPLETION_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/services/wallet_service.ts",
+        "methods": [
+          "getSummary()",
+          "requestPayout()",
+          "approvePayout()",
+          "rejectPayout()",
+          "markPayoutPaid()",
+          "updatePayoutStatus()",
+          "listPayoutRequests()",
+          "createTransaction()"
+        ],
+        "line_count": "500+"
+      }
+    },
+    {
+      "id": "file_upload_system",
+      "type": "concept",
+      "label": "Unified File Upload System",
+      "description": "Unified file-based upload system for all media with multiple storage backends",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/FILE_UPLOAD_COMPLETION.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "upload_types": [
+          "product_image",
+          "product_gallery",
+          "profile_image",
+          "admin_image",
+          "video",
+          "document",
+          "generic_file"
+        ],
+        "storage_backends": [
+          "local_filesystem",
+          "s3_minio"
+        ],
+        "rationale": "Unified controller reduces duplication; flexible backends enable development and production scaling"
+      }
+    },
+    {
+      "id": "upload_controller",
+      "type": "code",
+      "label": "UploadController",
+      "description": "Unified controller handling all file uploads with 500+ lines",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/FILE_UPLOAD_COMPLETION.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/controllers/upload_controller.ts",
+        "methods": [
+          "uploadProductImage()",
+          "uploadProductGallery()",
+          "uploadProfileImage()",
+          "uploadAdminImage()",
+          "uploadVideo()",
+          "uploadDocument()",
+          "uploadFile()"
+        ],
+        "validation": [
+          "file_type",
+          "file_size",
+          "security_checks"
+        ],
+        "line_count": "500+"
+      }
+    },
+    {
+      "id": "image_upload_field_component",
+      "type": "code",
+      "label": "ImageUploadField React Component",
+      "description": "Reusable React component for image uploads with drag-and-drop and validation",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/FILE_UPLOAD_COMPLETION.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "inertia/components/ImageUploadField.tsx",
+        "features": [
+          "drag_and_drop",
+          "file_validation",
+          "progress_indication",
+          "image_preview",
+          "error_handling"
+        ],
+        "line_count": "350+"
+      }
+    },
+    {
+      "id": "image_service",
+      "type": "code",
+      "label": "ImageService",
+      "description": "Centralized image URL resolution and storage key management",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/IMAGE_STORAGE_FIX.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/services/image_service.ts",
+        "methods": [
+          "getUrl(imageKey)",
+          "isAccessible(imageKey)"
+        ],
+        "rationale": "Centralizes URL resolution; enables flexible backend changes; prevents ENOENT errors in production"
+      }
+    },
+    {
+      "id": "payment_gateway_key_encryption",
+      "type": "concept",
+      "label": "Payment Gateway Key Encryption",
+      "description": "Secure storage of payment credentials using AES-256-CBC encryption",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/ENCRYPTION_FIX.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "algorithm": "AES-256-CBC",
+        "key_derivation": "scryptSync from APP_KEY",
+        "iv_length": 16,
+        "format": "hex_iv:hex_encrypted_data",
+        "rationale": "Industry-standard encryption; random IV prevents patterns; centralized key management via APP_KEY"
+      }
+    },
+    {
+      "id": "payment_gateway_key_model",
+      "type": "code",
+      "label": "PaymentGatewayKey Model",
+      "description": "Database model for storing encrypted payment provider credentials",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/ENCRYPTION_FIX.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/models/payment_gateway_key.ts",
+        "encrypted_fields": [
+          "publicKey",
+          "secretKey",
+          "webhookSecret"
+        ],
+        "getters": "Automatically decrypt on access",
+        "setters": "Automatically encrypt on assignment"
+      }
+    },
+    {
+      "id": "encryption_flow",
+      "type": "concept",
+      "label": "Encryption/Decryption Flow",
+      "description": "Transparent encryption/decryption through Lucid model getters and setters",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/ENCRYPTION_FLOW_EXPLANATION.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "storage": "Encrypted hex strings in database",
+        "retrieval": "Automatic decryption via getter",
+        "transparency": "Developers work with plaintext; encryption/decryption automatic"
+      }
+    },
+    {
+      "id": "email_notification_templates",
+      "type": "concept",
+      "label": "Email Notification Templates",
+      "description": "Edge template email system for order confirmations and vendor notifications",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/EMAIL_TEMPLATES_REFERENCE.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "templates": [
+          "order_confirmation",
+          "vendor_order_notification",
+          "admin_order_notification",
+          "affiliate_commission_notification"
+        ],
+        "rationale": "Template separation for different user roles; complete context in each email"
+      }
+    },
+    {
+      "id": "notification_service",
+      "type": "code",
+      "label": "NotificationService",
+      "description": "Service that creates and sends email and in-app notifications",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/EMAIL_TEMPLATES_REFERENCE.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/services/notification_service.ts",
+        "method": "notifyOrderCompleted(order, product)",
+        "features": [
+          "email_notifications",
+          "in_app_notifications",
+          "shipping_details_parsing"
+        ]
+      }
+    },
+    {
+      "id": "in_app_notification_system",
+      "type": "concept",
+      "label": "In-App Notification System",
+      "description": "Persistent database-backed notification system for vendors",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/NOTIFICATIONS_FEATURE_OVERVIEW.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "trigger": "Order completion",
+        "storage": "Database persistence",
+        "ui": "Bell icon with badge in dashboard",
+        "features": [
+          "mark_as_read",
+          "delete",
+          "bulk_actions",
+          "timestamps",
+          "order_links"
+        ],
+        "rationale": "Persistent storage enables history; bell icon provides visibility; database enables filtering and analytics"
+      }
+    },
+    {
+      "id": "notification_model",
+      "type": "code",
+      "label": "Notification Model",
+      "description": "Lucid model for in-app notifications with UUID and read tracking",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/NOTIFICATIONS_IMPLEMENTATION_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/models/notification.ts",
+        "fields": [
+          "id",
+          "uuid",
+          "user_id",
+          "type",
+          "title",
+          "message",
+          "icon",
+          "data",
+          "is_read",
+          "read_at",
+          "action_url",
+          "created_at",
+          "updated_at"
+        ],
+        "indexes": [
+          "user_id",
+          "is_read",
+          "created_at"
+        ],
+        "methods": [
+          "markAsRead()",
+          "createNotification()"
+        ]
+      }
+    },
+    {
+      "id": "notification_controller",
+      "type": "code",
+      "label": "NotificationsController",
+      "description": "REST API controller for notification management with 7 endpoints",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/NOTIFICATIONS_IMPLEMENTATION_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/controllers/notifications_controller.ts",
+        "endpoints": [
+          "GET /api/notifications",
+          "GET /api/notifications/unread",
+          "GET /api/notifications/:id",
+          "PATCH /api/notifications/:id/read",
+          "PATCH /api/notifications/read-all",
+          "DELETE /api/notifications/:id",
+          "DELETE /api/notifications"
+        ],
+        "auth_required": true,
+        "pagination": "50 items per page"
+      }
+    },
+    {
+      "id": "notification_center_component",
+      "type": "code",
+      "label": "NotificationCenter React Component",
+      "description": "Frontend component for displaying and managing notifications",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/NOTIFICATIONS_IMPLEMENTATION_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "inertia/components/NotificationCenter.tsx",
+        "features": [
+          "bell_icon",
+          "unread_badge",
+          "slide_out_panel",
+          "mark_as_read",
+          "delete",
+          "bulk_actions",
+          "timestamps",
+          "color_coding"
+        ],
+        "polling_interval": "30 seconds",
+        "responsive": true
+      }
+    },
+    {
+      "id": "payment_gateway_integration",
+      "type": "concept",
+      "label": "Payment Gateway Integration",
+      "description": "Multi-provider payment system supporting Stripe, Paystack, Flutterwave, and PayPal",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_CALLBACK_URLS.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "providers": [
+          "stripe",
+          "paystack",
+          "flutterwave",
+          "paypal",
+          "manual"
+        ],
+        "webhook_verification": "Provider-specific signature validation",
+        "callback_pattern": "Webhook endpoint + return URL redirect"
+      }
+    },
+    {
+      "id": "stripe_integration",
+      "type": "code",
+      "label": "Stripe Payment Integration",
+      "description": "Stripe webhook and payment initialization",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_CALLBACK_URLS.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "webhook_endpoint": "POST /api/payments/webhook/stripe",
+        "signature_header": "stripe-signature",
+        "signature_method": "HMAC-SHA256",
+        "events": [
+          "payment_intent.succeeded",
+          "payment_intent.payment_failed",
+          "charge.refunded",
+          "charge.dispute.created"
+        ],
+        "config_var": "STRIPE_WEBHOOK_SECRET"
+      }
+    },
+    {
+      "id": "paystack_integration",
+      "type": "code",
+      "label": "Paystack Payment Integration",
+      "description": "Paystack webhook and payment handling",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_CALLBACK_URLS.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "webhook_endpoint": "POST /api/payments/webhook/paystack",
+        "signature_header": "x-paystack-signature",
+        "signature_method": "HMAC-SHA512",
+        "events": [
+          "charge.success",
+          "charge.failed",
+          "transfer.success",
+          "transfer.failed"
+        ],
+        "config_var": "PAYSTACK_WEBHOOK_SECRET"
+      }
+    },
+    {
+      "id": "flutterwave_integration",
+      "type": "code",
+      "label": "Flutterwave Payment Integration",
+      "description": "Flutterwave webhook and payment handling",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_CALLBACK_URLS.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "webhook_endpoint": "POST /api/payments/webhook/flutterwave",
+        "signature_header": "verif-hash",
+        "signature_method": "SHA256 hash",
+        "events": [
+          "payment.completed",
+          "payment.failed",
+          "refund.created"
+        ],
+        "config_vars": [
+          "FLUTTERWAVE_WEBHOOK_SECRET",
+          "FLUTTERWAVE_ENCRYPTION_KEY"
+        ]
+      }
+    },
+    {
+      "id": "paypal_integration",
+      "type": "code",
+      "label": "PayPal Payment Integration",
+      "description": "PayPal webhook and payment handling",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_CALLBACK_URLS.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "webhook_endpoint": "POST /api/payments/webhook/paypal",
+        "signature_header": "paypal-transmission-sig",
+        "signature_method": "RSA signature with certificate",
+        "events": [
+          "PAYMENT.CAPTURE.COMPLETED",
+          "PAYMENT.CAPTURE.DENIED",
+          "PAYMENT.CAPTURE.REFUNDED"
+        ],
+        "config_var": "PAYPAL_WEBHOOK_ID"
+      }
+    },
+    {
+      "id": "site_settings_controller",
+      "type": "code",
+      "label": "SiteSettingsController",
+      "description": "Controller for managing site settings and payment provider configuration",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/COMPLETION_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "app/controllers/site_settings_controller.ts",
+        "methods": [
+          "index()",
+          "show()",
+          "upsert()",
+          "uploadImage()",
+          "paymentConfig()"
+        ],
+        "endpoints": [
+          "GET /api/admin/site-settings",
+          "GET /api/admin/site-settings/:id",
+          "POST /api/admin/site-settings",
+          "PUT /api/admin/site-settings/:id"
+        ]
+      }
+    },
+    {
+      "id": "dokploy_volume_persistence",
+      "type": "concept",
+      "label": "Dokploy Volume Persistence",
+      "description": "Docker volume mounting strategy for persistent file storage",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/DOKPLOY_VOLUME_SETUP.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "host_path": "/data/plenty-value-hub/storage",
+        "container_path": "/app/storage",
+        "purpose": "Persist uploads across container recreation",
+        "rationale": "Container recreation deletes files; named volume persists data; enables backup and recovery strategies"
+      }
+    },
+    {
+      "id": "implementation_timeline",
+      "type": "document",
+      "label": "Implementation Timeline & Feature Analysis",
+      "description": "Comprehensive feature gap analysis and development timeline estimates",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/IMPLEMENTATION_TIMELINE.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "current_completion": "60-70% of core PRD features",
+        "priority_1_timeline": "16 days manual, 8-11 days with AI",
+        "priority_2_timeline": "22 days manual, 10-13 days with AI",
+        "priority_3_timeline": "32-34 days manual, 16-21 days with AI"
+      }
+    },
+    {
+      "id": "vendor_notifications_migration",
+      "type": "code",
+      "label": "NotificationsTable Migration",
+      "description": "Database migration creating notifications table with indexes",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/NOTIFICATIONS_IMPLEMENTATION_SUMMARY.md",
+      "file_type": "code",
+      "confidence_score": 1.0,
+      "attributes": {
+        "file_path": "database/migrations/1787200000000_create_notifications_table.ts",
+        "columns": 11,
+        "indexes": [
+          "user_id",
+          "is_read",
+          "created_at"
+        ],
+        "foreign_key": "users.id with CASCADE delete"
+      }
+    },
+    {
+      "id": "global_error_handling",
+      "type": "concept",
+      "label": "Global Error Handling System",
+      "description": "Centralized error handling with automatic toast notifications for all API errors",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/COMPLETION_SUMMARY.md",
+      "file_type": "document",
+      "confidence_score": 1.0,
+      "attributes": {
+        "implementation_file": "inertia/api/http-client.ts",
+        "status_codes": {
+          "401": "Session expired",
+          "403": "Access denied",
+          "404": "Resource not found",
+          "5xx": "Server error",
+          "network": "Connection error"
+        },
+        "override_header": "X-Skip-Toast",
+        "rationale": "Global response interceptor reduces duplication and ensures consistent UX; allows component-level override when needed"
+      }
+    },
+    {
+      "id": "payment_gateway_architecture",
+      "label": "Payment Gateway System Architecture",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_GATEWAY_ARCHITECTURE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Comprehensive architecture documentation for multi-provider payment processing system using Strategy, Factory, and Adapter patterns"
+    },
+    {
+      "id": "payment_gateway_fixes",
+      "label": "Payment Gateway Fixes",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_GATEWAY_FIXES.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payment_gateway_keys_migration",
+      "label": "Payment Gateway Keys Migration",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_GATEWAY_KEYS_MIGRATION.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payment_integration_guide",
+      "label": "Payment Integration Guide",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_INTEGRATION_GUIDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payment_logo_system_setup",
+      "label": "Payment Logo System Setup",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_LOGO_SYSTEM_SETUP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payment_provider_logos",
+      "label": "Payment Provider Logos",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_PROVIDER_LOGOS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payout_form_guide",
+      "label": "Payout Form Guide",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYOUT_FORM_GUIDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payout_methods_implementation",
+      "label": "Payout Methods Implementation",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYOUT_METHODS_IMPLEMENTATION.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "payout_methods_update",
+      "label": "Payout Methods Update",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYOUT_METHODS_UPDATE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "post_purchase_email_setup",
+      "label": "Post Purchase Email Setup",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/POST_PURCHASE_EMAIL_SETUP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "priority_2_progress",
+      "label": "Priority 2 Implementation Progress",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Progress tracking for Priority 2 features including fraud detection, analytics dashboard, creator features, Shopify integration, and multi-currency support"
+    },
+    {
+      "id": "rebuild_progress",
+      "label": "Rebuild Progress",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/REBUILD_PROGRESS.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "session_error_handling_fix",
+      "label": "Session Error Handling Fix",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/SESSION_ERROR_HANDLING_FIX.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "site_settings_documentation",
+      "label": "Site Settings Documentation",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/SITE_SETTINGS_DOCUMENTATION.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "upload_error_handling",
+      "label": "Upload Error Handling",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/UPLOAD_ERROR_HANDLING.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "upload_files_index",
+      "label": "Upload Files Index",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/UPLOAD_FILES_INDEX.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "upload_quick_reference",
+      "label": "Upload Quick Reference",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/UPLOAD_QUICK_REFERENCE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "upload_system_summary",
+      "label": "Upload System Summary",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/UPLOAD_SYSTEM_SUMMARY.txt",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "use_cases_and_edge_cases",
+      "label": "Use Cases and Edge Cases",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/USE_CASES_AND_EDGE_CASES.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "vendor_notifications_setup",
+      "label": "Vendor Notifications Setup",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/VENDOR_NOTIFICATIONS_SETUP.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "wallet_completion_report",
+      "label": "Wallet Completion Report",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_COMPLETION_REPORT.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "wallet_documentation_index",
+      "label": "Wallet Documentation Index",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_DOCUMENTATION_INDEX.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "fraud_detection_system",
+      "label": "Fraud Detection System",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": "app/services/fraud_detection_service.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Advanced fraud detection with 5 detection checks, fraud scoring 0-100, and auto-rejection of high-risk conversions"
+    },
+    {
+      "id": "analytics_dashboard",
+      "label": "Analytics Dashboard System",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": "app/services/analytics_service.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Real-time metrics API with campaign performance, affiliate metrics, commission tracking, and CSV export"
+    },
+    {
+      "id": "influencer_features",
+      "label": "Creator/Influencer Features",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": "app/services/influencer_service.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Multi-platform influencer profiles with collaboration agreements, content tracking, and revenue sharing"
+    },
+    {
+      "id": "shopify_integration",
+      "label": "Shopify Integration",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": "app/services/shopify_service.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "OAuth 2.0 authentication and GraphQL product/order syncing with Shopify stores"
+    },
+    {
+      "id": "wallet_payout_guide",
+      "label": "Wallet Payout Guide",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_PAYOUT_GUIDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "wallet_quick_reference",
+      "label": "Wallet Quick Reference",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_QUICK_REFERENCE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "wallet_system_summary",
+      "label": "Wallet System Summary",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_SYSTEM_SUMMARY.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Comprehensive wallet system with dual-balance ledger (available + held), payout workflow, transaction immutability, and order integration"
+    },
+    {
+      "id": "wallet_testing_guide",
+      "label": "Wallet Testing Guide",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_TESTING_GUIDE.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "wallet_verification_checklist",
+      "label": "Wallet Verification Checklist",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_VERIFICATION_CHECKLIST.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "claude_md",
+      "label": "Claude Configuration",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/claude.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "docker_compose_yml",
+      "label": "Docker Compose Configuration",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/docker-compose.yml",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Docker Compose setup for application deployment with volume mounting for file uploads and Dokploy network integration"
+    },
+    {
+      "id": "payment_gateway_md",
+      "label": "Payment Gateway Design Document",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Payment gateway architecture using Adapter, Factory, and Facade patterns for multi-provider payment processing"
+    },
+    {
+      "id": "logos_readme",
+      "label": "Payment Logos Directory",
+      "file_type": "document",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/README.md",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pdf_asset_8_4ea31747",
+      "label": "Digital Asset PDF",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/digital_assets/8/4ea31747d743442665cad4d3.pdf",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "pdf_asset_8_cb73b69c",
+      "label": "Digital Asset PDF",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/digital_assets/8/cb73b69c17ef29c352168659.pdf",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "app_map_svg",
+      "label": "Application Architecture Diagram",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/app-map.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "favicon_svg",
+      "label": "Application Favicon",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/favicon.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "hero_banner_png",
+      "label": "Hero Banner Image",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/hero-banner.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flutterwave_logo_icon",
+      "label": "Flutterwave Logo Icon",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/icons/flutterwave-logo.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "paypal_logo_icon",
+      "label": "PayPal Logo Icon",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/icons/paypal-logo.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "paystack_logo_icon",
+      "label": "Paystack Logo Icon",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/icons/paystack-logo.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "stripe_logo_icon",
+      "label": "Stripe Logo Icon",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/icons/stripe-logo.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "flutterwave_logo",
+      "label": "Flutterwave Payment Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/flutterwave.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "paypal_logo",
+      "label": "PayPal Payment Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/paypal.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "paystack_logo",
+      "label": "Paystack Payment Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/paystack.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "stripe_logo",
+      "label": "Stripe Payment Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/stripe.svg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "wallet_service",
+      "label": "Wallet Service Implementation",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_SYSTEM_SUMMARY.md",
+      "source_location": "app/services/wallet_service.ts",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Core service managing dual-balance ledger, transaction recording, payout requests, and order integration"
+    },
+    {
+      "id": "payment_providers",
+      "label": "Payment Provider Implementations",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": "app/providers/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Stripe, PayPal, Paystack, Flutterwave, and Manual payment provider implementations using adapter pattern"
+    },
+    {
+      "id": "docker_deployment",
+      "label": "Docker-based Deployment",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/docker-compose.yml",
+      "source_location": "docker-compose.yml",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Docker Compose configuration for containerized application deployment with persistent storage volumes"
+    },
+    {
+      "id": "product_image_14_063dabc7",
+      "label": "Product Image 14 - 063dabc7",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/063dabc795ef37d69921435d.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_42748f83",
+      "label": "Product Image 14 - 42748f83",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/42748f83168f8888b4a86951.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_4bc4e84b",
+      "label": "Product Image 14 - 4bc4e84b",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/4bc4e84b43b6b8db59294f03.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_6d8c2259",
+      "label": "Product Image 14 - 6d8c2259",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/6d8c22596395c3cbab159e1e.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_71d58a8a",
+      "label": "Product Image 14 - 71d58a8a",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/71d58a8a04c988be8d14c1c3.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_75ab1860",
+      "label": "Product Image 14 - 75ab1860",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/75ab1860332de6d5534f1ded.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_8551b7f1",
+      "label": "Product Image 14 - 8551b7f1",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/8551b7f13e85a8c554723817.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_96a9900e",
+      "label": "Product Image 14 - 96a9900e",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/96a9900ec05f3ca7491feca0.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_a3607dde",
+      "label": "Product Image 14 - a3607dde",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/a3607ddee27ade3507db5164.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_abfe6b19",
+      "label": "Product Image 14 - abfe6b19",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/abfe6b1986b8567b91b6aca6.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_c05993ea",
+      "label": "Product Image 14 - c05993ea",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c05993eaa6a6ef41efa87c72.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_c4a669b3",
+      "label": "Product Image 14 - c4a669b3",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c4a669b3877feae78f598eec.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_c8a21686",
+      "label": "Product Image 14 - c8a21686",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c8a216861b4724334e29cefe.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_c95bdaaf",
+      "label": "Product Image 14 - c95bdaaf",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c95bdaaf8ce45e89f5c57604.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_d06cbfb3",
+      "label": "Product Image 14 - d06cbfb3",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/d06cbfb336c95064189bcec9.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_14_ec331c55",
+      "label": "Product Image 14 - ec331c55",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/ec331c556042125e648c9b3f.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_0cc8e659",
+      "label": "Product Image 8 - 0cc8e659",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/0cc8e6596d03dc524f0f6c55.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_242e3f2d",
+      "label": "Product Image 8 - 242e3f2d",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/242e3f2da17aefc2582e807d.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_32c0e1be",
+      "label": "Product Image 8 - 32c0e1be",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/32c0e1bea74e4f4dd368a146.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_3b5dc5ea",
+      "label": "Product Image 8 - 3b5dc5ea",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/3b5dc5ea2d0029c2fdfdabe3.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_422f9d32",
+      "label": "Product Image 8 - 422f9d32",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/422f9d32f55d34d0dee4fb39.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_43255c0b",
+      "label": "Product Image 8 - 43255c0b",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/43255c0b0c1968b2540a0f0a.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_catalog_14",
+      "label": "Product Catalog - Product 14",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/063dabc795ef37d69921435d.png",
+      "source_location": "storage/uploads/products/14/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Collection of product images for product ID 14, stored as multiple format variations (PNG and JPG)"
+    },
+    {
+      "id": "product_catalog_8",
+      "label": "Product Catalog - Product 8",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/0cc8e6596d03dc524f0f6c55.jpg",
+      "source_location": "storage/uploads/products/8/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Collection of product images for product ID 8, supporting e-commerce catalog display"
+    },
+    {
+      "id": "product_image_8_45ff33ab",
+      "label": "Product Image 8 - 45ff33ab",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/45ff33ab17deee44c3e6d8b9.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_461501f9",
+      "label": "Product Image 8 - 461501f9",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/461501f9655dd1bcef301b84.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_48c06a07",
+      "label": "Product Image 8 - 48c06a07",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/48c06a07af886230aa616cf7.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_48f5c12c",
+      "label": "Product Image 8 - 48f5c12c",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/48f5c12c4368718e27594d4e.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_6b7a78a9",
+      "label": "Product Image 8 - 6b7a78a9",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/6b7a78a98c3dff6531716198.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_6e48c461",
+      "label": "Product Image 8 - 6e48c461",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/6e48c46173183d2489414507.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_7452cd52",
+      "label": "Product Image 8 - 7452cd52",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/7452cd52c218753cc0619af0.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_7b95d0ef",
+      "label": "Product Image 8 - 7b95d0ef",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/7b95d0efb3eb017cf5795d41.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_85d9c3d5",
+      "label": "Product Image 8 - 85d9c3d5",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/85d9c3d5f855ae96427a64b5.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_8b85e42c",
+      "label": "Product Image 8 - 8b85e42c",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/8b85e42cd40259240b85d4b4.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_8ed54033",
+      "label": "Product Image 8 - 8ed54033",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/8ed540338ded7f45a66a30a8.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_b579be12",
+      "label": "Product Image 8 - b579be12",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/b579be12fe6738b5c9299147.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_d6f9ab1f",
+      "label": "Product Image 8 - d6f9ab1f",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/d6f9ab1f445c3045c0a73615.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_d81bba6b",
+      "label": "Product Image 8 - d81bba6b",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/d81bba6b8b51c70aef625829.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_d8db624b",
+      "label": "Product Image 8 - d8db624b",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/d8db624b4c5bb52d41466573.jpeg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_e64b14e6",
+      "label": "Product Image 8 - e64b14e6",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/e64b14e6cdcde138edf5c3f8.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_eb315792",
+      "label": "Product Image 8 - eb315792",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/eb315792c4eba845dac7895e.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_f0c5d120",
+      "label": "Product Image 8 - f0c5d120",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f0c5d120ffd15226ed935493.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_f1c97036",
+      "label": "Product Image 8 - f1c97036",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f1c970362eff730e620a214b.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_f3382e9a",
+      "label": "Product Image 8 - f3382e9a",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f3382e9a91d9adc246c81733.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_f34d9e29",
+      "label": "Product Image 8 - f34d9e29",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f34d9e291e1c7144ae7e1957.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_image_8_f68084fe",
+      "label": "Product Image 8 - f68084fe",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f68084feb0f2eb67ef99f3de.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "product_catalog_8_extended",
+      "label": "Product Catalog - Product 8 (Extended Set)",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/45ff33ab17deee44c3e6d8b9.jpg",
+      "source_location": "storage/uploads/products/8/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Extended collection of product images for product ID 8, containing 22 images in JPG, PNG, and JPEG formats"
+    },
+    {
+      "id": "profile_image_10_business_logo",
+      "label": "User 10 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/10/business_logo/0eb2721a957ae40a.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_10_cover_banner",
+      "label": "User 10 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/10/cover_banner/e78712118f639264.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_11_cover_banner",
+      "label": "User 11 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/11/cover_banner/4fb3e3859136887d.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_12_business_logo",
+      "label": "User 12 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/12/business_logo/9720c6b1dbc6a220.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_12_cover_banner",
+      "label": "User 12 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/12/cover_banner/0106f330bcf47aa1.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_business_logo_9488",
+      "label": "User 14 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/9488c29622317192.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_business_logo_97d1",
+      "label": "User 14 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/97d1c51a466cc904.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_business_logo_a50b",
+      "label": "User 14 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/a50bfe0bf236a24f.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_business_logo_bc2c",
+      "label": "User 14 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/bc2c208acc199450.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_0f8b",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/0f8be76c2809d42a.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_262b",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/262ba8489231c088.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_4137",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/41379cacfdea7bc4.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_4e76",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/4e7607ede9b86c02.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_670c",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/670cc542e691edd7.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_9b85",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/9b8579d45d94daed.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_b5a5",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/b5a589e18ea16106.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_c1df",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/c1df174e16183547.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_c67a",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/c67a3a8d0118fba0.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_14_cover_banner_fa10",
+      "label": "User 14 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/fa10cda8451472b5.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_15_cover_banner",
+      "label": "User 15 Cover Banner",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/15/cover_banner/61ab2ca75293d6f3.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_15_profile_picture",
+      "label": "User 15 Profile Picture",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/15/profile_picture/77a05a5a6844b784.png",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "profile_image_2_business_logo",
+      "label": "User 2 Business Logo",
+      "file_type": "image",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/2/business_logo/975ffc1429cb423e.jpg",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null
+    },
+    {
+      "id": "user_profiles_storage",
+      "label": "User Profiles Storage",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/10/business_logo/0eb2721a957ae40a.jpg",
+      "source_location": "storage/uploads/profiles/",
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Persistent storage for user profile images including business logos, cover banners, and profile pictures across multiple users"
+    },
+    {
+      "id": "chunk_6_empty",
+      "label": "Chunk 6 - No Files",
+      "file_type": "concept",
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/graphify-out/",
+      "source_location": null,
+      "source_url": null,
+      "captured_at": null,
+      "author": null,
+      "contributor": null,
+      "rationale": "Placeholder for chunk 6 which was referenced in total_chunks but contains no files in the file list"
+    }
+  ],
+  "edges": [
+    {
+      "source": "payment_gateway_architecture",
+      "target": "payment_gateway_fixes",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_GATEWAY_ARCHITECTURE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_architecture",
+      "target": "payment_integration_guide",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_GATEWAY_ARCHITECTURE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_keys_migration",
+      "target": "payment_gateway_architecture",
+      "relation": "rationale_for",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_GATEWAY_KEYS_MIGRATION.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_logo_system_setup",
+      "target": "payment_provider_logos",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYMENT_LOGO_SYSTEM_SETUP.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payout_methods_implementation",
+      "target": "payout_form_guide",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYOUT_METHODS_IMPLEMENTATION.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payout_methods_update",
+      "target": "payout_methods_implementation",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PAYOUT_METHODS_UPDATE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "priority_2_progress",
+      "target": "fraud_detection_system",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "priority_2_progress",
+      "target": "analytics_dashboard",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "priority_2_progress",
+      "target": "influencer_features",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "priority_2_progress",
+      "target": "shopify_integration",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/PRIORITY_2_PROGRESS.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "upload_system_summary",
+      "target": "upload_files_index",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/UPLOAD_SYSTEM_SUMMARY.txt",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "upload_quick_reference",
+      "target": "upload_system_summary",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/UPLOAD_QUICK_REFERENCE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "wallet_completion_report",
+      "target": "wallet_documentation_index",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_COMPLETION_REPORT.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "wallet_payout_guide",
+      "target": "wallet_system_summary",
+      "relation": "semantically_similar_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_PAYOUT_GUIDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "wallet_quick_reference",
+      "target": "wallet_system_summary",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_QUICK_REFERENCE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "wallet_testing_guide",
+      "target": "wallet_system_summary",
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_TESTING_GUIDE.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "wallet_verification_checklist",
+      "target": "wallet_testing_guide",
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_VERIFICATION_CHECKLIST.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "docker_compose_yml",
+      "target": "docker_deployment",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/docker-compose.yml",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_md",
+      "target": "payment_providers",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "logos_readme",
+      "target": "flutterwave_logo",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "logos_readme",
+      "target": "paypal_logo",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "logos_readme",
+      "target": "paystack_logo",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "logos_readme",
+      "target": "stripe_logo",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/public/logos/README.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_md",
+      "target": "flutterwave_logo",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_md",
+      "target": "paypal_logo",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_md",
+      "target": "paystack_logo",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "payment_gateway_md",
+      "target": "stripe_logo",
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/payment-gateway.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "wallet_system_summary",
+      "target": "wallet_service",
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/WALLET_SYSTEM_SUMMARY.md",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_063dabc7",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/063dabc795ef37d69921435d.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_42748f83",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/42748f83168f8888b4a86951.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_4bc4e84b",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/4bc4e84b43b6b8db59294f03.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_6d8c2259",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/6d8c22596395c3cbab159e1e.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_71d58a8a",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/71d58a8a04c988be8d14c1c3.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_75ab1860",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/75ab1860332de6d5534f1ded.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_8551b7f1",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/8551b7f13e85a8c554723817.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_96a9900e",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/96a9900ec05f3ca7491feca0.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_a3607dde",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/a3607ddee27ade3507db5164.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_abfe6b19",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/abfe6b1986b8567b91b6aca6.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_c05993ea",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c05993eaa6a6ef41efa87c72.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_c4a669b3",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c4a669b3877feae78f598eec.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_c8a21686",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c8a216861b4724334e29cefe.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_c95bdaaf",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/c95bdaaf8ce45e89f5c57604.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_d06cbfb3",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/d06cbfb336c95064189bcec9.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_14_ec331c55",
+      "target": "product_catalog_14",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/14/ec331c556042125e648c9b3f.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_0cc8e659",
+      "target": "product_catalog_8",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/0cc8e6596d03dc524f0f6c55.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_242e3f2d",
+      "target": "product_catalog_8",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/242e3f2da17aefc2582e807d.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_32c0e1be",
+      "target": "product_catalog_8",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/32c0e1bea74e4f4dd368a146.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_3b5dc5ea",
+      "target": "product_catalog_8",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/3b5dc5ea2d0029c2fdfdabe3.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_422f9d32",
+      "target": "product_catalog_8",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/422f9d32f55d34d0dee4fb39.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_43255c0b",
+      "target": "product_catalog_8",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/43255c0b0c1968b2540a0f0a.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_45ff33ab",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/45ff33ab17deee44c3e6d8b9.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_461501f9",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/461501f9655dd1bcef301b84.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_48c06a07",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/48c06a07af886230aa616cf7.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_48f5c12c",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/48f5c12c4368718e27594d4e.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_6b7a78a9",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/6b7a78a98c3dff6531716198.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_6e48c461",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/6e48c46173183d2489414507.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_7452cd52",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/7452cd52c218753cc0619af0.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_7b95d0ef",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/7b95d0efb3eb017cf5795d41.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_85d9c3d5",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/85d9c3d5f855ae96427a64b5.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_8b85e42c",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/8b85e42cd40259240b85d4b4.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_8ed54033",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/8ed540338ded7f45a66a30a8.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_b579be12",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/b579be12fe6738b5c9299147.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_d6f9ab1f",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/d6f9ab1f445c3045c0a73615.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_d81bba6b",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/d81bba6b8b51c70aef625829.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_d8db624b",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/d8db624b4c5bb52d41466573.jpeg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_e64b14e6",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/e64b14e6cdcde138edf5c3f8.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_eb315792",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/eb315792c4eba845dac7895e.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_f0c5d120",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f0c5d120ffd15226ed935493.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_f1c97036",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f1c970362eff730e620a214b.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_f3382e9a",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f3382e9a91d9adc246c81733.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_f34d9e29",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f34d9e291e1c7144ae7e1957.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "product_image_8_f68084fe",
+      "target": "product_catalog_8_extended",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/products/8/f68084feb0f2eb67ef99f3de.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_10_business_logo",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/10/business_logo/0eb2721a957ae40a.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_10_cover_banner",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/10/cover_banner/e78712118f639264.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_11_cover_banner",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/11/cover_banner/4fb3e3859136887d.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_12_business_logo",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/12/business_logo/9720c6b1dbc6a220.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_12_cover_banner",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/12/cover_banner/0106f330bcf47aa1.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_business_logo_9488",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/9488c29622317192.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_business_logo_97d1",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/97d1c51a466cc904.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_business_logo_a50b",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/a50bfe0bf236a24f.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_business_logo_bc2c",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/business_logo/bc2c208acc199450.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_0f8b",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/0f8be76c2809d42a.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_262b",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/262ba8489231c088.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_4137",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/41379cacfdea7bc4.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_4e76",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/4e7607ede9b86c02.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_670c",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/670cc542e691edd7.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_9b85",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/9b8579d45d94daed.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_b5a5",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/b5a589e18ea16106.jpg",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_c1df",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/c1df174e16183547.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_c67a",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/c67a3a8d0118fba0.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_14_cover_banner_fa10",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/14/cover_banner/fa10cda8451472b5.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_15_cover_banner",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/15/cover_banner/61ab2ca75293d6f3.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_15_profile_picture",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/15/profile_picture/77a05a5a6844b784.png",
+      "source_location": null,
+      "weight": 1.0
+    },
+    {
+      "source": "profile_image_2_business_logo",
+      "target": "user_profiles_storage",
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "/home/jacobs-joshua/Documents/plenty-value-hub/storage/uploads/profiles/2/business_logo/975ffc1429cb423e.jpg",
+      "source_location": null,
+      "weight": 1.0
+    }
+  ],
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
+}

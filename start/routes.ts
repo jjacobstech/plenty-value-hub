@@ -482,9 +482,25 @@ router
               controllers.PaymentSettings,
               'destroy',
             ])
+
+            // KYC management (admin)
+            router.get('/kyc/admin/pending', [controllers.Kyc, 'listPendingSubmissions'])
+            router.get('/kyc/admin/statistics', [controllers.Kyc, 'getStatistics'])
+            router.get('/kyc/admin/search', [controllers.Kyc, 'searchSubmissions'])
+            router.post('/kyc/:submissionId/verify-document/:documentId', [controllers.Kyc, 'verifyDocument'])
+            router.post('/kyc/:submissionId/assess-risk', [controllers.Kyc, 'assessRisk'])
+            router.post('/kyc/:submissionId/check-compliance', [controllers.Kyc, 'checkCompliance'])
+            router.post('/kyc/:submissionId/approve', [controllers.Kyc, 'approveSubmission'])
+            router.post('/kyc/:submissionId/reject', [controllers.Kyc, 'rejectSubmission'])
           })
           .use(middleware.role(['admin']))
           .use(adminThrottle)
+
+        // KYC endpoints (vendor & affiliate)
+        router.post('/kyc/submit', [controllers.Kyc, 'createSubmission'])
+        router.post('/kyc/:submissionId/documents', [controllers.Kyc, 'uploadDocument'])
+        router.get('/kyc/:submissionId', [controllers.Kyc, 'getSubmission'])
+        router.get('/kyc/:submissionId/audit-trail', [controllers.Kyc, 'getAuditTrail'])
       })
       .use(middleware.auth())
   })
