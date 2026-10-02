@@ -209,6 +209,10 @@ router
     router.post('/orders/track', [controllers.Orders, 'trackOrder'])
     router.get('/orders/download', [controllers.Orders, 'downloadDigitalAsset'])
 
+    // Affiliate recruitment (public)
+    router.get('/affiliates/top-performers', [controllers.Affiliates, 'getTopPerformers'])
+    router.get('/affiliates/tier/:tier', [controllers.Affiliates, 'getAffiliatesByTier'])
+
     // ── Webhook endpoints (no auth — secured by signature verification) ──
     // Order matters: AdonisJS matches in registration order, so the named
     // provider routes must come BEFORE the ':provider' catch-all or they
@@ -522,6 +526,12 @@ router
             router.post('/disputes/:id/request-approval', [controllers.Disputes, 'requestApproval'])
             router.post('/disputes/approvals/:approvalId/approve', [controllers.Disputes, 'approveDispute'])
             router.post('/disputes/approvals/:approvalId/reject', [controllers.Disputes, 'rejectDispute'])
+
+            // Affiliate recruitment (admin)
+            router.post('/recruitment/campaigns', [controllers.Affiliates, 'createCampaign'])
+            router.get('/recruitment/campaigns', [controllers.Affiliates, 'listCampaigns'])
+            router.post('/recruitment/campaigns/:id/launch', [controllers.Affiliates, 'launchCampaign'])
+            router.post('/recruitment/campaigns/:id/complete', [controllers.Affiliates, 'completeCampaign'])
           })
           .use(middleware.role(['admin']))
           .use(adminThrottle)
@@ -532,6 +542,17 @@ router
         router.get('/disputes/:id', [controllers.Disputes, 'getDispute'])
         router.get('/disputes/:id/comments', [controllers.Disputes, 'getComments'])
         router.post('/disputes/:id/comments', [controllers.Disputes, 'addComment'])
+
+        // Affiliate recruitment endpoints (all authenticated users)
+        router.post('/affiliate/profile', [controllers.Affiliates, 'createProfile'])
+        router.get('/affiliate/profile', [controllers.Affiliates, 'getProfile'])
+        router.put('/affiliate/profile', [controllers.Affiliates, 'updateProfile'])
+        router.post('/affiliate/referral-codes', [controllers.Affiliates, 'generateReferralCode'])
+        router.get('/affiliate/referral-codes', [controllers.Affiliates, 'getReferralCodes'])
+        router.get('/affiliate/referral-codes/:id/performance', [controllers.Affiliates, 'getReferralCodePerformance'])
+        router.get('/affiliate/referrals', [controllers.Affiliates, 'getReferrals'])
+        router.get('/affiliate/rewards', [controllers.Affiliates, 'getRewards'])
+        router.post('/affiliate/rewards/:id/claim', [controllers.Affiliates, 'claimReward'])
 
         // KYC endpoints (vendor & affiliate)
         router.post('/kyc/submit', [controllers.Kyc, 'createSubmission'])
