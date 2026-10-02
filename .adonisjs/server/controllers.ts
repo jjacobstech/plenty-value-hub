@@ -37,4 +37,5 @@ export const controllers = {
   VendorConversions: () => import('#controllers/vendor_conversions_controller'),
   Wallet: () => import('#controllers/wallet_controller'),
   Webhook: () => import('#controllers/webhook_controller'),
+  Woocommerce: () => import('#controllers/woocommerce_controller'),
 }

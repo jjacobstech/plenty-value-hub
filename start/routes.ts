@@ -395,6 +395,18 @@ router
             router.post('/shopify/commissions/calculate', [controllers.Shopify, 'calculateCommissions'])
             router.get('/shopify/analytics', [controllers.Shopify, 'getAnalytics'])
 
+            // WooCommerce integration (vendor)
+            router.post('/woocommerce/connect', [controllers.Woocommerce, 'connect'])
+            router.get('/woocommerce/store', [controllers.Woocommerce, 'getStore'])
+            router.post('/woocommerce/disconnect', [controllers.Woocommerce, 'disconnect'])
+            router.post('/woocommerce/sync/products', [controllers.Woocommerce, 'syncProducts'])
+            router.post('/woocommerce/sync/orders', [controllers.Woocommerce, 'syncOrders'])
+            router.get('/woocommerce/products', [controllers.Woocommerce, 'listProducts'])
+            router.put('/woocommerce/products/:id', [controllers.Woocommerce, 'updateProduct'])
+            router.get('/woocommerce/orders', [controllers.Woocommerce, 'listOrders'])
+            router.post('/woocommerce/commissions/calculate', [controllers.Woocommerce, 'calculateCommissions'])
+            router.get('/woocommerce/analytics', [controllers.Woocommerce, 'getAnalytics'])
+
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
