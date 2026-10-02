@@ -205,6 +205,79 @@ export class CampaignSchema extends BaseModel {
   declare webhookUrl: string | null
 }
 
+export class CommissionLedgerSchema extends BaseModel {
+  static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'approvalNotes', 'approvedAt', 'approvedBy', 'campaignId', 'commissionType', 'createdAt', 'disputeReason', 'disputeResolved', 'disputeResolvedAt', 'disputedAt', 'holdUntil', 'holdingDays', 'id', 'metadata', 'notes', 'onHold', 'orderId', 'paidAt', 'paymentReference', 'payoutId', 'productId', 'rate', 'reversalReason', 'reversalType', 'reversedAt', 'saleAmount', 'status', 'updatedAt', 'uuid', 'vendorConversionId', 'vendorId'] as const
+  $columns = CommissionLedgerSchema.$columns
+  @column()
+  declare affiliateId: number
+  @column()
+  declare affiliateLinkId: number | null
+  @column()
+  declare amount: string
+  @column()
+  declare approvalNotes: string | null
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedBy: number | null
+  @column()
+  declare campaignId: number
+  @column()
+  declare commissionType: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime
+  @column()
+  declare disputeReason: string | null
+  @column()
+  declare disputeResolved: boolean | null
+  @column.dateTime()
+  declare disputeResolvedAt: DateTime | null
+  @column.dateTime()
+  declare disputedAt: DateTime | null
+  @column.dateTime()
+  declare holdUntil: DateTime | null
+  @column()
+  declare holdingDays: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare onHold: boolean | null
+  @column()
+  declare orderId: number | null
+  @column.dateTime()
+  declare paidAt: DateTime | null
+  @column()
+  declare paymentReference: string | null
+  @column()
+  declare payoutId: string | null
+  @column()
+  declare productId: number | null
+  @column()
+  declare rate: string | null
+  @column()
+  declare reversalReason: string | null
+  @column()
+  declare reversalType: string | null
+  @column.dateTime()
+  declare reversedAt: DateTime | null
+  @column()
+  declare saleAmount: string
+  @column()
+  declare status: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare uuid: string
+  @column()
+  declare vendorConversionId: number | null
+  @column()
+  declare vendorId: number
+}
+
 export class EmailCampaignSchema extends BaseModel {
   static $columns = ['audienceSegment', 'campaignType', 'clickCount', 'content', 'conversionCount', 'createdAt', 'id', 'name', 'openCount', 'recipientsCount', 'revenueGenerated', 'sentAt', 'status', 'subject', 'updatedAt', 'uuid'] as const
   $columns = EmailCampaignSchema.$columns

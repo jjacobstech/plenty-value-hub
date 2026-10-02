@@ -241,6 +241,12 @@ router
         router.post('/conversions/:id/dispute', [controllers.VendorConversions, 'dispute'])
         router.get('/campaigns/:campaignId/conversions/stats', [controllers.VendorConversions, 'getStats'])
 
+        // Commission ledger (affiliate earnings tracking)
+        router.get('/commissions', [controllers.CommissionLedger, 'index'])
+        router.get('/commissions/:id', [controllers.CommissionLedger, 'show'])
+        router.post('/commissions/:id/dispute', [controllers.CommissionLedger, 'dispute'])
+        router.get('/commissions/stats', [controllers.CommissionLedger, 'getStats'])
+
         // Payments
 
         // Orders
@@ -306,6 +312,14 @@ router
             router.put('/conversions/:id/approve', [controllers.VendorConversions, 'approve'])
             router.put('/conversions/:id/reject', [controllers.VendorConversions, 'reject'])
             router.post('/conversions/:id/reverse', [controllers.VendorConversions, 'reverse'])
+
+            // Commission ledger management (admin)
+            router.put('/commissions/:id/approve', [controllers.CommissionLedger, 'approve'])
+            router.post('/commissions/:id/mark-paid', [controllers.CommissionLedger, 'markAsPaid'])
+            router.post('/commissions/:id/reverse', [controllers.CommissionLedger, 'reverse'])
+            router.post('/commissions/:id/release-hold', [controllers.CommissionLedger, 'releaseFromHold'])
+            router.post('/commissions/:id/resolve-dispute', [controllers.CommissionLedger, 'resolveDispute'])
+            router.post('/commissions/bulk-approve', [controllers.CommissionLedger, 'bulkApprove'])
 
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])

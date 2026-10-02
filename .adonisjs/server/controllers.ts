@@ -10,6 +10,7 @@ export const controllers = {
   Api: () => import('#controllers/api_controller'),
   BlogPosts: () => import('#controllers/blog_posts_controller'),
   Campaigns: () => import('#controllers/campaigns_controller'),
+  CommissionLedger: () => import('#controllers/commission_ledger_controller'),
   EmailCampaigns: () => import('#controllers/email_campaigns_controller'),
   NewAccount: () => import('#controllers/new_account_controller'),
   NewsletterAdmin: () => import('#controllers/newsletter_admin_controller'),
