@@ -30,6 +30,7 @@ export const controllers = {
   Profile: () => import('#controllers/profile_controller'),
   PurchaseDestinations: () => import('#controllers/purchase_destinations_controller'),
   RefundsChargebacks: () => import('#controllers/refunds_chargebacks_controller'),
+  Reports: () => import('#controllers/reports_controller'),
   Reviews: () => import('#controllers/reviews_controller'),
   Seo: () => import('#controllers/seo_controller'),
   Session: () => import('#controllers/session_controller'),
