@@ -195,6 +195,13 @@ router
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
     router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
     router.get('/reviews', [controllers.Reviews, 'index'])
+
+    // Currency endpoints (public)
+    router.get('/currencies', [controllers.Currency, 'listCurrencies'])
+    router.get('/currencies/:code', [controllers.Currency, 'getCurrency'])
+    router.post('/currencies/convert', [controllers.Currency, 'convertCurrency'])
+    router.get('/currencies/:code/regions', [controllers.Currency, 'getSupportedRegions'])
+    router.get('/currencies/rates/:from/:to', [controllers.Currency, 'getExchangeRateHistory'])
     router.get('/payment-settings', [controllers.SiteSettings, 'paymentConfig'])
     router.get('/payment-providers', [controllers.Payment, 'providers'])
     router.post('/payments/initialize', [controllers.Payment, 'initialize'])
@@ -406,6 +413,15 @@ router
             router.get('/woocommerce/orders', [controllers.Woocommerce, 'listOrders'])
             router.post('/woocommerce/commissions/calculate', [controllers.Woocommerce, 'calculateCommissions'])
             router.get('/woocommerce/analytics', [controllers.Woocommerce, 'getAnalytics'])
+
+            // Currency and regional pricing (vendor/affiliate)
+            router.post('/currencies/format', [controllers.Currency, 'formatAmount'])
+            router.get('/products/:id/price/:region', [controllers.Currency, 'getRegionalPrice'])
+            router.post('/products/:id/pricing', [controllers.Currency, 'setRegionalPricing'])
+            router.get('/products/:id/pricing', [controllers.Currency, 'listProductPricing'])
+
+            // Currency management (admin)
+            router.post('/admin/currencies/rates', [controllers.Currency, 'updateExchangeRates'])
 
             router.put('/users/:id', [controllers.Admin, 'updateUser'])
             router.delete('/users/:id', [controllers.Admin, 'deleteUser'])

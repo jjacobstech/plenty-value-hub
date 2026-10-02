@@ -12,6 +12,7 @@ export const controllers = {
   BlogPosts: () => import('#controllers/blog_posts_controller'),
   Campaigns: () => import('#controllers/campaigns_controller'),
   CommissionLedger: () => import('#controllers/commission_ledger_controller'),
+  Currency: () => import('#controllers/currency_controller'),
   EmailCampaigns: () => import('#controllers/email_campaigns_controller'),
   FraudAnalytics: () => import('#controllers/fraud_analytics_controller'),
   Influencers: () => import('#controllers/influencers_controller'),
