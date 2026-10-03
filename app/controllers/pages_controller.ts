@@ -330,17 +330,14 @@ export default class PagesController {
                 }
               }
 
-              const { WalletService } = await import('#services/wallet_service')
               const { NotificationService } = await import('#services/notification_service')
 
               if (isDigital) {
-                await WalletService.handleOrderCompleted(order)
                 await NotificationService.notifyOrderCompleted(order, productRow)
                 console.log(
                   `[PagesController.productDetail] Digital product order #${order.orderNumber} completed & notification sent immediately on return.`
                 )
               } else {
-                await WalletService.handleOrderCreated(order)
                 await NotificationService.notifyOrderProcessing(order, productRow)
                 console.log(
                   `[PagesController.productDetail] Physical product order #${order.orderNumber} set to processing & notification sent immediately on return.`
@@ -606,16 +603,13 @@ export default class PagesController {
 
   // Vendor pages
   async vendorDashboard({ inertia, auth }: HttpContext) {
-    const { WalletService } = await import('#services/wallet_service')
-
-    const [vendorProducts, vendorOrders, walletSummary] = await Promise.all([
+    const [vendorProducts, vendorOrders] = await Promise.all([
       Product.query().where('vendor_id', auth.user!.id),
       Order.query()
         .join('products', 'orders.product_id', 'products.id')
         .where('products.vendor_id', auth.user!.id)
         .select('orders.*', 'products.name as product_name')
         .orderBy('orders.created_at', 'desc'),
-      WalletService.getSummary(auth.user!.id),
     ])
 
     const walletData = walletSummary || { wallet: null, transactions: [], payoutRequests: [] }
@@ -680,14 +674,12 @@ export default class PagesController {
   }
 
   async vendorEarnings({ inertia, auth }: HttpContext) {
-    const { WalletService } = await import('#services/wallet_service')
     const [orders, walletSummary] = await Promise.all([
       Order.query()
         .join('products', 'orders.product_id', 'products.id')
         .where('products.vendor_id', auth.user!.id)
         .select('orders.*')
         .orderBy('orders.created_at', 'desc'),
-      WalletService.getSummary(auth.user!.id),
     ])
     return inertia.render('vendor/VendorEarnings', {
       user: auth.user,
@@ -783,11 +775,9 @@ export default class PagesController {
   }
 
   async affiliateEarnings({ inertia, auth }: HttpContext) {
-    const { WalletService } = await import('#services/wallet_service')
     const [orders, links, walletSummary] = await Promise.all([
       Order.query().where('affiliate_id', auth.user!.id).orderBy('created_at', 'desc'),
       AffiliateLink.query().where('affiliate_id', auth.user!.id),
-      WalletService.getSummary(auth.user!.id),
     ])
     return inertia.render('affiliate/AffiliateEarnings', {
       user: auth.user,
@@ -896,8 +886,6 @@ export default class PagesController {
   }
 
   async adminPayouts({ inertia, auth }: HttpContext) {
-    const { WalletService } = await import('#services/wallet_service')
-    const payouts = await WalletService.listPayoutRequests('all')
     return inertia.render('admin/AdminPayouts', {
       user: auth.user,
       payouts: (payouts || []).map((p) => ({
