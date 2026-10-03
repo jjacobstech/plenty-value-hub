@@ -76,7 +76,7 @@ const integrations: IntegrationStatus[] = [
   }
 ]
 
-export default function VendorIntegrations({ user }: { user: any }) {
+export default function VendorIntegrations() {
   const [shopDomain, setShopDomain] = React.useState('')
   const [storeUrl, setStoreUrl] = React.useState('')
   const [showShopifyPrompt, setShowShopifyPrompt] = React.useState(false)
@@ -112,7 +112,7 @@ export default function VendorIntegrations({ user }: { user: any }) {
   }
 
   return (
-    <DashboardLayout user={user}>
+    <DashboardLayout role="vendor">
       <Head title="Integrations" />
 
       <div className="space-y-6">

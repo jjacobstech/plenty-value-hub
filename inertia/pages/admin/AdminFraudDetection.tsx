@@ -64,7 +64,7 @@ export default function AdminFraudDetection({ user }: { user: any }) {
   }
 
   return (
-    <DashboardLayout user={user}>
+    <DashboardLayout role="admin">
       <Head title="Fraud Detection" />
 
       <div className="space-y-6">

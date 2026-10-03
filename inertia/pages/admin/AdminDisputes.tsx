@@ -64,7 +64,7 @@ export default function AdminDisputes({ user }: { user: any }) {
   }
 
   return (
-    <DashboardLayout user={user}>
+    <DashboardLayout role="admin">
       <Head title="Disputes Management" />
 
       <div className="space-y-6">
