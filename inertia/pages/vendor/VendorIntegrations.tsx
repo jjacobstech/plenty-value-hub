@@ -10,19 +10,43 @@ interface IntegrationStatus {
   name: string
   slug: string
   description: string
-  icon: string
+  icon: React.ComponentType
   status: 'connected' | 'available' | 'coming_soon'
   features: string[]
   actionUrl?: string
   actionLabel?: string
 }
 
+const ShopifyLogo = () => (
+  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M6 2C3.239 2 1 4.239 1 7v10c0 2.761 2.239 5 5 5h12c2.761 0 5-2.239 5-5V7c0-2.761-2.239-5-5-5H6zm8 2c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zm-4 8h8v6H10v-6z" fill="#96bf48"/>
+  </svg>
+)
+
+const WooCommerceLogo = () => (
+  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M3 6v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2zm8 2h4v8H11V8z" fill="#7cb305"/>
+  </svg>
+)
+
+const AmazonLogo = () => (
+  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M7.5 12c0-1.93 1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5-3.5-1.57-3.5-3.5zm8-6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" fill="#FF9900"/>
+  </svg>
+)
+
+const EtsyLogo = () => (
+  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11z" fill="#F1641E"/>
+  </svg>
+)
+
 const integrations: IntegrationStatus[] = [
   {
     name: 'Shopify',
     slug: 'shopify',
     description: 'Connect your Shopify store to sync products, orders, and automatically calculate commissions for your affiliates.',
-    icon: '🛍️',
+    icon: ShopifyLogo,
     status: 'available',
     features: [
       'Product catalog sync',
@@ -38,7 +62,7 @@ const integrations: IntegrationStatus[] = [
     name: 'WooCommerce',
     slug: 'woocommerce',
     description: 'Integrate your WooCommerce store with automatic product and order synchronization.',
-    icon: '📦',
+    icon: WooCommerceLogo,
     status: 'available',
     features: [
       'Product sync',
@@ -54,8 +78,8 @@ const integrations: IntegrationStatus[] = [
     name: 'Amazon',
     slug: 'amazon',
     description: 'Manage your Amazon affiliate partnerships directly from your dashboard.',
-    icon: '🚀',
-    status: 'coming_soon',
+    icon: AmazonLogo,
+    status: 'available',
     features: [
       'Product linking',
       'Commission tracking',
@@ -66,8 +90,8 @@ const integrations: IntegrationStatus[] = [
     name: 'Etsy',
     slug: 'etsy',
     description: 'Connect your Etsy shop to the affiliate network.',
-    icon: '🎨',
-    status: 'coming_soon',
+    icon: EtsyLogo,
+    status: 'available',
     features: [
       'Shop sync',
       'Order tracking',
@@ -78,13 +102,19 @@ const integrations: IntegrationStatus[] = [
 
 export default function VendorIntegrations({ user }: { user: any }) {
   const [shopDomain, setShopDomain] = React.useState('')
+  const [storeUrl, setStoreUrl] = React.useState('')
   const [showShopifyPrompt, setShowShopifyPrompt] = React.useState(false)
+  const [showWooCommercePrompt, setShowWooCommercePrompt] = React.useState(false)
 
   const handleConnect = (integration: IntegrationStatus) => {
     if (integration.slug === 'shopify') {
       setShowShopifyPrompt(true)
     } else if (integration.slug === 'woocommerce') {
-      alert('WooCommerce connection setup coming soon. Use the API endpoints for now.')
+      setShowWooCommercePrompt(true)
+    } else if (integration.slug === 'amazon') {
+      window.location.href = '/api/amazon/auth-url'
+    } else if (integration.slug === 'etsy') {
+      window.location.href = '/api/etsy/auth-url'
     }
   }
 
@@ -93,8 +123,16 @@ export default function VendorIntegrations({ user }: { user: any }) {
       alert('Please enter your Shopify store domain (e.g., mystore.myshopify.com)')
       return
     }
-    // Redirect to Shopify OAuth with shop domain
     window.location.href = `/api/shopify/auth-url?shop_domain=${encodeURIComponent(shopDomain)}`
+  }
+
+  const handleWooCommerceConnect = () => {
+    if (!storeUrl.trim()) {
+      alert('Please enter your WooCommerce store URL (e.g., https://mystore.com)')
+      return
+    }
+    // Store URL and consumer key/secret would be collected here in a real implementation
+    window.location.href = `/api/woocommerce/connect?store_url=${encodeURIComponent(storeUrl)}`
   }
 
   return (
@@ -120,7 +158,9 @@ export default function VendorIntegrations({ user }: { user: any }) {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
-                    <div className="text-3xl mb-2">{integration.icon}</div>
+                    <div className="mb-2">
+                      <integration.icon />
+                    </div>
                     <CardTitle>{integration.name}</CardTitle>
                     <CardDescription className="mt-2">{integration.description}</CardDescription>
                   </div>
@@ -227,6 +267,58 @@ export default function VendorIntegrations({ user }: { user: any }) {
                     onClick={handleShopifyConnect}
                   >
                     Connect Store
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* WooCommerce Setup Prompt Modal */}
+        {showWooCommercePrompt && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>Connect Your WooCommerce Store</CardTitle>
+                <button
+                  onClick={() => setShowWooCommercePrompt(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Store URL</label>
+                  <input
+                    type="url"
+                    placeholder="https://mystore.com"
+                    value={storeUrl}
+                    onChange={(e) => setStoreUrl(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && handleWooCommerceConnect()}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">Example: https://mystore.com</p>
+                </div>
+                <div className="bg-blue-50 p-3 rounded text-sm">
+                  <p className="text-blue-900 mb-2"><strong>Next Steps:</strong></p>
+                  <ol className="text-blue-800 space-y-1 text-xs list-decimal list-inside">
+                    <li>Generate WooCommerce REST API credentials in your store settings</li>
+                    <li>Provide Consumer Key and Consumer Secret</li>
+                    <li>Complete the connection</li>
+                  </ol>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowWooCommercePrompt(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleWooCommerceConnect}
+                  >
+                    Continue
                   </Button>
                 </div>
               </CardContent>

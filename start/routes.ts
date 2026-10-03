@@ -469,6 +469,19 @@ router
             router.post('/woocommerce/commissions/calculate', [controllers.Woocommerce, 'calculateCommissions'])
             router.get('/woocommerce/analytics', [controllers.Woocommerce, 'getAnalytics'])
 
+            // Amazon integration (vendor)
+            router.get('/amazon/auth-url', [controllers.Amazon, 'getAuthUrl'])
+            router.get('/amazon/callback', [controllers.Amazon, 'handleCallback'])
+            router.get('/amazon/accounts', [controllers.Amazon, 'listAccounts'])
+            router.get('/amazon/campaigns', [controllers.Amazon, 'getCampaigns'])
+
+            // Etsy integration (vendor)
+            router.get('/etsy/auth-url', [controllers.Etsy, 'getAuthUrl'])
+            router.get('/etsy/callback', [controllers.Etsy, 'handleCallback'])
+            router.get('/etsy/shops', [controllers.Etsy, 'listShops'])
+            router.get('/etsy/listings', [controllers.Etsy, 'getListings'])
+            router.get('/etsy/orders', [controllers.Etsy, 'getOrders'])
+
             // Currency and regional pricing (vendor/affiliate)
             router.post('/currencies/format', [controllers.Currency, 'formatAmount'])
             router.get('/products/:id/price/:region', [controllers.Currency, 'getRegionalPrice'])
