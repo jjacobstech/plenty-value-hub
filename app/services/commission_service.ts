@@ -1,308 +1,244 @@
-import { randomUUID } from 'crypto'
-import CommissionLedger from '#models/commission_ledger'
 import Conversion from '#models/conversion'
+import CommissionLedger from '#models/commission_ledger'
+import AffiliateLink from '#models/affiliate_link'
 import Campaign from '#models/campaign'
+import WalletService from './wallet_service.js'
 import { DateTime } from 'luxon'
+
+export interface CommissionCalculation {
+  conversionId: number
+  affiliateId: number
+  campaignId: number
+  linkId: number
+  baseAmount: number
+  commissionRate: number
+  commissionAmount: number
+  status: 'pending' | 'approved' | 'paid'
+}
 
 export default class CommissionService {
   /**
-   * Generate unique ledger ID
+   * Calculate commission for a single conversion
    */
-  static generateLedgerId(): string {
-    return `ledger_${randomUUID().replace(/-/g, '').substring(0, 20)}`
-  }
+  static async calculateConversionCommission(conversionId: number): Promise<CommissionCalculation | null> {
+    const conversion = await Conversion.findOrFail(conversionId)
 
-  /**
-   * Calculate commission amount based on conversion and campaign settings
-   */
-  static calculateCommission(
-    orderValue: number,
-    commissionType: 'percentage' | 'fixed_amount' | 'lead' | 'hybrid',
-    commissionRate: number,
-    leadValue?: number
-  ): number {
-    switch (commissionType) {
-      case 'percentage':
-        return (orderValue * commissionRate) / 100
-      case 'fixed_amount':
-        return commissionRate
-      case 'lead':
-        return leadValue || commissionRate
-      case 'hybrid':
-        const percentage = (orderValue * commissionRate) / 100
-        return Math.max(percentage, commissionRate)
-      default:
-        return 0
+    if (!conversion.affiliateId) {
+      return null
     }
-  }
 
-  /**
-   * Create commission ledger entry from conversion
-   */
-  static async createCommissionFromConversion(
-    conversion: Conversion,
-    campaign: Campaign,
-    platformFeePercent: number = 5
-  ): Promise<CommissionLedger> {
-    const orderValue = conversion.orderValue || 0
-    const commissionAmount = this.calculateCommission(
-      orderValue,
-      campaign.commissionType as any,
-      campaign.commissionAmount,
-      orderValue
-    )
+    const link = await AffiliateLink.findOrFail(conversion.affiliateLinkId)
+    const campaign = await Campaign.findOrFail(conversion.campaignId)
 
-    const platformFee = (commissionAmount * platformFeePercent) / 100
-    const netCommission = commissionAmount - platformFee
+    // Get commission rate from link or campaign
+    let commissionRate = link.commissionRate || campaign.commissionRate || 0.05
 
+    // Apply tier-based commission if available
+    const affiliateConversions = await Conversion.query()
+      .where('affiliate_id', conversion.affiliateId)
+      .where('campaign_id', campaign.id)
+      .where('status', 'completed')
+      .count('*', 'count')
+      .then((r) => parseInt((r[0] as any)?.count || '0'))
+
+    // Tier-based commission bonuses
+    if (affiliateConversions > 100) {
+      commissionRate *= 1.5 // 50% bonus at 100+ conversions
+    } else if (affiliateConversions > 50) {
+      commissionRate *= 1.25 // 25% bonus at 50+ conversions
+    } else if (affiliateConversions > 10) {
+      commissionRate *= 1.1 // 10% bonus at 10+ conversions
+    }
+
+    const baseAmount = conversion.orderValue || 0
+    const commissionAmount = baseAmount * commissionRate
+
+    // Create commission ledger entry
     const ledger = await CommissionLedger.create({
-      ledgerId: this.generateLedgerId(),
       affiliateId: conversion.affiliateId,
       campaignId: conversion.campaignId,
-      conversionId: conversion.id,
+      conversionId,
       affiliateLinkId: conversion.affiliateLinkId,
-      orderValue: conversion.orderValue || 0,
-      commissionType: campaign.commissionType as any,
-      commissionRate: campaign.commissionAmount,
+      commissionType: 'conversion',
+      commissionRate: commissionRate * 100,
+      baseAmount,
       commissionAmount,
-      platformFeeAmount: platformFee,
-      netCommission,
-      currency: 'USD',
       status: 'pending',
-      description: `Commission for conversion ${conversion.conversionId}`,
+      createdAt: DateTime.now(),
     })
 
-    return ledger
+    // Update conversion with commission info
+    conversion.commissionAmount = commissionAmount
+    conversion.commissionRate = commissionRate * 100
+    conversion.commissionStatus = 'calculated'
+    await conversion.save()
+
+    return {
+      conversionId: conversion.id,
+      affiliateId: conversion.affiliateId,
+      campaignId: conversion.campaignId,
+      linkId: conversion.affiliateLinkId,
+      baseAmount,
+      commissionRate: commissionRate * 100,
+      commissionAmount,
+      status: 'pending',
+    }
   }
 
   /**
-   * Get affiliate commissions with filtering
+   * Batch calculate commissions for pending conversions
    */
-  static async getAffiliateCommissions(
-    affiliateId: number,
-    status?: string,
-    campaignId?: number,
-    page = 1,
-    limit = 20
-  ) {
-    let query = CommissionLedger.query().where('affiliate_id', affiliateId)
-
-    if (status) {
-      query = query.where('status', status)
-    }
+  static async calculatePendingCommissions(campaignId?: number, limit = 1000) {
+    let query = Conversion.query().where('commission_status', 'pending')
 
     if (campaignId) {
       query = query.where('campaign_id', campaignId)
     }
 
-    return query.orderBy('created_at', 'desc').paginate(page, limit)
-  }
+    const conversions = await query.limit(limit)
 
-  /**
-   * Get commission details
-   */
-  static async getCommission(ledgerId: number) {
-    return CommissionLedger.query()
-      .where('id', ledgerId)
-      .preload('conversion')
-      .preload('affiliateLink')
-      .first()
-  }
+    const results: CommissionCalculation[] = []
+    let successCount = 0
+    let errorCount = 0
 
-  /**
-   * Approve commission
-   */
-  static async approveCommission(
-    ledgerId: number,
-    adminId: number
-  ): Promise<CommissionLedger> {
-    const ledger = await CommissionLedger.find(ledgerId)
-    if (!ledger) {
-      throw new Error('Commission not found')
-    }
-
-    if (ledger.status !== 'pending') {
-      throw new Error('Only pending commissions can be approved')
-    }
-
-    await ledger
-      .merge({
-        status: 'approved',
-        approvedAt: DateTime.now(),
-        approvedByAdminId: adminId,
-      })
-      .save()
-
-    return ledger
-  }
-
-  /**
-   * Reject commission
-   */
-  static async rejectCommission(
-    ledgerId: number,
-    reason: string
-  ): Promise<CommissionLedger> {
-    const ledger = await CommissionLedger.find(ledgerId)
-    if (!ledger) {
-      throw new Error('Commission not found')
-    }
-
-    if (ledger.status !== 'pending') {
-      throw new Error('Only pending commissions can be rejected')
-    }
-
-    await ledger
-      .merge({
-        status: 'rejected',
-        rejectedAt: DateTime.now(),
-        rejectionReason: reason,
-      })
-      .save()
-
-    return ledger
-  }
-
-  /**
-   * Mark commission as paid
-   */
-  static async markAsPaid(
-    ledgerId: number,
-    adminId: number
-  ): Promise<CommissionLedger> {
-    const ledger = await CommissionLedger.find(ledgerId)
-    if (!ledger) {
-      throw new Error('Commission not found')
-    }
-
-    if (ledger.status !== 'approved') {
-      throw new Error('Only approved commissions can be marked as paid')
-    }
-
-    await ledger
-      .merge({
-        status: 'paid',
-        paidAt: DateTime.now(),
-        paidByAdminId: adminId,
-      })
-      .save()
-
-    return ledger
-  }
-
-  /**
-   * File dispute on commission
-   */
-  static async fileDispute(
-    ledgerId: number,
-    userId: number,
-    reason: string
-  ): Promise<CommissionLedger> {
-    const ledger = await CommissionLedger.find(ledgerId)
-    if (!ledger) {
-      throw new Error('Commission not found')
-    }
-
-    if (ledger.status === 'paid' || ledger.status === 'rejected') {
-      throw new Error('Cannot dispute paid or rejected commissions')
-    }
-
-    await ledger
-      .merge({
-        status: 'disputed',
-        disputedAt: DateTime.now(),
-        disputedByUserId: userId,
-        disputeReason: reason,
-      })
-      .save()
-
-    return ledger
-  }
-
-  /**
-   * Get commission summary stats
-   */
-  static async getAffiliateStats(affiliateId: number) {
-    const commissions = await CommissionLedger.query()
-      .where('affiliate_id', affiliateId)
-      .select('status')
-
-    const stats = {
-      total: commissions.length,
-      pending: 0,
-      approved: 0,
-      paid: 0,
-      rejected: 0,
-      disputed: 0,
-      pendingAmount: 0,
-      approvedAmount: 0,
-      paidAmount: 0,
-    }
-
-    for (const ledger of commissions) {
-      stats[ledger.status as keyof typeof stats] =
-        (stats[ledger.status as keyof typeof stats] as number) + 1
-
-      if (ledger.status === 'pending') {
-        stats.pendingAmount += ledger.netCommission
-      } else if (ledger.status === 'approved') {
-        stats.approvedAmount += ledger.netCommission
-      } else if (ledger.status === 'paid') {
-        stats.paidAmount += ledger.netCommission
+    for (const conversion of conversions) {
+      try {
+        const result = await this.calculateConversionCommission(conversion.id)
+        if (result) {
+          results.push(result)
+          successCount++
+        }
+      } catch (error) {
+        console.error(`Failed to calculate commission for conversion ${conversion.id}:`, error)
+        errorCount++
       }
     }
 
-    return stats
-  }
-
-  /**
-   * Get campaign commission stats
-   */
-  static async getCampaignStats(campaignId: number) {
-    const commissions = await CommissionLedger.query().where('campaign_id', campaignId)
-
-    let totalCommissions = 0
-    let approvedCommissions = 0
-    let paidCommissions = 0
-
-    for (const ledger of commissions) {
-      totalCommissions += ledger.netCommission
-      if (ledger.status === 'approved') approvedCommissions += ledger.netCommission
-      if (ledger.status === 'paid') paidCommissions += ledger.netCommission
-    }
-
     return {
-      totalCommissions,
-      approvedCommissions,
-      paidCommissions,
-      totalEntries: commissions.length,
+      successCount,
+      errorCount,
+      totalProcessed: successCount + errorCount,
+      results,
     }
   }
 
   /**
-   * Bulk approve commissions for campaign
+   * Approve pending commissions
    */
-  static async bulkApproveCommissions(
-    campaignId: number,
-    adminId: number
-  ): Promise<number> {
-    const commissions = await CommissionLedger.query()
-      .where('campaign_id', campaignId)
+  static async approvePendingCommissions(affiliateId: number, campaignId?: number) {
+    let query = CommissionLedger.query()
+      .where('affiliate_id', affiliateId)
       .where('status', 'pending')
 
-    let approved = 0
-    for (const ledger of commissions) {
-      await ledger
-        .merge({
-          status: 'approved',
-          approvedAt: DateTime.now(),
-          approvedByAdminId: adminId,
-        })
-        .save()
-
-      approved++
+    if (campaignId) {
+      query = query.where('campaign_id', campaignId)
     }
 
-    return approved
+    const ledgers = await query
+
+    for (const ledger of ledgers) {
+      ledger.status = 'approved'
+      ledger.approvedAt = DateTime.now()
+      await ledger.save()
+
+      // Update conversion status
+      const conversion = await Conversion.findOrFail(ledger.conversionId)
+      conversion.commissionStatus = 'approved'
+      await conversion.save()
+    }
+
+    return ledgers.length
+  }
+
+  /**
+   * Release approved commissions to wallet
+   */
+  static async releaseCommissionsToWallet(affiliateId: number) {
+    const ledgers = await CommissionLedger.query()
+      .where('affiliate_id', affiliateId)
+      .where('status', 'approved')
+      .where('released_at', null)
+
+    let totalReleased = 0
+
+    for (const ledger of ledgers) {
+      try {
+        // Record transaction in wallet
+        await WalletService.recordTransaction(
+          affiliateId,
+          'commission',
+          ledger.commissionAmount,
+          `Commission for conversion #${ledger.conversionId}`,
+          {
+            ledgerId: ledger.id,
+            conversionId: ledger.conversionId,
+          }
+        )
+
+        ledger.status = 'paid'
+        ledger.releasedAt = DateTime.now()
+        await ledger.save()
+
+        totalReleased += ledger.commissionAmount
+      } catch (error) {
+        console.error(`Failed to release commission ledger ${ledger.id}:`, error)
+      }
+    }
+
+    return totalReleased
+  }
+
+  /**
+   * Get commission summary for affiliate
+   */
+  static async getCommissionSummary(affiliateId: number, campaignId?: number) {
+    let query = CommissionLedger.query().where('affiliate_id', affiliateId)
+
+    if (campaignId) {
+      query = query.where('campaign_id', campaignId)
+    }
+
+    const ledgers = await query
+
+    const summary = {
+      totalCommissions: 0,
+      pendingCommissions: 0,
+      approvedCommissions: 0,
+      paidCommissions: 0,
+      pendingCount: 0,
+      approvedCount: 0,
+      paidCount: 0,
+      avgCommissionRate: 0,
+      byStatus: {} as Record<string, { amount: number; count: number }>,
+    }
+
+    let totalRate = 0
+
+    for (const ledger of ledgers) {
+      summary.totalCommissions += ledger.commissionAmount
+      totalRate += ledger.commissionRate
+
+      if (!summary.byStatus[ledger.status]) {
+        summary.byStatus[ledger.status] = { amount: 0, count: 0 }
+      }
+
+      summary.byStatus[ledger.status].amount += ledger.commissionAmount
+      summary.byStatus[ledger.status].count++
+
+      if (ledger.status === 'pending') {
+        summary.pendingCommissions += ledger.commissionAmount
+        summary.pendingCount++
+      } else if (ledger.status === 'approved') {
+        summary.approvedCommissions += ledger.commissionAmount
+        summary.approvedCount++
+      } else if (ledger.status === 'paid') {
+        summary.paidCommissions += ledger.commissionAmount
+        summary.paidCount++
+      }
+    }
+
+    summary.avgCommissionRate = ledgers.length > 0 ? totalRate / ledgers.length : 0
+
+    return summary
   }
 }
