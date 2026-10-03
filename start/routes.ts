@@ -182,7 +182,7 @@ router
     router.get('/products/:id', [controllers.Products, 'show'])
 
     // Campaigns (public endpoints)
-    router.get('/campaigns', [controllers.Campaigns, 'index'])
+    router.get('/campaigns', [controllers.Campaigns, 'discover'])
     router.get('/campaigns/:id', [controllers.Campaigns, 'show'])
 
     // Shopify OAuth callback
@@ -213,6 +213,13 @@ router
     router.get('/affiliates/top-performers', [controllers.Affiliates, 'getTopPerformers'])
     router.get('/affiliates/tier/:tier', [controllers.Affiliates, 'getAffiliatesByTier'])
 
+    // Mobile API endpoints (public)
+    router.get('/mobile/config', [controllers.MobileApi, 'getAppConfig'])
+    router.get('/mobile/device-info', [controllers.MobileApi, 'getDeviceInfo'])
+    router.get('/mobile/health', [controllers.MobileApi, 'healthCheck'])
+    router.get('/mobile/help', [controllers.MobileApi, 'getHelp'])
+    router.post('/mobile/errors/report', [controllers.MobileApi, 'reportError'])
+
     // ── Webhook endpoints (no auth — secured by signature verification) ──
     // Order matters: AdonisJS matches in registration order, so the named
     // provider routes must come BEFORE the ':provider' catch-all or they
@@ -232,13 +239,16 @@ router
         router.delete('/products/:id', [controllers.Products, 'destroy'])
 
         // Campaigns (vendor)
-        router.post('/campaigns', [controllers.Campaigns, 'store'])
+        router.post('/campaigns', [controllers.Campaigns, 'create'])
         router.put('/campaigns/:id', [controllers.Campaigns, 'update'])
-        router.delete('/campaigns/:id', [controllers.Campaigns, 'destroy'])
         router.post('/campaigns/:id/submit', [controllers.Campaigns, 'submit'])
         router.post('/campaigns/:id/pause', [controllers.Campaigns, 'pause'])
         router.post('/campaigns/:id/resume', [controllers.Campaigns, 'resume'])
-        router.post('/campaigns/:id/archive', [controllers.Campaigns, 'archive'])
+        router.get('/campaigns/vendor', [controllers.Campaigns, 'vendorCampaigns'])
+
+        // Campaigns (affiliate)
+        router.post('/campaigns/:id/join', [controllers.Campaigns, 'join'])
+        router.get('/affiliate-campaigns', [controllers.Campaigns, 'affiliateCampaigns'])
 
         // Purchase destinations (vendor configuration)
         router.put('/campaigns/:campaignId/purchase-destination', [controllers.PurchaseDestinations, 'configureCampaignDestination'])
@@ -323,10 +333,8 @@ router
             router.put('/products/:id/approve', [controllers.Products, 'approve'])
 
             // Campaign management (admin approval/suspension)
-            router.put('/campaigns/:id/approve', [controllers.Campaigns, 'approve'])
-            router.put('/campaigns/:id/reject', [controllers.Campaigns, 'reject'])
-            router.post('/campaigns/:id/suspend', [controllers.Campaigns, 'suspend'])
-            router.post('/campaigns/:id/unsuspend', [controllers.Campaigns, 'unsuspend'])
+            router.post('/campaigns/:id/approve', [controllers.Campaigns, 'approve'])
+            router.post('/campaigns/:id/reject', [controllers.Campaigns, 'reject'])
 
             // Conversion management (admin approval/rejection)
             router.put('/conversions/:id/approve', [controllers.VendorConversions, 'approve'])
@@ -553,6 +561,10 @@ router
         router.get('/affiliate/referrals', [controllers.Affiliates, 'getReferrals'])
         router.get('/affiliate/rewards', [controllers.Affiliates, 'getRewards'])
         router.post('/affiliate/rewards/:id/claim', [controllers.Affiliates, 'claimReward'])
+
+        // Mobile API endpoints (authenticated)
+        router.post('/mobile/devices/register', [controllers.MobileApi, 'registerDevice'])
+        router.post('/mobile/token/validate', [controllers.MobileApi, 'validateToken'])
 
         // KYC endpoints (vendor & affiliate)
         router.post('/kyc/submit', [controllers.Kyc, 'createSubmission'])

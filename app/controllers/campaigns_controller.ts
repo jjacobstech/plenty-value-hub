@@ -1,343 +1,292 @@
-import Campaign from '#models/campaign'
-import { createCampaignValidator, updateCampaignValidator } from '#validators/campaign'
 import type { HttpContext } from '@adonisjs/core/http'
-import { DateTime } from 'luxon'
+import CampaignService from '#services/campaign_service'
+import Campaign from '#models/campaign'
 
 export default class CampaignsController {
-  async index({ request, response }: HttpContext) {
-    const page = request.input('page', 1)
-    const limit = request.input('limit', 20)
-    const status = request.input('status')
-    const vendorId = request.input('vendor_id')
-    const search = request.input('search')
-    const sort = request.input('sort', '-created_at')
-
-    let query = Campaign.query().where('status', 'active')
-
-    if (status) query = query.where('status', status)
-    if (vendorId) query = query.where('vendor_id', vendorId)
-    if (search) {
-      query = query
-        .where('name', 'like', `%${search}%`)
-        .orWhere('description', 'like', `%${search}%`)
+  /**
+   * Create a new campaign (vendor only)
+   */
+  async create({ request, auth, response }: HttpContext) {
+    const user = auth.user!
+    
+    if (user.role !== 'vendor') {
+      return response.unauthorized({ error: 'Only vendors can create campaigns' })
     }
 
-    if (sort === '-created_at') query = query.orderBy('created_at', 'desc')
-    if (sort === '-total_conversions') query = query.orderBy('total_conversions', 'desc')
-    if (sort === '-conversion_rate') query = query.orderBy('conversion_rate', 'desc')
-    if (sort === 'is_featured') query = query.orderBy('is_featured', 'desc')
+    const data = request.only([
+      'name',
+      'productServiceName',
+      'description',
+      'imageUrl',
+      'category',
+      'commissionType',
+      'commissionAmount',
+      'purchaseDestination',
+      'attributionWindowDays',
+      'campaignTerms',
+      'promotionalGuidelines',
+      'startDate',
+      'endDate',
+      'targetAudience',
+      'minimumRequirementsForAffiliates',
+      'approvalRequirements',
+    ])
 
-    const campaigns = await query.paginate(page, limit)
+    try {
+      const campaign = await CampaignService.createCampaign({
+        vendorId: user.id,
+        ...data,
+      })
 
-    return response.json({
-      success: true,
-      data: campaigns.all(),
-      pagination: {
-        total: campaigns.total,
-        perPage: campaigns.perPage,
-        currentPage: campaigns.currentPage,
-        lastPage: campaigns.lastPage,
-      },
-    })
+      return response.created({ success: true, data: campaign })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to create campaign'
+      return response.badRequest({ error: msg })
+    }
   }
 
-  async show({ params, response }: HttpContext) {
-    const UUID_REGEX =
-      /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/
-    const paramId = String(params.id ?? '').trim()
-    const isUuid = UUID_REGEX.test(paramId)
-    const isNumeric = /^\d+$/.test(paramId)
-
-    const campaign = await Campaign.query()
-      .where((q) => {
-        if (isUuid) {
-          q.where('uuid', paramId)
-        } else if (isNumeric) {
-          q.where('id', paramId)
-        } else {
-          q.where('slug', paramId).orWhere(
-            'id',
-            Number.isNaN(Number(paramId)) ? 0 : Number(paramId)
-          )
-        }
-      })
-      .where('status', 'active')
-      .preload('vendor')
-      .first()
+  /**
+   * Update campaign (vendor only, draft campaigns only)
+   */
+  async update({ params, request, auth, response }: HttpContext) {
+    const user = auth.user!
+    const campaign = await Campaign.find(params.id)
 
     if (!campaign) {
-      return response.status(404).json({ error: 'Campaign not found' })
+      return response.notFound({ error: 'Campaign not found' })
     }
 
-    return response.json({
-      success: true,
-      data: campaign.serialize(),
-    })
+    if (campaign.vendorId !== user.id) {
+      return response.forbidden({ error: 'You can only edit your own campaigns' })
+    }
+
+    const data = request.only([
+      'name',
+      'productServiceName',
+      'description',
+      'imageUrl',
+      'category',
+      'commissionType',
+      'commissionAmount',
+      'purchaseDestination',
+      'attributionWindowDays',
+      'campaignTerms',
+      'promotionalGuidelines',
+      'startDate',
+      'endDate',
+      'targetAudience',
+      'minimumRequirementsForAffiliates',
+      'approvalRequirements',
+    ])
+
+    try {
+      const updated = await CampaignService.updateCampaign(campaign.id, data)
+      return response.ok({ success: true, data: updated })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
+    }
   }
 
-  async store({ request, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-
-    if (user.role !== 'vendor') {
-      return response.status(403).json({ error: 'Only vendors can create campaigns' })
-    }
-
-    const payload = await request.validateUsing(createCampaignValidator)
-
-    const campaign = await Campaign.create({
-      ...(payload as any),
-      vendorId: user.id,
-      vendorName: user.fullName || user.email,
-      status: 'draft',
-      totalClicks: 0,
-      totalConversions: 0,
-      totalCommissionPaid: 0,
-      attributionWindowDays: 30,
-    })
-
-    return response.status(201).json({
-      success: true,
-      message: 'Campaign created successfully',
-      data: campaign.serialize(),
-    })
-  }
-
-  async update({ params, request, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const campaign = await Campaign.findOrFail(params.id)
-
-    if (campaign.vendorId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Unauthorized' })
-    }
-
-    // Only allow updates if campaign is in draft or pending_approval status
-    if (!['draft', 'pending_approval'].includes(campaign.status)) {
-      return response
-        .status(400)
-        .json({ error: 'Can only update campaigns in draft or pending approval status' })
-    }
-
-    const payload = await request.validateUsing(updateCampaignValidator)
-    campaign.merge(payload)
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign updated successfully',
-      data: campaign.serialize(),
-    })
-  }
-
-  async destroy({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const campaign = await Campaign.findOrFail(params.id)
-
-    if (campaign.vendorId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Unauthorized' })
-    }
-
-    if (campaign.status !== 'draft') {
-      return response.status(400).json({ error: 'Can only delete campaigns in draft status' })
-    }
-
-    await campaign.delete()
-
-    return response.json({
-      success: true,
-      message: 'Campaign deleted successfully',
-    })
-  }
-
-  // ═══════════════════════════════════════════════════════════════════
-  // Status Management Methods
-  // ═══════════════════════════════════════════════════════════════════
-
+  /**
+   * Submit campaign for approval (vendor only)
+   */
   async submit({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const campaign = await Campaign.findOrFail(params.id)
+    const user = auth.user!
+    const campaign = await Campaign.find(params.id)
 
-    if (campaign.vendorId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Unauthorized' })
+    if (!campaign) {
+      return response.notFound({ error: 'Campaign not found' })
     }
 
-    if (campaign.status !== 'draft') {
-      return response.status(400).json({ error: 'Only draft campaigns can be submitted' })
+    if (campaign.vendorId !== user.id) {
+      return response.forbidden({ error: 'You can only submit your own campaigns' })
     }
 
-    campaign.status = 'pending_approval'
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign submitted for approval',
-      data: campaign.serialize(),
-    })
+    try {
+      const updated = await CampaignService.submitForApproval(campaign.id)
+      return response.ok({ success: true, data: updated, message: 'Campaign submitted for approval' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
+    }
   }
 
-  async approve({ params, request, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
+  /**
+   * Approve campaign (admin only)
+   */
+  async approve({ params, auth, response }: HttpContext) {
+    const user = auth.user!
 
     if (user.role !== 'admin') {
-      return response.status(403).json({ error: 'Only admins can approve campaigns' })
+      return response.unauthorized({ error: 'Only admins can approve campaigns' })
     }
 
-    const campaign = await Campaign.findOrFail(params.id)
-
-    if (campaign.status !== 'pending_approval') {
-      return response.status(400).json({ error: 'Only pending campaigns can be approved' })
+    try {
+      const campaign = await CampaignService.approveCampaign(params.id, user.id)
+      return response.ok({ success: true, data: campaign, message: 'Campaign approved' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
     }
-
-    const approvalNotes = request.input('notes')
-
-    campaign.status = 'active'
-    campaign.approvalNotes = approvalNotes
-    campaign.approvedAt = DateTime.now()
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign approved',
-      data: campaign.serialize(),
-    })
   }
 
+  /**
+   * Reject campaign (admin only)
+   */
   async reject({ params, request, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
+    const user = auth.user!
 
     if (user.role !== 'admin') {
-      return response.status(403).json({ error: 'Only admins can reject campaigns' })
+      return response.unauthorized({ error: 'Only admins can reject campaigns' })
     }
 
-    const campaign = await Campaign.findOrFail(params.id)
+    const { reason } = request.only(['reason'])
 
-    if (!['pending_approval'].includes(campaign.status)) {
-      return response.status(400).json({ error: 'Only pending campaigns can be rejected' })
+    try {
+      const campaign = await CampaignService.rejectCampaign(params.id, user.id, reason)
+      return response.ok({ success: true, data: campaign, message: 'Campaign rejected' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
     }
-
-    const rejectionNotes = request.input('notes', '')
-
-    campaign.status = 'rejected'
-    campaign.approvalNotes = rejectionNotes
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign rejected',
-      data: campaign.serialize(),
-    })
   }
 
+  /**
+   * Pause campaign
+   */
   async pause({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const campaign = await Campaign.findOrFail(params.id)
+    const user = auth.user!
+    const campaign = await Campaign.find(params.id)
+
+    if (!campaign) {
+      return response.notFound({ error: 'Campaign not found' })
+    }
 
     if (campaign.vendorId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Unauthorized' })
+      return response.forbidden({ error: 'You do not have permission to pause this campaign' })
     }
 
-    if (campaign.status !== 'active') {
-      return response.status(400).json({ error: 'Only active campaigns can be paused' })
+    try {
+      const updated = await CampaignService.pauseCampaign(campaign.id)
+      return response.ok({ success: true, data: updated, message: 'Campaign paused' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
     }
-
-    campaign.status = 'paused'
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign paused',
-      data: campaign.serialize(),
-    })
   }
 
+  /**
+   * Resume campaign
+   */
   async resume({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const campaign = await Campaign.findOrFail(params.id)
+    const user = auth.user!
+    const campaign = await Campaign.find(params.id)
+
+    if (!campaign) {
+      return response.notFound({ error: 'Campaign not found' })
+    }
 
     if (campaign.vendorId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Unauthorized' })
+      return response.forbidden({ error: 'You do not have permission to resume this campaign' })
     }
 
-    if (campaign.status !== 'paused') {
-      return response.status(400).json({ error: 'Only paused campaigns can be resumed' })
+    try {
+      const updated = await CampaignService.resumeCampaign(campaign.id)
+      return response.ok({ success: true, data: updated, message: 'Campaign resumed' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
     }
-
-    campaign.status = 'active'
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign resumed',
-      data: campaign.serialize(),
-    })
   }
 
-  async suspend({ params, request, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
+  /**
+   * Get vendor's campaigns
+   */
+  async vendorCampaigns({ auth, request, response }: HttpContext) {
+    const user = auth.user!
+    const { status, page = 1, limit = 20 } = request.qs()
 
-    if (user.role !== 'admin') {
-      return response.status(403).json({ error: 'Only admins can suspend campaigns' })
+    try {
+      const campaigns = await CampaignService.getVendorCampaigns(user.id, status, page, limit)
+      return response.ok({ success: true, data: campaigns })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
     }
-
-    const campaign = await Campaign.findOrFail(params.id)
-
-    if (campaign.suspendedAt) {
-      return response.status(400).json({ error: 'Campaign is already suspended' })
-    }
-
-    const reason = request.input('reason', 'No reason provided')
-
-    campaign.suspendedAt = DateTime.now()
-    campaign.suspensionReason = reason
-    campaign.status = 'paused'
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign suspended',
-      data: campaign.serialize(),
-    })
   }
 
-  async unsuspend({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
+  /**
+   * Get campaign with details
+   */
+  async show({ params, response }: HttpContext) {
+    try {
+      const campaign = await CampaignService.getCampaignWithDetails(params.id)
 
-    if (user.role !== 'admin') {
-      return response.status(403).json({ error: 'Only admins can unsuspend campaigns' })
+      if (!campaign) {
+        return response.notFound({ error: 'Campaign not found' })
+      }
+
+      return response.ok({ success: true, data: campaign })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
     }
-
-    const campaign = await Campaign.findOrFail(params.id)
-
-    if (!campaign.suspendedAt) {
-      return response.status(400).json({ error: 'Campaign is not suspended' })
-    }
-
-    campaign.suspendedAt = null
-    campaign.suspensionReason = null
-    campaign.status = 'active'
-    await campaign.save()
-
-    return response.json({
-      success: true,
-      message: 'Campaign unsuspended',
-      data: campaign.serialize(),
-    })
   }
 
-  async archive({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const campaign = await Campaign.findOrFail(params.id)
+  /**
+   * Get active campaigns for discovery
+   */
+  async discover({ request, response }: HttpContext) {
+    const { page = 1, limit = 20, category, minCommission, maxCommission, searchTerm } = request.qs()
 
-    if (campaign.vendorId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Unauthorized' })
+    try {
+      const campaigns = await CampaignService.getActiveCampaigns(page, limit, {
+        category,
+        minCommission: minCommission ? parseFloat(minCommission) : undefined,
+        maxCommission: maxCommission ? parseFloat(maxCommission) : undefined,
+        searchTerm,
+      })
+
+      return response.ok({ success: true, data: campaigns })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
+    }
+  }
+
+  /**
+   * Join campaign as affiliate
+   */
+  async join({ params, auth, response }: HttpContext) {
+    const user = auth.user!
+
+    if (user.role !== 'affiliate') {
+      return response.unauthorized({ error: 'Only affiliates can join campaigns' })
     }
 
-    campaign.status = 'archived'
-    await campaign.save()
+    try {
+      const affiliateCampaign = await CampaignService.joinCampaign(user.id, params.id)
+      return response.created({ success: true, data: affiliateCampaign, message: 'Successfully joined campaign' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
+    }
+  }
 
-    return response.json({
-      success: true,
-      message: 'Campaign archived',
-      data: campaign.serialize(),
-    })
+  /**
+   * Get affiliate's campaigns
+   */
+  async affiliateCampaigns({ auth, request, response }: HttpContext) {
+    const user = auth.user!
+    const { page = 1, limit = 20 } = request.qs()
+
+    try {
+      const campaigns = await CampaignService.getAffiliateCampaigns(user.id, page, limit)
+      return response.ok({ success: true, data: campaigns })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Operation failed'
+      return response.badRequest({ error: msg })
+    }
   }
 }
