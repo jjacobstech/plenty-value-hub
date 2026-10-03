@@ -1,35 +1,59 @@
-import { AffiliateLinkSchema } from '#database/schema'
-import { belongsTo, hasMany, column, beforeSave } from '@adonisjs/lucid/orm'
-import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
-import User from '#models/user'
-import Product from '#models/product'
-import Order from '#models/order'
+import { DateTime } from 'luxon'
+import { BaseModel, column, hasMany, belongsTo } from '@adonisjs/lucid/orm'
+import type { HasMany, BelongsTo } from '@adonisjs/lucid/orm'
+import Click from '#models/click'
+import Conversion from '#models/conversion'
 import Campaign from '#models/campaign'
-import crypto from 'node:crypto'
 
-export default class AffiliateLink extends AffiliateLinkSchema {
+export default class AffiliateLink extends BaseModel {
+  @column({ isPrimary: true })
+  declare id: number
+
   @column()
-  declare uuid: string
+  declare affiliateId: number
 
   @column()
-  declare campaignId: number | null
+  declare campaignId: number
 
-  @beforeSave()
-  static async generateUuid(model: AffiliateLink) {
-    if (!model.uuid) {
-      model.uuid = crypto.randomUUID()
-    }
-  }
+  @column()
+  declare slug: string
 
-  @belongsTo(() => User, { foreignKey: 'affiliateId' })
-  declare affiliate: BelongsTo<typeof User>
+  @column()
+  declare token: string
 
-  @belongsTo(() => Product, { foreignKey: 'productId' })
-  declare product: BelongsTo<typeof Product>
+  @column()
+  declare customAlias: string | null
+
+  @column()
+  declare description: string | null
+
+  @column.dateTime()
+  declare createdAt: DateTime
+
+  @column.dateTime()
+  declare updatedAt: DateTime
+
+  @column.dateTime()
+  declare expiresAt: DateTime | null
+
+  @column()
+  declare totalClicks: number
+
+  @column()
+  declare totalConversions: number
+
+  @column()
+  declare totalEarnings: number
+
+  @column()
+  declare isActive: boolean
 
   @belongsTo(() => Campaign, { foreignKey: 'campaignId' })
   declare campaign: BelongsTo<typeof Campaign>
 
-  @hasMany(() => Order, { foreignKey: 'affiliateLinkId' })
-  declare orders: HasMany<typeof Order>
+  @hasMany(() => Click, { foreignKey: 'affiliateLinkId' })
+  declare clicks: HasMany<typeof Click>
+
+  @hasMany(() => Conversion, { foreignKey: 'affiliateLinkId' })
+  declare conversions: HasMany<typeof Conversion>
 }

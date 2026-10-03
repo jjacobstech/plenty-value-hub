@@ -1,166 +1,276 @@
-import AffiliateLink from '#models/affiliate_link'
-import Product from '#models/product'
-import {
-  createAffiliateLinkValidator,
-  updateAffiliateLinkValidator,
-  trackClickValidator,
-} from '#validators/affiliate_link'
 import type { HttpContext } from '@adonisjs/core/http'
-import { nanoid } from 'nanoid'
+import AffiliateLinkService from '#services/affiliate_link_service'
+import AffiliateLink from '#models/affiliate_link'
+import Conversion from '#models/conversion'
+import Campaign from '#models/campaign'
+import { DateTime } from 'luxon'
 
 export default class AffiliateLinksController {
-  async index({ auth, response, request }: HttpContext) {
-    const user = auth.use('web').user!
-    const page = request.input('page', 1)
-    const limit = request.input('limit', 20)
+  /**
+   * Create affiliate link (affiliate only)
+   */
+  async create({ request, auth, response }: HttpContext) {
+    const user = auth.user!
 
-    const links = await AffiliateLink.query().where('affiliateId', user.id).paginate(page, limit)
-
-    return response.json({
-      success: true,
-      data: links.all(),
-      pagination: {
-        total: links.total,
-        perPage: links.perPage,
-        currentPage: links.currentPage,
-        lastPage: links.lastPage,
-      },
-    })
-  }
-
-  async store({ auth, request, response }: HttpContext) {
-    const user = auth.use('web').user!
-
-    if (user.role !== 'affiliate' && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Only affiliates can create links' })
+    if (user.role !== 'affiliate') {
+      return response.unauthorized({ error: 'Only affiliates can create links' })
     }
 
-    const payload = await request.validateUsing(createAffiliateLinkValidator)
+    const { campaignId, customAlias, description, expiresAt } = request.only([
+      'campaignId',
+      'customAlias',
+      'description',
+      'expiresAt',
+    ])
 
-    const product = await Product.find(payload.productId)
-    if (!product) {
-      return response.status(404).json({ error: 'Product not found' })
-    }
+    try {
+      const campaign = await Campaign.find(campaignId)
+      if (!campaign) {
+        return response.notFound({ error: 'Campaign not found' })
+      }
 
-    if (product.status !== 'approved') {
-      return response.status(400).json({ error: 'Product is not approved for affiliate promotion' })
-    }
+      if (campaign.status !== 'active') {
+        return response.badRequest({ error: 'Can only create links for active campaigns' })
+      }
 
-    const affiliateLinkExists = await AffiliateLink.query()
-      .where('affiliateId', user.id)
-      .where('productId', payload.productId)
-      .first()
-
-
-
-    if (affiliateLinkExists) {
-      return response.status(200).json({
-        success: true,
-        message: 'Affiliate link already exists',
-        data: {
-          ...affiliateLinkExists.serialize(),
-          linkCode: affiliateLinkExists.linkCode,
-        },
+      const link = await AffiliateLinkService.createLink({
+        affiliateId: user.id,
+        campaignId,
+        customAlias,
+        description,
+        expiresAt: expiresAt ? DateTime.fromISO(expiresAt) : undefined,
       })
+
+      return response.created({ success: true, data: link })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to create link'
+      return response.badRequest({ error: msg })
     }
-
-    // Generate a readable link code using affiliate name + random suffix
-    const affiliateName = (user.fullName || user.email.split('@')[0] || 'affiliate')
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, '-')
-      .replace(/--+/g, '-')
-      .replace(/^-|-$/g, '')
-    const randomSuffix = nanoid(6) // shorter suffix since we have the name
-    const linkCode = `${affiliateName}-${randomSuffix}`
-
-    const link = await AffiliateLink.create({
-      affiliateId: user.id,
-      productId: payload.productId,
-      productName: product.name,
-      linkCode,
-      subId: payload.subId || null,
-      campaignName: payload.campaignName || null,
-      status: 'active',
-      clicks: 0,
-      conversions: 0,
-      revenue: '0',
-      commissionEarned: '0',
-    })
-
-    return response.status(201).json({
-      success: true,
-      message: 'Affiliate link created',
-      data: {
-        ...link.serialize(),
-        linkCode: link.linkCode, // Ensure camelCase is available for frontend
-      },
-    })
   }
 
+  /**
+   * List affiliate links
+   */
+  async index({ auth, request, response }: HttpContext) {
+    const user = auth.user!
+    const { campaignId } = request.qs()
+
+    try {
+      const links = await AffiliateLinkService.getAffiliateLinks(
+        user.id,
+        campaignId ? parseInt(campaignId) : undefined
+      )
+
+      return response.ok({ success: true, data: links })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to fetch links'
+      return response.badRequest({ error: msg })
+    }
+  }
+
+  /**
+   * Get link details
+   */
+  async show({ params, auth, response }: HttpContext) {
+    try {
+      const link = await AffiliateLink.find(params.id)
+
+      if (!link) {
+        return response.notFound({ error: 'Link not found' })
+      }
+
+      if (link.affiliateId !== auth.user!.id && auth.user!.role !== 'admin') {
+        return response.forbidden({ error: 'You do not have permission to view this link' })
+      }
+
+      return response.ok({ success: true, data: link })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to fetch link'
+      return response.badRequest({ error: msg })
+    }
+  }
+
+  /**
+   * Update affiliate link
+   */
   async update({ params, request, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const link = await AffiliateLink.find(params.id)
+    const user = auth.user!
 
-    if (!link) {
-      return response.status(404).json({ error: 'Affiliate link not found' })
+    try {
+      const link = await AffiliateLink.find(params.id)
+
+      if (!link) {
+        return response.notFound({ error: 'Link not found' })
+      }
+
+      if (link.affiliateId !== user.id && user.role !== 'admin') {
+        return response.forbidden({ error: 'You cannot update this link' })
+      }
+
+      const { description } = request.only(['description'])
+
+      await link.merge({ description }).save()
+
+      return response.ok({ success: true, data: link })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to update link'
+      return response.badRequest({ error: msg })
     }
-
-    if (link.affiliateId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Not authorized to update this link' })
-    }
-
-    const payload = await request.validateUsing(updateAffiliateLinkValidator)
-
-    link.status = payload.status
-    await link.save()
-
-    return response.json({
-      success: true,
-      message: 'Affiliate link updated',
-      data: link.serialize(),
-    })
   }
 
+  /**
+   * Disable affiliate link
+   */
   async destroy({ params, auth, response }: HttpContext) {
-    const user = auth.use('web').user!
-    const link = await AffiliateLink.find(params.id)
+    const user = auth.user!
 
-    if (!link) {
-      return response.status(404).json({ error: 'Affiliate link not found' })
+    try {
+      const link = await AffiliateLink.find(params.id)
+
+      if (!link) {
+        return response.notFound({ error: 'Link not found' })
+      }
+
+      if (link.affiliateId !== user.id && user.role !== 'admin') {
+        return response.forbidden({ error: 'You cannot disable this link' })
+      }
+
+      await AffiliateLinkService.disableLink(link.id)
+
+      return response.ok({ success: true, message: 'Link disabled' })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to disable link'
+      return response.badRequest({ error: msg })
     }
-
-    if (link.affiliateId !== user.id && user.role !== 'admin') {
-      return response.status(403).json({ error: 'Not authorized to delete this link' })
-    }
-
-    await link.delete()
-
-    return response.json({
-      success: true,
-      message: 'Affiliate link deleted',
-    })
   }
 
+  /**
+   * Get link metrics
+   */
+  async metrics({ params, auth, response }: HttpContext) {
+    const user = auth.user!
+
+    try {
+      const link = await AffiliateLink.find(params.id)
+
+      if (!link) {
+        return response.notFound({ error: 'Link not found' })
+      }
+
+      if (link.affiliateId !== user.id && user.role !== 'admin') {
+        return response.forbidden({ error: 'You cannot view this link metrics' })
+      }
+
+      const metrics = await AffiliateLinkService.getLinkMetrics(link.id)
+
+      return response.ok({ success: true, data: metrics })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to fetch metrics'
+      return response.badRequest({ error: msg })
+    }
+  }
+
+  /**
+   * Track click (public endpoint)
+   */
   async trackClick({ request, response }: HttpContext) {
-    const payload = await request.validateUsing(trackClickValidator)
+    const { slug } = request.params()
 
-    const link = await AffiliateLink.findBy('linkCode', payload.linkCode)
+    try {
+      const link = await AffiliateLinkService.getLinkBySlug(slug)
 
-    if (!link) {
-      return response.status(404).json({ error: 'Affiliate link not found' })
+      if (!link) {
+        return response.notFound({ error: 'Link not found' })
+      }
+
+      const userAgent = request.header('user-agent') || ''
+      const ipAddress = request.ip() || ''
+      const referrer = request.header('referer') || ''
+
+      const click = await AffiliateLinkService.recordClick(
+        link.id,
+        link.affiliateId,
+        link.campaignId,
+        {
+          userAgent,
+          ipAddress,
+          referrer,
+        }
+      )
+
+      return response.created({
+        success: true,
+        data: { clickId: click.clickId, slug: link.slug },
+      })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to track click'
+      return response.badRequest({ error: msg })
     }
+  }
 
-    if (link.status !== 'active') {
-      return response.status(400).json({ error: 'Affiliate link is not active' })
+  /**
+   * Report conversion from vendor
+   */
+  async reportConversion({ request, response }: HttpContext) {
+    const { affiliateLinkId, clickId, orderValue, externalOrderId, externalConversionId } =
+      request.only([
+        'affiliateLinkId',
+        'clickId',
+        'orderValue',
+        'externalOrderId',
+        'externalConversionId',
+      ])
+
+    try {
+      const link = await AffiliateLink.find(affiliateLinkId)
+
+      if (!link) {
+        return response.notFound({ error: 'Affiliate link not found' })
+      }
+
+      const conversion = await AffiliateLinkService.recordConversion(
+        clickId,
+        affiliateLinkId,
+        link.affiliateId,
+        link.campaignId,
+        orderValue,
+        externalOrderId,
+        externalConversionId
+      )
+
+      return response.created({
+        success: true,
+        data: { conversionId: conversion.conversionId },
+      })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to record conversion'
+      return response.badRequest({ error: msg })
     }
+  }
 
-    link.clicks = (link.clicks || 0) + 1
-    await link.save()
+  /**
+   * Get conversions for link (affiliate)
+   */
+  async conversions({ params, auth, response }: HttpContext) {
+    const user = auth.user!
 
-    return response.json({
-      success: true,
-      productId: link.productId,
-      affiliateLinkId: link.id,
-    })
+    try {
+      const link = await AffiliateLink.find(params.id)
+
+      if (!link) {
+        return response.notFound({ error: 'Link not found' })
+      }
+
+      if (link.affiliateId !== user.id && user.role !== 'admin') {
+        return response.forbidden({ error: 'You cannot view this link conversions' })
+      }
+
+      const conversions = await Conversion.query().where('affiliate_link_id', link.id)
+
+      return response.ok({ success: true, data: conversions })
+    } catch (error) {
+      const msg = error instanceof Error ? error.message : 'Failed to fetch conversions'
+      return response.badRequest({ error: msg })
+    }
   }
 }

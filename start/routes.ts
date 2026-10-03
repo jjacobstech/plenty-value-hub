@@ -288,9 +288,16 @@ router
 
         // Affiliate Links
         router.get('/affiliate-links', [controllers.AffiliateLinks, 'index'])
-        router.post('/affiliate-links', [controllers.AffiliateLinks, 'store'])
+        router.post('/affiliate-links', [controllers.AffiliateLinks, 'create'])
+        router.get('/affiliate-links/:id', [controllers.AffiliateLinks, 'show'])
         router.put('/affiliate-links/:id', [controllers.AffiliateLinks, 'update'])
         router.delete('/affiliate-links/:id', [controllers.AffiliateLinks, 'destroy'])
+        router.get('/affiliate-links/:id/metrics', [controllers.AffiliateLinks, 'metrics'])
+        router.get('/affiliate-links/:id/conversions', [controllers.AffiliateLinks, 'conversions'])
+
+        // Click and Conversion Tracking
+        router.post('/clicks/track/:slug', [controllers.AffiliateLinks, 'trackClick'])
+        router.post('/conversions/report', [controllers.AffiliateLinks, 'reportConversion'])
 
         // Reviews
         router.post('/reviews', [controllers.Reviews, 'store'])
