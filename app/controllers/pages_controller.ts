@@ -752,6 +752,12 @@ export default class PagesController {
     return inertia.render('vendor/VendorProfile', { user: user.serialize(), paymentConfig })
   }
 
+  async vendorIntegrations({ inertia, auth }: HttpContext) {
+    return inertia.render('vendor/VendorIntegrations', {
+      user: auth.user,
+    })
+  }
+
   // Affiliate pages
   async affiliateDashboard({ inertia, auth }: HttpContext) {
     const links = await AffiliateLink.query().where('affiliate_id', auth.user!.id)

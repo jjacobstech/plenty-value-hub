@@ -157,6 +157,7 @@ router
     router.get('/earnings', [controllers.Pages, 'vendorEarnings']).as('vendor.earnings')
     router.get('/analytics', [controllers.Pages, 'vendorAnalytics']).as('vendor.analytics')
     router.get('/profile', [controllers.Pages, 'vendorProfile']).as('vendor.profile')
+    router.get('/integrations', [controllers.Pages, 'vendorIntegrations']).as('vendor.integrations')
   })
   .prefix('/vendor')
   .use(middleware.auth())
