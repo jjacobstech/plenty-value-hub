@@ -58,6 +58,24 @@ export default class PayoutRequest extends BaseModel {
   declare approvedByAdminId: number | null
 
   @column()
+  declare transferCode: string | null
+
+  @column()
+  declare transferReference: string | null
+
+  @column()
+  declare transferStatus: 'pending' | 'success' | 'failed' | 'reversed' | null
+
+  @column()
+  declare transferErrorMessage: string | null
+
+  @column.dateTime()
+  declare transferInitiatedAt: DateTime | null
+
+  @column.dateTime()
+  declare transferCompletedAt: DateTime | null
+
+  @column()
   declare metadata: any
 
   @column.dateTime()
