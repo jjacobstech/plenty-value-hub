@@ -8,82 +8,82 @@ export default class CommissionLedger extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ columnName: 'ledger_id' })
   declare ledgerId: string
 
-  @column()
+  @column({ columnName: 'affiliate_id' })
   declare affiliateId: number
 
-  @column()
+  @column({ columnName: 'campaign_id' })
   declare campaignId: number
 
-  @column()
+  @column({ columnName: 'conversion_id' })
   declare conversionId: number
 
-  @column()
+  @column({ columnName: 'affiliate_link_id' })
   declare affiliateLinkId: number
 
-  @column()
+  @column({ columnName: 'status' })
   declare status: 'pending' | 'approved' | 'paid' | 'rejected' | 'disputed'
 
-  @column()
+  @column({ columnName: 'order_value' })
   declare orderValue: number
 
-  @column()
+  @column({ columnName: 'commission_type' })
   declare commissionType: 'percentage' | 'fixed_amount' | 'lead' | 'hybrid'
 
-  @column()
+  @column({ columnName: 'commission_rate' })
   declare commissionRate: number | null
 
-  @column()
+  @column({ columnName: 'commission_amount' })
   declare commissionAmount: number
 
-  @column()
+  @column({ columnName: 'currency' })
   declare currency: string
 
-  @column()
+  @column({ columnName: 'platform_fee_amount' })
   declare platformFeeAmount: number
 
-  @column()
+  @column({ columnName: 'net_commission' })
   declare netCommission: number
 
-  @column()
+  @column({ columnName: 'description' })
   declare description: string | null
 
-  @column()
+  @column({ columnName: 'rejection_reason' })
   declare rejectionReason: string | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'approved_at' })
   declare approvedAt: DateTime | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'paid_at' })
   declare paidAt: DateTime | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'rejected_at' })
   declare rejectedAt: DateTime | null
 
-  @column()
+  @column({ columnName: 'approved_by_admin_id' })
   declare approvedByAdminId: number | null
 
-  @column()
+  @column({ columnName: 'paid_by_admin_id' })
   declare paidByAdminId: number | null
 
-  @column()
+  @column({ columnName: 'disputed_by_user_id' })
   declare disputedByUserId: number | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'disputed_at' })
   declare disputedAt: DateTime | null
 
-  @column()
+  @column({ columnName: 'dispute_reason' })
   declare disputeReason: string | null
 
-  @column()
+  @column({ columnName: 'metadata' })
   declare metadata: any
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'created_at' })
   declare createdAt: DateTime
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'updated_at' })
   declare updatedAt: DateTime
 
   @belongsTo(() => Conversion, { foreignKey: 'conversionId' })
