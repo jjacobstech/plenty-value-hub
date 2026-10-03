@@ -1,298 +1,331 @@
-import VendorConversion from '#models/vendor_conversion'
-import Campaign from '#models/campaign'
+import Conversion from '#models/conversion'
+import Click from '#models/click'
+import User from '#models/user'
 import { DateTime } from 'luxon'
 
-export interface FraudFlags {
-  isDuplicate: boolean
-  isDuplicateReason?: string
-  isVelocityAnomaly: boolean
-  velocityAnomalyReason?: string
-  isAmountAnomaly: boolean
-  amountAnomalyReason?: string
-  isAffiliateAnomaly: boolean
-  affiliateAnomalyReason?: string
-  isDeviceSuspicious: boolean
-  deviceSuspiciousReason?: string
-  fraudScore: number
+export interface FraudFlag {
+  affiliateId: number
+  flagType: string
   riskLevel: 'low' | 'medium' | 'high' | 'critical'
-  flags: string[]
+  description: string
+  metadata: Record<string, any>
+  createdAt: DateTime
+  status: 'pending' | 'investigating' | 'approved' | 'rejected'
 }
 
 export default class FraudDetectionService {
   /**
-   * Perform comprehensive fraud detection on a conversion
+   * Analyze conversion for fraud signals
    */
-  static async detectFraud(
-    campaignId: number,
-    affiliateId: number,
-    affiliateLinkId: number,
-    amount: number,
-    customerEmail: string,
-    customerPhone?: string,
-    ipAddress?: string,
-    _userAgent?: string,
-    _deviceId?: string
-  ): Promise<FraudFlags> {
-    const flags: FraudFlags = {
-      isDuplicate: false,
-      isVelocityAnomaly: false,
-      isAmountAnomaly: false,
-      isAffiliateAnomaly: false,
-      isDeviceSuspicious: false,
-      fraudScore: 0,
-      riskLevel: 'low',
-      flags: [],
-    }
+  static async analyzeConversion(conversionId: number): Promise<FraudFlag[]> {
+    const conversion = await Conversion.findOrFail(conversionId)
+    const flags: FraudFlag[] = []
 
-    try {
-      // Get campaign and conversion history
-      const campaign = await Campaign.find(campaignId)
-      if (!campaign) return flags
+    if (!conversion.affiliateId) return flags
 
-      // Check for duplicate conversions
-      await this.checkDuplicateConversion(
-        campaignId,
-        customerEmail,
-        customerPhone,
-        flags
-      )
+    // Check 1: Velocity anomaly (too many conversions in short time)
+    const velocityFlag = await this.checkVelocityAnomaly(conversion.affiliateId)
+    if (velocityFlag) flags.push(velocityFlag)
 
-      // Check for velocity anomalies
-      await this.checkVelocityAnomaly(affiliateId, campaignId, flags)
+    // Check 2: Duplicate orders (same customer, product within hours)
+    const duplicateFlag = await this.checkDuplicateOrders(conversion)
+    if (duplicateFlag) flags.push(duplicateFlag)
 
-      // Check for amount anomalies
-      await this.checkAmountAnomaly(campaignId, amount, flags)
+    // Check 3: Suspicious IP pattern
+    const ipFlag = await this.checkSuspiciousIP(conversion.affiliateId)
+    if (ipFlag) flags.push(ipFlag)
 
-      // Check for affiliate anomalies
-      await this.checkAffiliateAnomaly(affiliateLinkId, campaignId, flags)
+    // Check 4: Device fingerprint anomaly
+    const deviceFlag = await this.checkDeviceAnomaly(conversion.affiliateId)
+    if (deviceFlag) flags.push(deviceFlag)
 
-      // Check for device/IP suspicions
-      await this.checkDeviceSuspicion(ipAddress, _deviceId, flags)
+    // Check 5: Geographic anomaly
+    const geoFlag = await this.checkGeographicAnomaly(conversion.affiliateId)
+    if (geoFlag) flags.push(geoFlag)
 
-      // Calculate fraud score
-      flags.fraudScore = this.calculateFraudScore(flags)
-      flags.riskLevel = this.getRiskLevel(flags.fraudScore)
+    // Check 6: Bot-like behavior
+    const botFlag = await this.checkBotLikeBehavior(conversion.affiliateId)
+    if (botFlag) flags.push(botFlag)
 
-      return flags
-    } catch (error) {
-      console.error('Fraud detection error:', error)
-      return flags
-    }
+    return flags
   }
 
   /**
-   * Check for duplicate conversions within 1 hour
+   * Check for velocity anomalies (rapid conversions)
    */
-  private static async checkDuplicateConversion(
-    campaignId: number,
-    customerEmail: string,
-    customerPhone: string | undefined,
-    flags: FraudFlags
-  ): Promise<void> {
-    const oneHourAgo = DateTime.now().minus({ hours: 1 })
-
-    const query = VendorConversion.query()
-      .where('campaign_id', campaignId)
-      .where('status', '!=', 'rejected')
-      .where('created_at', '>', oneHourAgo.toSQL())
-
-    if (customerEmail) {
-      const duplicateEmail = await query
-        .clone()
-        .where('customer_email', customerEmail)
-        .first()
-
-      if (duplicateEmail) {
-        flags.isDuplicate = true
-        flags.isDuplicateReason = `Email ${customerEmail} already converted within last hour`
-        flags.flags.push('DUPLICATE_EMAIL')
-        return
-      }
-    }
-
-    if (customerPhone) {
-      const duplicatePhone = await query
-        .clone()
-        .where('customer_phone', customerPhone)
-        .first()
-
-      if (duplicatePhone) {
-        flags.isDuplicate = true
-        flags.isDuplicateReason = `Phone ${customerPhone} already converted within last hour`
-        flags.flags.push('DUPLICATE_PHONE')
-      }
-    }
-  }
-
-  /**
-   * Check for velocity anomalies (too many conversions too fast)
-   */
-  private static async checkVelocityAnomaly(
-    affiliateId: number,
-    campaignId: number,
-    flags: FraudFlags
-  ): Promise<void> {
-    const thirtyMinutesAgo = DateTime.now().minus({ minutes: 30 })
-
-    const recentConversions = await VendorConversion.query()
+  private static async checkVelocityAnomaly(affiliateId: number): Promise<FraudFlag | null> {
+    const lastHour = DateTime.now().minus({ hour: 1 }).toSQL()
+    const conversionsLastHour = await Conversion.query()
       .where('affiliate_id', affiliateId)
-      .where('campaign_id', campaignId)
-      .where('created_at', '>', thirtyMinutesAgo.toSQL())
-      .where('status', '!=', 'rejected')
+      .where('created_at', '>', lastHour)
       .count('*', 'count')
+      .then((r) => parseInt((r[0] as any)?.count || '0'))
 
-    const count = parseInt((recentConversions[0] as any)?.count || '0')
-
-    if (count > 5) {
-      flags.isVelocityAnomaly = true
-      flags.velocityAnomalyReason = `${count} conversions in last 30 minutes (threshold: 5)`
-      flags.flags.push('VELOCITY_ANOMALY')
-    }
-  }
-
-  /**
-   * Check for amount anomalies
-   */
-  private static async checkAmountAnomaly(
-    campaignId: number,
-    amount: number,
-    flags: FraudFlags
-  ): Promise<void> {
-    const conversions = await VendorConversion.query()
-      .where('campaign_id', campaignId)
-      .where('status', '!=', 'rejected')
-      .select('amount')
-
-    if (conversions.length > 0) {
-      const amounts = conversions.map((c) => c.amount)
-      const avgAmount = amounts.reduce((a, b) => a + b, 0) / amounts.length
-      const threshold = avgAmount * 3
-
-      if (amount > threshold) {
-        flags.isAmountAnomaly = true
-        flags.amountAnomalyReason = `Amount ${amount} is >3x average (${avgAmount.toFixed(2)})`
-        flags.flags.push('AMOUNT_ANOMALY')
+    // Flag if > 20 conversions in 1 hour
+    if (conversionsLastHour > 20) {
+      return {
+        affiliateId,
+        flagType: 'velocity_anomaly',
+        riskLevel: conversionsLastHour > 50 ? 'critical' : 'high',
+        description: `${conversionsLastHour} conversions in last hour (threshold: 20)`,
+        metadata: {
+          conversionsLastHour,
+          threshold: 20,
+        },
+        createdAt: DateTime.now(),
+        status: 'pending',
       }
     }
+
+    return null
   }
 
   /**
-   * Check for affiliate anomalies
+   * Check for duplicate orders
    */
-  private static async checkAffiliateAnomaly(
-    affiliateLinkId: number,
-    _campaignId: number,
-    flags: FraudFlags
-  ): Promise<void> {
-    const oneHourAgo = DateTime.now().minus({ hours: 1 })
+  private static async checkDuplicateOrders(conversion: Conversion): Promise<FraudFlag | null> {
+    const twoHoursAgo = DateTime.now().minus({ hours: 2 }).toSQL()
 
-    const recentConversions = await VendorConversion.query()
-      .where('affiliate_link_id', affiliateLinkId)
-      .where('created_at', '>', oneHourAgo.toSQL())
-      .where('status', '!=', 'rejected')
-      .count('*', 'count')
+    const duplicates = await Conversion.query()
+      .where('affiliate_id', conversion.affiliateId)
+      .where('customer_email', conversion.customerEmail)
+      .where('product_id', conversion.productId)
+      .where('created_at', '>', twoHoursAgo)
+      .where('id', '!=', conversion.id)
 
-    const count = parseInt((recentConversions[0] as any)?.count || '0')
-
-    if (count > 10) {
-      flags.isAffiliateAnomaly = true
-      flags.affiliateAnomalyReason = `${count} conversions from same link in last hour`
-      flags.flags.push('AFFILIATE_VELOCITY_ANOMALY')
+    if (duplicates.length > 0) {
+      return {
+        affiliateId: conversion.affiliateId,
+        flagType: 'duplicate_orders',
+        riskLevel: duplicates.length > 3 ? 'critical' : 'high',
+        description: `${duplicates.length + 1} orders from same customer for same product in 2 hours`,
+        metadata: {
+          customerEmail: conversion.customerEmail,
+          productId: conversion.productId,
+          duplicateCount: duplicates.length,
+        },
+        createdAt: DateTime.now(),
+        status: 'pending',
+      }
     }
+
+    return null
   }
 
   /**
-   * Check for device/IP suspicion
+   * Check for suspicious IP patterns
    */
-  private static async checkDeviceSuspicion(
-    ipAddress: string | undefined,
-    _deviceId: string | undefined,
-    flags: FraudFlags
-  ): Promise<void> {
-    const suspiciousIps = [
-      '127.0.0.1',
-      '0.0.0.0',
-      // Add known proxy/VPN IPs as needed
-    ]
+  private static async checkSuspiciousIP(affiliateId: number): Promise<FraudFlag | null> {
+    const dayAgo = DateTime.now().minus({ day: 1 }).toSQL()
 
-    if (ipAddress && suspiciousIps.includes(ipAddress)) {
-      flags.isDeviceSuspicious = true
-      flags.deviceSuspiciousReason = `Suspicious IP: ${ipAddress}`
-      flags.flags.push('SUSPICIOUS_IP')
+    const clicks = await Click.query()
+      .where('affiliate_id', affiliateId)
+      .where('created_at', '>', dayAgo)
+
+    // Group by IP
+    const ipMap = new Map<string, number>()
+    for (const click of clicks) {
+      const count = (ipMap.get(click.ipAddress) || 0) + 1
+      ipMap.set(click.ipAddress, count)
     }
+
+    // Check for single IP with high click volume
+    const highVolumeIPs = Array.from(ipMap.entries())
+      .filter(([_, count]) => count > 100)
+      .map(([ip]) => ip)
+
+    if (highVolumeIPs.length > 0) {
+      return {
+        affiliateId,
+        flagType: 'suspicious_ip',
+        riskLevel: 'high',
+        description: `${highVolumeIPs.length} IP(s) with unusual click volume (>100 in 24h)`,
+        metadata: {
+          suspiciousIPs: highVolumeIPs.slice(0, 5),
+          ipCount: highVolumeIPs.length,
+        },
+        createdAt: DateTime.now(),
+        status: 'pending',
+      }
+    }
+
+    return null
   }
 
   /**
-   * Calculate fraud score (0-100)
+   * Check for device anomalies
    */
-  private static calculateFraudScore(flags: FraudFlags): number {
+  private static async checkDeviceAnomaly(affiliateId: number): Promise<FraudFlag | null> {
+    const dayAgo = DateTime.now().minus({ day: 1 }).toSQL()
+
+    const clicks = await Click.query()
+      .where('affiliate_id', affiliateId)
+      .where('created_at', '>', dayAgo)
+
+    // Count unique devices
+    const devices = new Set(clicks.map((c) => c.userAgent))
+
+    // If > 50 clicks but only 1-2 user agents, suspicious
+    if (clicks.length > 50 && devices.size <= 2) {
+      return {
+        affiliateId,
+        flagType: 'device_suspicion',
+        riskLevel: 'medium',
+        description: `${clicks.length} clicks from only ${devices.size} unique device(s)`,
+        metadata: {
+          clickCount: clicks.length,
+          uniqueDevices: devices.size,
+        },
+        createdAt: DateTime.now(),
+        status: 'pending',
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Check for geographic anomalies
+   */
+  private static async checkGeographicAnomaly(affiliateId: number): Promise<FraudFlag | null> {
+    const hourAgo = DateTime.now().minus({ hour: 1 }).toSQL()
+
+    const clicks = await Click.query()
+      .where('affiliate_id', affiliateId)
+      .where('created_at', '>', hourAgo)
+
+    // For now, check if clicks from vastly different regions in short time
+    // In real implementation, would use GeoIP lookup
+    const geoLocations = new Set(clicks.map((c) => c.countryCode))
+
+    if (geoLocations.size > 10 && clicks.length > 20) {
+      return {
+        affiliateId,
+        flagType: 'geographic_anomaly',
+        riskLevel: 'medium',
+        description: `Clicks from ${geoLocations.size} countries in 1 hour`,
+        metadata: {
+          locationCount: geoLocations.size,
+          clickCount: clicks.length,
+        },
+        createdAt: DateTime.now(),
+        status: 'pending',
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Check for bot-like behavior
+   */
+  private static async checkBotLikeBehavior(affiliateId: number): Promise<FraudFlag | null> {
+    const hourAgo = DateTime.now().minus({ hour: 1 }).toSQL()
+
+    const clicks = await Click.query()
+      .where('affiliate_id', affiliateId)
+      .where('created_at', '>', hourAgo)
+
+    // Bot indicators:
+    // 1. All same user agent
+    // 2. Same IP
+    // 3. Regular time intervals
+    // 4. No referrer
+
+    const userAgents = new Set(clicks.map((c) => c.userAgent))
+    const ips = new Set(clicks.map((c) => c.ipAddress))
+    const noReferrer = clicks.filter((c) => !c.referrerUrl).length
+
+    if (
+      userAgents.size === 1 &&
+      ips.size === 1 &&
+      noReferrer === clicks.length &&
+      clicks.length > 30
+    ) {
+      return {
+        affiliateId,
+        flagType: 'bot_network',
+        riskLevel: 'critical',
+        description: `Strong bot indicators: identical UA, IP, no referrer, ${clicks.length} clicks`,
+        metadata: {
+          clickCount: clicks.length,
+          uniqueUA: 1,
+          uniqueIP: 1,
+          noReferrer: noReferrer,
+        },
+        createdAt: DateTime.now(),
+        status: 'pending',
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Get affiliate risk score (0-100)
+   */
+  static async calculateAffiliateRiskScore(affiliateId: number): Promise<number> {
     let score = 0
+    const dayAgo = DateTime.now().minus({ day: 1 }).toSQL()
 
-    if (flags.isDuplicate) score += 40
-    if (flags.isVelocityAnomaly) score += 25
-    if (flags.isAmountAnomaly) score += 20
-    if (flags.isAffiliateAnomaly) score += 25
-    if (flags.isDeviceSuspicious) score += 15
+    // Check conversion velocity
+    const conversions = await Conversion.query()
+      .where('affiliate_id', affiliateId)
+      .where('created_at', '>', dayAgo)
+
+    if (conversions.length > 100) score += 30
+
+    // Check click to conversion ratio
+    const clicks = await Click.query()
+      .where('affiliate_id', affiliateId)
+      .where('created_at', '>', dayAgo)
+
+    const ratio = clicks.length > 0 ? conversions.length / clicks.length : 0
+    if (ratio > 0.5) score += 25 // Unusually high conversion rate
+
+    // Check for previous flags
+    const user = await User.findOrFail(affiliateId)
+    if ((user as any).fraudFlags > 0) score += 20
 
     return Math.min(score, 100)
   }
 
   /**
-   * Get risk level from fraud score
+   * Get flagged conversions
    */
-  private static getRiskLevel(score: number): 'low' | 'medium' | 'high' | 'critical' {
-    if (score >= 70) return 'critical'
-    if (score >= 50) return 'high'
-    if (score >= 30) return 'medium'
-    return 'low'
+  static async getFlaggedConversions(status?: 'pending' | 'investigating' | 'approved') {
+    let query = Conversion.query().where('fraud_flags_count', '>', 0)
+
+    if (status) {
+      query = query.where('fraud_status', status)
+    }
+
+    return query.orderBy('created_at', 'desc').limit(100)
   }
 
   /**
-   * Get fraud statistics
+   * Approve conversion (remove fraud flag)
    */
-  static async getFraudStats(campaignId?: number, dateRange?: { start: DateTime; end: DateTime }) {
-    let query = VendorConversion.query()
+  static async approveConversion(conversionId: number) {
+    const conversion = await Conversion.findOrFail(conversionId)
+    conversion.fraudStatus = 'approved'
+    conversion.fraudFlagsCount = 0
+    await conversion.save()
+    return conversion
+  }
 
-    if (campaignId) {
-      query = query.where('campaign_id', campaignId)
-    }
+  /**
+   * Reject conversion (mark as fraudulent)
+   */
+  static async rejectConversion(conversionId: number, reason: string) {
+    const conversion = await Conversion.findOrFail(conversionId)
+    conversion.fraudStatus = 'rejected'
+    conversion.fraudReason = reason
+    await conversion.save()
 
-    if (dateRange && dateRange.start && dateRange.end) {
-      const startSql = dateRange.start.toSQL()
-      const endSql = dateRange.end.toSQL()
-      if (startSql && endSql) {
-        query = query
-          .where('created_at', '>=', startSql)
-          .where('created_at', '<=', endSql)
-      }
-    }
+    // Cancel associated commissions
+    // TODO: Call CommissionService.cancelCommission()
 
-    const conversions = await query.select('*')
-
-    const stats = {
-      total: conversions.length,
-      flagged: conversions.filter((c) => c.fraudFlags && JSON.parse(c.fraudFlags).fraudScore > 30).length,
-      byRiskLevel: {
-        low: 0,
-        medium: 0,
-        high: 0,
-        critical: 0,
-      },
-      topFlags: {} as Record<string, number>,
-    }
-
-    conversions.forEach((c) => {
-      const fraudFlags = c.fraudFlags ? JSON.parse(c.fraudFlags) : {}
-      if (fraudFlags.riskLevel) {
-        stats.byRiskLevel[fraudFlags.riskLevel as keyof typeof stats.byRiskLevel]++
-      }
-      if (fraudFlags.flags) {
-        fraudFlags.flags.forEach((flag: string) => {
-          stats.topFlags[flag] = (stats.topFlags[flag] || 0) + 1
-        })
-      }
-    })
-
-    return stats
+    return conversion
   }
 }

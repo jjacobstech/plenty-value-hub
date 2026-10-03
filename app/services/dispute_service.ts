@@ -1,483 +1,230 @@
-import CommissionDispute from '#models/commission_dispute'
-import DisputeActivity from '#models/dispute_activity'
-import DisputeComment from '#models/dispute_comment'
-import DisputeAssignment from '#models/dispute_assignment'
-import DisputeApproval from '#models/dispute_approval'
-import DisputeStatistics from '#models/dispute_statistics'
-import CommissionLedger from '#models/commission_ledger'
+import Dispute from '#models/dispute'
+import User from '#models/user'
 import { DateTime } from 'luxon'
 
-interface CreateDisputeData {
-  commissionLedgerId: number
-  userId: number
-  filedByUserId: number
-  disputeType: 'amount_mismatch' | 'calculation_error' | 'missing_commission' | 'duplicate_entry' | 'payment_issue' | 'other'
-  description: string
-  supportingNotes?: string
-  claimedAmount?: number
+export interface DisputeResolution {
+  disputeId: number
+  resolution: 'approved' | 'rejected' | 'partial'
+  amountAwarded: number
+  notes: string
 }
 
 export default class DisputeService {
   /**
-   * Create a new commission dispute
+   * Create a dispute
    */
-  static async createDispute(data: CreateDisputeData): Promise<CommissionDispute> {
-    const commission = await CommissionLedger.find(data.commissionLedgerId)
-    if (!commission) {
-      throw new Error('Commission not found')
-    }
-
-    const dispute = await CommissionDispute.create({
-      commissionLedgerId: data.commissionLedgerId,
-      userId: data.userId,
-      filedByUserId: data.filedByUserId,
-      disputeType: data.disputeType,
-      description: data.description,
-      supportingNotes: data.supportingNotes || null,
-      disputedAmount: commission.amount || 0,
-      claimedAmount: data.claimedAmount || null,
+  static async createDispute(
+    type: 'commission' | 'chargeback' | 'conversion' | 'payout',
+    initiatorId: number,
+    respondentId: number,
+    amount: number,
+    reason: string,
+    relatedId?: number
+  ) {
+    const dispute = await Dispute.create({
+      type,
+      initiatorId,
+      respondentId,
+      amount,
+      reason,
+      relatedConversionId: relatedId,
       status: 'open',
-      priority: 'medium',
-      resolutionType: 'pending',
-      dueDate: DateTime.now().plus({ days: 14 }),
+      priority: this.calculatePriority(type, amount),
+      createdAt: DateTime.now(),
     })
-
-    await this.logActivity(dispute.id, data.filedByUserId, 'created', null, 'open', `Dispute created for commission #${commission.id}`)
-    await this.updateStatistics(data.userId)
 
     return dispute
   }
 
   /**
-   * Update dispute status
+   * Calculate dispute priority
    */
-  static async updateDisputeStatus(
-    disputeId: number,
-    newStatus: string,
-    userId: number,
-    notes?: string
-  ): Promise<CommissionDispute> {
-    const dispute = await CommissionDispute.find(disputeId)
-    if (!dispute) {
-      throw new Error('Dispute not found')
-    }
-
-    const oldStatus = dispute.status
-
-    await dispute.merge({
-      status: newStatus,
-      updatedAt: DateTime.now(),
-    }).save()
-
-    await this.logActivity(disputeId, userId, 'status_changed', oldStatus, newStatus, notes)
-    await this.updateStatistics(dispute.userId)
-
-    return dispute
-  }
-
-  /**
-   * Resolve a dispute
-   */
-  static async resolveDispute(
-    disputeId: number,
-    resolvedByUserId: number,
-    resolutionType: 'rejection' | 'adjustment' | 'reversal' | 'manual_approval',
-    resolvedAmount?: number,
-    notes?: string
-  ): Promise<CommissionDispute> {
-    const dispute = await CommissionDispute.find(disputeId)
-    if (!dispute) {
-      throw new Error('Dispute not found')
-    }
-
-    const previousStatus = dispute.status
-
-    await dispute.merge({
-      status: 'resolved',
-      resolutionType,
-      resolvedByUserId,
-      resolvedAmount: resolvedAmount || dispute.disputedAmount,
-      resolvedAt: DateTime.now(),
-      resolutionNotes: notes || null,
-    }).save()
-
-    await this.logActivity(disputeId, resolvedByUserId, 'resolved', previousStatus, 'resolved', notes)
-    await this.updateStatistics(dispute.userId)
-
-    return dispute
-  }
-
-  /**
-   * Add comment to dispute
-   */
-  static async addComment(
-    disputeId: number,
-    userId: number,
-    comment: string,
-    isInternal = false
-  ): Promise<DisputeComment> {
-    const dispute = await CommissionDispute.find(disputeId)
-    if (!dispute) {
-      throw new Error('Dispute not found')
-    }
-
-    const newComment = await DisputeComment.create({
-      disputeId,
-      userId,
-      comment,
-      isInternal,
-    })
-
-    await this.logActivity(disputeId, userId, 'comment_added', null, null, `Comment added by user`)
-
-    return newComment
-  }
-
-  /**
-   * Assign dispute to a user
-   */
-  static async assignDispute(
-    disputeId: number,
-    assignedToUserId: number,
-    assignedByUserId: number,
-    notes?: string
-  ): Promise<DisputeAssignment> {
-    const dispute = await CommissionDispute.find(disputeId)
-    if (!dispute) {
-      throw new Error('Dispute not found')
-    }
-
-    const assignment = await DisputeAssignment.create({
-      disputeId,
-      assignedToUserId,
-      assignedByUserId,
-      assignmentNotes: notes || null,
-      assignedAt: DateTime.now(),
-      isActive: true,
-    })
-
-    await this.logActivity(disputeId, assignedByUserId, 'assigned', null, null, `Assigned to user ${assignedToUserId}`)
-
-    return assignment
-  }
-
-  /**
-   * Unassign dispute from a user
-   */
-  static async unassignDispute(assignmentId: number): Promise<void> {
-    const assignment = await DisputeAssignment.find(assignmentId)
-    if (!assignment) {
-      throw new Error('Assignment not found')
-    }
-
-    await assignment.merge({
-      isActive: false,
-      unassignedAt: DateTime.now(),
-    }).save()
-  }
-
-  /**
-   * Escalate a dispute
-   */
-  static async escalateDispute(
-    disputeId: number,
-    escalatedToUserId: number,
-    userId: number,
-    notes?: string
-  ): Promise<CommissionDispute> {
-    const dispute = await CommissionDispute.find(disputeId)
-    if (!dispute) {
-      throw new Error('Dispute not found')
-    }
-
-    const previousPriority = dispute.priority
-
-    await dispute.merge({
-      isEscalated: true,
-      escalatedAt: DateTime.now(),
-      escalatedToUserId,
-      priority: 'high',
-    }).save()
-
-    await this.logActivity(disputeId, userId, 'escalated', previousPriority, 'high', notes)
-
-    return dispute
-  }
-
-  /**
-   * Request approval for dispute resolution
-   */
-  static async requestApproval(
-    disputeId: number,
-    requestedByUserId: number,
-    reason?: string
-  ): Promise<DisputeApproval> {
-    const dispute = await CommissionDispute.find(disputeId)
-    if (!dispute) {
-      throw new Error('Dispute not found')
-    }
-
-    const approval = await DisputeApproval.create({
-      disputeId,
-      requestedByUserId,
-      approvalStatus: 'pending',
-      approvalReason: reason || null,
-    })
-
-    return approval
-  }
-
-  /**
-   * Approve dispute resolution
-   */
-  static async approveDispute(
-    approvalId: number,
-    approvedByUserId: number,
-    reason?: string
-  ): Promise<DisputeApproval> {
-    const approval = await DisputeApproval.find(approvalId)
-    if (!approval) {
-      throw new Error('Approval not found')
-    }
-
-    await approval.merge({
-      approvalStatus: 'approved',
-      approvedByUserId,
-      approvedAt: DateTime.now(),
-      approvalReason: reason || null,
-    }).save()
-
-    const dispute = await CommissionDispute.find(approval.disputeId)
-    if (dispute) {
-      await this.logActivity(approval.disputeId, approvedByUserId, 'resolved', 'pending_approval', 'approved', reason)
-    }
-
-    return approval
-  }
-
-  /**
-   * Reject dispute resolution
-   */
-  static async rejectDispute(
-    approvalId: number,
-    rejectedByUserId: number,
-    reason?: string
-  ): Promise<DisputeApproval> {
-    const approval = await DisputeApproval.find(approvalId)
-    if (!approval) {
-      throw new Error('Approval not found')
-    }
-
-    await approval.merge({
-      approvalStatus: 'rejected',
-      approvedByUserId: rejectedByUserId,
-      rejectedAt: DateTime.now(),
-      rejectionReason: reason || null,
-    }).save()
-
-    return approval
-  }
-
-  /**
-   * Log dispute activity
-   */
-  static async logActivity(
-    disputeId: number,
-    userId: number,
-    activityType: 'created' | 'status_changed' | 'comment_added' | 'amount_updated' | 'assigned' | 'escalated' | 'resolved',
-    oldValue?: string | null,
-    newValue?: string | null,
-    description?: string
-  ): Promise<DisputeActivity> {
-    const activity = await DisputeActivity.create({
-      disputeId,
-      userId,
-      activityType,
-      oldValue: oldValue || null,
-      newValue: newValue || null,
-      description: description || null,
-    })
-
-    return activity
-  }
-
-  /**
-   * Get disputes for a user
-   */
-  static async getUserDisputes(userId: number, page = 1, limit = 20) {
-    const query = CommissionDispute.query()
-      .where((q) => {
-        q.where('user_id', userId).orWhere('filed_by_user_id', userId)
-      })
-      .orderBy('created_at', 'desc')
-
-    return query.paginate(page, limit)
+  private static calculatePriority(type: string, amount: number): 'low' | 'medium' | 'high' | 'critical' {
+    if (type === 'chargeback') return 'critical'
+    if (amount > 1000) return 'high'
+    if (amount > 100) return 'medium'
+    return 'low'
   }
 
   /**
    * Get open disputes
    */
-  static async getOpenDisputes(page = 1, limit = 20) {
-    const disputes = await CommissionDispute.query()
+  static async getOpenDisputes() {
+    return Dispute.query()
       .where('status', 'open')
-      .orderBy('due_date', 'asc')
-      .paginate(page, limit)
-
-    return disputes
+      .orderBy('priority', 'desc')
+      .orderBy('created_at', 'asc')
+      .preload('initiator')
+      .preload('respondent')
   }
 
   /**
-   * Get escalated disputes
+   * Get disputes for user
    */
-  static async getEscalatedDisputes(page = 1, limit = 20) {
-    const disputes = await CommissionDispute.query()
-      .where('is_escalated', true)
-      .where('status', '!=', 'resolved')
-      .orderBy('escalated_at', 'desc')
-      .paginate(page, limit)
-
-    return disputes
+  static async getUserDisputes(userId: number) {
+    return Dispute.query()
+      .where((query) => {
+        query.where('initiator_id', userId).orWhere('respondent_id', userId)
+      })
+      .orderBy('created_at', 'desc')
+      .preload('initiator')
+      .preload('respondent')
   }
 
   /**
-   * Get dispute by ID with related data
+   * Add evidence to dispute
    */
-  static async getDisputeWithDetails(disputeId: number) {
-    const dispute = await CommissionDispute.query()
-      .where('id', disputeId)
-      .preload('commissionLedger')
-      .preload('user')
-      .preload('activities')
-      .preload('comments')
-      .preload('assignments', (q) => q.where('is_active', true))
-      .first()
+  static async addEvidence(
+    disputeId: number,
+    userId: number,
+    evidence: string,
+    attachmentUrl?: string
+  ) {
+    const dispute = await Dispute.findOrFail(disputeId)
+
+    // Ensure user is party to dispute
+    if (dispute.initiatorId !== userId && dispute.respondentId !== userId) {
+      throw new Error('Unauthorized to add evidence')
+    }
+
+    const evidenceEntry = {
+      userId,
+      timestamp: DateTime.now().toISO(),
+      evidence,
+      attachment: attachmentUrl,
+    }
+
+    dispute.evidence = [...(dispute.evidence || []), evidenceEntry]
+    await dispute.save()
+
+    return evidenceEntry
+  }
+
+  /**
+   * Escalate dispute
+   */
+  static async escalateDispute(disputeId: number, reason: string) {
+    const dispute = await Dispute.findOrFail(disputeId)
+
+    dispute.status = 'escalated'
+    dispute.escalatedAt = DateTime.now()
+    dispute.escalationReason = reason
+    await dispute.save()
+
+    // TODO: Send notification to admin for manual review
 
     return dispute
   }
 
   /**
-   * Update dispute statistics
+   * Resolve dispute
    */
-  static async updateStatistics(userId?: number): Promise<void> {
-    if (userId) {
-      const disputes = await CommissionDispute.query().where('user_id', userId)
+  static async resolveDispute(resolution: DisputeResolution, adminNotes: string) {
+    const dispute = await Dispute.findOrFail(resolution.disputeId)
 
-      const stats = {
-        totalDisputes: disputes.length,
-        openDisputes: disputes.filter((d) => d.status === 'open').length,
-        resolvedDisputes: disputes.filter((d) => d.status === 'resolved').length,
-        escalatedDisputes: disputes.filter((d) => d.isEscalated).length,
-        totalDisputedAmount: disputes.reduce((sum, d) => sum + (d.disputedAmount || 0), 0),
-        totalResolvedAmount: disputes.reduce((sum, d) => sum + (d.resolvedAmount || 0), 0),
-      }
+    dispute.status = resolution.resolution === 'approved' ? 'resolved' : 'closed'
+    dispute.resolution = resolution.resolution
+    dispute.amountAwarded = resolution.amountAwarded
+    dispute.adminNotes = adminNotes
+    dispute.resolvedAt = DateTime.now()
+    await dispute.save()
 
-      const avgTime = disputes
-        .filter((d) => d.resolvedAt && d.createdAt)
-        .reduce((sum, d) => {
-          const createdDate = d.createdAt
-          const resolvedDate = d.resolvedAt
-          if (resolvedDate) {
-            return sum + resolvedDate.diff(createdDate, 'days').days
-          }
-          return sum
-        }, 0)
-
-      const avgResolutionTime = disputes.length > 0 ? avgTime / disputes.length : 0
-
-      const disputesByType: Record<string, number> = {}
-      disputes.forEach((d) => {
-        disputesByType[d.disputeType] = (disputesByType[d.disputeType] || 0) + 1
-      })
-
-      const disputesByStatus: Record<string, number> = {}
-      disputes.forEach((d) => {
-        disputesByStatus[d.status] = (disputesByStatus[d.status] || 0) + 1
-      })
-
-      let userStats = await DisputeStatistics.query().where('user_id', userId).first()
-
-      if (!userStats) {
-        userStats = await DisputeStatistics.create({
-          userId,
-          totalDisputes: stats.totalDisputes,
-          openDisputes: stats.openDisputes,
-          resolvedDisputes: stats.resolvedDisputes,
-          escalatedDisputes: stats.escalatedDisputes,
-          totalDisputedAmount: stats.totalDisputedAmount,
-          totalResolvedAmount: stats.totalResolvedAmount,
-          averageResolutionTimeDays: avgResolutionTime,
-          disputesByType,
-          disputesByStatus,
-          lastUpdatedAt: DateTime.now(),
-        })
-      } else {
-        await userStats.merge({
-          totalDisputes: stats.totalDisputes,
-          openDisputes: stats.openDisputes,
-          resolvedDisputes: stats.resolvedDisputes,
-          escalatedDisputes: stats.escalatedDisputes,
-          totalDisputedAmount: stats.totalDisputedAmount,
-          totalResolvedAmount: stats.totalResolvedAmount,
-          averageResolutionTimeDays: avgResolutionTime,
-          disputesByType,
-          disputesByStatus,
-          lastUpdatedAt: DateTime.now(),
-        }).save()
-      }
+    // Handle payouts based on resolution
+    if (resolution.amountAwarded > 0) {
+      await this.executeDisputePayment(dispute, resolution.amountAwarded)
     }
+
+    return dispute
   }
 
   /**
-   * Get disputes by type and status
+   * Execute payment based on dispute resolution
    */
-  static async getDisputesByFilter(
-    disputeType?: string,
-    status?: string,
-    priority?: string,
-    page = 1,
-    limit = 20
-  ) {
-    let query = CommissionDispute.query()
-
-    if (disputeType) {
-      query = query.where('dispute_type', disputeType)
-    }
-    if (status) {
-      query = query.where('status', status)
-    }
-    if (priority) {
-      query = query.where('priority', priority)
-    }
-
-    return query.orderBy('created_at', 'desc').paginate(page, limit)
+  private static async executeDisputePayment(dispute: Dispute, amount: number) {
+    // TODO: Integration with WalletService and PayoutService
+    // For now, just log
+    console.log(`Executing dispute payout: ${amount} to user ${dispute.respondentId}`)
   }
 
   /**
-   * Get dispute statistics for admin dashboard
+   * Get dispute statistics
    */
-  static async getDashboardStats() {
-    const totalDisputes = await CommissionDispute.query().count('* as total').first()
-    const openDisputes = await CommissionDispute.query().where('status', 'open').count('* as count').first()
-    const resolvedDisputes = await CommissionDispute.query().where('status', 'resolved').count('* as count').first()
-    const escalatedDisputes = await CommissionDispute.query().where('is_escalated', true).count('* as count').first()
+  static async getDisputeStatistics() {
+    const disputes = await Dispute.query()
 
-    const disputesByType = await CommissionDispute.query()
-      .select('dispute_type')
-      .count('* as count')
-      .groupBy('dispute_type')
+    const byStatus = {
+      open: disputes.filter((d) => d.status === 'open').length,
+      escalated: disputes.filter((d) => d.status === 'escalated').length,
+      resolved: disputes.filter((d) => d.status === 'resolved').length,
+      closed: disputes.filter((d) => d.status === 'closed').length,
+    }
 
-    const disputesByStatus = await CommissionDispute.query()
-      .select('status')
-      .count('* as count')
-      .groupBy('status')
+    const byType = {
+      commission: disputes.filter((d) => d.type === 'commission').length,
+      chargeback: disputes.filter((d) => d.type === 'chargeback').length,
+      conversion: disputes.filter((d) => d.type === 'conversion').length,
+      payout: disputes.filter((d) => d.type === 'payout').length,
+    }
+
+    const totalAmount = disputes.reduce((sum, d) => sum + d.amount, 0)
+    const avgResolutionTime = await this.calculateAvgResolutionTime()
 
     return {
-      totalDisputes: (totalDisputes as any)?.total || 0,
-      openDisputes: (openDisputes as any)?.count || 0,
-      resolvedDisputes: (resolvedDisputes as any)?.count || 0,
-      escalatedDisputes: (escalatedDisputes as any)?.count || 0,
-      disputesByType: disputesByType.map((d: any) => ({ type: d.dispute_type, count: d.count })),
-      disputesByStatus: disputesByStatus.map((d: any) => ({ status: d.status, count: d.count })),
+      totalDisputes: disputes.length,
+      byStatus,
+      byType,
+      totalAmount,
+      avgResolutionTime,
+    }
+  }
+
+  /**
+   * Calculate average resolution time
+   */
+  private static async calculateAvgResolutionTime(): Promise<number> {
+    const resolved = await Dispute.query()
+      .where('status', 'resolved')
+      .where('resolved_at', '!=', null)
+
+    if (resolved.length === 0) return 0
+
+    const times = resolved.map((d) => {
+      const created = DateTime.fromJSDate(d.createdAt as any)
+      const resolved = DateTime.fromJSDate(d.resolvedAt as any)
+      return resolved.diff(created, 'hours').hours
+    })
+
+    return times.reduce((a, b) => a + b, 0) / times.length
+  }
+
+  /**
+   * Auto-resolve simple disputes (based on rules)
+   */
+  static async autoResolveDisputes() {
+    const openDisputes = await this.getOpenDisputes()
+
+    for (const dispute of openDisputes) {
+      // Rule 1: Small commission disputes with clear evidence
+      if (
+        dispute.type === 'commission' &&
+        dispute.amount < 50 &&
+        (dispute.evidence || []).length >= 2
+      ) {
+        await this.resolveDispute(
+          {
+            disputeId: dispute.id,
+            resolution: 'approved',
+            amountAwarded: dispute.amount,
+            notes: 'Auto-resolved: sufficient evidence provided',
+          },
+          'Automatic resolution based on evidence'
+        )
+      }
+
+      // Rule 2: Chargeback disputes (always escalate to admin)
+      if (dispute.type === 'chargeback') {
+        await this.escalateDispute(dispute.id, 'Automatic escalation: chargeback disputes require manual review')
+      }
     }
   }
 }
