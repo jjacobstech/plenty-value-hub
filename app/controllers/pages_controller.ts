@@ -612,8 +612,6 @@ export default class PagesController {
         .orderBy('orders.created_at', 'desc'),
     ])
 
-    const walletData = walletSummary || { wallet: null, transactions: [], payoutRequests: [] }
-
     const serializedOrders = vendorOrders.map((o) => {
       const raw = o.serialize()
       return {
@@ -629,7 +627,7 @@ export default class PagesController {
       user: auth.user,
       products: vendorProducts,
       orders: serializedOrders,
-      wallet: walletData?.wallet || null,
+      wallet: null,
       profileComplete: computeProfileComplete(auth.user!),
     })
   }
@@ -674,7 +672,7 @@ export default class PagesController {
   }
 
   async vendorEarnings({ inertia, auth }: HttpContext) {
-    const [orders, walletSummary] = await Promise.all([
+    const [orders] = await Promise.all([
       Order.query()
         .join('products', 'orders.product_id', 'products.id')
         .where('products.vendor_id', auth.user!.id)
@@ -684,9 +682,9 @@ export default class PagesController {
     return inertia.render('vendor/VendorEarnings', {
       user: auth.user,
       orders,
-      wallet: walletSummary?.wallet || null,
-      transactions: walletSummary?.transactions || [],
-      payoutRequests: walletSummary?.payoutRequests || [],
+      wallet: null,
+      transactions: [],
+      payoutRequests: [],
     })
   }
 
@@ -775,7 +773,7 @@ export default class PagesController {
   }
 
   async affiliateEarnings({ inertia, auth }: HttpContext) {
-    const [orders, links, walletSummary] = await Promise.all([
+    const [orders, links] = await Promise.all([
       Order.query().where('affiliate_id', auth.user!.id).orderBy('created_at', 'desc'),
       AffiliateLink.query().where('affiliate_id', auth.user!.id),
     ])
@@ -783,9 +781,9 @@ export default class PagesController {
       user: auth.user,
       orders,
       links,
-      wallet: walletSummary?.wallet || null,
-      transactions: walletSummary?.transactions || [],
-      payoutRequests: walletSummary?.payoutRequests || [],
+      wallet: null,
+      transactions: [],
+      payoutRequests: [],
     })
   }
 
