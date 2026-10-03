@@ -553,7 +553,59 @@ New approach:
 - 30-day platform activity trends
 - AdminDashboardService + AdminDashboardController (11 endpoints)
 
-## Remaining Phase 1 MVP Tasks (3)
-7. Campaign Discovery System - dedicated page (partially in Task 1)
+### Task 7: Campaign Discovery System ✅
+**Status**: Complete
+**Files Created**:
+- `inertia/pages/affiliate/CampaignDiscovery.tsx` (550+ lines)
+- Updated `app/controllers/pages_controller.ts` with campaignDiscovery() method
+- Updated `start/routes.ts` with campaign discovery route
+
+**Features**:
+- Campaign grid display with pagination (12 per page)
+- Advanced filtering (category, commission range, search)
+- Campaign cards with status, commission details, and attribution window
+- Join campaign dialog with confirmation
+- Real-time stats tracking (active campaigns, joined campaigns, avg commission)
+- Responsive design with loading states
+- Performance metrics display (clicks, conversions, conversion rate)
+- Campaign status indicators (expired, days remaining)
+- Integration with existing API endpoints
+
+**Routes**:
+- `GET /affiliate/campaigns/discover` - Campaign discovery page
+
+**Build Status**: ✅ Passing (0 TypeScript errors for this task)
+
+### Task 9: API Rate Limiting ✅
+**Status**: Complete
+**Files Created/Modified**:
+- `start/limiter.ts` - Added new rate limit configurations
+- `start/routes.ts` - Applied rate limiting to key endpoints
+- `API_RATE_LIMITING.md` - Comprehensive documentation
+
+**Features**:
+- **7 Rate Limit Tiers**:
+  - Auth: 10 req/15 min (10 min block)
+  - Signup: 5 req/hour
+  - Admin: 100 req/min
+  - General API: 60 req/min (5 min block)
+  - Tracking: 1000 req/min (1 min block)
+  - Webhooks: 200 req/min (2 min block)
+  - Campaign Discovery: 100 req/hour (30 min block)
+
+**Applied To**:
+- Campaign discovery endpoints: `/api/campaigns`
+- Affiliate tracking: `/api/affiliate-links/track-click`
+- Payment webhooks: All webhook endpoints
+- Existing auth/signup endpoints
+
+**Headers**:
+- `X-RateLimit-Limit` - Request limit
+- `X-RateLimit-Remaining` - Requests remaining
+- `X-RateLimit-Reset` - Reset timestamp
+- `Retry-After` - When blocked
+
+**Build Status**: ✅ Passing (0 TypeScript errors for this task)
+
+## Remaining Phase 1 MVP Tasks (1)
 8. Real-time Notifications (WebSocket) - optional
-9. (Core task - API Rate Limiting or Mobile Notifications)

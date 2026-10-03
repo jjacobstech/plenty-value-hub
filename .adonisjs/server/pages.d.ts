@@ -33,6 +33,7 @@ declare module '@adonisjs/inertia/types' {
     'affiliate/AffiliatePerformance': ExtractProps<(typeof import('../../inertia/pages/affiliate/AffiliatePerformance.tsx'))['default']>
     'affiliate/AffiliateProducts': ExtractProps<(typeof import('../../inertia/pages/affiliate/AffiliateProducts.tsx'))['default']>
     'affiliate/AffiliateProfile': ExtractProps<(typeof import('../../inertia/pages/affiliate/AffiliateProfile.tsx'))['default']>
+    'affiliate/CampaignDiscovery': ExtractProps<(typeof import('../../inertia/pages/affiliate/CampaignDiscovery.tsx'))['default']>
     'AffiliateRedirect': ExtractProps<(typeof import('../../inertia/pages/AffiliateRedirect.tsx'))['default']>
     'auth/forgot-password': ExtractProps<(typeof import('../../inertia/pages/auth/forgot-password.tsx'))['default']>
     'auth/login': ExtractProps<(typeof import('../../inertia/pages/auth/login.tsx'))['default']>

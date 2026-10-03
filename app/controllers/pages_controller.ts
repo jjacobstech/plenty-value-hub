@@ -905,4 +905,10 @@ export default class PagesController {
       })),
     })
   }
+
+  async campaignDiscovery({ inertia, auth }: HttpContext) {
+    return inertia.render('affiliate/CampaignDiscovery', {
+      user: auth.user,
+    })
+  }
 }

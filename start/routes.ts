@@ -8,7 +8,15 @@
 */
 
 import { middleware } from '#start/kernel'
-import { authThrottle, signupThrottle, adminThrottle } from '#start/limiter'
+import {
+  authThrottle,
+  signupThrottle,
+  adminThrottle,
+  apiThrottle,
+  trackingThrottle,
+  webhookThrottle,
+  campaignThrottle,
+} from '#start/limiter'
 import { controllers } from '#generated/controllers'
 import router from '@adonisjs/core/services/router'
 
@@ -161,6 +169,7 @@ router
   .group(() => {
     router.get('/', [controllers.Pages, 'affiliateDashboard']).as('affiliate.dashboard')
     router.get('/products', [controllers.Pages, 'affiliateProducts']).as('affiliate.products')
+    router.get('/campaigns/discover', [controllers.Pages, 'campaignDiscovery']).as('affiliate.campaigns.discover')
     router.get('/links', [controllers.Pages, 'affiliateLinks']).as('affiliate.links')
     router.get('/earnings', [controllers.Pages, 'affiliateEarnings']).as('affiliate.earnings')
     router
@@ -181,9 +190,9 @@ router
     router.get('/products', [controllers.Products, 'index'])
     router.get('/products/:id', [controllers.Products, 'show'])
 
-    // Campaigns (public endpoints)
-    router.get('/campaigns', [controllers.Campaigns, 'discover'])
-    router.get('/campaigns/:id', [controllers.Campaigns, 'show'])
+    // Campaigns (public endpoints) - rate limited to prevent scraping
+    router.get('/campaigns', [controllers.Campaigns, 'discover']).use(campaignThrottle)
+    router.get('/campaigns/:id', [controllers.Campaigns, 'show']).use(campaignThrottle)
 
     // Shopify OAuth callback
     router.get('/shopify/callback', [controllers.Shopify, 'handleCallback'])
@@ -193,7 +202,7 @@ router
 
     router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
-    router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
+    router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick']).use(trackingThrottle)
     router.get('/reviews', [controllers.Reviews, 'index'])
 
     // Currency endpoints (public)
@@ -224,24 +233,32 @@ router
     // Order matters: AdonisJS matches in registration order, so the named
     // provider routes must come BEFORE the ':provider' catch-all or they
     // will never be reached.
-    router.post('/payments/webhook/stripe', [controllers.Webhook, 'stripeWebhook'])
-    router.post('/payments/webhook/paystack', [controllers.Webhook, 'paystackWebhook'])
-    router.post('/payments/webhook/flutterwave', [controllers.Webhook, 'flutterwaveWebhook'])
-    router.post('/payments/webhook/paypal', [controllers.Webhook, 'paypalWebhook'])
-    router.post('/payments/webhook/:provider', [controllers.Webhook, 'handleWebhook'])
+    router
+      .post('/payments/webhook/stripe', [controllers.Webhook, 'stripeWebhook'])
+      .use(webhookThrottle)
+    router
+      .post('/payments/webhook/paystack', [controllers.Webhook, 'paystackWebhook'])
+      .use(webhookThrottle)
+    router
+      .post('/payments/webhook/flutterwave', [controllers.Webhook, 'flutterwaveWebhook'])
+      .use(webhookThrottle)
+    router
+      .post('/payments/webhook/paypal', [controllers.Webhook, 'paypalWebhook'])
+      .use(webhookThrottle)
+    router.post('/payments/webhook/:provider', [controllers.Webhook, 'handleWebhook']).use(webhookThrottle)
 
     // ── Authenticated endpoints ───────────────────────────────────────
     router
       .group(() => {
         // Products (vendor)
-        router.post('/products', [controllers.Products, 'store'])
-        router.put('/products/:id', [controllers.Products, 'update'])
-        router.delete('/products/:id', [controllers.Products, 'destroy'])
+        router.post('/products', [controllers.Products, 'store']).use(apiThrottle)
+        router.put('/products/:id', [controllers.Products, 'update']).use(apiThrottle)
+        router.delete('/products/:id', [controllers.Products, 'destroy']).use(apiThrottle)
 
         // Campaigns (vendor)
-        router.post('/campaigns', [controllers.Campaigns, 'create'])
-        router.put('/campaigns/:id', [controllers.Campaigns, 'update'])
-        router.post('/campaigns/:id/submit', [controllers.Campaigns, 'submit'])
+        router.post('/campaigns', [controllers.Campaigns, 'create']).use(apiThrottle)
+        router.put('/campaigns/:id', [controllers.Campaigns, 'update']).use(apiThrottle)
+        router.post('/campaigns/:id/submit', [controllers.Campaigns, 'submit']).use(apiThrottle)
         router.post('/campaigns/:id/pause', [controllers.Campaigns, 'pause'])
         router.post('/campaigns/:id/resume', [controllers.Campaigns, 'resume'])
         router.get('/campaigns/vendor', [controllers.Campaigns, 'vendorCampaigns'])
