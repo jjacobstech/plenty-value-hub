@@ -7,49 +7,49 @@ export default class Click extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ columnName: 'click_id' })
   declare clickId: string
 
-  @column()
+  @column({ columnName: 'affiliate_link_id' })
   declare affiliateLinkId: number
 
-  @column()
+  @column({ columnName: 'affiliate_id' })
   declare affiliateId: number
 
-  @column()
+  @column({ columnName: 'campaign_id' })
   declare campaignId: number
 
-  @column()
+  @column({ columnName: 'user_agent' })
   declare userAgent: string | null
 
-  @column()
+  @column({ columnName: 'ip_address' })
   declare ipAddress: string | null
 
-  @column()
+  @column({ columnName: 'referrer' })
   declare referrer: string | null
 
-  @column()
+  @column({ columnName: 'device_type' })
   declare deviceType: string | null
 
-  @column()
+  @column({ columnName: 'browser' })
   declare browser: string | null
 
-  @column()
+  @column({ columnName: 'os' })
   declare os: string | null
 
-  @column()
+  @column({ columnName: 'country' })
   declare country: string | null
 
-  @column()
+  @column({ columnName: 'city' })
   declare city: string | null
 
-  @column()
+  @column({ columnName: 'metadata' })
   declare metadata: any
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'clicked_at' })
   declare clickedAt: DateTime
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'created_at' })
   declare createdAt: DateTime
 
   @belongsTo(() => AffiliateLink, { foreignKey: 'affiliateLinkId' })

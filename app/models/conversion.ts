@@ -8,61 +8,61 @@ export default class Conversion extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ columnName: 'conversion_id' })
   declare conversionId: string
 
-  @column()
+  @column({ columnName: 'click_id' })
   declare clickId: number | null
 
-  @column()
+  @column({ columnName: 'affiliate_link_id' })
   declare affiliateLinkId: number
 
-  @column()
+  @column({ columnName: 'affiliate_id' })
   declare affiliateId: number
 
-  @column()
+  @column({ columnName: 'campaign_id' })
   declare campaignId: number
 
-  @column()
+  @column({ columnName: 'status' })
   declare status: 'pending' | 'approved' | 'rejected' | 'reversed'
 
-  @column()
+  @column({ columnName: 'order_value' })
   declare orderValue: number | null
 
-  @column()
+  @column({ columnName: 'commission_amount' })
   declare commissionAmount: number | null
 
-  @column()
+  @column({ columnName: 'external_order_id' })
   declare externalOrderId: string | null
 
-  @column()
+  @column({ columnName: 'external_conversion_id' })
   declare externalConversionId: string | null
 
-  @column()
+  @column({ columnName: 'rejection_reason' })
   declare rejectionReason: string | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'converted_at' })
   declare convertedAt: DateTime
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'approved_at' })
   declare approvedAt: DateTime | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'rejected_at' })
   declare rejectedAt: DateTime | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'reversed_at' })
   declare reversedAt: DateTime | null
 
-  @column()
+  @column({ columnName: 'approved_by_admin_id' })
   declare approvedByAdminId: number | null
 
-  @column()
+  @column({ columnName: 'metadata' })
   declare metadata: any
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'created_at' })
   declare createdAt: DateTime
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'updated_at' })
   declare updatedAt: DateTime
 
   @belongsTo(() => AffiliateLink, { foreignKey: 'affiliateLinkId' })
