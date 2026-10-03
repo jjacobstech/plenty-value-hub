@@ -1,5 +1,6 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import type User from './user.js'
 
 export default class PayoutRequest extends BaseModel {
   @column({ isPrimary: true })
@@ -64,4 +65,10 @@ export default class PayoutRequest extends BaseModel {
 
   @column.dateTime()
   declare updatedAt: DateTime
+
+  @belongsTo(() => User, { foreignKey: 'affiliateId' })
+  declare user: User
+
+  @belongsTo(() => User, { foreignKey: 'approvedByAdminId' })
+  declare approvedByAdmin: User | null
 }
