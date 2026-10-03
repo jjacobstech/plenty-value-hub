@@ -41,7 +41,7 @@ export class WalletService {
         .where('walletId', wallet.id)
         .orderBy('created_at', 'desc')
         .limit(50),
-      PayoutRequest.query().where('userId', userId).orderBy('created_at', 'desc').limit(20),
+      PayoutRequest.query().where('affiliateId', userId).orderBy('created_at', 'desc').limit(20),
     ])
 
     return {
@@ -316,7 +316,7 @@ export class WalletService {
     }
 
     const pendingRequest = await PayoutRequest.query()
-      .where('userId', userId)
+      .where('affiliateId', userId)
       .where('status', 'pending')
       .first()
 
@@ -400,7 +400,7 @@ export class WalletService {
 
     try {
       await TransactionService.record({
-        userId: payout.userId,
+        userId: payout.affiliateId,
         type: 'payout',
         category: user.role === 'affiliate' ? 'affiliate_payout' : 'vendor_payout',
         status:
@@ -672,7 +672,7 @@ export class WalletService {
 
     // Automatically process Paystack transfer when payout is approved
     if (status === 'approved' && payout.payoutMethod === 'bank_transfer') {
-      const user = await User.findOrFail(payout.userId)
+      const user = await User.findOrFail(payout.affiliateId)
       try {
         await this.processPaystackTransfer(payout, user)
         console.log(`[WalletService] Automatic Paystack transfer initiated for payout ${payout.id}`)
