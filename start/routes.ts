@@ -202,7 +202,7 @@ router
 
     router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
-    router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick']).use(trackingThrottle)
+    router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick']).as('affiliate_links.track_click').use(trackingThrottle)
     router.get('/reviews', [controllers.Reviews, 'index'])
 
     // Currency endpoints (public)
@@ -314,7 +314,7 @@ router
         router.get('/affiliate-links/:id/conversions', [controllers.AffiliateLinks, 'conversions'])
 
         // Click and Conversion Tracking
-        router.post('/clicks/track/:slug', [controllers.AffiliateLinks, 'trackClick'])
+        router.post('/clicks/track/:slug', [controllers.AffiliateLinks, 'trackClick']).as('affiliate_links.track_click_slug')
         router.post('/conversions/report', [controllers.AffiliateLinks, 'reportConversion'])
 
         // Reviews
