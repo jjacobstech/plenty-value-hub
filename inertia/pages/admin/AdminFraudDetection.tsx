@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
-import DashboardLayout from '~/components/layouts/DashboardLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 
 export default function AdminFraudDetection({ user }: { user: any }) {
   const mockFraudCases = [

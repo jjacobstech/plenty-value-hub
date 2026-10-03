@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { AlertCircle, Clock, CheckCircle2 } from 'lucide-react'
-import DashboardLayout from '~/components/layouts/DashboardLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 
 export default function AdminDisputes({ user }: { user: any }) {
   const mockDisputes = [

@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { AlertCircle, CheckCircle2, ExternalLink } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import DashboardLayout from '~/components/layouts/DashboardLayout'
+import DashboardLayout from '@/components/layout/DashboardLayout'
 
 interface IntegrationStatus {
   name: string
