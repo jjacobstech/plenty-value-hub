@@ -10,7 +10,6 @@ import EmailCampaign from '#models/email_campaign'
 import SiteSetting from '#models/site_setting'
 import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
-import { PaymentService } from '#services/payment_service'
 import env from '#start/env'
 /**
  * Offline payment is being retired. Filter it here so the page can never
@@ -734,12 +733,8 @@ export default class PagesController {
   }
 
   async vendorProfile({ inertia, auth }: HttpContext) {
-    const { PaymentService } = await import('#services/payment_service')
-    const [user, paymentConfig] = await Promise.all([
-      User.query().where('id', auth.user!.id).firstOrFail(),
-      PaymentService.getPublicConfig(),
-    ])
-    return inertia.render('vendor/VendorProfile', { user: user.serialize(), paymentConfig })
+    const user = await User.query().where('id', auth.user!.id).firstOrFail()
+    return inertia.render('vendor/VendorProfile', { user: user.serialize(), paymentConfig: null })
   }
 
   async vendorIntegrations({ inertia, auth }: HttpContext) {
@@ -799,12 +794,8 @@ export default class PagesController {
   }
 
   async affiliateProfile({ inertia, auth }: HttpContext) {
-    const { PaymentService } = await import('#services/payment_service')
-    const [user, paymentConfig] = await Promise.all([
-      User.query().where('id', auth.user!.id).firstOrFail(),
-      PaymentService.getPublicConfig(),
-    ])
-    return inertia.render('affiliate/AffiliateProfile', { user: user.serialize(), paymentConfig })
+    const user = await User.query().where('id', auth.user!.id).firstOrFail()
+    return inertia.render('affiliate/AffiliateProfile', { user: user.serialize(), paymentConfig: null })
   }
 
   // New admin pages
@@ -869,15 +860,11 @@ export default class PagesController {
   }
 
   async adminPaymentSettings({ inertia, auth }: HttpContext) {
-    const { PaymentService } = await import('#services/payment_service')
-    const [paymentConfig, commissionSetting] = await Promise.all([
-      PaymentService.getConfig(),
-      SiteSetting.findBy('key', 'platform_commission'),
-    ])
+    const commissionSetting = await SiteSetting.findBy('key', 'platform_commission')
     const commission = Number(commissionSetting?.value)
     return inertia.render('admin/AdminPaymentSettings', {
       user: auth.user,
-      paymentConfig,
+      paymentConfig: null,
       platformCommission:
         Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
     })
