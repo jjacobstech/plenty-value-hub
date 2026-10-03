@@ -140,6 +140,8 @@ router
       .get('/payment-settings', [controllers.Pages, 'adminPaymentSettings'])
       .as('admin.payment.settings')
     router.get('/payouts', [controllers.Pages, 'adminPayouts']).as('admin.payouts')
+    router.get('/disputes', [controllers.Pages, 'adminDisputes']).as('admin.disputes')
+    router.get('/fraud-detection', [controllers.Pages, 'adminFraudDetection']).as('admin.fraud')
   })
   .prefix('/admin')
   .use(middleware.adminAuth())

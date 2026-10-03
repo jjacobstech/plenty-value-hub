@@ -914,6 +914,18 @@ export default class PagesController {
     })
   }
 
+  async adminDisputes({ inertia, auth }: HttpContext) {
+    return inertia.render('admin/AdminDisputes', {
+      user: auth.user,
+    })
+  }
+
+  async adminFraudDetection({ inertia, auth }: HttpContext) {
+    return inertia.render('admin/AdminFraudDetection', {
+      user: auth.user,
+    })
+  }
+
   async campaignDiscovery({ inertia, auth }: HttpContext) {
     return inertia.render('affiliate/CampaignDiscovery', {
       user: auth.user,
