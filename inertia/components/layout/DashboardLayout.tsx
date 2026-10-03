@@ -23,6 +23,9 @@ import {
   MousePointer,
   Image,
   Wallet,
+  Zap,
+  AlertCircle,
+  Shield,
 } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
 import NotificationCenter from '@/components/NotificationCenter'
@@ -55,6 +58,7 @@ const menuItems: Record<Role, MenuItem[]> = {
     { icon: FileText, label: 'Orders', path: '/vendor/orders' },
     { icon: BarChart3, label: 'Analytics', path: '/vendor/analytics' },
     { icon: DollarSign, label: 'Earnings', path: '/vendor/earnings' },
+    { icon: Zap, label: 'Integrations', path: '/vendor/integrations' },
     { icon: Store, label: 'Store Profile', path: '/vendor/profile' },
   ],
 
@@ -75,6 +79,8 @@ const menuItems: Record<Role, MenuItem[]> = {
     { icon: FileText, label: 'Orders', path: '/admin/orders' },
     { icon: BarChart3, label: 'Analytics', path: '/admin/analytics' },
     { icon: MousePointer, label: 'Conversions', path: '/admin/conversions' },
+    { icon: AlertCircle, label: 'Disputes', path: '/admin/disputes' },
+    { icon: Shield, label: 'Fraud Detection', path: '/admin/fraud-detection' },
     { icon: Newspaper, label: 'Newsletters', path: '/admin/newsletters' },
     { icon: Mail, label: 'Composer', path: '/admin/newsletter' },
     { icon: Send, label: 'Email Campaigns', path: '/admin/email-campaigns' },
