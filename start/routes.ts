@@ -338,6 +338,19 @@ router
         // ── Admin endpoints ─────────────────────────────────────────
         router
           .group(() => {
+            // Admin dashboard
+            router.get('/dashboard/overview', [controllers.AdminDashboard, 'overview'])
+            router.get('/dashboard/pending-campaigns', [controllers.AdminDashboard, 'pendingCampaigns'])
+            router.get('/dashboard/recent-conversions', [controllers.AdminDashboard, 'recentConversions'])
+            router.get('/dashboard/users', [controllers.AdminDashboard, 'users'])
+            router.get('/dashboard/commissions', [controllers.AdminDashboard, 'commissionStats'])
+            router.get('/dashboard/payouts', [controllers.AdminDashboard, 'payoutStats'])
+            router.get('/dashboard/campaigns', [controllers.AdminDashboard, 'topCampaigns'])
+            router.get('/dashboard/affiliates', [controllers.AdminDashboard, 'topAffiliates'])
+            router.get('/dashboard/financial', [controllers.AdminDashboard, 'financialOverview'])
+            router.get('/dashboard/health', [controllers.AdminDashboard, 'systemHealth'])
+            router.get('/dashboard/activity', [controllers.AdminDashboard, 'platformActivity'])
+
             router.get('/stats', [controllers.Admin, 'getPlatformStats'])
             router.get('/auth-status', [controllers.Admin, 'authStatus'])
             router.get('/debug/banks', [controllers.Admin, 'debugPaystackBanks'])
