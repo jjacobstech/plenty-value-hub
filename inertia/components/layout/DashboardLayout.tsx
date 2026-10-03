@@ -26,6 +26,8 @@ import {
   Zap,
   AlertCircle,
   Shield,
+  FileCheck,
+  Compass,
 } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
 import NotificationCenter from '@/components/NotificationCenter'
@@ -59,11 +61,13 @@ const menuItems: Record<Role, MenuItem[]> = {
     { icon: BarChart3, label: 'Analytics', path: '/vendor/analytics' },
     { icon: DollarSign, label: 'Earnings', path: '/vendor/earnings' },
     { icon: Zap, label: 'Integrations', path: '/vendor/integrations' },
+    { icon: FileCheck, label: 'KYC Verification', path: '/vendor/kyc' },
     { icon: Store, label: 'Store Profile', path: '/vendor/profile' },
   ],
 
   affiliate: [
     { icon: Home, label: 'Overview', path: '/affiliate' },
+    { icon: Compass, label: 'Discover Campaigns', path: '/affiliate/campaigns/discover' },
     { icon: Package, label: 'Find Products', path: '/affiliate/products' },
     { icon: Link2, label: 'My Links', path: '/affiliate/links' },
     { icon: BarChart3, label: 'Performance', path: '/affiliate/performance' },
