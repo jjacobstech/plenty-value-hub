@@ -1,26 +1,15 @@
-import { belongsTo, column, beforeSave } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { BaseModel } from '@adonisjs/lucid/orm'
-import User from '#models/user'
-import Campaign from '#models/campaign'
-import Product from '#models/product'
-import Order from '#models/order'
-import VendorConversion from '#models/vendor_conversion'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import Conversion from '#models/conversion'
 import AffiliateLink from '#models/affiliate_link'
-import crypto from 'node:crypto'
 
 export default class CommissionLedger extends BaseModel {
-  static table = 'commission_ledger'
-
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare uuid: string
-
-  @column()
-  declare vendorId: number
+  declare ledgerId: string
 
   @column()
   declare affiliateId: number
@@ -29,40 +18,40 @@ export default class CommissionLedger extends BaseModel {
   declare campaignId: number
 
   @column()
-  declare productId: number | null
+  declare conversionId: number
 
   @column()
-  declare orderId: number | null
+  declare affiliateLinkId: number
 
   @column()
-  declare vendorConversionId: number | null
+  declare status: 'pending' | 'approved' | 'paid' | 'rejected' | 'disputed'
 
   @column()
-  declare affiliateLinkId: number | null
+  declare orderValue: number
 
   @column()
-  declare amount: number
+  declare commissionType: 'percentage' | 'fixed_amount' | 'lead' | 'hybrid'
 
   @column()
-  declare saleAmount: number
+  declare commissionRate: number | null
 
   @column()
-  declare rate: number | null
+  declare commissionAmount: number
 
   @column()
-  declare commissionType: 'percentage' | 'fixed_amount' | 'lead_commission' | 'cost_per_acquisition' | 'tiered' | 'hybrid'
+  declare currency: string
 
   @column()
-  declare status: 'pending' | 'approved' | 'held' | 'paid' | 'reversed' | 'disputed' | 'voided'
+  declare platformFeeAmount: number
 
   @column()
-  declare holdingDays: number
-
-  @column.dateTime()
-  declare holdUntil: DateTime | null
+  declare netCommission: number
 
   @column()
-  declare onHold: boolean
+  declare description: string | null
+
+  @column()
+  declare rejectionReason: string | null
 
   @column.dateTime()
   declare approvedAt: DateTime | null
@@ -70,20 +59,17 @@ export default class CommissionLedger extends BaseModel {
   @column.dateTime()
   declare paidAt: DateTime | null
 
-  @column()
-  declare payoutId: string | null
-
-  @column()
-  declare paymentReference: string | null
-
   @column.dateTime()
-  declare reversedAt: DateTime | null
+  declare rejectedAt: DateTime | null
 
   @column()
-  declare reversalReason: string | null
+  declare approvedByAdminId: number | null
 
   @column()
-  declare reversalType: 'refund' | 'chargeback' | 'fraud' | 'manual' | null
+  declare paidByAdminId: number | null
+
+  @column()
+  declare disputedByUserId: number | null
 
   @column.dateTime()
   declare disputedAt: DateTime | null
@@ -92,141 +78,17 @@ export default class CommissionLedger extends BaseModel {
   declare disputeReason: string | null
 
   @column()
-  declare disputeResolved: boolean
+  declare metadata: any
 
   @column.dateTime()
-  declare disputeResolvedAt: DateTime | null
-
-  @column()
-  declare approvedBy: number | null
-
-  @column()
-  declare approvalNotes: string | null
-
-  @column({
-    prepare: (v: any) => (v == null ? null : JSON.stringify(v)),
-    consume: (v: any) => {
-      if (v == null) return null
-      if (typeof v === 'string') {
-        try { return JSON.parse(v) } catch { return v }
-      }
-      return v
-    },
-  })
-  declare metadata: any | null
-
-  @column()
-  declare notes: string | null
-
-  @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  @column.dateTime()
   declare updatedAt: DateTime
 
-  @beforeSave()
-  static async generateUuid(commission: CommissionLedger) {
-    if (!commission.uuid) {
-      commission.uuid = crypto.randomUUID()
-    }
-    if (!commission.holdUntil && commission.status === 'pending') {
-      commission.holdUntil = DateTime.now().plus({ days: commission.holdingDays })
-    }
-  }
-
-  @belongsTo(() => User, { foreignKey: 'vendorId' })
-  declare vendor: BelongsTo<typeof User>
-
-  @belongsTo(() => User, { foreignKey: 'affiliateId' })
-  declare affiliate: BelongsTo<typeof User>
-
-  @belongsTo(() => Campaign, { foreignKey: 'campaignId' })
-  declare campaign: BelongsTo<typeof Campaign>
-
-  @belongsTo(() => Product, { foreignKey: 'productId' })
-  declare product: BelongsTo<typeof Product>
-
-  @belongsTo(() => Order, { foreignKey: 'orderId' })
-  declare order: BelongsTo<typeof Order>
-
-  @belongsTo(() => VendorConversion, { foreignKey: 'vendorConversionId' })
-  declare vendorConversion: BelongsTo<typeof VendorConversion>
+  @belongsTo(() => Conversion, { foreignKey: 'conversionId' })
+  declare conversion: BelongsTo<typeof Conversion>
 
   @belongsTo(() => AffiliateLink, { foreignKey: 'affiliateLinkId' })
   declare affiliateLink: BelongsTo<typeof AffiliateLink>
-
-  // Helper methods
-  isHoldExpired(): boolean {
-    if (!this.holdUntil) return true
-    return DateTime.now() > this.holdUntil
-  }
-
-  canBeApproved(): boolean {
-    return this.status === 'pending' && this.isHoldExpired()
-  }
-
-  isPending(): boolean {
-    return this.status === 'pending'
-  }
-
-  isApproved(): boolean {
-    return this.status === 'approved'
-  }
-
-  isPaid(): boolean {
-    return this.status === 'paid'
-  }
-
-  isReversed(): boolean {
-    return this.status === 'reversed'
-  }
-
-  isDisputed(): boolean {
-    return this.status === 'disputed'
-  }
-
-  markAsApproved(approvedBy: number, notes?: string): void {
-    this.status = 'approved'
-    this.onHold = false
-    this.approvedAt = DateTime.now()
-    this.approvedBy = approvedBy
-    if (notes) {
-      this.approvalNotes = notes
-    }
-  }
-
-  markAsPaid(payoutId: string, paymentReference?: string): void {
-    this.status = 'paid'
-    this.paidAt = DateTime.now()
-    this.payoutId = payoutId
-    if (paymentReference) {
-      this.paymentReference = paymentReference
-    }
-  }
-
-  markAsReversed(reason: string, type: 'refund' | 'chargeback' | 'fraud' | 'manual'): void {
-    this.status = 'reversed'
-    this.reversedAt = DateTime.now()
-    this.reversalReason = reason
-    this.reversalType = type
-  }
-
-  markAsDisputed(reason: string): void {
-    this.status = 'disputed'
-    this.disputedAt = DateTime.now()
-    this.disputeReason = reason
-    this.disputeResolved = false
-  }
-
-  resolveDispute(resolved: boolean): void {
-    this.disputeResolved = resolved
-    this.disputeResolvedAt = DateTime.now()
-    if (resolved) {
-      this.status = 'approved'
-    }
-  }
-
-  void(): void {
-    this.status = 'voided'
-  }
 }

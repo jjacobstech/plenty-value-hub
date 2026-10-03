@@ -270,6 +270,7 @@ router
         router.get('/commissions/:id', [controllers.CommissionLedger, 'show'])
         router.post('/commissions/:id/dispute', [controllers.CommissionLedger, 'dispute'])
         router.get('/commissions/stats', [controllers.CommissionLedger, 'getStats'])
+        router.get('/commissions/campaign/:campaignId/stats', [controllers.CommissionLedger, 'campaignStats'])
 
         // Refunds and chargebacks (vendor reporting)
         router.post('/refunds-chargebacks/report', [controllers.RefundsChargebacks, 'report'])
@@ -349,11 +350,9 @@ router
             router.post('/conversions/:id/reverse', [controllers.VendorConversions, 'reverse'])
 
             // Commission ledger management (admin)
-            router.put('/commissions/:id/approve', [controllers.CommissionLedger, 'approve'])
+            router.post('/commissions/:id/approve', [controllers.CommissionLedger, 'approve'])
+            router.post('/commissions/:id/reject', [controllers.CommissionLedger, 'reject'])
             router.post('/commissions/:id/mark-paid', [controllers.CommissionLedger, 'markAsPaid'])
-            router.post('/commissions/:id/reverse', [controllers.CommissionLedger, 'reverse'])
-            router.post('/commissions/:id/release-hold', [controllers.CommissionLedger, 'releaseFromHold'])
-            router.post('/commissions/:id/resolve-dispute', [controllers.CommissionLedger, 'resolveDispute'])
             router.post('/commissions/bulk-approve', [controllers.CommissionLedger, 'bulkApprove'])
 
             // Refund and chargeback management (admin)
