@@ -618,6 +618,8 @@ export default class PagesController {
       WalletService.getSummary(auth.user!.id),
     ])
 
+    const walletData = walletSummary || { wallet: null, transactions: [], payoutRequests: [] }
+
     const serializedOrders = vendorOrders.map((o) => {
       const raw = o.serialize()
       return {
@@ -633,7 +635,7 @@ export default class PagesController {
       user: auth.user,
       products: vendorProducts,
       orders: serializedOrders,
-      wallet: walletSummary.wallet,
+      wallet: walletData?.wallet || null,
       profileComplete: computeProfileComplete(auth.user!),
     })
   }
@@ -690,9 +692,9 @@ export default class PagesController {
     return inertia.render('vendor/VendorEarnings', {
       user: auth.user,
       orders,
-      wallet: walletSummary.wallet,
-      transactions: walletSummary.transactions,
-      payoutRequests: walletSummary.payoutRequests,
+      wallet: walletSummary?.wallet || null,
+      transactions: walletSummary?.transactions || [],
+      payoutRequests: walletSummary?.payoutRequests || [],
     })
   }
 
@@ -785,9 +787,9 @@ export default class PagesController {
       user: auth.user,
       orders,
       links,
-      wallet: walletSummary.wallet,
-      transactions: walletSummary.transactions,
-      payoutRequests: walletSummary.payoutRequests,
+      wallet: walletSummary?.wallet || null,
+      transactions: walletSummary?.transactions || [],
+      payoutRequests: walletSummary?.payoutRequests || [],
     })
   }
 
@@ -892,7 +894,7 @@ export default class PagesController {
     const payouts = await WalletService.listPayoutRequests('all')
     return inertia.render('admin/AdminPayouts', {
       user: auth.user,
-      payouts: payouts.map((p) => ({
+      payouts: (payouts || []).map((p) => ({
         ...p.serialize(),
         user: p.user
           ? {
