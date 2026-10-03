@@ -319,8 +319,12 @@ router
         router.post('/uploads/file', [controllers.Upload, 'uploadFile'])
 
         // Wallet & payouts (vendor / affiliate)
-        router.get('/wallet', [controllers.Wallet, 'show'])
-        router.post('/wallet/payouts', [controllers.Wallet, 'requestPayout'])
+        router.get('/wallet', [controllers.Payouts, 'wallet'])
+        router.post('/payouts', [controllers.Payouts, 'requestPayout'])
+        router.get('/payouts/history', [controllers.Payouts, 'history'])
+        router.get('/payouts/:id', [controllers.Payouts, 'show'])
+        router.post('/payment-methods', [controllers.Payouts, 'addPaymentMethod'])
+        router.get('/payment-methods', [controllers.Payouts, 'paymentMethods'])
 
         // Notifications
         router.get('/notifications', [controllers.Notifications, 'index'])
@@ -446,9 +450,12 @@ router
             router.post('/reviews/:id/approve', [controllers.Reviews, 'approve'])
 
             // Payout management
-            router.get('/payouts', [controllers.Wallet, 'adminIndex'])
-            router.put('/payouts/:id', [controllers.Wallet, 'adminUpdate'])
-            router.post('/payouts/:id/retry-transfer', [controllers.Admin, 'retryFailedTransfer'])
+            router.get('/payouts', [controllers.Payouts, 'adminIndex'])
+            router.post('/payouts/:id/approve', [controllers.Payouts, 'approve'])
+            router.post('/payouts/:id/reject', [controllers.Payouts, 'reject'])
+            router.post('/payouts/:id/process', [controllers.Payouts, 'process'])
+            router.post('/payouts/:id/complete', [controllers.Payouts, 'complete'])
+            router.post('/payouts/:id/fail', [controllers.Payouts, 'fail'])
 
             // Blog posts
             router.get('/blog-posts', [controllers.BlogPosts, 'index'])

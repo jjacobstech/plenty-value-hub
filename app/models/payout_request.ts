@@ -1,78 +1,67 @@
-import { BaseModel, column, belongsTo, beforeSave } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import User from '#models/user'
-import Wallet from '#models/wallet'
-import crypto from 'node:crypto'
+import { BaseModel, column } from '@adonisjs/lucid/orm'
 
 export default class PayoutRequest extends BaseModel {
-  static table = 'payout_requests'
-
   @column({ isPrimary: true })
   declare id: number
 
   @column()
-  declare uuid: string
-
-  @beforeSave()
-  static async generateUuid(model: PayoutRequest) {
-    if (!model.uuid) {
-      model.uuid = crypto.randomUUID()
-    }
-  }
+  declare requestId: string
 
   @column()
-  declare userId: number
+  declare affiliateId: number
 
   @column()
-  declare walletId: number
+  declare amount: number
 
   @column()
-  declare amount: string
+  declare status: 'pending' | 'approved' | 'processing' | 'completed' | 'failed' | 'cancelled'
 
   @column()
-  declare payoutMethod: string
+  declare paymentMethod: 'bank_transfer' | 'paypal' | 'stripe' | 'mobile_money' | 'crypto'
 
   @column()
-  declare payoutDetails: string
+  declare paymentMethodId: string | null
 
   @column()
-  declare status: 'pending' | 'approved' | 'paid' | 'rejected'
+  declare currency: string
 
   @column()
-  declare adminNotes: string | null
+  declare platformFee: number
+
+  @column()
+  declare netAmount: number
+
+  @column()
+  declare referenceNumber: string | null
+
+  @column()
+  declare notes: string | null
+
+  @column()
+  declare rejectionReason: string | null
+
+  @column.dateTime()
+  declare approvedAt: DateTime | null
 
   @column.dateTime()
   declare processedAt: DateTime | null
 
-  // Transfer tracking fields
-  @column()
-  declare transferCode: string | null
-
-  @column()
-  declare transferReference: string | null
-
-  @column()
-  declare transferStatus: string | null
-
-  @column()
-  declare transferErrorMessage: string | null
+  @column.dateTime()
+  declare completedAt: DateTime | null
 
   @column.dateTime()
-  declare transferInitiatedAt: DateTime | null
+  declare failedAt: DateTime | null
+
+  @column()
+  declare approvedByAdminId: number | null
+
+  @column()
+  declare metadata: any
 
   @column.dateTime()
-  declare transferCompletedAt: DateTime | null
-
-  @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true })
-  declare updatedAt: DateTime | null
-
-  @belongsTo(() => User, { foreignKey: 'userId' })
-  declare user: BelongsTo<typeof User>
-
-  @belongsTo(() => Wallet, { foreignKey: 'walletId' })
-  declare wallet: BelongsTo<typeof Wallet>
+  @column.dateTime()
+  declare updatedAt: DateTime
 }
