@@ -1,15 +1,21 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import EtsyShop from '#models/etsy_shop'
 
 export default class EtsyController {
   /**
    * Get OAuth authorization URL for Etsy
    * GET /api/etsy/auth-url
    */
-  async getAuthUrl({ auth, response }: HttpContext) {
+  async getAuthUrl({ request, auth, response }: HttpContext) {
     const user = auth.use('web').user
 
     if (!user || user.role !== 'vendor') {
       return response.status(403).json({ error: 'Only vendors can connect Etsy shops' })
+    }
+
+    const shopUrl = request.input('shop_url')
+    if (!shopUrl) {
+      return response.status(400).json({ error: 'Shop URL required' })
     }
 
     const clientId = process.env.ETSY_CLIENT_ID
@@ -27,9 +33,9 @@ export default class EtsyController {
       'listings:write',
       'orders:read',
       'transactions:read',
-    ].join(',')
+    ].join(' ')
 
-    const state = Buffer.from(JSON.stringify({ userId: user.id, timestamp: Date.now() })).toString('base64')
+    const state = Buffer.from(JSON.stringify({ userId: user.id, shopUrl, timestamp: Date.now() })).toString('base64')
 
     const authUrl = `https://www.etsy.com/oauth/connect?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${encodeURIComponent(scopes)}&state=${state}`
 
@@ -49,29 +55,68 @@ export default class EtsyController {
 
     const code = request.input('code')
     const state = request.input('state')
+    const error = request.input('error')
+
+    if (error) {
+      return response.status(400).redirect(`/vendor/integrations?error=etsy_auth_failed&details=${error}`)
+    }
 
     if (!code || !state) {
-      return response.status(400).json({
-        error: 'Missing authorization code or state',
-      })
+      return response.status(400).redirect(`/vendor/integrations?error=missing_params`)
     }
 
     try {
-      // For now, return success response
-      // In Phase 2, implement actual token exchange with Etsy API
-      return response.json({
-        success: true,
-        message: 'Etsy shop connected',
-        data: {
-          vendor_id: user.id,
-          platform: 'etsy',
-          connected: true,
-        },
-      })
+      const decodedState = JSON.parse(Buffer.from(state, 'base64').toString())
+      if (decodedState.userId !== user.id) {
+        return response.status(403).json({ error: 'State mismatch' })
+      }
+
+      const shopUrl = decodedState.shopUrl
+      if (!shopUrl) {
+        return response.status(400).json({ error: 'Shop URL not found in state' })
+      }
+
+      // Mock token exchange - in production, exchange code for access token with Etsy API
+      const accessToken = `etsy_access_${user.id}_${Date.now()}`
+      const refreshToken = `etsy_refresh_${user.id}_${Date.now()}`
+      const shopId = `shop_${user.id}_${Date.now()}` // Mock shop ID
+
+      // Check if shop already exists
+      let shop = await EtsyShop.findBy('vendor_id', user.id)
+
+      if (shop) {
+        shop.merge({
+          shopUrl,
+          shopId,
+          accessToken,
+          refreshToken,
+          isConnected: true,
+          connectionStatus: 'connected',
+          connectedAt: new Date(),
+        })
+      } else {
+        shop = new EtsyShop()
+        shop.merge({
+          vendorId: user.id,
+          shopUrl,
+          shopId,
+          shopName: shopUrl.split('/').pop() || 'My Shop',
+          accessToken,
+          refreshToken,
+          isConnected: true,
+          connectionStatus: 'connected',
+          connectedAt: new Date(),
+        })
+      }
+
+      await shop.save()
+
+      return response.redirect(`/vendor/integrations?success=etsy_connected`)
     } catch (error) {
-      return response.status(400).json({
-        error: error instanceof Error ? error.message : 'Failed to connect shop',
-      })
+      console.error('[EtsyController] OAuth callback error:', error)
+      return response.status(400).redirect(
+        `/vendor/integrations?error=connection_failed&details=${error instanceof Error ? error.message : 'Unknown error'}`
+      )
     }
   }
 

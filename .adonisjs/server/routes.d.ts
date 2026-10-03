@@ -202,6 +202,24 @@ export type ScannedRoutes = {
     'refunds_chargebacks.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'refunds_chargebacks.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'refunds_chargebacks.complete': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_fraud.get_flagged': { paramsTuple?: []; params?: {} }
+    'admin_fraud.approve_conversion': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_fraud.reject_conversion': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_fraud.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_fraud.analyze_conversion': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.get_disputes': { paramsTuple?: []; params?: {} }
+    'admin_dispute.get_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.add_evidence': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.escalate_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.resolve_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_dispute.auto_resolve': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_payouts': { paramsTuple?: []; params?: {} }
+    'admin_payout.check_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_payout.get_banks': { paramsTuple?: []; params?: {} }
+    'admin_payout.verify_bank_account': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_payout.handle_webhook': { paramsTuple?: []; params?: {} }
     'fraud_analytics.get_stats': { paramsTuple?: []; params?: {} }
     'fraud_analytics.list_flagged': { paramsTuple?: []; params?: {} }
     'fraud_analytics.get_fraud_details': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -257,15 +275,6 @@ export type ScannedRoutes = {
     'woocommerce.list_orders': { paramsTuple?: []; params?: {} }
     'woocommerce.calculate_commissions': { paramsTuple?: []; params?: {} }
     'woocommerce.get_analytics': { paramsTuple?: []; params?: {} }
-    'amazon.get_auth_url': { paramsTuple?: []; params?: {} }
-    'amazon.handle_callback': { paramsTuple?: []; params?: {} }
-    'amazon.list_accounts': { paramsTuple?: []; params?: {} }
-    'amazon.get_campaigns': { paramsTuple?: []; params?: {} }
-    'etsy.get_auth_url': { paramsTuple?: []; params?: {} }
-    'etsy.handle_callback': { paramsTuple?: []; params?: {} }
-    'etsy.list_shops': { paramsTuple?: []; params?: {} }
-    'etsy.get_listings': { paramsTuple?: []; params?: {} }
-    'etsy.get_orders': { paramsTuple?: []; params?: {} }
     'currency.format_amount': { paramsTuple?: []; params?: {} }
     'currency.get_regional_price': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'region': ParamValue} }
     'currency.set_regional_pricing': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -348,6 +357,15 @@ export type ScannedRoutes = {
     'disputes.get_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'disputes.get_comments': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'disputes.add_comment': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amazon.get_auth_url': { paramsTuple?: []; params?: {} }
+    'amazon.handle_callback': { paramsTuple?: []; params?: {} }
+    'amazon.list_accounts': { paramsTuple?: []; params?: {} }
+    'amazon.get_campaigns': { paramsTuple?: []; params?: {} }
+    'etsy.get_auth_url': { paramsTuple?: []; params?: {} }
+    'etsy.handle_callback': { paramsTuple?: []; params?: {} }
+    'etsy.list_shops': { paramsTuple?: []; params?: {} }
+    'etsy.get_listings': { paramsTuple?: []; params?: {} }
+    'etsy.get_orders': { paramsTuple?: []; params?: {} }
     'affiliates.create_profile': { paramsTuple?: []; params?: {} }
     'affiliates.get_profile': { paramsTuple?: []; params?: {} }
     'affiliates.update_profile': { paramsTuple?: []; params?: {} }
@@ -499,6 +517,14 @@ export type ScannedRoutes = {
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
     'admin.auth_status': { paramsTuple?: []; params?: {} }
     'admin.debug_paystack_banks': { paramsTuple?: []; params?: {} }
+    'admin_fraud.get_flagged': { paramsTuple?: []; params?: {} }
+    'admin_fraud.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_dispute.get_disputes': { paramsTuple?: []; params?: {} }
+    'admin_dispute.get_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_payouts': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_banks': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_stats': { paramsTuple?: []; params?: {} }
     'fraud_analytics.get_stats': { paramsTuple?: []; params?: {} }
     'fraud_analytics.list_flagged': { paramsTuple?: []; params?: {} }
     'fraud_analytics.get_fraud_details': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -533,15 +559,6 @@ export type ScannedRoutes = {
     'woocommerce.list_products': { paramsTuple?: []; params?: {} }
     'woocommerce.list_orders': { paramsTuple?: []; params?: {} }
     'woocommerce.get_analytics': { paramsTuple?: []; params?: {} }
-    'amazon.get_auth_url': { paramsTuple?: []; params?: {} }
-    'amazon.handle_callback': { paramsTuple?: []; params?: {} }
-    'amazon.list_accounts': { paramsTuple?: []; params?: {} }
-    'amazon.get_campaigns': { paramsTuple?: []; params?: {} }
-    'etsy.get_auth_url': { paramsTuple?: []; params?: {} }
-    'etsy.handle_callback': { paramsTuple?: []; params?: {} }
-    'etsy.list_shops': { paramsTuple?: []; params?: {} }
-    'etsy.get_listings': { paramsTuple?: []; params?: {} }
-    'etsy.get_orders': { paramsTuple?: []; params?: {} }
     'currency.get_regional_price': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'region': ParamValue} }
     'currency.list_product_pricing': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'payouts.admin_index': { paramsTuple?: []; params?: {} }
@@ -572,6 +589,15 @@ export type ScannedRoutes = {
     'disputes.list_user_disputes': { paramsTuple?: []; params?: {} }
     'disputes.get_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'disputes.get_comments': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amazon.get_auth_url': { paramsTuple?: []; params?: {} }
+    'amazon.handle_callback': { paramsTuple?: []; params?: {} }
+    'amazon.list_accounts': { paramsTuple?: []; params?: {} }
+    'amazon.get_campaigns': { paramsTuple?: []; params?: {} }
+    'etsy.get_auth_url': { paramsTuple?: []; params?: {} }
+    'etsy.handle_callback': { paramsTuple?: []; params?: {} }
+    'etsy.list_shops': { paramsTuple?: []; params?: {} }
+    'etsy.get_listings': { paramsTuple?: []; params?: {} }
+    'etsy.get_orders': { paramsTuple?: []; params?: {} }
     'affiliates.get_profile': { paramsTuple?: []; params?: {} }
     'affiliates.get_referral_codes': { paramsTuple?: []; params?: {} }
     'affiliates.get_referral_code_performance': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -715,6 +741,14 @@ export type ScannedRoutes = {
     'admin.get_platform_stats': { paramsTuple?: []; params?: {} }
     'admin.auth_status': { paramsTuple?: []; params?: {} }
     'admin.debug_paystack_banks': { paramsTuple?: []; params?: {} }
+    'admin_fraud.get_flagged': { paramsTuple?: []; params?: {} }
+    'admin_fraud.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_dispute.get_disputes': { paramsTuple?: []; params?: {} }
+    'admin_dispute.get_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.get_stats': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_payouts': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_banks': { paramsTuple?: []; params?: {} }
+    'admin_payout.get_stats': { paramsTuple?: []; params?: {} }
     'fraud_analytics.get_stats': { paramsTuple?: []; params?: {} }
     'fraud_analytics.list_flagged': { paramsTuple?: []; params?: {} }
     'fraud_analytics.get_fraud_details': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -749,15 +783,6 @@ export type ScannedRoutes = {
     'woocommerce.list_products': { paramsTuple?: []; params?: {} }
     'woocommerce.list_orders': { paramsTuple?: []; params?: {} }
     'woocommerce.get_analytics': { paramsTuple?: []; params?: {} }
-    'amazon.get_auth_url': { paramsTuple?: []; params?: {} }
-    'amazon.handle_callback': { paramsTuple?: []; params?: {} }
-    'amazon.list_accounts': { paramsTuple?: []; params?: {} }
-    'amazon.get_campaigns': { paramsTuple?: []; params?: {} }
-    'etsy.get_auth_url': { paramsTuple?: []; params?: {} }
-    'etsy.handle_callback': { paramsTuple?: []; params?: {} }
-    'etsy.list_shops': { paramsTuple?: []; params?: {} }
-    'etsy.get_listings': { paramsTuple?: []; params?: {} }
-    'etsy.get_orders': { paramsTuple?: []; params?: {} }
     'currency.get_regional_price': { paramsTuple: [ParamValue,ParamValue]; params: {'id': ParamValue,'region': ParamValue} }
     'currency.list_product_pricing': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'payouts.admin_index': { paramsTuple?: []; params?: {} }
@@ -788,6 +813,15 @@ export type ScannedRoutes = {
     'disputes.list_user_disputes': { paramsTuple?: []; params?: {} }
     'disputes.get_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'disputes.get_comments': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'amazon.get_auth_url': { paramsTuple?: []; params?: {} }
+    'amazon.handle_callback': { paramsTuple?: []; params?: {} }
+    'amazon.list_accounts': { paramsTuple?: []; params?: {} }
+    'amazon.get_campaigns': { paramsTuple?: []; params?: {} }
+    'etsy.get_auth_url': { paramsTuple?: []; params?: {} }
+    'etsy.handle_callback': { paramsTuple?: []; params?: {} }
+    'etsy.list_shops': { paramsTuple?: []; params?: {} }
+    'etsy.get_listings': { paramsTuple?: []; params?: {} }
+    'etsy.get_orders': { paramsTuple?: []; params?: {} }
     'affiliates.get_profile': { paramsTuple?: []; params?: {} }
     'affiliates.get_referral_codes': { paramsTuple?: []; params?: {} }
     'affiliates.get_referral_code_performance': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -877,6 +911,16 @@ export type ScannedRoutes = {
     'refunds_chargebacks.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'refunds_chargebacks.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'refunds_chargebacks.complete': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_fraud.approve_conversion': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_fraud.reject_conversion': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_fraud.analyze_conversion': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.add_evidence': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.escalate_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.resolve_dispute': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_dispute.auto_resolve': { paramsTuple?: []; params?: {} }
+    'admin_payout.check_status': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_payout.verify_bank_account': { paramsTuple?: []; params?: {} }
+    'admin_payout.handle_webhook': { paramsTuple?: []; params?: {} }
     'fraud_analytics.approve_fraud_flag': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'fraud_analytics.reject_fraud_flag': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'fraud_analytics.auto_reject_high_risk': { paramsTuple?: []; params?: {} }

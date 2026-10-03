@@ -493,19 +493,6 @@ router
             router.post('/woocommerce/commissions/calculate', [controllers.Woocommerce, 'calculateCommissions'])
             router.get('/woocommerce/analytics', [controllers.Woocommerce, 'getAnalytics'])
 
-            // Amazon integration (vendor)
-            router.get('/amazon/auth-url', [controllers.Amazon, 'getAuthUrl'])
-            router.get('/amazon/callback', [controllers.Amazon, 'handleCallback'])
-            router.get('/amazon/accounts', [controllers.Amazon, 'listAccounts'])
-            router.get('/amazon/campaigns', [controllers.Amazon, 'getCampaigns'])
-
-            // Etsy integration (vendor)
-            router.get('/etsy/auth-url', [controllers.Etsy, 'getAuthUrl'])
-            router.get('/etsy/callback', [controllers.Etsy, 'handleCallback'])
-            router.get('/etsy/shops', [controllers.Etsy, 'listShops'])
-            router.get('/etsy/listings', [controllers.Etsy, 'getListings'])
-            router.get('/etsy/orders', [controllers.Etsy, 'getOrders'])
-
             // Currency and regional pricing (vendor/affiliate)
             router.post('/currencies/format', [controllers.Currency, 'formatAmount'])
             router.get('/products/:id/price/:region', [controllers.Currency, 'getRegionalPrice'])
@@ -633,6 +620,19 @@ router
         router.get('/disputes/:id', [controllers.Disputes, 'getDispute'])
         router.get('/disputes/:id/comments', [controllers.Disputes, 'getComments'])
         router.post('/disputes/:id/comments', [controllers.Disputes, 'addComment'])
+
+        // Amazon integration (vendor)
+        router.get('/amazon/auth-url', [controllers.Amazon, 'getAuthUrl'])
+        router.get('/amazon/callback', [controllers.Amazon, 'handleCallback'])
+        router.get('/amazon/accounts', [controllers.Amazon, 'listAccounts'])
+        router.get('/amazon/campaigns', [controllers.Amazon, 'getCampaigns'])
+
+        // Etsy integration (vendor)
+        router.get('/etsy/auth-url', [controllers.Etsy, 'getAuthUrl'])
+        router.get('/etsy/callback', [controllers.Etsy, 'handleCallback'])
+        router.get('/etsy/shops', [controllers.Etsy, 'listShops'])
+        router.get('/etsy/listings', [controllers.Etsy, 'getListings'])
+        router.get('/etsy/orders', [controllers.Etsy, 'getOrders'])
 
         // Affiliate recruitment endpoints (all authenticated users)
         router.post('/affiliate/profile', [controllers.Affiliates, 'createProfile'])

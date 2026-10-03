@@ -60,7 +60,9 @@ const integrations: IntegrationStatus[] = [
       'Product linking',
       'Commission tracking',
       'Performance analytics'
-    ]
+    ],
+    actionUrl: 'javascript:void(0)',
+    actionLabel: 'Connect Account'
   },
   {
     name: 'Etsy',
@@ -72,15 +74,21 @@ const integrations: IntegrationStatus[] = [
       'Shop sync',
       'Order tracking',
       'Affiliate management'
-    ]
+    ],
+    actionUrl: 'javascript:void(0)',
+    actionLabel: 'Connect Shop'
   }
 ]
 
 export default function VendorIntegrations() {
   const [shopDomain, setShopDomain] = React.useState('')
   const [storeUrl, setStoreUrl] = React.useState('')
+  const [amazonSellerId, setAmazonSellerId] = React.useState('')
+  const [etsyShopUrl, setEtsyShopUrl] = React.useState('')
   const [showShopifyPrompt, setShowShopifyPrompt] = React.useState(false)
   const [showWooCommercePrompt, setShowWooCommercePrompt] = React.useState(false)
+  const [showAmazonPrompt, setShowAmazonPrompt] = React.useState(false)
+  const [showEtsyPrompt, setShowEtsyPrompt] = React.useState(false)
 
   const handleConnect = (integration: IntegrationStatus) => {
     if (integration.slug === 'shopify') {
@@ -88,9 +96,9 @@ export default function VendorIntegrations() {
     } else if (integration.slug === 'woocommerce') {
       setShowWooCommercePrompt(true)
     } else if (integration.slug === 'amazon') {
-      window.location.href = '/api/amazon/auth-url'
+      setShowAmazonPrompt(true)
     } else if (integration.slug === 'etsy') {
-      window.location.href = '/api/etsy/auth-url'
+      setShowEtsyPrompt(true)
     }
   }
 
@@ -109,6 +117,22 @@ export default function VendorIntegrations() {
     }
     // Store URL and consumer key/secret would be collected here in a real implementation
     window.location.href = `/api/woocommerce/connect?store_url=${encodeURIComponent(storeUrl)}`
+  }
+
+  const handleAmazonConnect = () => {
+    if (!amazonSellerId.trim()) {
+      alert('Please enter your Amazon Seller ID')
+      return
+    }
+    window.location.href = `/api/amazon/auth-url?seller_id=${encodeURIComponent(amazonSellerId)}`
+  }
+
+  const handleEtsyConnect = () => {
+    if (!etsyShopUrl.trim()) {
+      alert('Please enter your Etsy shop URL')
+      return
+    }
+    window.location.href = `/api/etsy/auth-url?shop_url=${encodeURIComponent(etsyShopUrl)}`
   }
 
   return (
@@ -295,6 +319,102 @@ export default function VendorIntegrations() {
                     onClick={handleWooCommerceConnect}
                   >
                     Continue
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Amazon Connect Prompt Modal */}
+        {showAmazonPrompt && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>Connect Your Amazon Account</CardTitle>
+                <button
+                  onClick={() => setShowAmazonPrompt(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Amazon Seller ID</label>
+                  <input
+                    type="text"
+                    placeholder="Your Amazon Seller ID"
+                    value={amazonSellerId}
+                    onChange={(e) => setAmazonSellerId(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && handleAmazonConnect()}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">You can find this in your Amazon Seller Central account</p>
+                </div>
+                <div className="bg-amber-50 p-3 rounded text-sm">
+                  <p className="text-amber-900 mb-2"><strong>Next:</strong></p>
+                  <p className="text-amber-800 text-xs">You'll be redirected to Amazon to authorize the connection.</p>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowAmazonPrompt(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleAmazonConnect}
+                  >
+                    Connect
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {/* Etsy Connect Prompt Modal */}
+        {showEtsyPrompt && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>Connect Your Etsy Shop</CardTitle>
+                <button
+                  onClick={() => setShowEtsyPrompt(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Etsy Shop URL</label>
+                  <input
+                    type="url"
+                    placeholder="https://www.etsy.com/shop/yourshopname"
+                    value={etsyShopUrl}
+                    onChange={(e) => setEtsyShopUrl(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && handleEtsyConnect()}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">Example: https://www.etsy.com/shop/myshop</p>
+                </div>
+                <div className="bg-amber-50 p-3 rounded text-sm">
+                  <p className="text-amber-900 mb-2"><strong>Next:</strong></p>
+                  <p className="text-amber-800 text-xs">You'll be redirected to Etsy to authorize the connection.</p>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowEtsyPrompt(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleEtsyConnect}
+                  >
+                    Connect Shop
                   </Button>
                 </div>
               </CardContent>

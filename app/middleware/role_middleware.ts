@@ -5,6 +5,14 @@ export default class RoleMiddleware {
   handle(ctx: HttpContext, next: () => Promise<void>, roles: string[]) {
     const user = ctx.auth.user
 
+    console.log('[RoleMiddleware] Checking access', {
+      isAuthenticated: !!user,
+      userId: user?.id,
+      userRole: user?.role,
+      requiredRoles: roles,
+      path: ctx.request.url(),
+    })
+
     if (!user) {
       throw new Exception('Not authenticated', { status: 401 })
     }

@@ -339,6 +339,30 @@ export interface ApiDefinition {
     systemHealth: typeof routes['admin_dashboard.system_health']
     platformActivity: typeof routes['admin_dashboard.platform_activity']
   }
+  adminFraud: {
+    getFlagged: typeof routes['admin_fraud.get_flagged']
+    approveConversion: typeof routes['admin_fraud.approve_conversion']
+    rejectConversion: typeof routes['admin_fraud.reject_conversion']
+    getStats: typeof routes['admin_fraud.get_stats']
+    analyzeConversion: typeof routes['admin_fraud.analyze_conversion']
+  }
+  adminDispute: {
+    getDisputes: typeof routes['admin_dispute.get_disputes']
+    getDispute: typeof routes['admin_dispute.get_dispute']
+    addEvidence: typeof routes['admin_dispute.add_evidence']
+    escalateDispute: typeof routes['admin_dispute.escalate_dispute']
+    resolveDispute: typeof routes['admin_dispute.resolve_dispute']
+    getStats: typeof routes['admin_dispute.get_stats']
+    autoResolve: typeof routes['admin_dispute.auto_resolve']
+  }
+  adminPayout: {
+    getPayouts: typeof routes['admin_payout.get_payouts']
+    checkStatus: typeof routes['admin_payout.check_status']
+    getBanks: typeof routes['admin_payout.get_banks']
+    verifyBankAccount: typeof routes['admin_payout.verify_bank_account']
+    getStats: typeof routes['admin_payout.get_stats']
+    handleWebhook: typeof routes['admin_payout.handle_webhook']
+  }
   fraudAnalytics: {
     getStats: typeof routes['fraud_analytics.get_stats']
     listFlagged: typeof routes['fraud_analytics.list_flagged']
@@ -390,19 +414,6 @@ export interface ApiDefinition {
     listOrders: typeof routes['woocommerce.list_orders']
     calculateCommissions: typeof routes['woocommerce.calculate_commissions']
     getAnalytics: typeof routes['woocommerce.get_analytics']
-  }
-  amazon: {
-    getAuthUrl: typeof routes['amazon.get_auth_url']
-    handleCallback: typeof routes['amazon.handle_callback']
-    listAccounts: typeof routes['amazon.list_accounts']
-    getCampaigns: typeof routes['amazon.get_campaigns']
-  }
-  etsy: {
-    getAuthUrl: typeof routes['etsy.get_auth_url']
-    handleCallback: typeof routes['etsy.handle_callback']
-    listShops: typeof routes['etsy.list_shops']
-    getListings: typeof routes['etsy.get_listings']
-    getOrders: typeof routes['etsy.get_orders']
   }
   blogPosts: {
     index: typeof routes['blog_posts.index']
@@ -479,6 +490,19 @@ export interface ApiDefinition {
     getDispute: typeof routes['disputes.get_dispute']
     getComments: typeof routes['disputes.get_comments']
     addComment: typeof routes['disputes.add_comment']
+  }
+  amazon: {
+    getAuthUrl: typeof routes['amazon.get_auth_url']
+    handleCallback: typeof routes['amazon.handle_callback']
+    listAccounts: typeof routes['amazon.list_accounts']
+    getCampaigns: typeof routes['amazon.get_campaigns']
+  }
+  etsy: {
+    getAuthUrl: typeof routes['etsy.get_auth_url']
+    handleCallback: typeof routes['etsy.handle_callback']
+    listShops: typeof routes['etsy.list_shops']
+    getListings: typeof routes['etsy.get_listings']
+    getOrders: typeof routes['etsy.get_orders']
   }
   affiliateDashboard: {
     overview: typeof routes['affiliate_dashboard.overview']

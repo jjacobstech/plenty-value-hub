@@ -2383,6 +2383,222 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/refunds_chargebacks_controller').default['complete']>>>
     }
   }
+  'admin_fraud.get_flagged': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/fraud-api/flagged'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['getFlagged']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['getFlagged']>>>
+    }
+  }
+  'admin_fraud.approve_conversion': {
+    methods: ["POST"]
+    pattern: '/api/fraud-api/:id/approve'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['approveConversion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['approveConversion']>>>
+    }
+  }
+  'admin_fraud.reject_conversion': {
+    methods: ["POST"]
+    pattern: '/api/fraud-api/:id/reject'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['rejectConversion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['rejectConversion']>>>
+    }
+  }
+  'admin_fraud.get_stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/fraud-api/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['getStats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['getStats']>>>
+    }
+  }
+  'admin_fraud.analyze_conversion': {
+    methods: ["POST"]
+    pattern: '/api/fraud-api/:id/analyze'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['analyzeConversion']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_fraud_controller').default['analyzeConversion']>>>
+    }
+  }
+  'admin_dispute.get_disputes': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/disputes-api/list'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['getDisputes']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['getDisputes']>>>
+    }
+  }
+  'admin_dispute.get_dispute': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/disputes-api/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['getDispute']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['getDispute']>>>
+    }
+  }
+  'admin_dispute.add_evidence': {
+    methods: ["POST"]
+    pattern: '/api/disputes-api/:id/evidence'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['addEvidence']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['addEvidence']>>>
+    }
+  }
+  'admin_dispute.escalate_dispute': {
+    methods: ["POST"]
+    pattern: '/api/disputes-api/:id/escalate'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['escalateDispute']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['escalateDispute']>>>
+    }
+  }
+  'admin_dispute.resolve_dispute': {
+    methods: ["POST"]
+    pattern: '/api/disputes-api/:id/resolve'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['resolveDispute']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['resolveDispute']>>>
+    }
+  }
+  'admin_dispute.get_stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/disputes-api/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['getStats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['getStats']>>>
+    }
+  }
+  'admin_dispute.auto_resolve': {
+    methods: ["POST"]
+    pattern: '/api/disputes-api/auto-resolve'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['autoResolve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_dispute_controller').default['autoResolve']>>>
+    }
+  }
+  'admin_payout.get_payouts': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payouts/list'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['getPayouts']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['getPayouts']>>>
+    }
+  }
+  'admin_payout.check_status': {
+    methods: ["POST"]
+    pattern: '/api/payouts/:id/check-status'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['checkStatus']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['checkStatus']>>>
+    }
+  }
+  'admin_payout.get_banks': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payouts/banks/list'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['getBanks']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['getBanks']>>>
+    }
+  }
+  'admin_payout.verify_bank_account': {
+    methods: ["POST"]
+    pattern: '/api/payouts/bank/verify'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['verifyBankAccount']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['verifyBankAccount']>>>
+    }
+  }
+  'admin_payout.get_stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/payouts/stats'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['getStats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['getStats']>>>
+    }
+  }
+  'admin_payout.handle_webhook': {
+    methods: ["POST"]
+    pattern: '/api/payouts/webhook/paystack'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['handleWebhook']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_payout_controller').default['handleWebhook']>>>
+    }
+  }
   'fraud_analytics.get_stats': {
     methods: ["GET","HEAD"]
     pattern: '/api/fraud/stats'
@@ -3041,114 +3257,6 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/woocommerce_controller').default['getAnalytics']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/woocommerce_controller').default['getAnalytics']>>>
-    }
-  }
-  'amazon.get_auth_url': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/amazon/auth-url'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getAuthUrl']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getAuthUrl']>>>
-    }
-  }
-  'amazon.handle_callback': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/amazon/callback'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['handleCallback']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['handleCallback']>>>
-    }
-  }
-  'amazon.list_accounts': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/amazon/accounts'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['listAccounts']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['listAccounts']>>>
-    }
-  }
-  'amazon.get_campaigns': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/amazon/campaigns'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getCampaigns']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getCampaigns']>>>
-    }
-  }
-  'etsy.get_auth_url': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/etsy/auth-url'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getAuthUrl']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getAuthUrl']>>>
-    }
-  }
-  'etsy.handle_callback': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/etsy/callback'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['handleCallback']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['handleCallback']>>>
-    }
-  }
-  'etsy.list_shops': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/etsy/shops'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['listShops']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['listShops']>>>
-    }
-  }
-  'etsy.get_listings': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/etsy/listings'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getListings']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getListings']>>>
-    }
-  }
-  'etsy.get_orders': {
-    methods: ["GET","HEAD"]
-    pattern: '/api/etsy/orders'
-    types: {
-      body: {}
-      paramsTuple: []
-      params: {}
-      query: {}
-      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getOrders']>>>
-      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getOrders']>>>
     }
   }
   'currency.format_amount': {
@@ -4133,6 +4241,114 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/disputes_controller').default['addComment']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/disputes_controller').default['addComment']>>>
+    }
+  }
+  'amazon.get_auth_url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/amazon/auth-url'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getAuthUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getAuthUrl']>>>
+    }
+  }
+  'amazon.handle_callback': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/amazon/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['handleCallback']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['handleCallback']>>>
+    }
+  }
+  'amazon.list_accounts': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/amazon/accounts'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['listAccounts']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['listAccounts']>>>
+    }
+  }
+  'amazon.get_campaigns': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/amazon/campaigns'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getCampaigns']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/amazon_controller').default['getCampaigns']>>>
+    }
+  }
+  'etsy.get_auth_url': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/etsy/auth-url'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getAuthUrl']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getAuthUrl']>>>
+    }
+  }
+  'etsy.handle_callback': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/etsy/callback'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['handleCallback']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['handleCallback']>>>
+    }
+  }
+  'etsy.list_shops': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/etsy/shops'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['listShops']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['listShops']>>>
+    }
+  }
+  'etsy.get_listings': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/etsy/listings'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getListings']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getListings']>>>
+    }
+  }
+  'etsy.get_orders': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/etsy/orders'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getOrders']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/etsy_controller').default['getOrders']>>>
     }
   }
   'affiliates.create_profile': {
