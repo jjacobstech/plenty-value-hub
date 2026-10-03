@@ -75,6 +75,175 @@ export class AffiliateLinkSchema extends BaseModel {
   declare uuid: string | null
 }
 
+export class AffiliatePerformanceHistorySchema extends BaseModel {
+  static $columns = ['affiliateId', 'breakdown', 'createdAt', 'id', 'metadata', 'metricType', 'period', 'value'] as const
+  $columns = AffiliatePerformanceHistorySchema.$columns
+  @column()
+  declare affiliateId: number
+  @column()
+  declare breakdown: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare metricType: string
+  @column()
+  declare period: string
+  @column()
+  declare value: string
+}
+
+export class AffiliateProfileSchema extends BaseModel {
+  static $columns = ['activeReferrals', 'affiliateTier', 'approvedAt', 'averageConversionRate', 'bio', 'createdAt', 'id', 'isApproved', 'isSuspended', 'isVerified', 'metadata', 'monthsActive', 'recruitmentSource', 'specializations', 'suspendedAt', 'suspensionReason', 'targetAudiences', 'totalEarnings', 'totalReferrals', 'updatedAt', 'userId', 'verificationScore', 'verifiedAt'] as const
+  $columns = AffiliateProfileSchema.$columns
+  @column()
+  declare activeReferrals: number | null
+  @column()
+  declare affiliateTier: string | null
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare averageConversionRate: string | null
+  @column()
+  declare bio: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isApproved: boolean | null
+  @column()
+  declare isSuspended: boolean | null
+  @column()
+  declare isVerified: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare monthsActive: number | null
+  @column()
+  declare recruitmentSource: string
+  @column()
+  declare specializations: any | null
+  @column.dateTime()
+  declare suspendedAt: DateTime | null
+  @column()
+  declare suspensionReason: string | null
+  @column()
+  declare targetAudiences: any | null
+  @column()
+  declare totalEarnings: string | null
+  @column()
+  declare totalReferrals: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+  @column()
+  declare verificationScore: number | null
+  @column.dateTime()
+  declare verifiedAt: DateTime | null
+}
+
+export class AffiliateReferralSchema extends BaseModel {
+  static $columns = ['activatedAt', 'affiliateId', 'createdAt', 'earnedCommission', 'id', 'inactiveAt', 'metadata', 'referralCodeId', 'referralStatus', 'referredUserId', 'totalConversions', 'totalRevenue', 'updatedAt'] as const
+  $columns = AffiliateReferralSchema.$columns
+  @column.dateTime()
+  declare activatedAt: DateTime | null
+  @column()
+  declare affiliateId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare earnedCommission: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime()
+  declare inactiveAt: DateTime | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare referralCodeId: number | null
+  @column()
+  declare referralStatus: string | null
+  @column()
+  declare referredUserId: number
+  @column()
+  declare totalConversions: number | null
+  @column()
+  declare totalRevenue: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class AffiliateRewardSchema extends BaseModel {
+  static $columns = ['affiliateId', 'awardedAt', 'claimedAt', 'createdAt', 'description', 'earnedAt', 'earningCriteria', 'expiresAt', 'id', 'metadata', 'rewardAmount', 'rewardName', 'rewardType', 'status', 'updatedAt'] as const
+  $columns = AffiliateRewardSchema.$columns
+  @column()
+  declare affiliateId: number
+  @column.dateTime()
+  declare awardedAt: DateTime | null
+  @column.dateTime()
+  declare claimedAt: DateTime | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column.dateTime()
+  declare earnedAt: DateTime
+  @column()
+  declare earningCriteria: string | null
+  @column.dateTime()
+  declare expiresAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare rewardAmount: string
+  @column()
+  declare rewardName: string
+  @column()
+  declare rewardType: string
+  @column()
+  declare status: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class AffiliateTierSchema extends BaseModel {
+  static $columns = ['benefits', 'commissionRateBonus', 'conversionRateMinimum', 'createdAt', 'description', 'id', 'isActive', 'metadata', 'minimumActiveReferrals', 'monthlyEarningThreshold', 'requirements', 'tierLevel', 'updatedAt'] as const
+  $columns = AffiliateTierSchema.$columns
+  @column()
+  declare benefits: any | null
+  @column()
+  declare commissionRateBonus: string | null
+  @column()
+  declare conversionRateMinimum: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare minimumActiveReferrals: number
+  @column()
+  declare monthlyEarningThreshold: string
+  @column()
+  declare requirements: any | null
+  @column()
+  declare tierLevel: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class BlogPostSchema extends BaseModel {
   static $columns = ['authorName', 'category', 'content', 'createdAt', 'excerpt', 'featuredImageUrl', 'id', 'publishedAt', 'readTimeMinutes', 'seoDescription', 'seoTitle', 'slug', 'status', 'tags', 'title', 'updatedAt', 'uuid', 'viewCount'] as const
   $columns = BlogPostSchema.$columns
@@ -217,6 +386,134 @@ export class CampaignSchema extends BaseModel {
   declare webhookUrl: string | null
 }
 
+export class CollaborationAgreementSchema extends BaseModel {
+  static $columns = ['acceptedAt', 'acceptedBy', 'agreementDocument', 'autoRenewal', 'avgOrderValue', 'baseCommissionRate', 'bonusStructure', 'campaignId', 'cancellationReason', 'cancelledAt', 'commissionStructure', 'completedAt', 'contentRequirements', 'conversionRate', 'createdAt', 'description', 'endDate', 'exclusiveCategories', 'exclusivityClause', 'id', 'influencerId', 'minimumPayout', 'notes', 'paymentTerms', 'performanceTargets', 'proposedAt', 'proposedBy', 'renewalTermDays', 'startDate', 'status', 'title', 'totalClicks', 'totalConversions', 'totalEarnings', 'updatedAt', 'vendorId'] as const
+  $columns = CollaborationAgreementSchema.$columns
+  @column.dateTime()
+  declare acceptedAt: DateTime | null
+  @column()
+  declare acceptedBy: number | null
+  @column()
+  declare agreementDocument: string | null
+  @column()
+  declare autoRenewal: boolean | null
+  @column()
+  declare avgOrderValue: string | null
+  @column()
+  declare baseCommissionRate: string
+  @column()
+  declare bonusStructure: any | null
+  @column()
+  declare campaignId: number
+  @column()
+  declare cancellationReason: string | null
+  @column.dateTime()
+  declare cancelledAt: DateTime | null
+  @column()
+  declare commissionStructure: any
+  @column.dateTime()
+  declare completedAt: DateTime | null
+  @column()
+  declare contentRequirements: any | null
+  @column()
+  declare conversionRate: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column.dateTime()
+  declare endDate: DateTime | null
+  @column()
+  declare exclusiveCategories: any | null
+  @column()
+  declare exclusivityClause: boolean | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare influencerId: number
+  @column()
+  declare minimumPayout: number | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare paymentTerms: string | null
+  @column()
+  declare performanceTargets: any | null
+  @column.dateTime()
+  declare proposedAt: DateTime
+  @column()
+  declare proposedBy: number
+  @column()
+  declare renewalTermDays: number | null
+  @column.dateTime()
+  declare startDate: DateTime
+  @column()
+  declare status: string | null
+  @column()
+  declare title: string
+  @column()
+  declare totalClicks: number | null
+  @column()
+  declare totalConversions: number | null
+  @column()
+  declare totalEarnings: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vendorId: number
+}
+
+export class CommissionDisputeSchema extends BaseModel {
+  static $columns = ['claimedAmount', 'commissionLedgerId', 'createdAt', 'description', 'disputeType', 'disputedAmount', 'dueDate', 'escalatedAt', 'escalatedToUserId', 'filedByUserId', 'id', 'isEscalated', 'metadata', 'priority', 'resolutionNotes', 'resolutionType', 'resolvedAmount', 'resolvedAt', 'resolvedByUserId', 'status', 'supportingNotes', 'updatedAt', 'userId'] as const
+  $columns = CommissionDisputeSchema.$columns
+  @column()
+  declare claimedAmount: string | null
+  @column()
+  declare commissionLedgerId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string
+  @column()
+  declare disputeType: string
+  @column()
+  declare disputedAmount: string
+  @column.dateTime()
+  declare dueDate: DateTime | null
+  @column.dateTime()
+  declare escalatedAt: DateTime | null
+  @column()
+  declare escalatedToUserId: number | null
+  @column()
+  declare filedByUserId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isEscalated: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare priority: string | null
+  @column()
+  declare resolutionNotes: string | null
+  @column()
+  declare resolutionType: string | null
+  @column()
+  declare resolvedAmount: string | null
+  @column.dateTime()
+  declare resolvedAt: DateTime | null
+  @column()
+  declare resolvedByUserId: number | null
+  @column()
+  declare status: string | null
+  @column()
+  declare supportingNotes: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
 export class CommissionLedgerSchema extends BaseModel {
   static $columns = ['affiliateId', 'affiliateLinkId', 'amount', 'approvalNotes', 'approvedAt', 'approvedBy', 'campaignId', 'commissionType', 'createdAt', 'disputeReason', 'disputeResolved', 'disputeResolvedAt', 'disputedAt', 'holdUntil', 'holdingDays', 'id', 'metadata', 'notes', 'onHold', 'orderId', 'paidAt', 'paymentReference', 'payoutId', 'productId', 'rate', 'reversalReason', 'reversalType', 'reversedAt', 'saleAmount', 'status', 'updatedAt', 'uuid', 'vendorConversionId', 'vendorId'] as const
   $columns = CommissionLedgerSchema.$columns
@@ -290,6 +587,336 @@ export class CommissionLedgerSchema extends BaseModel {
   declare vendorId: number
 }
 
+export class ComplianceCheckSchema extends BaseModel {
+  static $columns = ['actualValue', 'approvedAt', 'approvedBy', 'checkStatus', 'checkType', 'complianceResult', 'createdAt', 'escalationReason', 'escalationStatus', 'evidenceDetails', 'failureReason', 'id', 'kycSubmissionId', 'regulatoryRequirement', 'remarks', 'requiredEvidenceProvided', 'thresholdValue', 'updatedAt'] as const
+  $columns = ComplianceCheckSchema.$columns
+  @column()
+  declare actualValue: string | null
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedBy: number | null
+  @column()
+  declare checkStatus: string | null
+  @column()
+  declare checkType: string
+  @column()
+  declare complianceResult: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare escalationReason: string | null
+  @column()
+  declare escalationStatus: string | null
+  @column()
+  declare evidenceDetails: any | null
+  @column()
+  declare failureReason: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare kycSubmissionId: number
+  @column()
+  declare regulatoryRequirement: string | null
+  @column()
+  declare remarks: string | null
+  @column()
+  declare requiredEvidenceProvided: boolean | null
+  @column()
+  declare thresholdValue: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class CurrencyExchangeRateSchema extends BaseModel {
+  static $columns = ['buyRate', 'createdAt', 'fromCurrency', 'id', 'midRate', 'rate', 'sellRate', 'source', 'timestamp', 'toCurrency'] as const
+  $columns = CurrencyExchangeRateSchema.$columns
+  @column()
+  declare buyRate: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare fromCurrency: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare midRate: string | null
+  @column()
+  declare rate: string
+  @column()
+  declare sellRate: string | null
+  @column()
+  declare source: string
+  @column.dateTime()
+  declare timestamp: DateTime
+  @column()
+  declare toCurrency: string
+}
+
+export class CurrencySettingSchema extends BaseModel {
+  static $columns = ['bankingDetails', 'countries', 'createdAt', 'currencyCode', 'currencyName', 'decimalPlaces', 'decimalSeparator', 'exchangeRate', 'id', 'isActive', 'isBaseCurrency', 'lastRateUpdateAt', 'minPaymentAmount', 'notes', 'paymentMethods', 'rateSource', 'regions', 'symbol', 'symbolPosition', 'taxIncluded', 'taxRate', 'thousandsSeparator', 'updatedAt'] as const
+  $columns = CurrencySettingSchema.$columns
+  @column()
+  declare bankingDetails: any | null
+  @column()
+  declare countries: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currencyCode: string
+  @column()
+  declare currencyName: string
+  @column()
+  declare decimalPlaces: number | null
+  @column()
+  declare decimalSeparator: string | null
+  @column()
+  declare exchangeRate: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare isBaseCurrency: boolean | null
+  @column.dateTime()
+  declare lastRateUpdateAt: DateTime | null
+  @column()
+  declare minPaymentAmount: string | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare paymentMethods: any | null
+  @column()
+  declare rateSource: string | null
+  @column()
+  declare regions: any | null
+  @column()
+  declare symbol: string
+  @column()
+  declare symbolPosition: string | null
+  @column()
+  declare taxIncluded: boolean | null
+  @column()
+  declare taxRate: string | null
+  @column()
+  declare thousandsSeparator: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class DisputeActivitySchema extends BaseModel {
+  static $columns = ['activityType', 'createdAt', 'description', 'disputeId', 'id', 'metadata', 'newValue', 'oldValue', 'userId'] as const
+  $columns = DisputeActivitySchema.$columns
+  @column()
+  declare activityType: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column()
+  declare disputeId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare newValue: string | null
+  @column()
+  declare oldValue: string | null
+  @column()
+  declare userId: number
+}
+
+export class DisputeApprovalSchema extends BaseModel {
+  static $columns = ['approvalReason', 'approvalStatus', 'approvedAt', 'approvedByUserId', 'createdAt', 'disputeId', 'id', 'metadata', 'rejectedAt', 'rejectionReason', 'requestedByUserId', 'updatedAt'] as const
+  $columns = DisputeApprovalSchema.$columns
+  @column()
+  declare approvalReason: string | null
+  @column()
+  declare approvalStatus: string | null
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedByUserId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare disputeId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column.dateTime()
+  declare rejectedAt: DateTime | null
+  @column()
+  declare rejectionReason: string | null
+  @column()
+  declare requestedByUserId: number
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class DisputeAssignmentSchema extends BaseModel {
+  static $columns = ['assignedAt', 'assignedByUserId', 'assignedToUserId', 'assignmentNotes', 'createdAt', 'disputeId', 'id', 'isActive', 'metadata', 'unassignedAt', 'updatedAt'] as const
+  $columns = DisputeAssignmentSchema.$columns
+  @column.dateTime()
+  declare assignedAt: DateTime
+  @column()
+  declare assignedByUserId: number
+  @column()
+  declare assignedToUserId: number
+  @column()
+  declare assignmentNotes: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare disputeId: number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare metadata: any | null
+  @column.dateTime()
+  declare unassignedAt: DateTime | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class DisputeCommentSchema extends BaseModel {
+  static $columns = ['attachments', 'comment', 'createdAt', 'disputeId', 'editedAt', 'id', 'isEdited', 'isInternal', 'metadata', 'parentCommentId', 'updatedAt', 'userId'] as const
+  $columns = DisputeCommentSchema.$columns
+  @column()
+  declare attachments: any | null
+  @column()
+  declare comment: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare disputeId: number
+  @column.dateTime()
+  declare editedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isEdited: boolean | null
+  @column()
+  declare isInternal: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare parentCommentId: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class DisputeStatisticSchema extends BaseModel {
+  static $columns = ['averageResolutionTimeDays', 'createdAt', 'disputesByStatus', 'disputesByType', 'escalatedDisputes', 'id', 'lastUpdatedAt', 'metadata', 'openDisputes', 'resolvedDisputes', 'totalDisputedAmount', 'totalDisputes', 'totalResolvedAmount', 'updatedAt', 'userId'] as const
+  $columns = DisputeStatisticSchema.$columns
+  @column()
+  declare averageResolutionTimeDays: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare disputesByStatus: any | null
+  @column()
+  declare disputesByType: any | null
+  @column()
+  declare escalatedDisputes: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column.dateTime()
+  declare lastUpdatedAt: DateTime | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare openDisputes: number | null
+  @column()
+  declare resolvedDisputes: number | null
+  @column()
+  declare totalDisputedAmount: string | null
+  @column()
+  declare totalDisputes: number | null
+  @column()
+  declare totalResolvedAmount: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number | null
+}
+
+export class DisputeTemplateSchema extends BaseModel {
+  static $columns = ['adminId', 'createdAt', 'description', 'disputeType', 'id', 'isActive', 'metadata', 'name', 'resolutionTemplate', 'updatedAt'] as const
+  $columns = DisputeTemplateSchema.$columns
+  @column()
+  declare adminId: number
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column()
+  declare disputeType: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare name: string
+  @column()
+  declare resolutionTemplate: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class DocumentVerificationSchema extends BaseModel {
+  static $columns = ['createdAt', 'documentNumberExtracted', 'documentType', 'documentUrl', 'expiryDateExtracted', 'fileName', 'fileSize', 'id', 'issueCountry', 'kycSubmissionId', 'manualReviewRequired', 'matchScore', 'mimeType', 'ocrExtractedData', 'rejectionReason', 'updatedAt', 'verificationStatus', 'verifiedAt', 'verifiedBy', 'verifierNotes'] as const
+  $columns = DocumentVerificationSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare documentNumberExtracted: string | null
+  @column()
+  declare documentType: string
+  @column()
+  declare documentUrl: string
+  @column.dateTime()
+  declare expiryDateExtracted: DateTime | null
+  @column()
+  declare fileName: string
+  @column()
+  declare fileSize: bigint | number
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare issueCountry: string | null
+  @column()
+  declare kycSubmissionId: number
+  @column()
+  declare manualReviewRequired: boolean | null
+  @column()
+  declare matchScore: number | null
+  @column()
+  declare mimeType: string
+  @column()
+  declare ocrExtractedData: any | null
+  @column()
+  declare rejectionReason: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare verificationStatus: string | null
+  @column.dateTime()
+  declare verifiedAt: DateTime | null
+  @column()
+  declare verifiedBy: number | null
+  @column()
+  declare verifierNotes: string | null
+}
+
 export class EmailCampaignSchema extends BaseModel {
   static $columns = ['audienceSegment', 'campaignType', 'clickCount', 'content', 'conversionCount', 'createdAt', 'id', 'name', 'openCount', 'recipientsCount', 'revenueGenerated', 'sentAt', 'status', 'subject', 'updatedAt', 'uuid'] as const
   $columns = EmailCampaignSchema.$columns
@@ -325,6 +952,256 @@ export class EmailCampaignSchema extends BaseModel {
   declare updatedAt: DateTime | null
   @column()
   declare uuid: string | null
+}
+
+export class InfluencerContentSchema extends BaseModel {
+  static $columns = ['affiliateLink', 'approvalNotes', 'approvalStatus', 'campaignId', 'clicks', 'comments', 'contentType', 'contentUrl', 'conversions', 'createdAt', 'description', 'engagementRate', 'hashtags', 'id', 'influencerId', 'isPaid', 'likes', 'linkedProducts', 'mediaAssets', 'mentions', 'paidAmount', 'paymentStatus', 'performanceMetrics', 'platform', 'publishedAt', 'rejectionReason', 'revenue', 'shares', 'status', 'thumbnailUrl', 'title', 'updatedAt', 'views'] as const
+  $columns = InfluencerContentSchema.$columns
+  @column()
+  declare affiliateLink: string | null
+  @column()
+  declare approvalNotes: string | null
+  @column()
+  declare approvalStatus: string | null
+  @column()
+  declare campaignId: number | null
+  @column()
+  declare clicks: number | null
+  @column()
+  declare comments: number | null
+  @column()
+  declare contentType: string
+  @column()
+  declare contentUrl: string
+  @column()
+  declare conversions: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column()
+  declare engagementRate: string | null
+  @column()
+  declare hashtags: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare influencerId: number
+  @column()
+  declare isPaid: boolean | null
+  @column()
+  declare likes: number | null
+  @column()
+  declare linkedProducts: any | null
+  @column()
+  declare mediaAssets: any | null
+  @column()
+  declare mentions: any | null
+  @column()
+  declare paidAmount: number | null
+  @column()
+  declare paymentStatus: string | null
+  @column()
+  declare performanceMetrics: any | null
+  @column()
+  declare platform: string
+  @column.dateTime()
+  declare publishedAt: DateTime | null
+  @column()
+  declare rejectionReason: string | null
+  @column()
+  declare revenue: number | null
+  @column()
+  declare shares: number | null
+  @column()
+  declare status: string | null
+  @column()
+  declare thumbnailUrl: string | null
+  @column()
+  declare title: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare views: number | null
+}
+
+export class InfluencerProfileSchema extends BaseModel {
+  static $columns = ['affiliateId', 'approvedAt', 'approvedBy', 'audienceDemographics', 'averageCommissionRate', 'bannerImageUrl', 'bio', 'category', 'conversionRate', 'countryCode', 'createdAt', 'displayName', 'email', 'engagementRate', 'followerCount', 'id', 'isApproved', 'niche', 'phone', 'platformFollowers', 'platforms', 'profileImageUrl', 'rejectionReason', 'revenue30Days', 'revenue90Days', 'topProduct', 'totalRevenue', 'updatedAt', 'verificationDocuments', 'verificationStatus', 'website'] as const
+  $columns = InfluencerProfileSchema.$columns
+  @column()
+  declare affiliateId: number
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedBy: number | null
+  @column()
+  declare audienceDemographics: any | null
+  @column()
+  declare averageCommissionRate: string | null
+  @column()
+  declare bannerImageUrl: string | null
+  @column()
+  declare bio: string | null
+  @column()
+  declare category: string
+  @column()
+  declare conversionRate: string | null
+  @column()
+  declare countryCode: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare displayName: string
+  @column()
+  declare email: string | null
+  @column()
+  declare engagementRate: string | null
+  @column()
+  declare followerCount: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isApproved: boolean | null
+  @column()
+  declare niche: string | null
+  @column()
+  declare phone: string | null
+  @column()
+  declare platformFollowers: any | null
+  @column()
+  declare platforms: any | null
+  @column()
+  declare profileImageUrl: string | null
+  @column()
+  declare rejectionReason: string | null
+  @column()
+  declare revenue30Days: number | null
+  @column()
+  declare revenue90Days: number | null
+  @column()
+  declare topProduct: string | null
+  @column()
+  declare totalRevenue: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare verificationDocuments: any | null
+  @column()
+  declare verificationStatus: string | null
+  @column()
+  declare website: string | null
+}
+
+export class KycAuditLogSchema extends BaseModel {
+  static $columns = ['action', 'actionType', 'createdAt', 'description', 'duration', 'entityId', 'entityType', 'id', 'ipAddress', 'kycSubmissionId', 'metadata', 'newStatus', 'performedBy', 'performedByRole', 'previousStatus', 'result', 'updatedAt', 'userAgent', 'userId'] as const
+  $columns = KycAuditLogSchema.$columns
+  @column()
+  declare action: string
+  @column()
+  declare actionType: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string
+  @column()
+  declare duration: number | null
+  @column()
+  declare entityId: number
+  @column()
+  declare entityType: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare ipAddress: string | null
+  @column()
+  declare kycSubmissionId: number | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare newStatus: string
+  @column()
+  declare performedBy: number | null
+  @column()
+  declare performedByRole: string
+  @column()
+  declare previousStatus: string | null
+  @column()
+  declare result: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userAgent: string | null
+  @column()
+  declare userId: number
+}
+
+export class KycSubmissionSchema extends BaseModel {
+  static $columns = ['beneficiaryOwners', 'businessAddress', 'businessName', 'businessRegistration', 'businessType', 'city', 'complianceStatus', 'country', 'createdAt', 'dateOfBirth', 'documentNumber', 'documentType', 'expectedAnnualVolume', 'expiryDate', 'firstName', 'id', 'lastName', 'nationality', 'nextReviewDate', 'notes', 'rejectionReason', 'riskLevel', 'riskScore', 'sourceOfFunds', 'state', 'status', 'submissionType', 'updatedAt', 'userId', 'verificationLevel', 'verifiedAt', 'zipCode'] as const
+  $columns = KycSubmissionSchema.$columns
+  @column()
+  declare beneficiaryOwners: any | null
+  @column()
+  declare businessAddress: string | null
+  @column()
+  declare businessName: string | null
+  @column()
+  declare businessRegistration: string | null
+  @column()
+  declare businessType: string | null
+  @column()
+  declare city: string | null
+  @column()
+  declare complianceStatus: string | null
+  @column()
+  declare country: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.date()
+  declare dateOfBirth: DateTime | null
+  @column()
+  declare documentNumber: string | null
+  @column()
+  declare documentType: string | null
+  @column()
+  declare expectedAnnualVolume: string | null
+  @column.dateTime()
+  declare expiryDate: DateTime | null
+  @column()
+  declare firstName: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare lastName: string | null
+  @column()
+  declare nationality: string | null
+  @column.dateTime()
+  declare nextReviewDate: DateTime | null
+  @column()
+  declare notes: string | null
+  @column()
+  declare rejectionReason: string | null
+  @column()
+  declare riskLevel: string | null
+  @column()
+  declare riskScore: number | null
+  @column()
+  declare sourceOfFunds: string | null
+  @column()
+  declare state: string | null
+  @column()
+  declare status: string | null
+  @column()
+  declare submissionType: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+  @column()
+  declare verificationLevel: number | null
+  @column.dateTime()
+  declare verifiedAt: DateTime | null
+  @column()
+  declare zipCode: string | null
 }
 
 export class NewsletterSubscriberSchema extends BaseModel {
@@ -692,6 +1569,117 @@ export class RateLimitSchema extends BaseModel {
   declare points: number
 }
 
+export class RecruitmentCampaignSchema extends BaseModel {
+  static $columns = ['adminId', 'bonusCommissionRate', 'campaignType', 'conversionTarget', 'createdAt', 'description', 'endedAt', 'id', 'metadata', 'name', 'recruitedCount', 'startedAt', 'status', 'targetAffiliates', 'targetCriteria', 'totalBonusPaid', 'updatedAt'] as const
+  $columns = RecruitmentCampaignSchema.$columns
+  @column()
+  declare adminId: number
+  @column()
+  declare bonusCommissionRate: string | null
+  @column()
+  declare campaignType: string
+  @column()
+  declare conversionTarget: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column.dateTime()
+  declare endedAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare name: string
+  @column()
+  declare recruitedCount: string | null
+  @column.dateTime()
+  declare startedAt: DateTime | null
+  @column()
+  declare status: string | null
+  @column()
+  declare targetAffiliates: string | null
+  @column()
+  declare targetCriteria: any | null
+  @column()
+  declare totalBonusPaid: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class RecruitmentMetricSchema extends BaseModel {
+  static $columns = ['activeRecruited', 'affiliateId', 'averageReferralEarnings', 'campaignId', 'conversionRate', 'createdAt', 'id', 'inactiveRecruited', 'lastCalculatedAt', 'metadata', 'retentionRate', 'topPerformerCount', 'totalRecruited', 'totalReferralEarnings', 'updatedAt'] as const
+  $columns = RecruitmentMetricSchema.$columns
+  @column()
+  declare activeRecruited: number | null
+  @column()
+  declare affiliateId: number | null
+  @column()
+  declare averageReferralEarnings: string | null
+  @column()
+  declare campaignId: number | null
+  @column()
+  declare conversionRate: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare inactiveRecruited: number | null
+  @column.dateTime()
+  declare lastCalculatedAt: DateTime | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare retentionRate: number | null
+  @column()
+  declare topPerformerCount: number | null
+  @column()
+  declare totalRecruited: number | null
+  @column()
+  declare totalReferralEarnings: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ReferralCodeSchema extends BaseModel {
+  static $columns = ['affiliateId', 'code', 'codeType', 'commissionRateOverride', 'createdAt', 'currentUses', 'description', 'expiresAt', 'id', 'isActive', 'maxUses', 'metadata', 'startedAt', 'totalConversions', 'totalRevenue', 'updatedAt'] as const
+  $columns = ReferralCodeSchema.$columns
+  @column()
+  declare affiliateId: number
+  @column()
+  declare code: string
+  @column()
+  declare codeType: string | null
+  @column()
+  declare commissionRateOverride: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currentUses: number | null
+  @column()
+  declare description: string | null
+  @column.dateTime()
+  declare expiresAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare maxUses: number | null
+  @column()
+  declare metadata: any | null
+  @column.dateTime()
+  declare startedAt: DateTime
+  @column()
+  declare totalConversions: number | null
+  @column()
+  declare totalRevenue: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class RefundsChargebackSchema extends BaseModel {
   static $columns = ['approvalNotes', 'approvedAt', 'approvedBy', 'commissionAmountReversed', 'commissionLedgerId', 'commissionReversed', 'commissionReversedAt', 'commissionToReverse', 'completedAt', 'createdAt', 'currency', 'customerReason', 'externalId', 'externalReference', 'id', 'initiatedAt', 'internalNotes', 'metadata', 'orderId', 'originalAmount', 'reason', 'refundAmount', 'rejectedAt', 'status', 'type', 'updatedAt', 'uuid', 'vendorConversionId', 'vendorId', 'verifiedAt'] as const
   $columns = RefundsChargebackSchema.$columns
@@ -757,6 +1745,274 @@ export class RefundsChargebackSchema extends BaseModel {
   declare verifiedAt: DateTime | null
 }
 
+export class RegionalPricingSchema extends BaseModel {
+  static $columns = ['adjustment', 'basePrice', 'competitorPricing', 'createdAt', 'currency', 'demandMultiplier', 'discountRate', 'id', 'isActive', 'localPrice', 'notes', 'pricingStrategy', 'productId', 'region', 'shippingCost', 'taxRate', 'updatedAt', 'validFrom', 'validUntil'] as const
+  $columns = RegionalPricingSchema.$columns
+  @column()
+  declare adjustment: string | null
+  @column()
+  declare basePrice: string
+  @column()
+  declare competitorPricing: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string
+  @column()
+  declare demandMultiplier: string | null
+  @column()
+  declare discountRate: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare localPrice: string
+  @column()
+  declare notes: string | null
+  @column()
+  declare pricingStrategy: string | null
+  @column()
+  declare productId: number
+  @column()
+  declare region: string
+  @column()
+  declare shippingCost: string | null
+  @column()
+  declare taxRate: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column.dateTime()
+  declare validFrom: DateTime
+  @column.dateTime()
+  declare validUntil: DateTime | null
+}
+
+export class ReportArchiveSchema extends BaseModel {
+  static $columns = ['archiveFormat', 'archiveLocation', 'archiveMetadata', 'archivedAt', 'compressedFileSize', 'compressionRatio', 'createdAt', 'id', 'isRetrievable', 'metadata', 'originalFileSize', 'reportLogId', 'retentionUntil', 'storageType', 'updatedAt'] as const
+  $columns = ReportArchiveSchema.$columns
+  @column()
+  declare archiveFormat: string | null
+  @column()
+  declare archiveLocation: string
+  @column()
+  declare archiveMetadata: any | null
+  @column.dateTime()
+  declare archivedAt: DateTime
+  @column()
+  declare compressedFileSize: number | null
+  @column()
+  declare compressionRatio: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isRetrievable: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare originalFileSize: number | null
+  @column()
+  declare reportLogId: number
+  @column.dateTime()
+  declare retentionUntil: DateTime | null
+  @column()
+  declare storageType: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ReportConfigurationSchema extends BaseModel {
+  static $columns = ['aggregations', 'columns', 'createdAt', 'description', 'emailRecipients', 'filters', 'format', 'frequency', 'id', 'includeCharts', 'includeSummary', 'includeTrends', 'isActive', 'isTemplate', 'metadata', 'name', 'reportType', 'scheduleConfig', 'templateName', 'updatedAt', 'userId'] as const
+  $columns = ReportConfigurationSchema.$columns
+  @column()
+  declare aggregations: any | null
+  @column()
+  declare columns: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare description: string | null
+  @column()
+  declare emailRecipients: string | null
+  @column()
+  declare filters: any | null
+  @column()
+  declare format: string | null
+  @column()
+  declare frequency: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare includeCharts: boolean | null
+  @column()
+  declare includeSummary: boolean | null
+  @column()
+  declare includeTrends: boolean | null
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare isTemplate: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare name: string
+  @column()
+  declare reportType: string
+  @column()
+  declare scheduleConfig: any | null
+  @column()
+  declare templateName: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class ReportExportSchema extends BaseModel {
+  static $columns = ['createdAt', 'encryptionKey', 'expirationDays', 'expiresAt', 'exportColumns', 'exportFileSize', 'exportIdentifier', 'exportType', 'exportedRecords', 'id', 'includeHeaders', 'isEncrypted', 'metadata', 'reportLogId', 's3Bucket', 's3Key', 'totalRecords', 'updatedAt', 'userId'] as const
+  $columns = ReportExportSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare encryptionKey: string | null
+  @column()
+  declare expirationDays: string | null
+  @column.dateTime()
+  declare expiresAt: DateTime | null
+  @column()
+  declare exportColumns: any | null
+  @column()
+  declare exportFileSize: string | null
+  @column()
+  declare exportIdentifier: string | null
+  @column()
+  declare exportType: string | null
+  @column()
+  declare exportedRecords: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare includeHeaders: boolean | null
+  @column()
+  declare isEncrypted: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare reportLogId: number
+  @column()
+  declare s3Bucket: string | null
+  @column()
+  declare s3Key: string | null
+  @column()
+  declare totalRecords: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class ReportLogSchema extends BaseModel {
+  static $columns = ['archivedAt', 'archivedLocation', 'createdAt', 'emailSentAt', 'emailSentTo', 'endDate', 'errorMessage', 'fileSize', 'filtersApplied', 'formatGenerated', 'generationTimeMs', 'id', 'isArchived', 'metadata', 'mimeType', 'reportConfigurationId', 'reportFileName', 'reportFilePath', 'reportFileUrl', 'rowCount', 'startDate', 'status', 'totalRows', 'totalValue', 'updatedAt', 'userId'] as const
+  $columns = ReportLogSchema.$columns
+  @column.dateTime()
+  declare archivedAt: DateTime | null
+  @column()
+  declare archivedLocation: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.dateTime()
+  declare emailSentAt: DateTime | null
+  @column()
+  declare emailSentTo: string | null
+  @column.dateTime()
+  declare endDate: DateTime
+  @column()
+  declare errorMessage: string | null
+  @column()
+  declare fileSize: number | null
+  @column()
+  declare filtersApplied: any | null
+  @column()
+  declare formatGenerated: string
+  @column()
+  declare generationTimeMs: number | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isArchived: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare mimeType: string | null
+  @column()
+  declare reportConfigurationId: number
+  @column()
+  declare reportFileName: string | null
+  @column()
+  declare reportFilePath: string | null
+  @column()
+  declare reportFileUrl: string | null
+  @column()
+  declare rowCount: number | null
+  @column.dateTime()
+  declare startDate: DateTime
+  @column()
+  declare status: string | null
+  @column()
+  declare totalRows: string | null
+  @column()
+  declare totalValue: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare userId: number
+}
+
+export class ReportScheduleSchema extends BaseModel {
+  static $columns = ['createdAt', 'cronExpression', 'endDate', 'id', 'intervalMinutes', 'isActive', 'isPaused', 'lastErrorMessage', 'lastRunAt', 'maxOccurrences', 'maxRetries', 'metadata', 'nextRunAt', 'occurrencesCount', 'reportConfigurationId', 'retryCount', 'scheduleType', 'startDate', 'updatedAt'] as const
+  $columns = ReportScheduleSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare cronExpression: string
+  @column.dateTime()
+  declare endDate: DateTime | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare intervalMinutes: number | null
+  @column()
+  declare isActive: boolean | null
+  @column()
+  declare isPaused: boolean | null
+  @column()
+  declare lastErrorMessage: string | null
+  @column.dateTime()
+  declare lastRunAt: DateTime | null
+  @column()
+  declare maxOccurrences: number | null
+  @column()
+  declare maxRetries: number | null
+  @column()
+  declare metadata: any | null
+  @column.dateTime()
+  declare nextRunAt: DateTime | null
+  @column()
+  declare occurrencesCount: number | null
+  @column()
+  declare reportConfigurationId: number
+  @column()
+  declare retryCount: number | null
+  @column()
+  declare scheduleType: string | null
+  @column.dateTime()
+  declare startDate: DateTime
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
 export class ReviewSchema extends BaseModel {
   static $columns = ['cons', 'content', 'createdAt', 'helpfulCount', 'id', 'isVerifiedPurchase', 'productId', 'productName', 'pros', 'rating', 'reviewerName', 'status', 'title', 'updatedAt', 'uuid'] as const
   $columns = ReviewSchema.$columns
@@ -792,6 +2048,299 @@ export class ReviewSchema extends BaseModel {
   declare uuid: string | null
 }
 
+export class RiskAssessmentSchema extends BaseModel {
+  static $columns = ['amlStatus', 'assessmentType', 'behavioralIndicators', 'businessRiskFactors', 'createdAt', 'dataSource', 'externalCheckId', 'externalCheckResult', 'id', 'isMatch', 'kycSubmissionId', 'matchDetails', 'pepStatus', 'reviewRequired', 'reviewedAt', 'reviewedBy', 'reviewerNotes', 'riskLevel', 'riskScore', 'sanctionedStatus', 'updatedAt'] as const
+  $columns = RiskAssessmentSchema.$columns
+  @column()
+  declare amlStatus: string | null
+  @column()
+  declare assessmentType: string
+  @column()
+  declare behavioralIndicators: any | null
+  @column()
+  declare businessRiskFactors: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare dataSource: string
+  @column()
+  declare externalCheckId: string | null
+  @column()
+  declare externalCheckResult: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isMatch: boolean | null
+  @column()
+  declare kycSubmissionId: number
+  @column()
+  declare matchDetails: string | null
+  @column()
+  declare pepStatus: string | null
+  @column()
+  declare reviewRequired: boolean | null
+  @column.dateTime()
+  declare reviewedAt: DateTime | null
+  @column()
+  declare reviewedBy: number | null
+  @column()
+  declare reviewerNotes: string | null
+  @column()
+  declare riskLevel: string | null
+  @column()
+  declare riskScore: number | null
+  @column()
+  declare sanctionedStatus: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ScheduledReportExecutionSchema extends BaseModel {
+  static $columns = ['createdAt', 'executedAt', 'executionContext', 'executionDurationMs', 'executionStatus', 'failureReason', 'id', 'metadata', 'reportLogId', 'reportScheduleId', 'retryAt', 'retryAttempt', 'scheduledFor', 'triggeredBy', 'updatedAt'] as const
+  $columns = ScheduledReportExecutionSchema.$columns
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column.dateTime()
+  declare executedAt: DateTime | null
+  @column()
+  declare executionContext: any | null
+  @column()
+  declare executionDurationMs: number | null
+  @column()
+  declare executionStatus: string | null
+  @column()
+  declare failureReason: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare metadata: any | null
+  @column()
+  declare reportLogId: number | null
+  @column()
+  declare reportScheduleId: number
+  @column.dateTime()
+  declare retryAt: DateTime | null
+  @column()
+  declare retryAttempt: number | null
+  @column.dateTime()
+  declare scheduledFor: DateTime
+  @column()
+  declare triggeredBy: string | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+}
+
+export class ShopifyOrderSchema extends BaseModel {
+  static $columns = ['affiliateCommissionAmount', 'affiliateId', 'affiliateLinkUsed', 'billingAddress', 'campaignId', 'commissionAmount', 'commissionCalculated', 'commissionStatus', 'conversionId', 'createdAt', 'currency', 'customerEmail', 'customerName', 'discountAmount', 'disputeReason', 'financialStatus', 'fulfillmentStatus', 'id', 'isDisputed', 'lastWebhookAt', 'lineItems', 'notes', 'orderNumber', 'orderedAt', 'paymentStatus', 'rawData', 'refundAmount', 'refundedAt', 'shippingAddress', 'shippingPrice', 'shopifyOrderId', 'shopifyStoreId', 'subtotalPrice', 'syncedToHub', 'tags', 'taxPrice', 'totalPrice', 'updatedAt', 'vendorCommissionAmount', 'webhookReceived'] as const
+  $columns = ShopifyOrderSchema.$columns
+  @column()
+  declare affiliateCommissionAmount: string | null
+  @column()
+  declare affiliateId: number | null
+  @column()
+  declare affiliateLinkUsed: boolean | null
+  @column()
+  declare billingAddress: any | null
+  @column()
+  declare campaignId: number | null
+  @column()
+  declare commissionAmount: string | null
+  @column()
+  declare commissionCalculated: boolean | null
+  @column()
+  declare commissionStatus: string | null
+  @column()
+  declare conversionId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column()
+  declare customerEmail: string | null
+  @column()
+  declare customerName: string | null
+  @column()
+  declare discountAmount: string | null
+  @column()
+  declare disputeReason: string | null
+  @column()
+  declare financialStatus: string | null
+  @column()
+  declare fulfillmentStatus: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isDisputed: boolean | null
+  @column.dateTime()
+  declare lastWebhookAt: DateTime | null
+  @column()
+  declare lineItems: any
+  @column()
+  declare notes: string | null
+  @column()
+  declare orderNumber: string
+  @column.dateTime()
+  declare orderedAt: DateTime
+  @column()
+  declare paymentStatus: string | null
+  @column()
+  declare rawData: string | null
+  @column()
+  declare refundAmount: string | null
+  @column.dateTime()
+  declare refundedAt: DateTime | null
+  @column()
+  declare shippingAddress: any | null
+  @column()
+  declare shippingPrice: string | null
+  @column()
+  declare shopifyOrderId: string
+  @column()
+  declare shopifyStoreId: number
+  @column()
+  declare subtotalPrice: string
+  @column()
+  declare syncedToHub: boolean | null
+  @column()
+  declare tags: any | null
+  @column()
+  declare taxPrice: string | null
+  @column()
+  declare totalPrice: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vendorCommissionAmount: string | null
+  @column()
+  declare webhookReceived: boolean | null
+}
+
+export class ShopifyProductSchema extends BaseModel {
+  static $columns = ['affiliateCommissionRate', 'collections', 'compareAtPrice', 'createdAt', 'currency', 'description', 'id', 'imageUrl', 'inventoryQty', 'isSyncedToHub', 'lastSyncedAt', 'options', 'price', 'rawData', 'shopifyProductId', 'shopifyStoreId', 'shopifyUrl', 'shopifyVariantId', 'sku', 'status', 'syncStatus', 'tags', 'title', 'totalAffiliateRevenue', 'totalCommissionPaid', 'totalSales', 'updatedAt', 'variantTitle', 'vendorCommissionRate', 'weight', 'weightUnit'] as const
+  $columns = ShopifyProductSchema.$columns
+  @column()
+  declare affiliateCommissionRate: string | null
+  @column()
+  declare collections: any | null
+  @column()
+  declare compareAtPrice: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column()
+  declare description: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare imageUrl: string | null
+  @column()
+  declare inventoryQty: number | null
+  @column()
+  declare isSyncedToHub: boolean | null
+  @column.dateTime()
+  declare lastSyncedAt: DateTime | null
+  @column()
+  declare options: any | null
+  @column()
+  declare price: string
+  @column()
+  declare rawData: string | null
+  @column()
+  declare shopifyProductId: string
+  @column()
+  declare shopifyStoreId: number
+  @column()
+  declare shopifyUrl: string
+  @column()
+  declare shopifyVariantId: string | null
+  @column()
+  declare sku: string | null
+  @column()
+  declare status: string | null
+  @column()
+  declare syncStatus: string | null
+  @column()
+  declare tags: any | null
+  @column()
+  declare title: string
+  @column()
+  declare totalAffiliateRevenue: number | null
+  @column()
+  declare totalCommissionPaid: number | null
+  @column()
+  declare totalSales: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare variantTitle: string | null
+  @column()
+  declare vendorCommissionRate: string | null
+  @column()
+  declare weight: string | null
+  @column()
+  declare weightUnit: string | null
+}
+
+export class ShopifyStoreSchema extends BaseModel {
+  static $columns = ['accessToken', 'apiVersion', 'autoSync', 'connectedAt', 'connectionStatus', 'createdAt', 'currency', 'disconnectedAt', 'errorLog', 'id', 'isConnected', 'lastErrorAt', 'lastErrorMessage', 'lastOrderSyncAt', 'lastSyncAt', 'refreshToken', 'scopes', 'shopDomain', 'shopName', 'storeSettings', 'syncFrequency', 'totalOrders', 'totalProducts', 'totalRevenue', 'updatedAt', 'vendorId', 'webhookId'] as const
+  $columns = ShopifyStoreSchema.$columns
+  @column()
+  declare accessToken: string
+  @column()
+  declare apiVersion: string | null
+  @column()
+  declare autoSync: boolean | null
+  @column.dateTime()
+  declare connectedAt: DateTime | null
+  @column()
+  declare connectionStatus: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column.dateTime()
+  declare disconnectedAt: DateTime | null
+  @column()
+  declare errorLog: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isConnected: boolean | null
+  @column.dateTime()
+  declare lastErrorAt: DateTime | null
+  @column()
+  declare lastErrorMessage: string | null
+  @column.dateTime()
+  declare lastOrderSyncAt: DateTime | null
+  @column.dateTime()
+  declare lastSyncAt: DateTime | null
+  @column()
+  declare refreshToken: string | null
+  @column()
+  declare scopes: any | null
+  @column()
+  declare shopDomain: string
+  @column()
+  declare shopName: string
+  @column()
+  declare storeSettings: any | null
+  @column()
+  declare syncFrequency: number | null
+  @column()
+  declare totalOrders: number | null
+  @column()
+  declare totalProducts: number | null
+  @column()
+  declare totalRevenue: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vendorId: number
+  @column()
+  declare webhookId: string | null
+}
+
 export class SiteSettingSchema extends BaseModel {
   static $columns = ['createdAt', 'id', 'key', 'label', 'updatedAt', 'uuid', 'value'] as const
   $columns = SiteSettingSchema.$columns
@@ -809,6 +2358,37 @@ export class SiteSettingSchema extends BaseModel {
   declare uuid: string | null
   @column()
   declare value: string | null
+}
+
+export class TierPromotionSchema extends BaseModel {
+  static $columns = ['affiliateId', 'approvedAt', 'approvedByUserId', 'bonusCommission', 'createdAt', 'fromTier', 'id', 'isApproved', 'isAutomatic', 'metadata', 'promotionReason', 'toTier', 'updatedAt'] as const
+  $columns = TierPromotionSchema.$columns
+  @column()
+  declare affiliateId: number
+  @column.dateTime()
+  declare approvedAt: DateTime | null
+  @column()
+  declare approvedByUserId: number | null
+  @column()
+  declare bonusCommission: string | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare fromTier: string
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isApproved: boolean | null
+  @column()
+  declare isAutomatic: boolean | null
+  @column()
+  declare metadata: any | null
+  @column()
+  declare promotionReason: string | null
+  @column()
+  declare toTier: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
 }
 
 export class TransactionSchema extends BaseModel {
@@ -1098,4 +2678,215 @@ export class WalletSchema extends BaseModel {
   declare userId: number
   @column()
   declare uuid: string | null
+}
+
+export class WoocommerceOrderSchema extends BaseModel {
+  static $columns = ['affiliateCommissionAmount', 'affiliateId', 'affiliateLinkUsed', 'billingAddress', 'campaignId', 'commissionAmount', 'commissionCalculated', 'commissionStatus', 'conversionId', 'createdAt', 'currency', 'customerEmail', 'customerName', 'discountAmount', 'disputeReason', 'id', 'isDisputed', 'lastWebhookAt', 'lineItems', 'notes', 'orderNumber', 'orderedAt', 'paymentMethod', 'paymentStatus', 'rawData', 'refundAmount', 'refundedAt', 'shippingAddress', 'shippingPrice', 'status', 'subtotalPrice', 'syncedToHub', 'taxPrice', 'totalPrice', 'updatedAt', 'vendorCommissionAmount', 'webhookReceived', 'wooOrderId', 'woocommerceStoreId'] as const
+  $columns = WoocommerceOrderSchema.$columns
+  @column()
+  declare affiliateCommissionAmount: string | null
+  @column()
+  declare affiliateId: number | null
+  @column()
+  declare affiliateLinkUsed: boolean | null
+  @column()
+  declare billingAddress: any | null
+  @column()
+  declare campaignId: number | null
+  @column()
+  declare commissionAmount: string | null
+  @column()
+  declare commissionCalculated: boolean | null
+  @column()
+  declare commissionStatus: string | null
+  @column()
+  declare conversionId: number | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column()
+  declare customerEmail: string | null
+  @column()
+  declare customerName: string | null
+  @column()
+  declare discountAmount: string | null
+  @column()
+  declare disputeReason: string | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isDisputed: boolean | null
+  @column.dateTime()
+  declare lastWebhookAt: DateTime | null
+  @column()
+  declare lineItems: any
+  @column()
+  declare notes: string | null
+  @column()
+  declare orderNumber: string
+  @column.dateTime()
+  declare orderedAt: DateTime
+  @column()
+  declare paymentMethod: string | null
+  @column()
+  declare paymentStatus: string | null
+  @column()
+  declare rawData: string | null
+  @column()
+  declare refundAmount: string | null
+  @column.dateTime()
+  declare refundedAt: DateTime | null
+  @column()
+  declare shippingAddress: any | null
+  @column()
+  declare shippingPrice: string | null
+  @column()
+  declare status: string | null
+  @column()
+  declare subtotalPrice: string
+  @column()
+  declare syncedToHub: boolean | null
+  @column()
+  declare taxPrice: string | null
+  @column()
+  declare totalPrice: string
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vendorCommissionAmount: string | null
+  @column()
+  declare webhookReceived: boolean | null
+  @column()
+  declare wooOrderId: number
+  @column()
+  declare woocommerceStoreId: number
+}
+
+export class WoocommerceProductSchema extends BaseModel {
+  static $columns = ['affiliateCommissionRate', 'attributes', 'categories', 'createdAt', 'currency', 'description', 'dimensions', 'id', 'imageUrl', 'isSyncedToHub', 'lastSyncedAt', 'price', 'productUrl', 'rawData', 'regularPrice', 'salePrice', 'sku', 'status', 'stockQty', 'syncStatus', 'tags', 'title', 'totalAffiliateRevenue', 'totalCommissionPaid', 'totalSales', 'updatedAt', 'variations', 'vendorCommissionRate', 'weight', 'wooProductId', 'woocommerceStoreId'] as const
+  $columns = WoocommerceProductSchema.$columns
+  @column()
+  declare affiliateCommissionRate: string | null
+  @column()
+  declare attributes: any | null
+  @column()
+  declare categories: any | null
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column()
+  declare description: string | null
+  @column()
+  declare dimensions: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare imageUrl: string | null
+  @column()
+  declare isSyncedToHub: boolean | null
+  @column.dateTime()
+  declare lastSyncedAt: DateTime | null
+  @column()
+  declare price: string
+  @column()
+  declare productUrl: string
+  @column()
+  declare rawData: string | null
+  @column()
+  declare regularPrice: string | null
+  @column()
+  declare salePrice: string | null
+  @column()
+  declare sku: string | null
+  @column()
+  declare status: string | null
+  @column()
+  declare stockQty: number | null
+  @column()
+  declare syncStatus: string | null
+  @column()
+  declare tags: any | null
+  @column()
+  declare title: string
+  @column()
+  declare totalAffiliateRevenue: number | null
+  @column()
+  declare totalCommissionPaid: number | null
+  @column()
+  declare totalSales: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare variations: any | null
+  @column()
+  declare vendorCommissionRate: string | null
+  @column()
+  declare weight: string | null
+  @column()
+  declare wooProductId: number
+  @column()
+  declare woocommerceStoreId: number
+}
+
+export class WoocommerceStoreSchema extends BaseModel {
+  static $columns = ['apiVersion', 'autoSync', 'connectedAt', 'connectionStatus', 'consumerKey', 'consumerSecret', 'createdAt', 'currency', 'disconnectedAt', 'errorLog', 'id', 'isConnected', 'lastErrorAt', 'lastErrorMessage', 'lastOrderSyncAt', 'lastProductSyncAt', 'lastSyncAt', 'storeName', 'storeSettings', 'storeUrl', 'syncFrequency', 'totalOrders', 'totalProducts', 'totalRevenue', 'updatedAt', 'vendorId', 'webhookSecret', 'webhookUrl'] as const
+  $columns = WoocommerceStoreSchema.$columns
+  @column()
+  declare apiVersion: string | null
+  @column()
+  declare autoSync: boolean | null
+  @column.dateTime()
+  declare connectedAt: DateTime | null
+  @column()
+  declare connectionStatus: string | null
+  @column()
+  declare consumerKey: string
+  @column()
+  declare consumerSecret: string
+  @column.dateTime({ autoCreate: true })
+  declare createdAt: DateTime | null
+  @column()
+  declare currency: string | null
+  @column.dateTime()
+  declare disconnectedAt: DateTime | null
+  @column()
+  declare errorLog: any | null
+  @column({ isPrimary: true })
+  declare id: number
+  @column()
+  declare isConnected: boolean | null
+  @column.dateTime()
+  declare lastErrorAt: DateTime | null
+  @column()
+  declare lastErrorMessage: string | null
+  @column.dateTime()
+  declare lastOrderSyncAt: DateTime | null
+  @column.dateTime()
+  declare lastProductSyncAt: DateTime | null
+  @column.dateTime()
+  declare lastSyncAt: DateTime | null
+  @column()
+  declare storeName: string
+  @column()
+  declare storeSettings: any | null
+  @column()
+  declare storeUrl: string
+  @column()
+  declare syncFrequency: number | null
+  @column()
+  declare totalOrders: number | null
+  @column()
+  declare totalProducts: number | null
+  @column()
+  declare totalRevenue: number | null
+  @column.dateTime({ autoCreate: true, autoUpdate: true })
+  declare updatedAt: DateTime | null
+  @column()
+  declare vendorId: number
+  @column()
+  declare webhookSecret: string | null
+  @column()
+  declare webhookUrl: string | null
 }

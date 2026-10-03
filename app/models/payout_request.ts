@@ -27,8 +27,26 @@ export default class PayoutRequest extends BaseModel {
   @column({ columnName: 'admin_notes' })
   declare adminNotes: string | null
 
-  @column.dateTime({ columnName: 'processed_at' })
+  @column({ columnName: 'processed_at' })
   declare processedAt: DateTime | null
+
+  @column({ columnName: 'transfer_code' })
+  declare transferCode: string | null
+
+  @column({ columnName: 'transfer_reference' })
+  declare transferReference: string | null
+
+  @column({ columnName: 'transfer_status' })
+  declare transferStatus: 'pending' | 'success' | 'failed' | 'reversed' | null
+
+  @column({ columnName: 'transfer_error_message' })
+  declare transferErrorMessage: string | null
+
+  @column.dateTime({ columnName: 'transfer_initiated_at' })
+  declare transferInitiatedAt: DateTime | null
+
+  @column.dateTime({ columnName: 'transfer_completed_at' })
+  declare transferCompletedAt: DateTime | null
 
   @column.dateTime({ columnName: 'created_at' })
   declare createdAt: DateTime

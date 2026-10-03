@@ -17,36 +17,12 @@ interface IntegrationStatus {
   actionLabel?: string
 }
 
-const ShopifyLogo = () => (
-  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M6 2C3.239 2 1 4.239 1 7v10c0 2.761 2.239 5 5 5h12c2.761 0 5-2.239 5-5V7c0-2.761-2.239-5-5-5H6zm8 2c1.657 0 3 1.343 3 3s-1.343 3-3 3-3-1.343-3-3 1.343-3 3-3zm-4 8h8v6H10v-6z" fill="#96bf48"/>
-  </svg>
-)
-
-const WooCommerceLogo = () => (
-  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M3 6v12c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2zm8 2h4v8H11V8z" fill="#7cb305"/>
-  </svg>
-)
-
-const AmazonLogo = () => (
-  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M7.5 12c0-1.93 1.57-3.5 3.5-3.5s3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5-3.5-1.57-3.5-3.5zm8-6c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z" fill="#FF9900"/>
-  </svg>
-)
-
-const EtsyLogo = () => (
-  <svg className="w-12 h-12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11z" fill="#F1641E"/>
-  </svg>
-)
-
 const integrations: IntegrationStatus[] = [
   {
     name: 'Shopify',
     slug: 'shopify',
     description: 'Connect your Shopify store to sync products, orders, and automatically calculate commissions for your affiliates.',
-    icon: ShopifyLogo,
+    icon: () => <img src="/logos/shopify-logo.svg" alt="Shopify" className="h-16 object-contain" />,
     status: 'available',
     features: [
       'Product catalog sync',
@@ -62,7 +38,7 @@ const integrations: IntegrationStatus[] = [
     name: 'WooCommerce',
     slug: 'woocommerce',
     description: 'Integrate your WooCommerce store with automatic product and order synchronization.',
-    icon: WooCommerceLogo,
+    icon: () => <img src="/logos/woocommerce-logo.svg" alt="WooCommerce" className="h-16 object-contain" />,
     status: 'available',
     features: [
       'Product sync',
@@ -78,7 +54,7 @@ const integrations: IntegrationStatus[] = [
     name: 'Amazon',
     slug: 'amazon',
     description: 'Manage your Amazon affiliate partnerships directly from your dashboard.',
-    icon: AmazonLogo,
+    icon: () => <img src="/logos/amazon-logo.svg" alt="Amazon" className="h-16 object-contain" />,
     status: 'available',
     features: [
       'Product linking',
@@ -90,7 +66,7 @@ const integrations: IntegrationStatus[] = [
     name: 'Etsy',
     slug: 'etsy',
     description: 'Connect your Etsy shop to the affiliate network.',
-    icon: EtsyLogo,
+    icon: () => <img src="/logos/etsy-logo.svg" alt="Etsy" className="h-16 object-contain" />,
     status: 'available',
     features: [
       'Shop sync',

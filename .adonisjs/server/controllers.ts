@@ -48,4 +48,6 @@ export const controllers = {
   Wallet: () => import('#controllers/wallet_controller'),
   Webhook: () => import('#controllers/webhook_controller'),
   Woocommerce: () => import('#controllers/woocommerce_controller'),
+  Amazon: () => import('#controllers/amazon_controller'),
+  Etsy: () => import('#controllers/etsy_controller'),
 }

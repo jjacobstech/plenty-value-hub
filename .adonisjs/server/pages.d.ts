@@ -16,7 +16,9 @@ declare module '@adonisjs/inertia/types' {
     'admin/AdminBlog': ExtractProps<(typeof import('../../inertia/pages/admin/AdminBlog.tsx'))['default']>
     'admin/AdminConversions': ExtractProps<(typeof import('../../inertia/pages/admin/AdminConversions.tsx'))['default']>
     'admin/AdminDashboard': ExtractProps<(typeof import('../../inertia/pages/admin/AdminDashboard.tsx'))['default']>
+    'admin/AdminDisputes': ExtractProps<(typeof import('../../inertia/pages/admin/AdminDisputes.tsx'))['default']>
     'admin/AdminEmailCampaigns': ExtractProps<(typeof import('../../inertia/pages/admin/AdminEmailCampaigns.tsx'))['default']>
+    'admin/AdminFraudDetection': ExtractProps<(typeof import('../../inertia/pages/admin/AdminFraudDetection.tsx'))['default']>
     'admin/AdminHeroBanner': ExtractProps<(typeof import('../../inertia/pages/admin/AdminHeroBanner.tsx'))['default']>
     'admin/AdminLogin': ExtractProps<(typeof import('../../inertia/pages/admin/AdminLogin.tsx'))['default']>
     'admin/AdminNewsletter': ExtractProps<(typeof import('../../inertia/pages/admin/AdminNewsletter.tsx'))['default']>
@@ -56,6 +58,7 @@ declare module '@adonisjs/inertia/types' {
     'vendor/VendorAnalytics': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorAnalytics.tsx'))['default']>
     'vendor/VendorDashboard': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorDashboard.tsx'))['default']>
     'vendor/VendorEarnings': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorEarnings.tsx'))['default']>
+    'vendor/VendorIntegrations': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorIntegrations.tsx'))['default']>
     'vendor/VendorOrders': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorOrders.tsx'))['default']>
     'vendor/VendorProducts': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProducts.tsx'))['default']>
     'vendor/VendorProfile': ExtractProps<(typeof import('../../inertia/pages/vendor/VendorProfile.tsx'))['default']>
