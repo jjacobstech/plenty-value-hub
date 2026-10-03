@@ -416,13 +416,8 @@ router
             router.get('/disputes/stats', [controllers.AdminDispute, 'getStats'])
             router.post('/disputes/auto-resolve', [controllers.AdminDispute, 'autoResolve'])
 
-            // Phase 3: Payout Management (admin)
-            router.get('/payouts', [controllers.AdminPayout, 'index'])
+            // Phase 3: Payout Management (admin) - Enhanced routes
             router.get('/payouts/list', [controllers.AdminPayout, 'getPayouts'])
-            router.get('/payouts/:id', [controllers.AdminPayout, 'getPayout'])
-            router.post('/payouts/:id/approve', [controllers.AdminPayout, 'approvePayout'])
-            router.post('/payouts/:id/reject', [controllers.AdminPayout, 'rejectPayout'])
-            router.post('/payouts/:id/process', [controllers.AdminPayout, 'processPayout'])
             router.post('/payouts/:id/check-status', [controllers.AdminPayout, 'checkStatus'])
             router.get('/payouts/banks/list', [controllers.AdminPayout, 'getBanks'])
             router.post('/payouts/bank/verify', [controllers.AdminPayout, 'verifyBankAccount'])
