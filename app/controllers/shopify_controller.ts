@@ -7,14 +7,18 @@ import { DateTime } from 'luxon'
 
 export default class ShopifyController {
   /**
-   * Get OAuth authorization URL
-   * POST /api/shopify/auth-url
+   * Get OAuth authorization URL and redirect to Shopify
+   * GET /api/shopify/auth-url
    */
-  async getAuthUrl({ request, response }: HttpContext) {
+  async getAuthUrl({ request, auth, response }: HttpContext) {
+    const user = auth.use('web').user
+
+    if (!user || user.role !== 'vendor') {
+      return response.status(403).json({ error: 'Only vendors can connect Shopify stores' })
+    }
+
     const shopDomain = request.input('shop_domain')
     const apiKey = process.env.SHOPIFY_API_KEY
-
-    const redirectUri = `${process.env.APP_URL}/api/shopify/callback`
 
     if (!shopDomain || !apiKey) {
       return response.status(400).json({
@@ -22,13 +26,11 @@ export default class ShopifyController {
       })
     }
 
+    const redirectUri = `${process.env.APP_URL}/api/shopify/callback`
     const scopes = ['read_products', 'read_orders', 'read_fulfillments', 'read_customers']
     const authUrl = ShopifyService.getOAuthUrl(shopDomain, apiKey, redirectUri, scopes)
 
-    return response.json({
-      success: true,
-      data: { auth_url: authUrl },
-    })
+    return response.redirect(authUrl)
   }
 
   /**

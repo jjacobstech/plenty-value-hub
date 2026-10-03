@@ -1,7 +1,8 @@
+import React from 'react'
 import { Head } from '@inertiajs/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { AlertCircle, CheckCircle2, ExternalLink } from 'lucide-react'
+import { AlertCircle, CheckCircle2, ExternalLink, X } from 'lucide-react'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 
@@ -76,14 +77,24 @@ const integrations: IntegrationStatus[] = [
 ]
 
 export default function VendorIntegrations({ user }: { user: any }) {
+  const [shopDomain, setShopDomain] = React.useState('')
+  const [showShopifyPrompt, setShowShopifyPrompt] = React.useState(false)
+
   const handleConnect = (integration: IntegrationStatus) => {
     if (integration.slug === 'shopify') {
-      // Initiate Shopify OAuth flow
-      window.location.href = '/api/shopify/auth-url'
+      setShowShopifyPrompt(true)
     } else if (integration.slug === 'woocommerce') {
-      // Open WooCommerce connection modal or page
       alert('WooCommerce connection setup coming soon. Use the API endpoints for now.')
     }
+  }
+
+  const handleShopifyConnect = () => {
+    if (!shopDomain.trim()) {
+      alert('Please enter your Shopify store domain (e.g., mystore.myshopify.com)')
+      return
+    }
+    // Redirect to Shopify OAuth with shop domain
+    window.location.href = `/api/shopify/auth-url?shop_domain=${encodeURIComponent(shopDomain)}`
   }
 
   return (
@@ -170,7 +181,7 @@ export default function VendorIntegrations({ user }: { user: any }) {
           <CardContent className="space-y-2 text-sm">
             <p>You can also use our REST API to integrate your store programmatically:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-700">
-              <li><code className="bg-white px-2 py-1 rounded text-xs">POST /api/shopify/auth-url</code> - Get Shopify OAuth link</li>
+              <li><code className="bg-white px-2 py-1 rounded text-xs">GET /api/shopify/auth-url</code> - Initiate Shopify OAuth flow</li>
               <li><code className="bg-white px-2 py-1 rounded text-xs">POST /api/woocommerce/connect</code> - Connect WooCommerce</li>
               <li><code className="bg-white px-2 py-1 rounded text-xs">GET /api/shopify/products</code> - List products</li>
               <li><code className="bg-white px-2 py-1 rounded text-xs">GET /api/woocommerce/orders</code> - List orders</li>
@@ -178,6 +189,50 @@ export default function VendorIntegrations({ user }: { user: any }) {
             <p className="text-gray-600 mt-3">See our <a href="#" className="text-blue-600 hover:underline">API documentation</a> for complete details.</p>
           </CardContent>
         </Card>
+
+        {/* Shopify Domain Prompt Modal */}
+        {showShopifyPrompt && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+            <Card className="w-full max-w-md">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0">
+                <CardTitle>Connect Your Shopify Store</CardTitle>
+                <button
+                  onClick={() => setShowShopifyPrompt(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium mb-2">Shopify Store Domain</label>
+                  <input
+                    type="text"
+                    placeholder="mystore.myshopify.com"
+                    value={shopDomain}
+                    onChange={(e) => setShopDomain(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onKeyPress={(e) => e.key === 'Enter' && handleShopifyConnect()}
+                  />
+                  <p className="text-xs text-gray-500 mt-2">Example: mystore.myshopify.com (without https://)</p>
+                </div>
+                <div className="flex gap-2 justify-end">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowShopifyPrompt(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleShopifyConnect}
+                  >
+                    Connect Store
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
     </DashboardLayout>
   )

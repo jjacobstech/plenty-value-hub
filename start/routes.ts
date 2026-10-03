@@ -445,7 +445,7 @@ router
             router.post('/admin/influencers/:id/reject', [controllers.Influencers, 'rejectInfluencer'])
 
             // Shopify integration (vendor)
-            router.post('/shopify/auth-url', [controllers.Shopify, 'getAuthUrl'])
+            router.get('/shopify/auth-url', [controllers.Shopify, 'getAuthUrl'])
             router.get('/shopify/store', [controllers.Shopify, 'getStore'])
             router.post('/shopify/disconnect', [controllers.Shopify, 'disconnect'])
             router.post('/shopify/sync/products', [controllers.Shopify, 'syncProducts'])
