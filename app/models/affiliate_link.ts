@@ -11,46 +11,46 @@ export default class AffiliateLink extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
-  @column()
+  @column({ columnName: 'affiliate_id' })
   declare affiliateId: number
 
-  @column()
+  @column({ columnName: 'product_id' })
   declare productId: number
 
-  @column()
+  @column({ columnName: 'campaign_id' })
   declare campaignId: number
 
-  @column()
+  @column({ columnName: 'slug' })
   declare slug: string
 
-  @column()
+  @column({ columnName: 'token' })
   declare token: string
 
-  @column()
+  @column({ columnName: 'custom_alias' })
   declare customAlias: string | null
 
-  @column()
+  @column({ columnName: 'description' })
   declare description: string | null
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'created_at' })
   declare createdAt: DateTime
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'updated_at' })
   declare updatedAt: DateTime
 
-  @column.dateTime()
+  @column.dateTime({ columnName: 'expires_at' })
   declare expiresAt: DateTime | null
 
-  @column()
+  @column({ columnName: 'total_clicks' })
   declare totalClicks: number
 
-  @column()
+  @column({ columnName: 'total_conversions' })
   declare totalConversions: number
 
-  @column()
+  @column({ columnName: 'total_earnings' })
   declare totalEarnings: number
 
-  @column()
+  @column({ columnName: 'is_active' })
   declare isActive: boolean
 
   @belongsTo(() => User, { foreignKey: 'affiliateId' })
