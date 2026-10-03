@@ -4,6 +4,7 @@ import type { HasMany, BelongsTo } from '@adonisjs/lucid/orm'
 import Click from '#models/click'
 import Conversion from '#models/conversion'
 import Campaign from '#models/campaign'
+import Product from '#models/product'
 
 export default class AffiliateLink extends BaseModel {
   @column({ isPrimary: true })
@@ -11,6 +12,9 @@ export default class AffiliateLink extends BaseModel {
 
   @column()
   declare affiliateId: number
+
+  @column()
+  declare productId: number
 
   @column()
   declare campaignId: number
@@ -47,6 +51,9 @@ export default class AffiliateLink extends BaseModel {
 
   @column()
   declare isActive: boolean
+
+  @belongsTo(() => Product, { foreignKey: 'productId' })
+  declare product: BelongsTo<typeof Product>
 
   @belongsTo(() => Campaign, { foreignKey: 'campaignId' })
   declare campaign: BelongsTo<typeof Campaign>
