@@ -5,6 +5,7 @@ import Click from '#models/click'
 import Conversion from '#models/conversion'
 import Campaign from '#models/campaign'
 import Product from '#models/product'
+import User from '#models/user'
 
 export default class AffiliateLink extends BaseModel {
   @column({ isPrimary: true })
@@ -51,6 +52,9 @@ export default class AffiliateLink extends BaseModel {
 
   @column()
   declare isActive: boolean
+
+  @belongsTo(() => User, { foreignKey: 'affiliateId' })
+  declare affiliate: BelongsTo<typeof User>
 
   @belongsTo(() => Product, { foreignKey: 'productId' })
   declare product: BelongsTo<typeof Product>
