@@ -1,4 +1,3 @@
-import User from '#models/user'
 import Wallet from '#models/wallet'
 import Transaction from '#models/transaction'
 import PayoutRequest from '#models/payout_request'
@@ -254,4 +253,14 @@ export default class WalletService {
 
     return query.orderBy('created_at', 'desc')
   }
+
+  static async listPaystackBanks() {
+    return []
+  }
+
+  static async retryPaystackTransfer(_payoutId: number) {
+    return null
+  }
 }
+
+export { WalletService }

@@ -47,6 +47,9 @@ export default class CommissionLedger extends BaseModel {
   @column({ columnName: 'net_commission' })
   declare netCommission: number
 
+  @column({ columnName: 'amount' })
+  declare amount: number
+
   @column({ columnName: 'description' })
   declare description: string | null
 
@@ -58,6 +61,9 @@ export default class CommissionLedger extends BaseModel {
 
   @column.dateTime({ columnName: 'paid_at' })
   declare paidAt: DateTime | null
+
+  @column.dateTime({ columnName: 'released_at' })
+  declare releasedAt: DateTime | null
 
   @column.dateTime({ columnName: 'rejected_at' })
   declare rejectedAt: DateTime | null
@@ -91,4 +97,13 @@ export default class CommissionLedger extends BaseModel {
 
   @belongsTo(() => AffiliateLink, { foreignKey: 'affiliateLinkId' })
   declare affiliateLink: BelongsTo<typeof AffiliateLink>
+
+  isReversed(): boolean {
+    return this.status === 'disputed'
+  }
+
+  markAsReversed(reason: string, type: string): void {
+    this.status = 'disputed'
+    this.disputeReason = reason
+  }
 }

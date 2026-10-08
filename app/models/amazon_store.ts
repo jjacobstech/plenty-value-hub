@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo, beforeCreate, beforeUpdate, afterFetch, afterFind } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { encrypt, decrypt } from '#services/encryption_service'
 import User from '#models/user'
 

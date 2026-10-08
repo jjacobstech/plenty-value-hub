@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 import EtsyShop from '#models/etsy_shop'
 
 export default class EtsyController {
@@ -92,7 +93,7 @@ export default class EtsyController {
           refreshToken,
           isConnected: true,
           connectionStatus: 'connected',
-          connectedAt: new Date(),
+          connectedAt: DateTime.now(),
         })
       } else {
         shop = new EtsyShop()
@@ -105,7 +106,7 @@ export default class EtsyController {
           refreshToken,
           isConnected: true,
           connectionStatus: 'connected',
-          connectedAt: new Date(),
+          connectedAt: DateTime.now(),
         })
       }
 

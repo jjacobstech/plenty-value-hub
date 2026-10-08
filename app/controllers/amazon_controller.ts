@@ -1,4 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 import AmazonStore from '#models/amazon_store'
 
 export default class AmazonController {
@@ -83,7 +84,7 @@ export default class AmazonController {
           refreshToken,
           isConnected: true,
           connectionStatus: 'connected',
-          connectedAt: new Date(),
+          connectedAt: DateTime.now(),
         })
       } else {
         store = new AmazonStore()
@@ -94,7 +95,7 @@ export default class AmazonController {
           refreshToken,
           isConnected: true,
           connectionStatus: 'connected',
-          connectedAt: new Date(),
+          connectedAt: DateTime.now(),
         })
       }
 

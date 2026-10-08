@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, hasMany, belongsTo } from '@adonisjs/lucid/orm'
-import type { HasMany, BelongsTo } from '@adonisjs/lucid/orm'
+import type { HasMany, BelongsTo } from '@adonisjs/lucid/types/relations'
 import Click from '#models/click'
 import Conversion from '#models/conversion'
 import Campaign from '#models/campaign'
@@ -26,11 +26,29 @@ export default class AffiliateLink extends BaseModel {
   @column({ columnName: 'token' })
   declare token: string
 
+  @column({ columnName: 'link_code' })
+  declare linkCode: string
+
   @column({ columnName: 'custom_alias' })
   declare customAlias: string | null
 
   @column({ columnName: 'description' })
   declare description: string | null
+
+  @column({ columnName: 'status' })
+  declare status: 'active' | 'inactive' | 'expired'
+
+  @column({ columnName: 'revenue' })
+  declare revenue: number
+
+  @column({ columnName: 'commission_earned' })
+  declare commissionEarned: number
+
+  @column({ columnName: 'commission_rate' })
+  declare commissionRate: number | null
+
+  @column({ columnName: 'product_name' })
+  declare productName: string | null
 
   @column.dateTime({ columnName: 'created_at' })
   declare createdAt: DateTime

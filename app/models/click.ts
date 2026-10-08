@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/orm'
+import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import AffiliateLink from '#models/affiliate_link'
 
 export default class Click extends BaseModel {
@@ -27,6 +27,9 @@ export default class Click extends BaseModel {
 
   @column({ columnName: 'referrer' })
   declare referrer: string | null
+
+  @column({ columnName: 'country_code' })
+  declare countryCode: string | null
 
   @column({ columnName: 'device_type' })
   declare deviceType: string | null

@@ -192,7 +192,7 @@ export default class AffiliateLinkService {
    */
   static async approveConversion(
     conversionId: number,
-    adminId: number,
+    _adminId: number,
     commissionAmount?: number
   ): Promise<Conversion> {
     const conversion = await Conversion.find(conversionId)
@@ -231,8 +231,8 @@ export default class AffiliateLinkService {
    */
   static async rejectConversion(
     conversionId: number,
-    adminId: number,
-    reason: string
+    _adminId: number,
+    _reason: string
   ): Promise<Conversion> {
     const conversion = await Conversion.find(conversionId)
     if (!conversion) {
@@ -257,7 +257,7 @@ export default class AffiliateLinkService {
   /**
    * Reverse conversion
    */
-  static async reverseConversion(conversionId: number, reason: string): Promise<Conversion> {
+  static async reverseConversion(conversionId: number, _reason: string): Promise<Conversion> {
     const conversion = await Conversion.find(conversionId)
     if (!conversion) {
       throw new Error('Conversion not found')

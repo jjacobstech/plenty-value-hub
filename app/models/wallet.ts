@@ -22,14 +22,26 @@ export default class Wallet extends BaseModel {
     }
   }
 
-  @column()
+  @column({ columnName: 'user_id' })
   declare userId: number
 
-  @column()
-  declare availableBalance: string
+  @column({ columnName: 'available_balance' })
+  declare availableBalance: number
+
+  @column({ columnName: 'pending_balance' })
+  declare pendingBalance: number
 
   @column()
-  declare pendingBalance: string
+  declare balance: number
+
+  @column({ columnName: 'total_earnings' })
+  declare totalEarnings: number
+
+  @column({ columnName: 'total_withdrawn' })
+  declare totalWithdrawn: number
+
+  @column({ columnName: 'last_updated' })
+  declare lastUpdated: DateTime | null
 
   @column()
   declare currency: string

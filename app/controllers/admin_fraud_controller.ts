@@ -1,6 +1,5 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import FraudDetectionService from '#services/fraud_detection_service'
-import Conversion from '#models/conversion'
 
 export default class AdminFraudController {
   /**

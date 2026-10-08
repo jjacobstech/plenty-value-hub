@@ -15,6 +15,7 @@ export type TransactionType =
   | 'refund'
   | 'transfer'
   | 'deposit'
+  | 'adjustment'
 
 export type TransactionStatus = 'pending' | 'completed' | 'failed' | 'refunded' | 'processing'
 
@@ -34,11 +35,14 @@ export default class Transaction extends BaseModel {
     }
   }
 
-  @column()
+  @column({ columnName: 'transaction_reference' })
   declare transactionReference: string
 
-  @column()
+  @column({ columnName: 'user_id' })
   declare userId: number | null
+
+  @column({ columnName: 'wallet_id' })
+  declare walletId: number
 
   @column()
   declare type: TransactionType
@@ -50,31 +54,31 @@ export default class Transaction extends BaseModel {
   declare status: TransactionStatus
 
   @column()
-  declare amount: string
+  declare amount: number
 
   @column()
   declare currency: string
 
-  @column()
+  @column({ columnName: 'payment_method' })
   declare paymentMethod: string | null
 
-  @column()
+  @column({ columnName: 'payment_gateway_reference' })
   declare paymentGatewayReference: string | null
 
-  @column()
+  @column({ columnName: 'order_id' })
   declare orderId: number | null
 
-  @column()
+  @column({ columnName: 'payout_request_id' })
   declare payoutRequestId: number | null
 
-  @column()
+  @column({ columnName: 'product_id' })
   declare productId: number | null
 
   @column()
   declare description: string | null
 
   @column()
-  declare metadata: string | null
+  declare metadata: Record<string, any> | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

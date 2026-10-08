@@ -1,5 +1,4 @@
 import Dispute from '#models/dispute'
-import User from '#models/user'
 import { DateTime } from 'luxon'
 
 export interface DisputeResolution {

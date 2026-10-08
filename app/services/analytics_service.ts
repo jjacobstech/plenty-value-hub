@@ -151,7 +151,7 @@ export default class AnalyticsService {
       data.conversions++
 
       const commission = commissions.find(
-        (c) => c.vendorConversionId === conv.id && c.status === 'approved'
+        (c) => c.conversionId === conv.id && c.status === 'approved'
       )
       if (commission) {
         data.commission += commission.amount || 0
@@ -219,7 +219,7 @@ export default class AnalyticsService {
       data.revenue += conv.amount || 0
 
       const commission = commissions.find(
-        (c) => c.vendorConversionId === conv.id && c.status === 'approved'
+        (c) => c.conversionId === conv.id && c.status === 'approved'
       )
       if (commission) {
         data.commission += commission.amount || 0
@@ -329,7 +329,7 @@ export default class AnalyticsService {
       data.revenue += conv.amount
 
       const commission = commissions.find(
-        (c) => c.vendorConversionId === conv.id && c.status === 'approved'
+        (c) => c.conversionId === conv.id && c.status === 'approved'
       )
       if (commission) {
         data.commission += commission.amount || 0

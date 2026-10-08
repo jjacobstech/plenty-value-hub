@@ -38,6 +38,30 @@ export default class Campaign extends BaseModel {
   @column()
   declare purchaseDestination: string
 
+  @column({ columnName: 'purchase_destination_url' })
+  declare purchaseDestinationUrl: string | null
+
+  @column({ columnName: 'purchase_destination_type' })
+  declare purchaseDestinationType: string | null
+
+  @column({ columnName: 'webhook_url' })
+  declare webhookUrl: string | null
+
+  @column({ columnName: 'webhook_secret' })
+  declare webhookSecret: string | null
+
+  @column({ columnName: 'external_integration_config' })
+  declare externalIntegrationConfig: Record<string, any> | null
+
+  @column({ columnName: 'commission_value' })
+  declare commissionValue: number | null
+
+  @column({ columnName: 'fixed_fee' })
+  declare fixedFee: number | null
+
+  @column({ columnName: 'tiered_commission_structure' })
+  declare tieredCommissionStructure: any[] | null
+
   @column()
   declare attributionWindowDays: number
 
@@ -68,11 +92,23 @@ export default class Campaign extends BaseModel {
   @column()
   declare totalConversions: number
 
+  @column({ columnName: 'total_redirects' })
+  declare totalRedirects: number
+
+  @column({ columnName: 'total_external_conversions' })
+  declare totalExternalConversions: number
+
+  @column()
+  declare conversionRate: number | null
+
   @column()
   declare totalRevenue: number
 
   @column()
   declare totalCommission: number
+
+  @column({ columnName: 'total_commission_paid' })
+  declare totalCommissionPaid: number | null
 
   @column()
   declare activeAffiliates: number

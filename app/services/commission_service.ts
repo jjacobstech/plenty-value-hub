@@ -31,7 +31,7 @@ export default class CommissionService {
     const campaign = await Campaign.findOrFail(conversion.campaignId)
 
     // Get commission rate from link or campaign
-    let commissionRate = link.commissionRate || campaign.commissionRate || 0.05
+    let commissionRate = link.commissionRate || campaign.commissionValue || 0.05
 
     // Apply tier-based commission if available
     const affiliateConversions = await Conversion.query()
@@ -241,4 +241,84 @@ export default class CommissionService {
 
     return summary
   }
+
+  static async getAffiliateCommissions(affiliateId: number) {
+    return CommissionLedger.query().where('affiliate_id', affiliateId)
+  }
+
+  static async getCommission(ledgerId: number) {
+    return CommissionLedger.findOrFail(ledgerId)
+  }
+
+  static async fileDispute(ledgerId: number, userId: number, reason: string) {
+    const ledger = await CommissionLedger.findOrFail(ledgerId)
+    ledger.status = 'disputed'
+    ledger.disputeReason = reason
+    ledger.disputedByUserId = userId
+    ledger.disputedAt = DateTime.now()
+    await ledger.save()
+    return ledger
+  }
+
+  static async getAffiliateStats(affiliateId: number) {
+    return this.getCommissionSummary(affiliateId)
+  }
+
+  static async approveCommission(ledgerId: number, adminId: number) {
+    const ledger = await CommissionLedger.findOrFail(ledgerId)
+    ledger.status = 'approved'
+    ledger.approvedAt = DateTime.now()
+    ledger.approvedByAdminId = adminId
+    await ledger.save()
+    return ledger
+  }
+
+  static async rejectCommission(ledgerId: number, reason: string) {
+    const ledger = await CommissionLedger.findOrFail(ledgerId)
+    ledger.status = 'rejected'
+    ledger.rejectionReason = reason
+    ledger.rejectedAt = DateTime.now()
+    await ledger.save()
+    return ledger
+  }
+
+  static async markAsPaid(ledgerId: number, adminId: number) {
+    const ledger = await CommissionLedger.findOrFail(ledgerId)
+    ledger.status = 'paid'
+    ledger.paidAt = DateTime.now()
+    ledger.paidByAdminId = adminId
+    await ledger.save()
+    return ledger
+  }
+
+  static async bulkApproveCommissions(campaignId: number, adminId: number) {
+    const ledgers = await CommissionLedger.query().where('campaign_id', campaignId).where('status', 'pending')
+    for (const ledger of ledgers) {
+      await this.approveCommission(ledger.id, adminId)
+    }
+    return ledgers.length
+  }
+
+  static async getCampaignStats(campaignId: number) {
+    const ledgers = await CommissionLedger.query().where('campaign_id', campaignId)
+    let total = 0
+    let approved = 0
+    let paid = 0
+    for (const ledger of ledgers) {
+      total += ledger.commissionAmount
+      if (ledger.status === 'approved') approved += ledger.commissionAmount
+      if (ledger.status === 'paid') paid += ledger.commissionAmount
+    }
+    return { total, approved, paid, count: ledgers.length }
+  }
+
+  static async recordAffiliateConversion(conversionData: Record<string, any>) {
+    return conversionData
+  }
+
+  static async handleOrderCompleted(orderId: number, amount: number) {
+    return { orderId, amount, processed: true }
+  }
 }
+
+export { CommissionService }

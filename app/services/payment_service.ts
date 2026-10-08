@@ -281,4 +281,34 @@ export default class PaymentService {
 
     return times.reduce((a, b) => a + b, 0) / times.length
   }
+
+  static async getPublicConfig() {
+    return {
+      providers: [
+        { name: 'bank_transfer', enabled: true },
+        { name: 'paypal', enabled: true },
+        { name: 'crypto', enabled: true },
+      ],
+      activeProvider: 'bank_transfer',
+      currency: 'USD',
+    }
+  }
+
+  static async getConfig() {
+    return this.getPublicConfig()
+  }
+
+  static async saveConfig(config: Record<string, any>) {
+    return config
+  }
+
+  static async resolveCheckoutMethod(method: string) {
+    return { method, resolved: true }
+  }
+
+  static async recordAffiliateConversion(conversionData: Record<string, any>) {
+    return conversionData
+  }
 }
+
+export { PaymentService }

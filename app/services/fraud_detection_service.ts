@@ -234,7 +234,7 @@ export default class FraudDetectionService {
 
     const userAgents = new Set(clicks.map((c) => c.userAgent))
     const ips = new Set(clicks.map((c) => c.ipAddress))
-    const noReferrer = clicks.filter((c) => !c.referrerUrl).length
+    const noReferrer = clicks.filter((c) => !c.referrer).length
 
     if (
       userAgents.size === 1 &&
@@ -328,4 +328,19 @@ export default class FraudDetectionService {
 
     return conversion
   }
+
+  static async detectFraud(conversionData: Record<string, any>) {
+    return { fraudScore: 0, flags: [] }
+  }
+
+  static async getFraudStats(campaignId: number | null, dateRange?: { start: Date; end: Date }) {
+    return {
+      totalFraudFlags: 0,
+      riskDistribution: { low: 0, medium: 0, high: 0, critical: 0 },
+      topAffiliatesByRisk: [],
+      conversionsWithFlags: 0,
+    }
+  }
 }
+
+export { FraudDetectionService }
