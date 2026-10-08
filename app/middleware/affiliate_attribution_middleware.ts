@@ -22,7 +22,7 @@ export default class AffiliateAttributionMiddleware {
 
           if (!isSelfReferral) {
             // Track click counter
-            link.clicks = (link.clicks || 0) + 1
+            link.totalClicks = (link.totalClicks || 0) + 1
             await link.save()
 
             const cookiePayload = JSON.stringify({

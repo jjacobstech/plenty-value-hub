@@ -42,8 +42,8 @@ export default class AdminController {
     const pendingProducts = products.filter((p) => p.status === 'pending')
 
     const activeLinks = affiliateLinks.filter((l) => l.status === 'active')
-    const totalClicks = affiliateLinks.reduce((sum, l) => sum + (l.clicks || 0), 0)
-    const totalConversions = affiliateLinks.reduce((sum, l) => sum + (l.conversions || 0), 0)
+    const totalClicks = affiliateLinks.reduce((sum, l) => sum + (l.totalClicks || 0), 0)
+    const totalConversions = affiliateLinks.reduce((sum, l) => sum + (l.totalConversions || 0), 0)
 
     const topProducts = products
       .sort((a, b) => new Decimal(b.totalRevenue || 0).minus(a.totalRevenue || 0).toNumber())
@@ -203,13 +203,13 @@ export default class AdminController {
 
     try {
       const { WalletService } = await import('#services/wallet_service')
-      const banks = await WalletService.listPaystackBanks()
-      
+      const banks: Record<string, any>[] = await WalletService.listPaystackBanks()
+
       return response.json({
         success: true,
         totalBanks: banks.length,
-        gtbBanks: banks.filter(b => 
-          b.name.toLowerCase().includes('guaranty') || 
+        gtbBanks: banks.filter((b: Record<string, any>) =>
+          b.name.toLowerCase().includes('guaranty') ||
           b.name.toLowerCase().includes('gtb')
         ),
         allBanks: banks.slice(0, 50) // Limit to first 50 for response size

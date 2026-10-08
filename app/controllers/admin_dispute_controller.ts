@@ -13,13 +13,13 @@ export default class AdminDisputeController {
       return null
     }
 
-    const disputes = await DisputeService.getOpenDisputes()
+    const paginated = await DisputeService.getOpenDisputes(1, 50)
     const stats = await DisputeService.getDisputeStatistics()
 
     return inertia.render('admin/AdminDisputes', {
       user,
       stats,
-      disputes,
+      disputes: paginated.all?.() || [],
     })
   }
 
@@ -87,10 +87,11 @@ export default class AdminDisputeController {
   /**
    * Escalate dispute
    */
-  async escalateDispute({ params, request, response }: HttpContext) {
+  async escalateDispute({ params, request, auth, response }: HttpContext) {
+    const user = auth.use('web').user!
     const reason = request.input('reason')
 
-    const dispute = await DisputeService.escalateDispute(params.id, reason)
+    const dispute = await DisputeService.escalateDispute(params.id, 0, user.id, reason)
 
     return response.json({
       success: true,
@@ -102,18 +103,17 @@ export default class AdminDisputeController {
   /**
    * Resolve dispute
    */
-  async resolveDispute({ params, request, response }: HttpContext) {
-    const resolution = request.input('resolution')
+  async resolveDispute({ params, request, auth, response }: HttpContext) {
+    const user = auth.use('web').user!
+    const resolutionType = request.input('resolutionType')
     const amountAwarded = request.input('amountAwarded', 0)
     const notes = request.input('notes', '')
 
     const dispute = await DisputeService.resolveDispute(
-      {
-        disputeId: params.id,
-        resolution,
-        amountAwarded,
-        notes,
-      },
+      params.id,
+      user.id,
+      resolutionType,
+      amountAwarded,
       notes
     )
 

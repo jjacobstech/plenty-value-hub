@@ -249,8 +249,8 @@ export default class VendorConversionsController {
     if (conversion.affiliateLinkId) {
       const affiliateLink = await AffiliateLink.find(conversion.affiliateLinkId)
       if (affiliateLink) {
-        affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
-        affiliateLink.commissionEarned = Number((affiliateLink.commissionEarned as any) || 0) + commissionAmount as any
+        affiliateLink.totalConversions = (affiliateLink.totalConversions || 0) + 1
+        affiliateLink.commissionEarned = (affiliateLink.commissionEarned || 0) + commissionAmount
         await affiliateLink.save()
       }
     }
@@ -312,9 +312,9 @@ export default class VendorConversionsController {
     // Deduct from affiliate if applicable
     if (conversion.affiliateLinkId && conversion.commissionAmount) {
       const affiliateLink = await AffiliateLink.find(conversion.affiliateLinkId)
-      if (affiliateLink && affiliateLink.conversions! > 0) {
-        affiliateLink.conversions = affiliateLink.conversions! - 1
-        affiliateLink.commissionEarned = (Number(affiliateLink.commissionEarned as any) || 0) - conversion.commissionAmount as any
+      if (affiliateLink && affiliateLink.totalConversions! > 0) {
+        affiliateLink.totalConversions = affiliateLink.totalConversions! - 1
+        affiliateLink.commissionEarned = (affiliateLink.commissionEarned || 0) - conversion.commissionAmount
         await affiliateLink.save()
       }
     }

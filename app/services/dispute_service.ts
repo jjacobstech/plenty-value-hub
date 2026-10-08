@@ -63,19 +63,14 @@ export default class DisputeService {
   /**
    * Get open disputes with pagination
    */
-  static async getOpenDisputes(page?: number, limit?: number) {
-    const query = Dispute.query()
+  static async getOpenDisputes(page = 1, limit = 20) {
+    return Dispute.query()
       .where('status', 'open')
       .orderBy('priority', 'desc')
       .orderBy('created_at', 'asc')
       .preload('initiator')
       .preload('respondent')
-
-    if (page && limit) {
-      return query.paginate(page, limit)
-    }
-
-    return query
+      .paginate(page, limit)
   }
 
   /**
@@ -124,15 +119,14 @@ export default class DisputeService {
   /**
    * Escalate dispute
    */
-  static async escalateDispute(disputeId: number, reason: string) {
+  static async escalateDispute(disputeId: number, escalatedToUserId: number, _userId: number, notes: string) {
     const dispute = await Dispute.findOrFail(disputeId)
 
     dispute.status = 'escalated'
     dispute.escalatedAt = DateTime.now()
-    dispute.escalationReason = reason
+    dispute.escalatedToUserId = escalatedToUserId
+    dispute.resolutionNotes = (dispute.resolutionNotes || '') + '\nEscalated: ' + notes
     await dispute.save()
-
-    // TODO: Send notification to admin for manual review
 
     return dispute
   }
@@ -140,32 +134,25 @@ export default class DisputeService {
   /**
    * Resolve dispute
    */
-  static async resolveDispute(resolution: DisputeResolution, adminNotes: string) {
-    const dispute = await Dispute.findOrFail(resolution.disputeId)
+  static async resolveDispute(
+    disputeId: number,
+    _userId: number,
+    resolutionType: 'rejection' | 'adjustment' | 'reversal' | 'manual_approval',
+    resolvedAmount: number,
+    notes: string
+  ) {
+    const dispute = await Dispute.findOrFail(disputeId)
 
-    dispute.status = resolution.resolution === 'approved' ? 'resolved' : 'closed'
-    dispute.resolution = resolution.resolution
-    dispute.amountAwarded = resolution.amountAwarded
-    dispute.adminNotes = adminNotes
+    dispute.status = 'resolved'
+    dispute.resolutionType = resolutionType
+    dispute.resolvedAmount = resolvedAmount
+    dispute.resolutionNotes = notes
     dispute.resolvedAt = DateTime.now()
     await dispute.save()
-
-    // Handle payouts based on resolution
-    if (resolution.amountAwarded > 0) {
-      await this.executeDisputePayment(dispute, resolution.amountAwarded)
-    }
 
     return dispute
   }
 
-  /**
-   * Execute payment based on dispute resolution
-   */
-  private static async executeDisputePayment(dispute: Dispute, amount: number) {
-    // TODO: Integration with WalletService and PayoutService
-    // For now, just log
-    console.log(`Executing dispute payout: ${amount} to user ${dispute.respondentId}`)
-  }
 
   /**
    * Get dispute statistics
@@ -222,7 +209,8 @@ export default class DisputeService {
    * Auto-resolve simple disputes (based on rules)
    */
   static async autoResolveDisputes() {
-    const openDisputes = await this.getOpenDisputes()
+    const paginated = await this.getOpenDisputes(1, 1000)
+    const openDisputes = paginated.all?.() || []
 
     for (const dispute of openDisputes) {
       // Rule 1: Small commission disputes with clear evidence
@@ -232,19 +220,17 @@ export default class DisputeService {
         (dispute.evidence || []).length >= 2
       ) {
         await this.resolveDispute(
-          {
-            disputeId: dispute.id,
-            resolution: 'approved',
-            amountAwarded: dispute.amount,
-            notes: 'Auto-resolved: sufficient evidence provided',
-          },
-          'Automatic resolution based on evidence'
+          dispute.id,
+          0,
+          'manual_approval',
+          dispute.amount,
+          'Auto-resolved: sufficient evidence provided'
         )
       }
 
       // Rule 2: Chargeback disputes (always escalate to admin)
       if (dispute.type === 'chargeback') {
-        await this.escalateDispute(dispute.id, 'Automatic escalation: chargeback disputes require manual review')
+        await this.escalateDispute(dispute.id, 0, 0, 'Automatic escalation: chargeback disputes require manual review')
       }
     }
   }

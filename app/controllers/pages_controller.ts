@@ -221,11 +221,11 @@ export default class PagesController {
     // One payment object instead of paymentConfig + availablePaymentMethods,
     // which were two shapes of the same data drifting apart.
     const providers = (paymentConfig.providers ?? [])
-      .filter((p) => p.enabled && !RETIRED_PROVIDERS.has(p.key))
-      .map((p) => ({
+      .filter((p: any) => p.enabled && !RETIRED_PROVIDERS.has(p.key))
+      .map((p: any) => ({
         key: p.key,
-        label: p.label,
-        description: p.description ?? null,
+        label: p.name || p.key,
+        description: null,
       }))
 
     const requestedActive = paymentConfig.activeProvider
@@ -317,15 +317,9 @@ export default class PagesController {
               if (order.affiliateLinkId) {
                 const affiliateLink = await AffiliateLink.find(order.affiliateLinkId)
                 if (affiliateLink) {
-                  affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
-                  affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-                    .plus(order.amount)
-                    .toDecimalPlaces(2)
-                    .toString()
-                  affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-                    .plus(order.commissionAmount || 0)
-                    .toDecimalPlaces(2)
-                    .toString()
+                  affiliateLink.totalConversions = (affiliateLink.totalConversions || 0) + 1
+                  affiliateLink.revenue = (affiliateLink.revenue || 0) + Number(order.amount || 0)
+                  affiliateLink.commissionEarned = (affiliateLink.commissionEarned || 0) + Number(order.commissionAmount || 0)
                   await affiliateLink.save()
                 }
               }
@@ -402,7 +396,7 @@ export default class PagesController {
           const isSelfReferral = authUser && authUser.id === link.affiliateId
 
           if (!isSelfReferral) {
-            link.clicks = (link.clicks || 0) + 1
+            link.totalClicks = (link.totalClicks || 0) + 1
             await link.save()
 
             const cookiePayload = JSON.stringify({

@@ -488,15 +488,9 @@ export default class OrdersController {
       if (order.affiliateLinkId) {
         const affiliateLink = await AffiliateLink.find(order.affiliateLinkId)
         if (affiliateLink) {
-          affiliateLink.conversions = Math.max(0, (affiliateLink.conversions || 0) - 1)
-          affiliateLink.revenue = new Decimal(affiliateLink.revenue || 0)
-            .minus(order.amount)
-            .toDecimalPlaces(2)
-            .toString()
-          affiliateLink.commissionEarned = new Decimal(affiliateLink.commissionEarned || 0)
-            .minus(order.commissionAmount || 0)
-            .toDecimalPlaces(2)
-            .toString()
+          affiliateLink.totalConversions = Math.max(0, (affiliateLink.totalConversions || 0) - 1)
+          affiliateLink.revenue = Math.max(0, (affiliateLink.revenue || 0) - Number(order.amount || 0))
+          affiliateLink.commissionEarned = Math.max(0, (affiliateLink.commissionEarned || 0) - Number(order.commissionAmount || 0))
           await affiliateLink.save()
         }
       }

@@ -348,7 +348,7 @@ export default class FraudDetectionService {
     return { fraudScore: 0, riskLevel: 'low' as const, flags: [] }
   }
 
-  static async getFraudStats(_campaignId: number | null, _dateRange?: { start: Date; end: Date }) {
+  static async getFraudStats(_campaignId: number | null, _dateRange?: { start: DateTime | Date; end: DateTime | Date }) {
     return {
       totalFraudFlags: 0,
       riskDistribution: { low: 0, medium: 0, high: 0, critical: 0 },

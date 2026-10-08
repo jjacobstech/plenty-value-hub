@@ -2,12 +2,11 @@ import type { HttpContext } from '@adonisjs/core/http'
 
 export default class MobileClientDetectionMiddleware {
   async handle({ request, response }: HttpContext, next: () => Promise<void>) {
-    const userAgent = request.header('user-agent', '').toLowerCase()
+    const userAgent = (request.header('user-agent') || '').toLowerCase()
 
     const isMobileUserAgent = this.detectMobileUserAgent(userAgent)
 
-    request.ctx = request.ctx || {}
-    request.ctx.isMobileClient = isMobileUserAgent
+    ;(request as any).isMobileClient = isMobileUserAgent
 
     if (isMobileUserAgent) {
       response.header('X-Mobile-Client', 'true')

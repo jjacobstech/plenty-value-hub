@@ -210,8 +210,8 @@ export default class PurchaseDestinationsController {
     if (destination.affiliateLinkId) {
       const affiliateLink = await AffiliateLink.find(destination.affiliateLinkId)
       if (affiliateLink) {
-        affiliateLink.conversions = (affiliateLink.conversions || 0) + 1
-        affiliateLink.revenue = (Number(affiliateLink.revenue as any) || 0) + Number(amount || 0) as any
+        affiliateLink.totalConversions = (affiliateLink.totalConversions || 0) + 1
+        affiliateLink.revenue = (affiliateLink.revenue || 0) + Number(amount || 0)
         await affiliateLink.save()
       }
     }
