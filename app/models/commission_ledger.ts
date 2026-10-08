@@ -102,7 +102,7 @@ export default class CommissionLedger extends BaseModel {
     return this.status === 'disputed'
   }
 
-  markAsReversed(reason: string, type: string): void {
+  markAsReversed(reason: string, _type: string): void {
     this.status = 'disputed'
     this.disputeReason = reason
   }

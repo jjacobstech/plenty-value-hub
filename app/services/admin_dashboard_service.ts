@@ -154,7 +154,7 @@ export default class AdminDashboardService {
         .reduce((sum, p) => sum + p.amount, 0),
       completedAmount: payouts
         .filter((p) => p.status === 'completed')
-        .reduce((sum, p) => sum + p.netAmount, 0),
+        .reduce((sum, p) => sum + p.amount, 0),
     }
 
     return stats
@@ -209,7 +209,7 @@ export default class AdminDashboardService {
       totalCommissions += campaign.totalCommission
     }
 
-    const totalPaid = payouts.reduce((sum, p) => sum + p.netAmount, 0)
+    const totalPaid = payouts.reduce((sum, p) => sum + p.amount, 0)
     const platformRevenue = totalCommissions - totalPaid
     const platformFees = totalCommissions * 0.02 // Estimated 2% platform fee
 

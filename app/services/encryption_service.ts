@@ -1,7 +1,13 @@
 import crypto from 'node:crypto'
-import app from '@adonisjs/core/services/app'
 
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || app.cliArgs.includes('serve') ? crypto.randomBytes(32).toString('hex') : process.env.ENCRYPTION_KEY
+let ENCRYPTION_KEY: string
+if (process.env.ENCRYPTION_KEY) {
+  ENCRYPTION_KEY = process.env.ENCRYPTION_KEY
+} else if (process.argv.includes('serve')) {
+  ENCRYPTION_KEY = crypto.randomBytes(32).toString('hex')
+} else {
+  ENCRYPTION_KEY = ''
+}
 
 if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length < 32) {
   throw new Error('ENCRYPTION_KEY environment variable must be set and at least 32 characters')

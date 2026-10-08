@@ -69,7 +69,7 @@ export default class AdminPayoutController {
   /**
    * Approve payout
    */
-  async approvePayout({ params, _request, response }: HttpContext) {
+  async approvePayout({ params, response }: HttpContext) {
     const payout = await WalletService.approvePayout(parseInt(params.id))
 
     return response.json({
@@ -133,7 +133,7 @@ export default class AdminPayoutController {
   /**
    * Check transfer status
    */
-  async checkStatus({ params, _request, response }: HttpContext) {
+  async checkStatus({ params, response }: HttpContext) {
     try {
       const payout = await PayoutRequest.findOrFail(params.id)
 

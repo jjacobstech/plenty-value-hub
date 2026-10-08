@@ -118,6 +118,12 @@ export default class Dispute extends BaseModel {
   @belongsTo(() => User, { foreignKey: 'resolvedByUserId' })
   declare resolvedByUser: BelongsTo<typeof User>
 
+  @belongsTo(() => User, { foreignKey: 'initiatorId' })
+  declare initiator: BelongsTo<typeof User>
+
+  @belongsTo(() => User, { foreignKey: 'respondentId' })
+  declare respondent: BelongsTo<typeof User>
+
   @hasMany(() => DisputeActivity, { foreignKey: 'disputeId' })
   declare activities: HasMany<typeof DisputeActivity>
 

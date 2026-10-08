@@ -189,26 +189,17 @@ export default class VendorConversionsController {
    * Calculate commission for approved conversion
    */
   private async calculateCommission(campaign: Campaign, conversion: VendorConversion): Promise<number> {
-    switch (campaign.commissionType) {
+    const commissionType = campaign.commissionType as string
+
+    switch (commissionType) {
       case 'percentage':
         return (conversion.amount * (campaign.commissionValue || 0)) / 100
 
       case 'fixed_amount':
         return campaign.commissionValue || 0
 
-      case 'lead_commission':
+      case 'lead':
         return campaign.commissionValue || 0
-
-      case 'tiered': {
-        const structure = campaign.tieredCommissionStructure as any[]
-        if (!structure) return 0
-        for (const tier of structure) {
-          if (conversion.amount >= tier.min_amount && conversion.amount <= tier.max_amount) {
-            return (conversion.amount * tier.commission_rate) / 100
-          }
-        }
-        return 0
-      }
 
       case 'hybrid': {
         const percentageCommission = (conversion.amount * (campaign.commissionValue || 0)) / 100

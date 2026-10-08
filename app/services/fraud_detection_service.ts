@@ -84,12 +84,16 @@ export default class FraudDetectionService {
    * Check for duplicate orders
    */
   private static async checkDuplicateOrders(conversion: Conversion): Promise<FraudFlag | null> {
-    const twoHoursAgo = DateTime.now().minus({ hours: 2 }).toSQL()
+    const twoHoursAgo = DateTime.now().minus({ hours: 2 }).toISO()!
+
+    if (!conversion.customerEmail || !conversion.productId) {
+      return null
+    }
 
     const duplicates = await Conversion.query()
       .where('affiliate_id', conversion.affiliateId)
-      .where('customer_email', conversion.customerEmail)
-      .where('product_id', conversion.productId)
+      .where('customer_email', conversion.customerEmail!)
+      .where('product_id', conversion.productId!)
       .where('created_at', '>', twoHoursAgo)
       .where('id', '!=', conversion.id)
 
@@ -116,7 +120,7 @@ export default class FraudDetectionService {
    * Check for suspicious IP patterns
    */
   private static async checkSuspiciousIP(affiliateId: number): Promise<FraudFlag | null> {
-    const dayAgo = DateTime.now().minus({ day: 1 }).toSQL()
+    const dayAgo = DateTime.now().minus({ day: 1 }).toISO()!
 
     const clicks = await Click.query()
       .where('affiliate_id', affiliateId)
@@ -125,6 +129,7 @@ export default class FraudDetectionService {
     // Group by IP
     const ipMap = new Map<string, number>()
     for (const click of clicks) {
+      if (!click.ipAddress) continue
       const count = (ipMap.get(click.ipAddress) || 0) + 1
       ipMap.set(click.ipAddress, count)
     }
@@ -291,12 +296,12 @@ export default class FraudDetectionService {
   }
 
   /**
-   * Get flagged conversions
+   * Get flagged conversions (returns query builder)
    */
-  static async getFlaggedConversions(status?: 'pending' | 'investigating' | 'approved') {
+  static getFlaggedConversions(status?: 'pending' | 'investigating' | 'approved' | 'all') {
     let query = Conversion.query().where('fraud_flags_count', '>', 0)
 
-    if (status) {
+    if (status && status !== 'all') {
       query = query.where('fraud_status', status)
     }
 
@@ -329,11 +334,21 @@ export default class FraudDetectionService {
     return conversion
   }
 
-  static async detectFraud(conversionData: Record<string, any>) {
-    return { fraudScore: 0, flags: [] }
+  static async detectFraud(
+    _campaignId: number,
+    _affiliateId: number,
+    _linkId: number,
+    _amount: number,
+    _email?: string,
+    _phone?: string,
+    _ipAddress?: string,
+    _userAgent?: string,
+    _deviceId?: string
+  ) {
+    return { fraudScore: 0, riskLevel: 'low' as const, flags: [] }
   }
 
-  static async getFraudStats(campaignId: number | null, dateRange?: { start: Date; end: Date }) {
+  static async getFraudStats(_campaignId: number | null, _dateRange?: { start: Date; end: Date }) {
     return {
       totalFraudFlags: 0,
       riskDistribution: { low: 0, medium: 0, high: 0, critical: 0 },

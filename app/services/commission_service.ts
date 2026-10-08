@@ -54,14 +54,14 @@ export default class CommissionService {
     const commissionAmount = baseAmount * commissionRate
 
     // Create commission ledger entry
-    const ledger = await CommissionLedger.create({
+    await CommissionLedger.create({
       affiliateId: conversion.affiliateId,
       campaignId: conversion.campaignId,
       conversionId,
       affiliateLinkId: conversion.affiliateLinkId,
-      commissionType: 'conversion',
+      commissionType: 'percentage',
       commissionRate: commissionRate * 100,
-      baseAmount,
+      orderValue: baseAmount,
       commissionAmount,
       status: 'pending',
       createdAt: DateTime.now(),
@@ -157,7 +157,7 @@ export default class CommissionService {
     const ledgers = await CommissionLedger.query()
       .where('affiliate_id', affiliateId)
       .where('status', 'approved')
-      .where('released_at', null)
+      .whereNull('released_at')
 
     let totalReleased = 0
 
@@ -216,7 +216,7 @@ export default class CommissionService {
 
     for (const ledger of ledgers) {
       summary.totalCommissions += ledger.commissionAmount
-      totalRate += ledger.commissionRate
+      totalRate += ledger.commissionRate || 0
 
       if (!summary.byStatus[ledger.status]) {
         summary.byStatus[ledger.status] = { amount: 0, count: 0 }
@@ -242,8 +242,24 @@ export default class CommissionService {
     return summary
   }
 
-  static async getAffiliateCommissions(affiliateId: number) {
-    return CommissionLedger.query().where('affiliate_id', affiliateId)
+  static async getAffiliateCommissions(
+    affiliateId: number,
+    status?: string,
+    campaignId?: number,
+    page = 1,
+    limit = 20
+  ) {
+    let query = CommissionLedger.query().where('affiliate_id', affiliateId)
+
+    if (status) {
+      query = query.where('status', status)
+    }
+
+    if (campaignId) {
+      query = query.where('campaign_id', campaignId)
+    }
+
+    return query.orderBy('created_at', 'desc').paginate(page, limit)
   }
 
   static async getCommission(ledgerId: number) {
@@ -312,12 +328,37 @@ export default class CommissionService {
     return { total, approved, paid, count: ledgers.length }
   }
 
-  static async recordAffiliateConversion(conversionData: Record<string, any>) {
+  static async recordAffiliateConversion(
+    conversionData: Record<string, any>,
+    _affiliateLink?: Record<string, any> | null
+  ) {
     return conversionData
   }
 
   static async handleOrderCompleted(orderId: number, amount: number) {
     return { orderId, amount, processed: true }
+  }
+
+  /**
+   * Query commissions with filters and pagination
+   */
+  static async queryCommissions(
+    status?: string,
+    campaignId?: number,
+    page = 1,
+    limit = 20
+  ) {
+    let query = CommissionLedger.query()
+
+    if (status) {
+      query = query.where('status', status)
+    }
+
+    if (campaignId) {
+      query = query.where('campaign_id', campaignId)
+    }
+
+    return query.orderBy('created_at', 'desc').paginate(page, limit)
   }
 }
 

@@ -183,7 +183,7 @@ export default class PaymentService {
     }
 
     try {
-      const paypalDetails = JSON.parse(payout.payoutDetails)
+      JSON.parse(payout.payoutDetails)
 
       // TODO: Integrate with PayPal SDK
       // For now, simulate processing
@@ -213,7 +213,7 @@ export default class PaymentService {
     }
 
     try {
-      const cryptoDetails = JSON.parse(payout.payoutDetails)
+      JSON.parse(payout.payoutDetails)
 
       // TODO: Integrate with blockchain/crypto payment provider
       payout.status = 'processing'
@@ -269,7 +269,7 @@ export default class PaymentService {
   private static async calculateAvgProcessingTime(): Promise<number> {
     const completed = await PayoutRequest.query()
       .where('status', 'completed')
-      .where('transfer_completed_at', '!=', null)
+      .whereNotNull('transfer_completed_at')
 
     if (completed.length === 0) return 0
 
@@ -285,12 +285,13 @@ export default class PaymentService {
   static async getPublicConfig() {
     return {
       providers: [
-        { name: 'bank_transfer', enabled: true },
-        { name: 'paypal', enabled: true },
-        { name: 'crypto', enabled: true },
+        { name: 'bank_transfer', enabled: true, key: 'bank_transfer' },
+        { name: 'paypal', enabled: true, key: 'paypal' },
+        { name: 'crypto', enabled: true, key: 'crypto' },
       ],
       activeProvider: 'bank_transfer',
       currency: 'USD',
+      currencySymbol: '$',
     }
   }
 
@@ -302,8 +303,18 @@ export default class PaymentService {
     return config
   }
 
-  static async resolveCheckoutMethod(method: string) {
-    return { method, resolved: true }
+  static async resolveCheckoutMethod(method?: string) {
+    const config = await this.getPublicConfig()
+    const selectedMethod = method || config.activeProvider
+
+    return {
+      method: selectedMethod,
+      resolved: true,
+      provider: {
+        key: selectedMethod,
+        enabled: config.providers.some((p: any) => p.key === selectedMethod && p.enabled),
+      },
+    }
   }
 
   static async recordAffiliateConversion(conversionData: Record<string, any>) {

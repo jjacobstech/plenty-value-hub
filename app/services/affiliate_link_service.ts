@@ -181,8 +181,8 @@ export default class AffiliateLinkService {
     return Click.query()
       .where('affiliate_id', affiliateId)
       .where('campaign_id', campaignId)
-      .where('clicked_at', '>=', windowStart.toSQL())
-      .where('clicked_at', '<=', beforeTimestamp.toSQL())
+      .where('clicked_at', '>=', windowStart.toISO()!)
+      .where('clicked_at', '<=', beforeTimestamp.toISO()!)
       .orderBy('clicked_at', 'desc')
       .first()
   }
@@ -192,7 +192,7 @@ export default class AffiliateLinkService {
    */
   static async approveConversion(
     conversionId: number,
-    _adminId: number,
+    adminId: number,
     commissionAmount?: number
   ): Promise<Conversion> {
     const conversion = await Conversion.find(conversionId)
@@ -232,7 +232,7 @@ export default class AffiliateLinkService {
   static async rejectConversion(
     conversionId: number,
     _adminId: number,
-    _reason: string
+    reason: string
   ): Promise<Conversion> {
     const conversion = await Conversion.find(conversionId)
     if (!conversion) {
@@ -309,12 +309,8 @@ export default class AffiliateLinkService {
       throw new Error('Link not found')
     }
 
-    const conversions = await Conversion.query()
-      .where('affiliate_link_id', linkId)
-      .where('status', 'approved')
-
-    const conversionRate = link.totalClicks > 0 
-      ? (link.totalConversions / link.totalClicks) * 100 
+    const conversionRate = link.totalClicks > 0
+      ? (link.totalConversions / link.totalClicks) * 100
       : 0
 
     return {
@@ -323,8 +319,8 @@ export default class AffiliateLinkService {
       totalConversions: link.totalConversions,
       conversionRate: parseFloat(conversionRate.toFixed(2)),
       totalEarnings: link.totalEarnings,
-      avgOrderValue: link.totalConversions > 0 
-        ? link.totalEarnings / link.totalConversions 
+      avgOrderValue: link.totalConversions > 0
+        ? link.totalEarnings / link.totalConversions
         : 0,
     }
   }

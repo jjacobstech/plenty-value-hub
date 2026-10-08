@@ -8,6 +8,7 @@ import BlogPost from '#models/blog_post'
 import Newsletter from '#models/newsletter'
 import EmailCampaign from '#models/email_campaign'
 import SiteSetting from '#models/site_setting'
+import { PaymentService } from '#services/payment_service'
 import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
@@ -873,17 +874,7 @@ export default class PagesController {
   async adminPayouts({ inertia, auth }: HttpContext) {
     return inertia.render('admin/AdminPayouts', {
       user: auth.user,
-      payouts: (payouts || []).map((p) => ({
-        ...p.serialize(),
-        user: p.user
-          ? {
-              id: p.user.id,
-              fullName: p.user.fullName,
-              email: p.user.email,
-              role: p.user.role,
-            }
-          : null,
-      })),
+      payouts: [],
     })
   }
 

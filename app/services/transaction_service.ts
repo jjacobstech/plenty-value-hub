@@ -100,14 +100,12 @@ export class TransactionService {
       data.paymentGatewayReference ||
       `TXN_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`
 
-    const metadataStr = data.metadata ? JSON.stringify(data.metadata) : null
-
     const payload = {
       userId: data.userId || null,
       type: data.type,
       category: data.category,
       status: data.status || 'completed',
-      amount: String(data.amount),
+      amount: typeof data.amount === 'string' ? parseFloat(data.amount) : data.amount,
       currency: data.currency || 'USD',
       paymentMethod: data.paymentMethod || null,
       paymentGatewayReference: data.paymentGatewayReference || null,
@@ -116,7 +114,7 @@ export class TransactionService {
       productId: data.productId || null,
       description: data.description || null,
       transactionReference: reference,
-      metadata: metadataStr,
+      metadata: data.metadata || null,
     }
 
     return Transaction.firstOrCreate({ transactionReference: reference }, payload)

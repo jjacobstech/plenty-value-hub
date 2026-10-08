@@ -33,7 +33,7 @@ export default class PayoutService {
     return payout
   }
 
-  static async getPayoutHistory(userId: number | null, status: string, page: number = 1, limit: number = 10) {
+  static async getPayoutHistory(userId?: number | null, status?: string, page = 1, limit = 10) {
     let query = PayoutRequest.query()
     if (userId) query = query.where('user_id', userId)
     if (status && status !== 'all') query = query.where('status', status)
@@ -84,8 +84,8 @@ export default class PayoutService {
     return payout
   }
 
-  static async addPayoutMethod(userId: number, methodType: string, details: Record<string, any>) {
-    return { userId, methodType, details }
+  static async addPayoutMethod(userId: number, methodType: string, accountHolderName: string, details: Record<string, any>) {
+    return { userId, methodType, accountHolderName, details }
   }
 
   static async getPayoutMethods(_userId: number) {

@@ -101,8 +101,8 @@ export default class WalletService {
   static async requestPayout(
     userId: number,
     amount: number,
-    payoutMethod: 'bank_transfer' | 'paypal' | 'crypto',
-    payoutDetails: Record<string, any>
+    payoutMethod?: 'bank_transfer' | 'paypal' | 'crypto',
+    payoutDetails?: Record<string, any>
   ) {
     const wallet = await this.getOrCreateWallet(userId)
 
@@ -114,8 +114,8 @@ export default class WalletService {
       userId,
       walletId: wallet.id,
       amount,
-      payoutMethod,
-      payoutDetails,
+      payoutMethod: payoutMethod || 'bank_transfer',
+      payoutDetails: JSON.stringify(payoutDetails || {}),
       status: 'pending',
       adminNotes: '',
     })
@@ -260,6 +260,60 @@ export default class WalletService {
 
   static async retryPaystackTransfer(_payoutId: number) {
     return null
+  }
+
+  /**
+   * Handle order creation
+   */
+  static async handleOrderCreated(order: Record<string, any>) {
+    return order
+  }
+
+  /**
+   * Handle order completion
+   */
+  static async handleOrderCompleted(order: Record<string, any>) {
+    return order
+  }
+
+  /**
+   * Handle order cancellation
+   */
+  static async handleOrderCancelled(order: Record<string, any>) {
+    return order
+  }
+
+  /**
+   * Handle order refund
+   */
+  static async handleOrderRefunded(order: Record<string, any>) {
+    return order
+  }
+
+  /**
+   * Update payout status
+   */
+  static async updatePayoutStatus(
+    payoutId: number,
+    status: 'pending' | 'approved' | 'rejected' | 'completed' | 'paid' | 'processing' | 'failed',
+    transferRef?: string,
+    errorMessage?: string
+  ) {
+    const payout = await PayoutRequest.findOrFail(payoutId)
+    payout.status = status
+
+    if (transferRef) {
+      payout.transferReference = transferRef
+      payout.transferStatus = 'success'
+    }
+
+    if (errorMessage) {
+      payout.transferErrorMessage = errorMessage
+      payout.transferStatus = 'failed'
+    }
+
+    await payout.save()
+    return payout
   }
 }
 

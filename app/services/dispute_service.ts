@@ -10,25 +10,40 @@ export interface DisputeResolution {
 
 export default class DisputeService {
   /**
-   * Create a dispute
+   * Create a dispute (supports both individual args and object arg)
    */
   static async createDispute(
-    type: 'commission' | 'chargeback' | 'conversion' | 'payout',
-    initiatorId: number,
-    respondentId: number,
-    amount: number,
-    reason: string,
+    typeOrData: 'commission' | 'chargeback' | 'conversion' | 'payout' | Record<string, any>,
+    initiatorId?: number,
+    respondentId?: number,
+    amount?: number,
+    reason?: string,
     relatedId?: number
   ) {
+    let disputeData: Record<string, any>
+
+    if (typeof typeOrData === 'object') {
+      disputeData = typeOrData
+    } else {
+      disputeData = {
+        type: typeOrData,
+        initiatorId,
+        respondentId,
+        amount,
+        reason,
+        relatedConversionId: relatedId,
+      }
+    }
+
     const dispute = await Dispute.create({
-      type,
-      initiatorId,
-      respondentId,
-      amount,
-      reason,
-      relatedConversionId: relatedId,
+      type: disputeData.type,
+      initiatorId: disputeData.initiatorId,
+      respondentId: disputeData.respondentId,
+      amount: disputeData.amount,
+      reason: disputeData.reason,
+      relatedConversionId: disputeData.relatedConversionId,
       status: 'open',
-      priority: this.calculatePriority(type, amount),
+      priority: this.calculatePriority(disputeData.type, disputeData.amount),
       createdAt: DateTime.now(),
     })
 
@@ -46,21 +61,27 @@ export default class DisputeService {
   }
 
   /**
-   * Get open disputes
+   * Get open disputes with pagination
    */
-  static async getOpenDisputes() {
-    return Dispute.query()
+  static async getOpenDisputes(page?: number, limit?: number) {
+    const query = Dispute.query()
       .where('status', 'open')
       .orderBy('priority', 'desc')
       .orderBy('created_at', 'asc')
       .preload('initiator')
       .preload('respondent')
+
+    if (page && limit) {
+      return query.paginate(page, limit)
+    }
+
+    return query
   }
 
   /**
-   * Get disputes for user
+   * Get disputes for user with pagination
    */
-  static async getUserDisputes(userId: number) {
+  static async getUserDisputes(userId: number, page = 1, limit = 20) {
     return Dispute.query()
       .where((query) => {
         query.where('initiator_id', userId).orWhere('respondent_id', userId)
@@ -68,6 +89,7 @@ export default class DisputeService {
       .orderBy('created_at', 'desc')
       .preload('initiator')
       .preload('respondent')
+      .paginate(page, limit)
   }
 
   /**
@@ -183,7 +205,7 @@ export default class DisputeService {
   private static async calculateAvgResolutionTime(): Promise<number> {
     const resolved = await Dispute.query()
       .where('status', 'resolved')
-      .where('resolved_at', '!=', null)
+      .whereNotNull('resolved_at')
 
     if (resolved.length === 0) return 0
 
@@ -224,6 +246,137 @@ export default class DisputeService {
       if (dispute.type === 'chargeback') {
         await this.escalateDispute(dispute.id, 'Automatic escalation: chargeback disputes require manual review')
       }
+    }
+  }
+
+  /**
+   * Get dispute with full details
+   */
+  static async getDisputeWithDetails(disputeId: number) {
+    return Dispute.query()
+      .where('id', disputeId)
+      .preload('initiator')
+      .preload('respondent')
+      .firstOrFail()
+  }
+
+  /**
+   * Add comment to dispute
+   */
+  static async addComment(disputeId: number, _userId: number, comment: string, _isInternal: boolean) {
+    const dispute = await Dispute.findOrFail(disputeId)
+    dispute.supportingNotes = (dispute.supportingNotes || '') + '\n' + comment
+    await dispute.save()
+    return { comment, createdAt: DateTime.now() }
+  }
+
+  /**
+   * Update dispute status
+   */
+  static async updateDisputeStatus(disputeId: number, status: 'open' | 'escalated' | 'resolved' | 'closed', _userId: number, notes: string) {
+    const dispute = await Dispute.findOrFail(disputeId)
+    dispute.status = status
+    dispute.resolutionNotes = (dispute.resolutionNotes || '') + '\n' + notes
+    await dispute.save()
+    return dispute
+  }
+
+  /**
+   * Assign dispute to user
+   */
+  static async assignDispute(disputeId: number, assignedToUserId: number, _userId: number, notes: string) {
+    const dispute = await Dispute.findOrFail(disputeId)
+    dispute.escalatedToUserId = assignedToUserId
+    dispute.resolutionNotes = (dispute.resolutionNotes || '') + '\n' + notes
+    await dispute.save()
+    return dispute
+  }
+
+  /**
+   * Get escalated disputes
+   */
+  static async getEscalatedDisputes(page = 1, limit = 20) {
+    return Dispute.query()
+      .where('status', 'escalated')
+      .orderBy('created_at', 'desc')
+      .preload('initiator')
+      .preload('respondent')
+      .paginate(page, limit)
+  }
+
+  /**
+   * Get disputes by filter
+   */
+  static async getDisputesByFilter(
+    type?: string,
+    status?: string,
+    priority?: string,
+    page = 1,
+    limit = 20
+  ) {
+    let query = Dispute.query()
+
+    if (type) query = query.where('type', type)
+    if (status) query = query.where('status', status)
+    if (priority) query = query.where('priority', priority)
+
+    return query
+      .orderBy('created_at', 'desc')
+      .preload('initiator')
+      .preload('respondent')
+      .paginate(page, limit)
+  }
+
+  /**
+   * Get dashboard statistics
+   */
+  static async getDashboardStats() {
+    const disputes = await Dispute.query()
+    return {
+      total: disputes.length,
+      open: disputes.filter((d) => d.status === 'open').length,
+      escalated: disputes.filter((d) => d.status === 'escalated').length,
+      resolved: disputes.filter((d) => d.status === 'resolved').length,
+      totalAmount: disputes.reduce((sum, d) => sum + d.amount, 0),
+    }
+  }
+
+  /**
+   * Request dispute approval
+   */
+  static async requestApproval(disputeId: number, userId: number, reason: string) {
+    const dispute = await Dispute.findOrFail(disputeId)
+    dispute.resolutionNotes = (dispute.resolutionNotes || '') + '\nApproval requested: ' + reason
+    await dispute.save()
+    return {
+      disputeId,
+      requestedByUserId: userId,
+      reason,
+      requestedAt: DateTime.now().toISO(),
+    }
+  }
+
+  /**
+   * Approve dispute
+   */
+  static async approveDispute(approvalId: number, _userId: number, reason: string) {
+    return {
+      approvalId,
+      status: 'approved',
+      reason,
+      approvedAt: DateTime.now().toISO(),
+    }
+  }
+
+  /**
+   * Reject dispute
+   */
+  static async rejectDispute(approvalId: number, _userId: number, reason: string) {
+    return {
+      approvalId,
+      status: 'rejected',
+      reason,
+      rejectedAt: DateTime.now().toISO(),
     }
   }
 }

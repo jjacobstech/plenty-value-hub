@@ -2,7 +2,6 @@ import Conversion from '#models/conversion'
 import Click from '#models/click'
 import CommissionLedger from '#models/commission_ledger'
 import Campaign from '#models/campaign'
-import AffiliateLink from '#models/affiliate_link'
 import { DateTime } from 'luxon'
 
 export interface AffiliatePerformanceReport {
@@ -298,11 +297,18 @@ export default class ReportService {
     }
   }
 
-  static async createReportLog(config: Record<string, any>, reportData: Record<string, any>) {
-    return { reportId: 1, config, generatedAt: DateTime.now() }
+  static async createReportLog(configId: number, userId: number, reportData: Record<string, any>, format: string) {
+    return {
+      reportId: 1,
+      configId,
+      userId,
+      format,
+      generatedAt: DateTime.now(),
+      recordCount: Object.keys(reportData).length
+    }
   }
 
-  static async scheduleReport(configId: number, settings: Record<string, any>) {
+  static async scheduleReport(configId: number, _settings: Record<string, any>) {
     return { scheduled: true, configId }
   }
 

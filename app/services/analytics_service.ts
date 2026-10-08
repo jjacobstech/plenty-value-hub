@@ -404,7 +404,7 @@ export default class AnalyticsService {
       .filter((c) => c.status === 'pending')
       .reduce((sum, c) => sum + c.amount, 0)
     const totalReversed = commissions
-      .filter((c) => c.status === 'reversed')
+      .filter((c) => c.status === 'disputed')
       .reduce((sum, c) => sum + c.amount, 0)
     const totalPayouts = commissions
       .filter((c) => c.status === 'paid')
