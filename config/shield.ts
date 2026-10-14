@@ -58,6 +58,8 @@ const shieldConfig = defineConfig({
       // Partner API and redirect. Shield matches route patterns, not URLs, so list each /v1 route here.
       '/v1/affiliates',
       '/v1/affiliates/:id',
+      '/v1/links',
+      '/v1/links/:id/disable',
       '/r/:code',
     ],
 

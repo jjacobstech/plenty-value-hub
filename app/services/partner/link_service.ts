@@ -1,0 +1,96 @@
+import db from '@adonisjs/lucid/services/db'
+import env from '#start/env'
+import { customAlphabet } from 'nanoid'
+import PartnerApiException from '#exceptions/partner_api_exception'
+import type Partner from '#models/partner'
+import PartnerAffiliate from '#models/partner_affiliate'
+import PartnerLink from '#models/partner_link'
+import { publicId } from '#services/partner/public_id'
+
+// No look-alike characters (0, O, 1, l, I) so codes can be read aloud.
+const codeAlphabet = customAlphabet('23456789abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ', 8)
+
+/** Base of the public redirect, e.g. https://go.example.com. Falls back to APP_URL. */
+export function redirectBase(): string {
+  return (env.get('PUBLIC_REDIRECT_BASE_URL') ?? env.get('APP_URL')).replace(/\/+$/, '')
+}
+
+export function linkUrl(link: PartnerLink): string {
+  return `${redirectBase()}/r/${link.code}`
+}
+
+/** A destination is allowed when its host equals an allowed domain or is a subdomain of one. */
+export function assertDestinationAllowed(partner: Partner, destinationUrl: string, livemode: boolean) {
+  const url = new URL(destinationUrl)
+  if (livemode && url.protocol !== 'https:') {
+    throw new PartnerApiException('destination_url must use https in live mode.', 'invalid_request_error', 'parameter_invalid', 400, 'destination_url')
+  }
+  const allowed = partner.allowedRedirectDomains.some(
+    (domain) => url.hostname === domain || url.hostname.endsWith(`.${domain}`)
+  )
+  if (!allowed) {
+    throw new PartnerApiException('destination_url host is not in allowed_redirect_domains', 'invalid_request_error', 'parameter_invalid', 400, 'destination_url')
+  }
+}
+
+/** Creates the link, or returns the existing one for the same affiliate, product and campaign. */
+export async function createOrGetLink(input: {
+  partner: Partner
+  livemode: boolean
+  affiliate: PartnerAffiliate
+  productRef: string | null
+  campaignRef: string | null
+  destinationUrl: string
+  updateDestination: boolean
+  metadata: Record<string, string>
+}): Promise<{ link: PartnerLink; created: boolean }> {
+  const { partner, livemode, affiliate, productRef, campaignRef, destinationUrl } = input
+
+  const existing = await PartnerLink.query()
+    .where('partner_id', partner.id)
+    .where('livemode', livemode)
+    .where('affiliate_id', affiliate.id)
+    .whereRaw("coalesce(product_ref, '') = ?", [productRef ?? ''])
+    .whereRaw("coalesce(campaign_ref, '') = ?", [campaignRef ?? ''])
+    .first()
+
+  if (existing) {
+    if (existing.status === 'disabled') {
+      throw new PartnerApiException('This link is disabled.', 'invalid_request_error', 'link_disabled', 422)
+    }
+    if (input.updateDestination && existing.destinationUrl !== destinationUrl) {
+      existing.destinationUrl = destinationUrl
+      await existing.save()
+    }
+    return { link: existing, created: false }
+  }
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const inserted = await db.rawQuery(
+        `insert into partner_links (public_id, partner_id, livemode, affiliate_id, code, product_ref, campaign_ref, destination_url, status, metadata, created_at, updated_at)
+         values (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?::jsonb, now(), now())
+         on conflict (partner_id, livemode, affiliate_id, (coalesce(product_ref, '')), (coalesce(campaign_ref, '')))
+         do nothing returning id`,
+        [publicId('lnk_'), partner.id, livemode, affiliate.id, codeAlphabet(), productRef, campaignRef, destinationUrl, JSON.stringify(input.metadata)]
+      )
+      if (inserted.rows.length > 0) {
+        return { link: await PartnerLink.findOrFail(inserted.rows[0].id), created: true }
+      }
+      // A concurrent request created the same link first.
+      const winner = await PartnerLink.query()
+        .where('partner_id', partner.id)
+        .where('livemode', livemode)
+        .where('affiliate_id', affiliate.id)
+        .whereRaw("coalesce(product_ref, '') = ?", [productRef ?? ''])
+        .whereRaw("coalesce(campaign_ref, '') = ?", [campaignRef ?? ''])
+        .firstOrFail()
+      return { link: winner, created: false }
+    } catch (error: any) {
+      // Code collision: the unique code index rejected it, so try another code.
+      if (error?.code === '23505' && String(error.constraint).includes('code')) continue
+      throw error
+    }
+  }
+  throw new Error('Could not generate a unique link code')
+}

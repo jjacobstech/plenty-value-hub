@@ -36,8 +36,10 @@ export const controllers = {
   Pages: () => import('#controllers/pages_controller'),
   partnerApi: {
     Affiliates: () => import('#controllers/partner_api/affiliates_controller'),
+    Links: () => import('#controllers/partner_api/links_controller'),
     Ping: () => import('#controllers/partner_api/ping_controller'),
   },
+  PartnerRedirect: () => import('#controllers/partner_redirect_controller'),
   Payment: () => import('#controllers/payment_controller'),
   PaymentSettings: () => import('#controllers/payment_settings_controller'),
   Payouts: () => import('#controllers/payouts_controller'),

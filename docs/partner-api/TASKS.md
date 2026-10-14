@@ -56,12 +56,20 @@ Notes:
 
 ## M3 — Links, redirect, clicks
 
-- [ ] Migrations + models `partner_links`, `partner_clicks`.
-- [ ] `POST/GET /v1/links`, `GET /v1/links/:id`, `POST /v1/links/:id/disable`.
-- [ ] Destination allowlist validation (host or subdomain match, https required in live mode).
-- [ ] Public `GET /r/:code` controller: visitor hash with daily salt, unique-click logic, bot filter, UTM passthrough, append click id param, never 500.
-- [ ] Env `PUBLIC_REDIRECT_BASE_URL` added to `start/env.ts`.
-- [ ] Tests: create-or-get, `update_destination`, disallowed domain, redirect Location header correct, raw vs unique counting, bot not counted, disabled link, suspended affiliate still redirects.
+- [x] Migrations + models `partner_links`, `partner_clicks`.
+- [x] `POST/GET /v1/links`, `GET /v1/links/:id`, `POST /v1/links/:id/disable`.
+- [x] Destination allowlist validation (host or subdomain match, https required in live mode).
+- [x] Public `GET /r/:code` controller: visitor hash with daily salt, unique-click logic, bot filter, UTM passthrough, append click id param, never 500.
+- [x] Env `PUBLIC_REDIRECT_BASE_URL` added to `start/env.ts`.
+- [x] Tests: create-or-get, `update_destination`, disallowed domain, redirect Location header correct, raw vs unique counting, bot not counted, disabled link, suspended affiliate still redirects.
+
+Notes:
+- Redirect base is `PUBLIC_REDIRECT_BASE_URL`, falling back to `APP_URL`. Added to `.env.example`.
+- Visitor hash: sha256(ip | user agent | daily salt). The salt comes from APP_KEY and the UTC date, so it is not stored and hashes cannot be linked across days.
+- Clicks are written after the redirect is sent. A crash in that gap loses the click; the redirect still works. A queue (BullMQ) can take over if loss matters.
+- Not built: the 60-second in-memory link cache (the redirect is one indexed lookup). Add it if redirect latency shows up in load tests.
+- A suspended partner gets 404 on the redirect. The spec does not say; this is the conservative choice. A suspended affiliate still redirects, as the spec requires.
+- Bot and visitor-limit checks run after the redirect, so a bot still gets its 302.
 
 ## M4 — Events and attribution
 

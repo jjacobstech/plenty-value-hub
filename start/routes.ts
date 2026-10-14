@@ -689,6 +689,13 @@ router
     router.get('/affiliates', [controllers.partnerApi.Affiliates, 'index'])
     router.get('/affiliates/:id', [controllers.partnerApi.Affiliates, 'show'])
     router.patch('/affiliates/:id', [controllers.partnerApi.Affiliates, 'update'])
+    router.post('/links', [controllers.partnerApi.Links, 'create']).use(middleware.partnerIdempotency())
+    router.get('/links', [controllers.partnerApi.Links, 'index'])
+    router.get('/links/:id', [controllers.partnerApi.Links, 'show'])
+    router.post('/links/:id/disable', [controllers.partnerApi.Links, 'disable']).use(middleware.partnerIdempotency())
   })
   .prefix('/v1')
   .use([middleware.partnerRequestId(), middleware.partnerApiAuth()])
+
+// Public redirect. No key, no session. Never a 500 (see PartnerRedirectController).
+router.get('/r/:code', [controllers.PartnerRedirect, 'show'])

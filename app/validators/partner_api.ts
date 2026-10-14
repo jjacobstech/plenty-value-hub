@@ -28,3 +28,14 @@ export function rejectUnknownFields(body: Record<string, unknown>, allowed: read
     throw new PartnerApiException(`Unknown field: ${unknown}.`, 'invalid_request_error', 'parameter_unknown', 400, unknown)
   }
 }
+
+export const createLinkValidator = vine.create(
+  vine.object({
+    affiliate: vine.string().trim().minLength(1).maxLength(64),
+    product_ref: vine.string().trim().maxLength(191).optional(),
+    campaign_ref: vine.string().trim().maxLength(191).optional(),
+    destination_url: vine.string().url({ protocols: ['http', 'https'] }).maxLength(2048),
+    update_destination: vine.boolean().optional(),
+    metadata: metadata.optional(),
+  })
+)

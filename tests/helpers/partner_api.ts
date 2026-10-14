@@ -44,3 +44,14 @@ export async function api(
   })
   return { status: response.status, headers: response.headers, body: await response.json() }
 }
+
+/** Polls until `check` returns a truthy value. Clicks are recorded after the redirect responds. */
+export async function eventually<T>(check: () => Promise<T>, timeoutMs = 3000): Promise<T> {
+  const started = Date.now()
+  let last: T = await check()
+  while (!last && Date.now() - started < timeoutMs) {
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    last = await check()
+  }
+  return last
+}
