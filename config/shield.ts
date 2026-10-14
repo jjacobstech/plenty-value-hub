@@ -60,6 +60,8 @@ const shieldConfig = defineConfig({
       '/v1/affiliates/:id',
       '/v1/links',
       '/v1/links/:id/disable',
+      '/v1/events',
+      '/v1/events/:id/reverse',
       '/r/:code',
     ],
 

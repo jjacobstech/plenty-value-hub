@@ -73,11 +73,17 @@ Notes:
 
 ## M4 — Events and attribution
 
-- [ ] Migration + model `partner_events`.
-- [ ] `app/services/partner/attribution_service.ts` implementing SPEC §8 Events steps 1–6 in one transaction.
-- [ ] Hook fraud heuristics (reuse from `FraudDetectionService` where possible, otherwise small partner-local checks: >N events per affiliate per hour, same visitor_hash converting > N times per day).
-- [ ] `POST/GET /v1/events`, `GET /v1/events/:id`, `POST /v1/events/:id/reverse`.
-- [ ] Tests: dedupe by event_id (200 with original), each reason code, window boundary (exactly N days in, N days + 1s out), first_click vs last_click, type not allowed → 400.
+- [x] Migration + model `partner_events`.
+- [x] `app/services/partner/attribution_service.ts` implementing SPEC §8 Events steps 1–4 in one transaction. Steps 5 (commission) and 6 (webhooks) follow in M5 and M6.
+- [x] Hook fraud heuristics (reuse from `FraudDetectionService` where possible, otherwise small partner-local checks: >N events per affiliate per hour, same visitor_hash converting > N times per day).
+- [x] `POST/GET /v1/events`, `GET /v1/events/:id`, `POST /v1/events/:id/reverse`.
+- [x] Tests: dedupe by event_id (200 with original), each reason code, window boundary (exactly N days in, N days + 1s out), first_click vs last_click, type not allowed → 400.
+
+Notes:
+- Fraud limits are partner-local constants: 50 attributed events per affiliate per hour, and 5 attributed events per visitor hash per day. Both are constants, not per-program settings yet.
+- Event `commission` is null until M5.
+- First-click uses the earliest attributed event for the referred customer, so the click is the one that first brought them in.
+- Redirect and event tests share a visitor hash limit (60/min) through the same user agent. Keep test user agents distinct if the suite starts to flake.
 
 ## M5 — Commissions
 

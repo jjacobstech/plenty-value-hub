@@ -39,3 +39,24 @@ export const createLinkValidator = vine.create(
     metadata: metadata.optional(),
   })
 )
+
+export const createEventValidator = vine.create(
+  vine.object({
+    event_id: vine.string().trim().minLength(1).maxLength(191),
+    type: vine.string().trim().minLength(1).maxLength(64),
+    click_id: vine.string().trim().maxLength(64).optional(),
+    link_id: vine.string().trim().maxLength(64).optional(),
+    affiliate_id: vine.string().trim().maxLength(64).optional(),
+    referred_external_user_id: vine.string().trim().maxLength(191).optional(),
+    amount: vine.number().min(0).withoutDecimals().optional(),
+    currency: vine.string().trim().minLength(3).maxLength(3).optional(),
+    occurred_at: vine.number().min(0).withoutDecimals().optional(),
+    metadata: metadata.optional(),
+  })
+)
+
+export const reverseEventValidator = vine.create(
+  vine.object({
+    reason: vine.string().trim().maxLength(255).optional(),
+  })
+)

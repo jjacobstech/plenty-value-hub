@@ -76,7 +76,7 @@ test.group('partner redirect', (group) => {
   test('unknown codes and disabled links return a plain 404 page', async ({ assert }) => {
     const { partner, testKey } = await makePartner()
     created.push(partner)
-    const { link, dbId } = await createLink(testKey.secret)
+    const { link } = await createLink(testKey.secret)
     const unknown = await get('/r/doesnotexist')
     assert.equal(unknown.status, 404)
     assert.include(await unknown.text(), 'not available')
@@ -98,7 +98,7 @@ test.group('partner redirect', (group) => {
   test('a suspended partner no longer redirects', async ({ assert }) => {
     const { partner, testKey } = await makePartner()
     created.push(partner)
-    const { link, dbId } = await createLink(testKey.secret)
+    const { link } = await createLink(testKey.secret)
     partner.status = 'suspended'
     await partner.save()
     const res = await get(`/r/${link.code}`)
