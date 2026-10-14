@@ -678,3 +678,13 @@ router
       .use(middleware.auth())
   })
   .prefix('/api')
+
+/**
+ * Partner API (JSON, key-authenticated, CSRF-exempt; see docs/partner-api).
+ */
+router
+  .group(() => {
+    router.get('/ping', [controllers.partnerApi.Ping, 'show'])
+  })
+  .prefix('/v1')
+  .use([middleware.partnerRequestId(), middleware.partnerApiAuth()])

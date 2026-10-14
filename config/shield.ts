@@ -54,7 +54,9 @@ const shieldConfig = defineConfig({
       '/api/orders/download',
       '/api/newsletters/subscribe',
       '/api/newsletters/unsubscribe',
-      '/api/affiliate-links/track-click'
+      '/api/affiliate-links/track-click',
+      '/v1/*',
+      '/r/*'
     ],
 
     /**
