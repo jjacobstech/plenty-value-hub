@@ -171,7 +171,13 @@ Notes:
 
 ## M10 — Docs and hardening
 
-- [ ] Update `openapi.yaml` to match what was actually built (it is the source of truth for partners).
-- [ ] Serve rendered docs at `/docs/api` (static page using the OpenAPI file) and `QUICKSTART.md` content.
-- [ ] Security pass: no secrets in logs, all `/v1` queries scoped (grep every Lucid query in `partner_api` controllers/services for `partner_id` and `livemode`), body size limit, CORS denies browser calls to `/v1`.
-- [ ] Final report in `docs/partner-api/RECON.md` → "Build notes": what was built, deviations, follow-ups.
+- [x] Update `openapi.yaml` to match what was actually built (it is the source of truth for partners).
+- [x] Serve rendered docs at `/docs/api` (static page using the OpenAPI file) and `QUICKSTART.md` content.
+- [x] Security pass: no secrets in logs, all `/v1` queries scoped (grep every Lucid query in `partner_api` controllers/services for `partner_id` and `livemode`), body size limit, CORS denies browser calls to `/v1`.
+- [x] Final report in `docs/partner-api/RECON.md` → "Build notes": what was built, deviations, follow-ups.
+
+Notes:
+- openapi: the dashboard session response now returns the `id` it documents. Info describes JSON-only, the 64 KB limit, the CORS denial, Request-Id and rate limits.
+- Security pass: no console output and no secret-bearing log fields in the partner code. Every /v1 query is scoped by partner and mode, except three intended cases: the public `/r/:code` lookup, the background approval and webhook jobs, and the dashboard token lookup (by hash).
+- The body limit and CORS denial are in `partner_body_limit_middleware` (server stack) and `config/cors.ts`.
+- The QUICKSTART end-to-end test is `tests/functional/partner_api/quickstart.spec.ts`.

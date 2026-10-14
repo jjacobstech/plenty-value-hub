@@ -754,3 +754,10 @@ router
  */
 router.get('/a/session/:token', [controllers.PartnerAffiliateDashboard, 'redeem'])
 router.get('/a', [controllers.PartnerAffiliateDashboard, 'show'])
+
+/**
+ * Partner API documentation. Public. Served from docs/partner-api.
+ */
+router.get('/docs/api', [controllers.PartnerDocs, 'api'])
+router.get('/docs/api/openapi.yaml', [controllers.PartnerDocs, 'openapi'])
+router.get('/docs/quickstart', [controllers.PartnerDocs, 'quickstart'])

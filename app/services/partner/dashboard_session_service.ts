@@ -31,8 +31,9 @@ export function assertReturnUrlAllowed(partner: Partner, returnUrl: string) {
 export async function createDashboardSession(partner: Partner, livemode: boolean, affiliate: PartnerAffiliate, returnUrl?: string) {
   const token = token52()
   const expiresAt = DateTime.now().plus({ minutes: LINK_TTL_MINUTES })
+  const id = publicId('dss_')
   await PartnerDashboardSession.create({
-    publicId: publicId('dss_'),
+    publicId: id,
     partnerId: partner.id,
     livemode,
     affiliateId: affiliate.id,
@@ -40,7 +41,7 @@ export async function createDashboardSession(partner: Partner, livemode: boolean
     expiresAt,
     returnUrl: returnUrl ?? null,
   })
-  return { url: `${appBase()}/a/session/${token}`, expiresAt }
+  return { id, url: `${appBase()}/a/session/${token}`, expiresAt }
 }
 
 /** Finds the session for a token. Returns null for unknown tokens, expired ones and used ones. */

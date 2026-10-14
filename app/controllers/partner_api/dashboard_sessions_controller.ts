@@ -19,6 +19,6 @@ export default class DashboardSessionsController {
     if (data.return_url) assertReturnUrlAllowed(ctx.partner, data.return_url)
 
     const session = await createDashboardSession(ctx.partner, ctx.livemode, affiliate, data.return_url)
-    return ctx.response.status(201).json({ object: 'dashboard_session', url: session.url, expires_at: Math.floor(session.expiresAt.toSeconds()) })
+    return ctx.response.status(201).json({ object: 'dashboard_session', id: session.id, url: session.url, expires_at: Math.floor(session.expiresAt.toSeconds()) })
   }
 }

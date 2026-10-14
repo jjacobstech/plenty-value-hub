@@ -57,24 +57,60 @@ Each command is idempotent, so overlapping runs are safe. Confirm the host you d
 |---|---|---|
 | 1 | Redirect host in openapi and QUICKSTART was a hardcoded domain. | Built from `PUBLIC_REDIRECT_BASE_URL`. Done in docs. |
 | 2 | Partner wallet wording in docs. | Removed. Organizations only have affiliates. Done in docs. |
-| 3 | `/a/session/` dashboard host is not stated. openapi uses `api.plentyvalue.com`. | Open. Proposal: `PUBLIC_DASHBOARD_BASE_URL` env var, same pattern. Needs your decision before M9. |
+| 3 | `/a/session/` dashboard host is not stated. | Resolved: the dashboard is served from `APP_URL`. No new env var (your decision 1). |
 | 4 | SPEC §5 says `/v1` never uses session, but global middleware runs. | Accepted deviation (see §2). |
 | 5 | SPEC §8 says the role middleware gets a `partner` role. | Changed. Use a separate partner membership middleware, so marketplace roles are untouched. |
 | 6 | `/r/*` and `/v1/*` run `affiliate_attribution_middleware`. | Accepted. A `ref` query value only matters if it matches a marketplace link code. |
-| 7 | Tests would use the marketplace database. | Fixed in M1 via `.env.test` (see §4). Needs approval. |
+| 7 | Tests would use the marketplace database. | Resolved: tests run on `plenty_value_hub` as you approved. Each test removes the partner it creates. |
 
 ## 7. Milestone plan
 
 - **M1**: migrations for `partners`, `partner_members`, `partner_api_keys`, `partner_programs`, `partner_idempotency_keys`. Add `public_id.ts`, `api_key_service.ts`, `partnerApiAuth`, the error branch, `partnerIdempotency`, rate limit, CSRF exemption, `GET /v1/ping`, and `partner:create`. Tests: auth cases, error shape, ping, idempotency.
 - **M2 to M10**: as in TASKS.md. Each adds its own migrations, models, services, controllers, routes and tests. No changes to marketplace tables or routes beyond `config/shield.ts`, `start/env.ts`, `start/routes.ts` (new group only) and `app/exceptions/handler.ts`.
 
-## 8. Open items for you
+## 8. Decisions taken
 
-1. Dashboard host (conflict 3).
-2. Approve creating the `plenty_value_test` database and running migrations against it (conflict 7).
-3. Confirm the scheduler choice (§3).
-4. Confirm you accept the session middleware deviation (conflict 4).
+1. Dashboard host: `APP_URL` (conflict 3).
+2. Tests: `plenty_value_hub` (conflict 7).
+3. Scheduler: BullMQ job scheduler on queue `partner-jobs`, run by `node ace partner:worker` (§3).
+4. Session middleware: accepted (conflict 4).
 
 ## Build notes
 
-M0 only. Nothing built yet.
+Built M1 to M10 on `main`, one commit per milestone, none pushed:
+`5f376ce` M1 · `405337b` M2 · `9d19109` M3 · `c9b87e1` M4 · `3c90cb5` M5 · `c5bbbac` M6 · `2cbd1a0` M7 · `6237ec0` M8 · `e05d639` M9 · M10 (this commit).
+
+**Built**
+- Partner tables (12 migrations), models, prefixed public ids, SHA-256 hashed keys, `partnerApiAuth`, `/v1` error shape, per-key rate limits.
+- Affiliates (create-or-get in one statement), links (expression unique index, destination allowlist), `/r/:code` redirect (never 500, click after response).
+- Events and attribution (SPEC §8 steps 1 to 6), commissions (decimal.js, half-up, hold, state machine).
+- Webhooks: outbox in the same transaction, HMAC-SHA256 signing, retries, 3-day disable with owner email, 24-hour rotation.
+- Stats (grouped SQL), developer portal (`/partner`), admin partners (`/admin/partners`), hosted affiliate dashboard (`/a`).
+- BullMQ jobs: approve-commissions (10 min), deliver-webhooks (1 min), prune (daily). Run with `node ace partner:worker`.
+- Docs served at `/docs/api`, `/docs/api/openapi.yaml`, `/docs/quickstart`.
+- Hardening: `/v1` CORS denied, 64 KB and JSON-only bodies, Request-Id on every response.
+
+**Verification**
+- 100 partner and portal tests pass on two consecutive runs (`tests/functional/partner_api/*`, `tests/functional/partner_portal/*`). Among them, `quickstart.spec.ts` runs the QUICKSTART flow end to end: portal setup, API, signed webhook, reversal and dashboard.
+- Backend typecheck is clean. New frontend files typecheck clean. The frontend project total is 992 errors. Five are in `AdminAnalytics.tsx`, which had an uncommitted change before this work.
+- `node ace test functional` covers these suites. The old root `tests/*.spec.ts` files (run with `node --test`) fail with or without these changes. The `browser` and `unit` suites were not run.
+
+**Deviations from the spec**
+- Commission and stats money: mixed-currency buckets return a null amount rather than a converted total.
+- Idempotency: thrown 4xx errors are not stored, so a retry runs again. Only completed responses are replayed.
+- `ids` are integer `increments` to match `users`. Public ids are prefixed.
+- Visitor hash salt is derived from APP_KEY and the UTC date, not stored.
+- Dashboard chart is CSS bars, not recharts.
+- Clicks are written after the redirect. A crash in that gap loses the click.
+- Delivery runs every minute, not right after commit.
+- Global router middleware (session, auth) still runs on `/v1`. Accepted.
+- `/v1` body limit is enforced before the body parser for `/v1` only. Chunked requests without a content-length are still bounded by the global 20 MB limit.
+
+**Follow-ups**
+- Portal not clicked through in a browser. The tests check its HTML data and redirects over HTTP.
+- Team invites add an existing account only. No invitation email yet.
+- Reveal-once secrets are shown in the creating response only. Nothing is stored in the session.
+- Re-measure stats at 1M clicks before deciding on a daily rollup (SPEC threshold 300 ms).
+- Remove the stale `plenty-partner-api/` folder once the repo copy is confirmed.
+- `ioredis` is pinned to 5.11.1. Review it when bullmq moves.
+- Stripe/payout money movement: out of scope, as the spec says.

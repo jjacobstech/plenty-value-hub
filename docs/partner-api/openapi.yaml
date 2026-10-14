@@ -6,7 +6,10 @@ info:
     Affiliate and referral tracking infrastructure for partner platforms.
     Authenticate with a secret key: `Authorization: Bearer pv_live_sk_...` (or `pv_test_sk_...` for test mode).
     All POST requests accept an `Idempotency-Key` header. Money is integer minor units.
-    See SPEC.md for behaviour that this contract does not express.
+    Requests and responses are JSON only. Request bodies are limited to 64 KB, and browsers get no CORS access to `/v1`.
+    Every response carries a `Request-Id` header, and every error body repeats it as `request_id`.
+    Keys are limited per key: 100 requests per 10 seconds in live mode, 50 in test mode.
+    See SPEC.md for behaviour that this contract does not express. The rendered reference is at /docs/api.
 servers:
   - url: https://api.plentyvalue.com
     description: Production (replace with real host)
@@ -176,7 +179,6 @@ paths:
                   id: { type: string, example: dss_x8LmQ2... }
                   url: { type: string, format: uri, example: "https://api.plentyvalue.com/a/session/AbC..." }
                   expires_at: { type: integer, description: Unix seconds, 5 minutes from creation }
-        "422": { $ref: "#/components/responses/Unprocessable" }
 
   /v1/links:
     post:

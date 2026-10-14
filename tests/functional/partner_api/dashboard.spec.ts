@@ -51,6 +51,7 @@ test.group('partner affiliate dashboard', (group) => {
     const { affiliate } = await affiliateWithLink(testKey.secret, 'dash_one')
     const session = await api('POST', `/v1/affiliates/${affiliate.id}/dashboard_sessions`, testKey.secret, {})
     assert.equal(session.status, 201)
+    assert.match(session.body.id, /^dss_[0-9A-Za-z]{20}$/)
     assert.match(session.body.url, /\/a\/session\/[0-9A-Za-z]{43}$/)
     assert.isAbove(session.body.expires_at, Math.floor(DateTime.now().toSeconds()))
 

@@ -60,7 +60,8 @@ test.group('partner redirect', (group) => {
       return rows.length === 2 ? rows : null
     })
     assert.isNotNull(clicks)
-    assert.deepEqual(clicks!.map((c) => c.isUnique), [true, false])
+    // Both requests may run at once, so either one can be the unique click. Exactly one must be.
+    assert.deepEqual(clicks!.map((c) => c.isUnique).sort(), [false, true])
   })
 
   test('bots are redirected but not counted', async ({ assert }) => {

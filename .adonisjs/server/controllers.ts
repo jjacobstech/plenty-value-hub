@@ -45,6 +45,7 @@ export const controllers = {
     Ping: () => import('#controllers/partner_api/ping_controller'),
     Stats: () => import('#controllers/partner_api/stats_controller'),
   },
+  PartnerDocs: () => import('#controllers/partner_docs_controller'),
   partnerPortal: {
     Activity: () => import('#controllers/partner_portal/activity_controller'),
     Keys: () => import('#controllers/partner_portal/keys_controller'),

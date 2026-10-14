@@ -1,5 +1,6 @@
 import crypto from 'node:crypto'
 import { DateTime } from 'luxon'
+import db from '@adonisjs/lucid/services/db'
 import PartnerClick from '#models/partner_click'
 import PartnerLink from '#models/partner_link'
 import Partner from '#models/partner'
@@ -59,25 +60,32 @@ export async function recordClick(input: {
   dedupeMinutes: number
 }) {
   const since = input.now.minus({ minutes: input.dedupeMinutes })
-  const repeat = await PartnerClick.query()
-    .where('link_id', input.link.id)
-    .where('visitor_hash', input.hash)
-    .where('clicked_at', '>', since.toSQL()!)
-    .first()
+  // Two clicks from one visitor on one link are serialized, so only the first counts as unique.
+  return db.transaction(async (trx) => {
+    await trx.rawQuery('select pg_advisory_xact_lock(hashtext(?))', [`${input.link.id}:${input.hash}`])
+    const repeat = await PartnerClick.query({ client: trx })
+      .where('link_id', input.link.id)
+      .where('visitor_hash', input.hash)
+      .where('clicked_at', '>', since.toSQL()!)
+      .first()
 
-  return PartnerClick.create({
-    publicId: input.clickIdPublic,
-    partnerId: input.partner.id,
-    livemode: input.link.livemode,
-    linkId: input.link.id,
-    affiliateId: input.affiliate.id,
-    productRef: input.link.productRef,
-    campaignRef: input.link.campaignRef,
-    visitorHash: input.hash,
-    isUnique: !repeat,
-    referrer: input.referrer,
-    utm: input.utm,
-    userAgentFamily: userAgentFamily(input.userAgent),
-    clickedAt: input.now,
+    return PartnerClick.create(
+      {
+        publicId: input.clickIdPublic,
+        partnerId: input.partner.id,
+        livemode: input.link.livemode,
+        linkId: input.link.id,
+        affiliateId: input.affiliate.id,
+        productRef: input.link.productRef,
+        campaignRef: input.link.campaignRef,
+        visitorHash: input.hash,
+        isUnique: !repeat,
+        referrer: input.referrer,
+        utm: input.utm,
+        userAgentFamily: userAgentFamily(input.userAgent),
+        clickedAt: input.now,
+      },
+      { client: trx }
+    )
   })
 }
