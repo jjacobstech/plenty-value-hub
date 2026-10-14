@@ -60,3 +60,15 @@ export const reverseEventValidator = vine.create(
     reason: vine.string().trim().maxLength(255).optional(),
   })
 )
+
+export const rejectCommissionValidator = vine.create(
+  vine.object({
+    reason: vine.string().trim().maxLength(255).optional(),
+  })
+)
+
+export const markPaidValidator = vine.create(
+  vine.object({
+    payout_reference: vine.string().trim().minLength(1).maxLength(191),
+  })
+)

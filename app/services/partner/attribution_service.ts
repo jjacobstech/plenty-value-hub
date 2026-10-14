@@ -9,6 +9,7 @@ import PartnerEvent from '#models/partner_event'
 import PartnerLink from '#models/partner_link'
 import type PartnerProgram from '#models/partner_program'
 import { publicId } from '#services/partner/public_id'
+import { createCommission, reverseForEvent } from '#services/partner/commission_service'
 
 // Fraud heuristics: small partner-local limits, not the marketplace FraudDetectionService.
 const MAX_AFFILIATE_EVENTS_PER_HOUR = 50
@@ -170,6 +171,10 @@ export async function recordEvent(partner: Partner, livemode: boolean, program: 
     event.amount = input.amount ?? null
     event.currency = input.currency ?? null
     await event.useTransaction(trx).save()
+    // Step 5: attributed events earn a pending commission when the program pays one.
+    if (attribution.status === 'attributed' && attribution.affiliate) {
+      await createCommission(trx, event, attribution.affiliate, program, occurredAt)
+    }
     return { event, created: true }
   })
 }
@@ -183,6 +188,9 @@ export async function reverseEvent(event: PartnerEvent, reason: string | undefin
   event.status = 'reversed'
   event.reason = 'reversed_by_partner'
   if (reason) event.metadata = { ...event.metadata, reversal_reason: reason }
-  await event.save()
-  return event
+  return db.transaction(async (trx) => {
+    await event.useTransaction(trx).save()
+    await reverseForEvent(event.id, 'reversed_by_partner', trx)
+    return event
+  })
 }

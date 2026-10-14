@@ -62,6 +62,9 @@ const shieldConfig = defineConfig({
       '/v1/links/:id/disable',
       '/v1/events',
       '/v1/events/:id/reverse',
+      '/v1/commissions/:id/approve',
+      '/v1/commissions/:id/reject',
+      '/v1/commissions/:id/mark_paid',
       '/r/:code',
     ],
 

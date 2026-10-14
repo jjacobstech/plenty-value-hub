@@ -87,12 +87,20 @@ Notes:
 
 ## M5 — Commissions
 
-- [ ] Migration + model `partner_commissions`.
-- [ ] Commission creation inside attribution (flat and percent, `decimal.js`, round half-up to minor units).
-- [ ] `GET /v1/commissions`, `GET /v1/commissions/:id`, `POST approve|reject|mark_paid`.
-- [ ] State machine helper enforcing allowed transitions.
-- [ ] Ace command `partner:approve-commissions`.
-- [ ] Tests: maths, transitions, reversal of approved, command approves only due + auto-approve programs.
+- [x] Migration + model `partner_commissions`.
+- [x] Commission creation inside attribution (flat and percent, `decimal.js`, round half-up to minor units).
+- [x] `GET /v1/commissions`, `GET /v1/commissions/:id`, `POST approve|reject|mark_paid`.
+- [x] State machine helper enforcing allowed transitions.
+- [x] Ace command `partner:approve-commissions`.
+- [x] Tests: maths, transitions, reversal of approved, command approves only due + auto-approve programs.
+
+Notes:
+- The recurring approval is a BullMQ job scheduler (`approve-commissions`, every 10 minutes) on queue `partner-jobs`. It runs in `node ace partner:worker`, which needs Redis at `QUEUE_REDIS_HOST:QUEUE_REDIS_PORT`. These are now in `start/env.ts`.
+- `ioredis` is installed as BullMQ's Redis client. It is pinned to 5.11.1, the version BullMQ 6 tests against.
+- Percent commissions: `decimal.js`, basis points, round half-up. 1235 at 1000 bps gives 124.
+- Commission currency: flat uses the program's commission_currency (or the event currency if it is unset). Percent uses the event currency.
+- Reversing an event reverses its commission in any state, in one transaction.
+- Commission webhooks (commission.created, approved, reversed) are wired in M6.
 
 ## M6 — Webhooks
 

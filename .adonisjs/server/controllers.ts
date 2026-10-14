@@ -36,6 +36,7 @@ export const controllers = {
   Pages: () => import('#controllers/pages_controller'),
   partnerApi: {
     Affiliates: () => import('#controllers/partner_api/affiliates_controller'),
+    Commissions: () => import('#controllers/partner_api/commissions_controller'),
     Events: () => import('#controllers/partner_api/events_controller'),
     Links: () => import('#controllers/partner_api/links_controller'),
     Ping: () => import('#controllers/partner_api/ping_controller'),

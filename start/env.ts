@@ -64,6 +64,14 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   /*
   |----------------------------------------------------------
+  | Variables for the BullMQ queue (partner jobs)
+  |----------------------------------------------------------
+  */
+  QUEUE_REDIS_HOST: Env.schema.string({ format: 'host' }),
+  QUEUE_REDIS_PORT: Env.schema.number(),
+
+  /*
+  |----------------------------------------------------------
   | Variables for configuring the storage driver
   |----------------------------------------------------------
   */

@@ -21,6 +21,7 @@ export default class EventsController {
           .preload('click')
           .preload('affiliate')
           .preload('link')
+          .preload('commission')
           .first()
       : null
     if (!event) throw new PartnerApiException('No such event.', 'invalid_request_error', 'resource_missing', 404, 'id')
@@ -45,6 +46,7 @@ export default class EventsController {
     await event.load('click')
     await event.load('affiliate')
     await event.load('link')
+    await event.load('commission')
     return response.status(created ? 201 : 200).json(eventToApi(event))
   }
 
@@ -57,6 +59,7 @@ export default class EventsController {
       .preload('click')
       .preload('affiliate')
       .preload('link')
+      .preload('commission')
     if (request.input('status')) query = query.where('status', request.input('status'))
     if (request.input('type')) query = query.where('type', request.input('type'))
     if (request.input('from')) query = query.where('occurred_at', '>=', DateTime.fromSeconds(Number(request.input('from'))).toSQL()!)

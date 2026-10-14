@@ -1,6 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, belongsTo, hasOne } from '@adonisjs/lucid/orm'
+import type { BelongsTo, HasOne } from '@adonisjs/lucid/types/relations'
+import PartnerCommission from '#models/partner_commission'
 import PartnerAffiliate from '#models/partner_affiliate'
 import PartnerClick from '#models/partner_click'
 import PartnerLink from '#models/partner_link'
@@ -68,4 +69,7 @@ export default class PartnerEvent extends BaseModel {
 
   @belongsTo(() => PartnerLink, { foreignKey: 'linkId' })
   declare link: BelongsTo<typeof PartnerLink>
+
+  @hasOne(() => PartnerCommission, { foreignKey: 'eventId' })
+  declare commission: HasOne<typeof PartnerCommission>
 }
