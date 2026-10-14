@@ -139,12 +139,22 @@ Notes:
 
 ## M8 — Developer portal and admin
 
-- [ ] Role handling for partner members; `/partner` route group behind auth + partner membership.
-- [ ] Inertia pages (SPEC §10): overview, API keys, webhooks + delivery log + resend + test event, program settings, affiliates, events & commissions, team.
-- [ ] Test/live toggle stored in session.
-- [ ] Admin: partners list/create/suspend in existing admin area.
-- [ ] Reuse existing shadcn components; do not modify shared components in a way that changes marketplace pages.
-- [ ] Functional tests for portal controllers (authorization: viewer cannot create keys, non-member gets 404).
+- [x] Role handling for partner members; `/partner` route group behind auth + partner membership.
+- [x] Inertia pages (SPEC §10): overview, API keys, webhooks + delivery log + resend + test event, program settings, affiliates, events & commissions, team.
+- [x] Test/live toggle stored in session.
+- [x] Admin: partners list/create/suspend in existing admin area.
+- [x] Reuse existing shadcn components; do not modify shared components in a way that changes marketplace pages. (The portal uses plain Tailwind and shadcn-free markup, so no shared component was touched.)
+- [x] Functional tests for portal controllers (authorization: viewer cannot create keys, non-member gets 404). `tests/functional/partner_portal/portal.spec.ts`, 11 passing, signing in through the real `/auth/login` form.
+
+Notes:
+- Roles: viewers read only. Developers manage keys and webhooks. Owners and admins also manage the program, affiliates, commissions and team. Non-members get 404 on /partner.
+- The portal is server-rendered Inertia pages. New frontend files typecheck clean. The frontend project has 992 errors overall. Five are in `AdminAnalytics.tsx`, which had an uncommitted change before this work.
+- The one-time secrets (keys, webhook signing secrets) come back in the response that creates them. They are not stored in the session.
+- Team invites add an existing account only. There is no invitation email yet.
+- The portal has no browser-level test. The tests check the HTML data and the redirects over HTTP. Please click through /partner once in a browser.
+- Sign-in attempts are throttled (10 per 15 minutes per IP). The portal test clears the limiter store before each test.
+- Delivery rows use their numeric id in the portal. They are not part of the API, so this does not break the no-numeric-ids rule.
+- Admin partner creation makes the partner and its programs, but no keys. The owner creates keys in the portal.
 
 ## M9 — Hosted affiliate dashboard
 

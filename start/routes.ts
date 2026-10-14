@@ -142,6 +142,10 @@ router
     router.get('/payouts', [controllers.Pages, 'adminPayouts']).as('admin.payouts')
     router.get('/disputes', [controllers.Pages, 'adminDisputes']).as('admin.disputes')
     router.get('/fraud-detection', [controllers.Pages, 'adminFraudDetection']).as('admin.fraud')
+    router.get('/partners', [controllers.AdminPartners, 'index']).as('admin.partners')
+    router.post('/partners', [controllers.AdminPartners, 'store']).as('admin.partners.store')
+    router.post('/partners/:id/suspend', [controllers.AdminPartners, 'suspend'])
+    router.post('/partners/:id/reactivate', [controllers.AdminPartners, 'reactivate'])
   })
   .prefix('/admin')
   .use(middleware.adminAuth())
@@ -710,3 +714,36 @@ router
 
 // Public redirect. No key, no session. Never a 500 (see PartnerRedirectController).
 router.get('/r/:code', [controllers.PartnerRedirect, 'show'])
+
+/**
+ * Partner developer portal. Signed-in members only; non-members get a 404 (see PartnerPortalMiddleware).
+ */
+router
+  .group(() => {
+    router.get('/', [controllers.partnerPortal.Overview, 'show']).as('partner.overview')
+    router.post('/mode', [controllers.partnerPortal.Overview, 'setMode']).as('partner.mode')
+    router.get('/keys', [controllers.partnerPortal.Keys, 'index']).as('partner.keys')
+    router.post('/keys', [controllers.partnerPortal.Keys, 'store'])
+    router.post('/keys/:id/revoke', [controllers.partnerPortal.Keys, 'revoke'])
+    router.get('/webhooks', [controllers.partnerPortal.Webhooks, 'index']).as('partner.webhooks')
+    router.post('/webhooks', [controllers.partnerPortal.Webhooks, 'store'])
+    router.post('/webhooks/test', [controllers.partnerPortal.Webhooks, 'test'])
+    router.post('/webhooks/:id/rotate', [controllers.partnerPortal.Webhooks, 'rotate'])
+    router.post('/webhooks/:id/enable', [controllers.partnerPortal.Webhooks, 'enable'])
+    router.post('/webhooks/:id/disable', [controllers.partnerPortal.Webhooks, 'disable'])
+    router.post('/deliveries/:id/resend', [controllers.partnerPortal.Webhooks, 'resend'])
+    router.get('/affiliates', [controllers.partnerPortal.Activity, 'affiliates']).as('partner.affiliates')
+    router.post('/affiliates/:id/suspend', [controllers.partnerPortal.Activity, 'suspendAffiliate'])
+    router.post('/affiliates/:id/reactivate', [controllers.partnerPortal.Activity, 'reactivateAffiliate'])
+    router.get('/activity', [controllers.partnerPortal.Activity, 'activity']).as('partner.activity')
+    router.post('/events/:id/reverse', [controllers.partnerPortal.Activity, 'reverseEvent'])
+    router.post('/commissions/:id/approve', [controllers.partnerPortal.Activity, 'approveCommission'])
+    router.post('/commissions/:id/reject', [controllers.partnerPortal.Activity, 'rejectCommission'])
+    router.get('/program', [controllers.partnerPortal.Settings, 'program']).as('partner.program')
+    router.post('/program', [controllers.partnerPortal.Settings, 'updateProgram'])
+    router.get('/team', [controllers.partnerPortal.Settings, 'team']).as('partner.team')
+    router.post('/team/invite', [controllers.partnerPortal.Settings, 'invite'])
+    router.post('/team/:id/remove', [controllers.partnerPortal.Settings, 'remove'])
+  })
+  .prefix('/partner')
+  .use([middleware.auth(), middleware.partnerPortal()])
