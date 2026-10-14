@@ -55,4 +55,5 @@ export const middleware = router.named({
   singleAdmin: () => import('#middleware/single_admin_middleware'),
   partnerRequestId: () => import('#middleware/partner_request_id_middleware'),
   partnerApiAuth: () => import('#middleware/partner_api_auth_middleware'),
+  partnerIdempotency: () => import('#middleware/partner_idempotency_middleware'),
 })

@@ -40,11 +40,19 @@ Notes:
 
 ## M2 — Affiliates
 
-- [ ] Migration + model `partner_affiliates`.
-- [ ] Serializer `toApi()` per model returning the openapi shape (unix seconds, public ids only).
-- [ ] Cursor pagination helper (`limit`, `starting_after`, `has_more`).
-- [ ] `POST/GET /v1/affiliates`, `GET/PATCH /v1/affiliates/:id`. Create-or-get via `INSERT ... ON CONFLICT DO NOTHING` then select.
-- [ ] Tests: create vs existing (201/200), 20 concurrent creates → 1 row, isolation across partners and modes, metadata limits, status update.
+- [x] Migration + model `partner_affiliates`.
+- [x] Serializer `toApi()` per model returning the openapi shape (unix seconds, public ids only).
+- [x] Cursor pagination helper (`limit`, `starting_after`, `has_more`).
+- [x] `POST/GET /v1/affiliates`, `GET/PATCH /v1/affiliates/:id`. Create-or-get via `INSERT ... ON CONFLICT DO NOTHING` then select.
+- [x] Tests: create vs existing (201/200), 20 concurrent creates → 1 row, isolation across partners and modes, metadata limits, status update.
+
+Notes:
+- `partnerIdempotency` (M1 leftover) is built here, on `POST /v1/affiliates`. Thrown 4xx errors are not stored, so a retry runs again. Only completed responses and 5xx-free results are replayed.
+- Unknown body fields are rejected by `rejectUnknownFields`, because VineJS silently drops them by default.
+- Shield matches route patterns, not URLs. `/v1/affiliates`, `/v1/affiliates/:id` and `/r/:code` are listed in `config/shield.ts` (add each new `/v1` POST, PATCH or DELETE route there).
+- `affiliate.created` emission is not wired yet (M6).
+- Run the partner tests with `node ace test functional --files tests/functional/partner_api/auth.spec.ts --files tests/functional/partner_api/affiliates.spec.ts`. `--files <directory>` runs nothing.
+
 
 ## M3 — Links, redirect, clicks
 

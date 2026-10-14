@@ -55,8 +55,10 @@ const shieldConfig = defineConfig({
       '/api/newsletters/subscribe',
       '/api/newsletters/unsubscribe',
       '/api/affiliate-links/track-click',
-      '/v1/*',
-      '/r/*'
+      // Partner API and redirect. Shield matches route patterns, not URLs, so list each /v1 route here.
+      '/v1/affiliates',
+      '/v1/affiliates/:id',
+      '/r/:code',
     ],
 
     /**

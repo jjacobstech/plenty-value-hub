@@ -685,6 +685,10 @@ router
 router
   .group(() => {
     router.get('/ping', [controllers.partnerApi.Ping, 'show'])
+    router.post('/affiliates', [controllers.partnerApi.Affiliates, 'create']).use(middleware.partnerIdempotency())
+    router.get('/affiliates', [controllers.partnerApi.Affiliates, 'index'])
+    router.get('/affiliates/:id', [controllers.partnerApi.Affiliates, 'show'])
+    router.patch('/affiliates/:id', [controllers.partnerApi.Affiliates, 'update'])
   })
   .prefix('/v1')
   .use([middleware.partnerRequestId(), middleware.partnerApiAuth()])

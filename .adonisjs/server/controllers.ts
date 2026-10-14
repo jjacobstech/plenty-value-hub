@@ -35,6 +35,7 @@ export const controllers = {
   Orders: () => import('#controllers/orders_controller'),
   Pages: () => import('#controllers/pages_controller'),
   partnerApi: {
+    Affiliates: () => import('#controllers/partner_api/affiliates_controller'),
     Ping: () => import('#controllers/partner_api/ping_controller'),
   },
   Payment: () => import('#controllers/payment_controller'),
