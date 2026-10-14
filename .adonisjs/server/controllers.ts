@@ -35,9 +35,11 @@ export const controllers = {
   Oauth: () => import('#controllers/oauth_controller'),
   Orders: () => import('#controllers/orders_controller'),
   Pages: () => import('#controllers/pages_controller'),
+  PartnerAffiliateDashboard: () => import('#controllers/partner_affiliate_dashboard_controller'),
   partnerApi: {
     Affiliates: () => import('#controllers/partner_api/affiliates_controller'),
     Commissions: () => import('#controllers/partner_api/commissions_controller'),
+    DashboardSessions: () => import('#controllers/partner_api/dashboard_sessions_controller'),
     Events: () => import('#controllers/partner_api/events_controller'),
     Links: () => import('#controllers/partner_api/links_controller'),
     Ping: () => import('#controllers/partner_api/ping_controller'),

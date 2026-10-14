@@ -158,10 +158,16 @@ Notes:
 
 ## M9 — Hosted affiliate dashboard
 
-- [ ] Migration + model `partner_dashboard_sessions`.
-- [ ] `POST /v1/affiliates/:id/dashboard_sessions`.
-- [ ] `/a/session/:token` redeem → signed cookie → `/a` read-only dashboard page (stats, links with copy, commissions, chart via existing recharts).
-- [ ] Tests: single use, expiry, cookie scoping, affiliate can see only their own data.
+- [x] Migration + model `partner_dashboard_sessions`.
+- [x] `POST /v1/affiliates/:id/dashboard_sessions`.
+- [x] `/a/session/:token` redeem → signed cookie → `/a` read-only dashboard page (stats, links with copy, commissions, chart via existing recharts).
+- [x] Tests: single use, expiry, cookie scoping, affiliate can see only their own data. `tests/functional/partner_api/dashboard.spec.ts`, 6 passing.
+
+Notes:
+- The dashboard is served from APP_URL (`/a`, `/a/session/:token`). No separate dashboard host env var is needed.
+- The redeemed session is kept in an encrypted cookie for 12 hours, scoped to `/a`, HttpOnly, SameSite=Lax. A session link works once and expires after 5 minutes.
+- return_url must be on the partner's allowed domains. A suspended partner's dashboard returns 404.
+- The chart is CSS bars, not recharts. This keeps the page free of extra type errors. Swap in recharts if the chart needs more.
 
 ## M10 — Docs and hardening
 

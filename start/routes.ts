@@ -704,6 +704,7 @@ router
     router.get('/commissions', [controllers.partnerApi.Commissions, 'index'])
     router.get('/commissions/:id', [controllers.partnerApi.Commissions, 'show'])
     router.get('/stats/summary', [controllers.partnerApi.Stats, 'summary'])
+    router.post('/affiliates/:id/dashboard_sessions', [controllers.partnerApi.DashboardSessions, 'create']).use(middleware.partnerIdempotency())
     router.get('/affiliates/:id/stats', [controllers.partnerApi.Affiliates, 'stats'])
     router.post('/commissions/:id/approve', [controllers.partnerApi.Commissions, 'approve']).use(middleware.partnerIdempotency())
     router.post('/commissions/:id/reject', [controllers.partnerApi.Commissions, 'reject']).use(middleware.partnerIdempotency())
@@ -747,3 +748,9 @@ router
   })
   .prefix('/partner')
   .use([middleware.auth(), middleware.partnerPortal()])
+
+/**
+ * Hosted affiliate dashboard. Public, but the single-use link and the cookie it sets are the only way in.
+ */
+router.get('/a/session/:token', [controllers.PartnerAffiliateDashboard, 'redeem'])
+router.get('/a', [controllers.PartnerAffiliateDashboard, 'show'])
