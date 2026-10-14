@@ -1,20 +1,26 @@
 import { Queue, Worker, type Job } from 'bullmq'
 import env from '#start/env'
 import { approveDueCommissions } from '#services/partner/commission_service'
+import { deliverDue } from '#services/partner/webhook_delivery_service'
+import { prune } from '#services/partner/maintenance'
 
 export const PARTNER_QUEUE = 'partner-jobs'
 
-const APPROVE_EVERY_MS = 10 * 60 * 1000
+const MINUTE_MS = 60 * 1000
 
 export function queueConnection() {
   return { host: env.get('QUEUE_REDIS_HOST'), port: env.get('QUEUE_REDIS_PORT'), maxRetriesPerRequest: null }
 }
 
 /** Runs one partner job by name. Each job is idempotent, so a retry or an overlap is safe. */
-export async function runJob(name: string): Promise<number> {
+export async function runJob(name: string): Promise<unknown> {
   switch (name) {
     case 'approve-commissions':
       return approveDueCommissions()
+    case 'deliver-webhooks':
+      return deliverDue()
+    case 'prune':
+      return prune()
     default:
       throw new Error(`Unknown partner job: ${name}`)
   }
@@ -24,7 +30,9 @@ export async function runJob(name: string): Promise<number> {
 export async function scheduleRecurringJobs(connectionOptions = queueConnection()) {
   const queue = new Queue(PARTNER_QUEUE, { connection: connectionOptions })
   try {
-    await queue.upsertJobScheduler('approve-commissions', { every: APPROVE_EVERY_MS }, { name: 'approve-commissions' })
+    await queue.upsertJobScheduler('approve-commissions', { every: 10 * MINUTE_MS }, { name: 'approve-commissions' })
+    await queue.upsertJobScheduler('deliver-webhooks', { every: MINUTE_MS }, { name: 'deliver-webhooks' })
+    await queue.upsertJobScheduler('prune', { every: 24 * 60 * MINUTE_MS }, { name: 'prune' })
   } finally {
     await queue.close()
   }

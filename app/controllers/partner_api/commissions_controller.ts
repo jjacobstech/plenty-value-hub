@@ -3,9 +3,11 @@ import { DateTime } from 'luxon'
 import PartnerApiException from '#exceptions/partner_api_exception'
 import PartnerAffiliate from '#models/partner_affiliate'
 import PartnerCommission from '#models/partner_commission'
+import db from '@adonisjs/lucid/services/db'
 import { transition } from '#services/partner/commission_service'
 import { cursorPage, parseLimit } from '#services/partner/pagination'
 import { commissionToApi } from '#services/partner/serialize'
+import { emit } from '#services/partner/webhook_emitter'
 import { markPaidValidator, rejectCommissionValidator, rejectUnknownFields } from '#validators/partner_api'
 
 export default class CommissionsController {
@@ -21,6 +23,16 @@ export default class CommissionsController {
       : null
     if (!commission) throw new PartnerApiException('No such commission.', 'invalid_request_error', 'resource_missing', 404, 'id')
     return commission
+  }
+
+  /** Moves a commission to a new state and writes the matching event to the outbox, in one transaction. */
+  private async move(ctx: HttpContext, to: 'approved' | 'rejected', fields: { reason?: string } = {}) {
+    const commission = await this.findOwn(ctx, ctx.params.id)
+    return db.transaction(async (trx) => {
+      await transition(commission, to, fields, trx)
+      await emit(trx, commission.partnerId, commission.livemode, `commission.${to}`, commissionToApi(commission))
+      return commission
+    })
   }
 
   /** GET /v1/commissions */
@@ -53,7 +65,7 @@ export default class CommissionsController {
 
   /** POST /v1/commissions/:id/approve: approve a pending commission before its hold ends. */
   async approve(ctx: HttpContext) {
-    const commission = await transition(await this.findOwn(ctx, ctx.params.id), 'approved')
+    const commission = await this.move(ctx, 'approved')
     return ctx.response.json(commissionToApi(commission))
   }
 
@@ -61,7 +73,7 @@ export default class CommissionsController {
   async reject(ctx: HttpContext) {
     rejectUnknownFields(ctx.request.body(), ['reason'])
     const data = await ctx.request.validateUsing(rejectCommissionValidator)
-    const commission = await transition(await this.findOwn(ctx, ctx.params.id), 'rejected', { reason: data.reason })
+    const commission = await this.move(ctx, 'rejected', { reason: data.reason })
     return ctx.response.json(commissionToApi(commission))
   }
 
@@ -83,7 +95,10 @@ export default class CommissionsController {
     }
     commission.paidAt = DateTime.now()
     commission.payoutReference = data.payout_reference
-    await commission.save()
+    await db.transaction(async (trx) => {
+      await commission.useTransaction(trx).save()
+      await emit(trx, commission.partnerId, commission.livemode, 'commission.paid', commissionToApi(commission))
+    })
     return ctx.response.json(commissionToApi(commission))
   }
 }

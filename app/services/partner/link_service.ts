@@ -1,4 +1,5 @@
 import db from '@adonisjs/lucid/services/db'
+import type { TransactionClientContract } from '@adonisjs/lucid/types/database'
 import env from '#start/env'
 import { customAlphabet } from 'nanoid'
 import PartnerApiException from '#exceptions/partner_api_exception'
@@ -35,6 +36,7 @@ export function assertDestinationAllowed(partner: Partner, destinationUrl: strin
 
 /** Creates the link, or returns the existing one for the same affiliate, product and campaign. */
 export async function createOrGetLink(input: {
+  trx?: TransactionClientContract
   partner: Partner
   livemode: boolean
   affiliate: PartnerAffiliate
@@ -44,9 +46,10 @@ export async function createOrGetLink(input: {
   updateDestination: boolean
   metadata: Record<string, string>
 }): Promise<{ link: PartnerLink; created: boolean }> {
-  const { partner, livemode, affiliate, productRef, campaignRef, destinationUrl } = input
+  const { partner, livemode, affiliate, productRef, campaignRef, destinationUrl, trx } = input
+  const client = trx ?? db
 
-  const existing = await PartnerLink.query()
+  const existing = await PartnerLink.query({ client: trx })
     .where('partner_id', partner.id)
     .where('livemode', livemode)
     .where('affiliate_id', affiliate.id)
@@ -67,7 +70,7 @@ export async function createOrGetLink(input: {
 
   for (let attempt = 0; attempt < 5; attempt++) {
     try {
-      const inserted = await db.rawQuery(
+      const inserted = await client.rawQuery(
         `insert into partner_links (public_id, partner_id, livemode, affiliate_id, code, product_ref, campaign_ref, destination_url, status, metadata, created_at, updated_at)
          values (?, ?, ?, ?, ?, ?, ?, ?, 'active', ?::jsonb, now(), now())
          on conflict (partner_id, livemode, affiliate_id, (coalesce(product_ref, '')), (coalesce(campaign_ref, '')))
@@ -75,10 +78,10 @@ export async function createOrGetLink(input: {
         [publicId('lnk_'), partner.id, livemode, affiliate.id, codeAlphabet(), productRef, campaignRef, destinationUrl, JSON.stringify(input.metadata)]
       )
       if (inserted.rows.length > 0) {
-        return { link: await PartnerLink.findOrFail(inserted.rows[0].id), created: true }
+        return { link: await PartnerLink.query({ client: trx }).where('id', inserted.rows[0].id).firstOrFail(), created: true }
       }
       // A concurrent request created the same link first.
-      const winner = await PartnerLink.query()
+      const winner = await PartnerLink.query({ client: trx })
         .where('partner_id', partner.id)
         .where('livemode', livemode)
         .where('affiliate_id', affiliate.id)

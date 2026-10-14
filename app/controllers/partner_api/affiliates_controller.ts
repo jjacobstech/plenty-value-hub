@@ -4,6 +4,7 @@ import PartnerApiException from '#exceptions/partner_api_exception'
 import PartnerAffiliate from '#models/partner_affiliate'
 import { publicId } from '#services/partner/public_id'
 import { affiliateToApi } from '#services/partner/serialize'
+import { emit } from '#services/partner/webhook_emitter'
 import { cursorPage, parseLimit } from '#services/partner/pagination'
 import { createAffiliateValidator, rejectUnknownFields, updateAffiliateValidator } from '#validators/partner_api'
 
@@ -40,25 +41,30 @@ export default class AffiliatesController {
     const data = await request.validateUsing(createAffiliateValidator)
     assertMetadataSize(data.metadata)
 
-    // One statement, so concurrent creates for the same external_user_id produce one row.
-    const inserted = await db.rawQuery(
-      `insert into partner_affiliates (public_id, partner_id, livemode, external_user_id, status, email, display_name, metadata, created_at, updated_at)
-       values (?, ?, ?, ?, 'active', ?, ?, ?::jsonb, now(), now())
-       on conflict (partner_id, livemode, external_user_id) do nothing returning id`,
-      [publicId('aff_'), partner.id, livemode, data.external_user_id, data.email ?? null, data.display_name ?? null, JSON.stringify(data.metadata ?? {})]
-    )
+    return db.transaction(async (trx) => {
+      // One statement, so concurrent creates for the same external_user_id produce one row.
+      // The bindings cast is needed because the driver typing rejects null values.
+      const bindings = [publicId('aff_'), partner.id, livemode, data.external_user_id, data.email ?? null, data.display_name ?? null, JSON.stringify(data.metadata ?? {})] as any[]
+      const inserted = await trx.rawQuery(
+        `insert into partner_affiliates (public_id, partner_id, livemode, external_user_id, status, email, display_name, metadata, created_at, updated_at)
+         values (?, ?, ?, ?, 'active', ?, ?, ?::jsonb, now(), now())
+         on conflict (partner_id, livemode, external_user_id) do nothing returning id`,
+        bindings
+      )
 
-    if (inserted.rows.length > 0) {
-      const affiliate = await PartnerAffiliate.findOrFail(inserted.rows[0].id)
-      return response.status(201).json(affiliateToApi(affiliate))
-    }
+      if (inserted.rows.length > 0) {
+        const affiliate = await PartnerAffiliate.query({ client: trx }).where('id', inserted.rows[0].id).firstOrFail()
+        await emit(trx, partner.id, livemode, 'affiliate.created', affiliateToApi(affiliate))
+        return response.status(201).json(affiliateToApi(affiliate))
+      }
 
-    const existing = await PartnerAffiliate.query()
-      .where('partner_id', partner.id)
-      .where('livemode', livemode)
-      .where('external_user_id', data.external_user_id)
-      .firstOrFail()
-    return response.status(200).json(affiliateToApi(existing))
+      const existing = await PartnerAffiliate.query({ client: trx })
+        .where('partner_id', partner.id)
+        .where('livemode', livemode)
+        .where('external_user_id', data.external_user_id)
+        .firstOrFail()
+      return response.status(200).json(affiliateToApi(existing))
+    })
   }
 
   /** GET /v1/affiliates: cursor-paginated list with optional external_user_id and status filters. */
@@ -89,7 +95,10 @@ export default class AffiliatesController {
     if (data.email !== undefined) affiliate.email = data.email ?? null
     if (data.display_name !== undefined) affiliate.displayName = data.display_name ?? null
     if (data.metadata !== undefined) affiliate.metadata = data.metadata ?? {}
-    await affiliate.save()
+    await db.transaction(async (trx) => {
+      await affiliate.useTransaction(trx).save()
+      await emit(trx, ctx.partner.id, ctx.livemode, 'affiliate.updated', affiliateToApi(affiliate))
+    })
 
     return ctx.response.json(affiliateToApi(affiliate))
   }

@@ -1,6 +1,8 @@
 import type PartnerAffiliate from '#models/partner_affiliate'
 import type PartnerEvent from '#models/partner_event'
 import type PartnerCommission from '#models/partner_commission'
+import type PartnerLink from '#models/partner_link'
+import { linkUrl } from '#services/partner/link_service'
 
 /** Affiliate as the API returns it (openapi `Affiliate`). Never exposes numeric ids. */
 export function affiliateToApi(affiliate: PartnerAffiliate) {
@@ -60,5 +62,22 @@ export function commissionToApi(commission: PartnerCommission) {
     reason: commission.reason,
     livemode: commission.livemode,
     created: Math.floor(commission.createdAt.toSeconds()),
+  }
+}
+
+export function linkToApi(link: PartnerLink) {
+  return {
+    object: 'link',
+    id: link.publicId,
+    affiliate: link.affiliate?.publicId ?? null,
+    code: link.code,
+    url: linkUrl(link),
+    product_ref: link.productRef,
+    campaign_ref: link.campaignRef,
+    destination_url: link.destinationUrl,
+    status: link.status,
+    metadata: link.metadata ?? {},
+    livemode: link.livemode,
+    created: Math.floor(link.createdAt.toSeconds()),
   }
 }

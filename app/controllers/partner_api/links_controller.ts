@@ -2,28 +2,15 @@ import type { HttpContext } from '@adonisjs/core/http'
 import PartnerApiException from '#exceptions/partner_api_exception'
 import PartnerAffiliate from '#models/partner_affiliate'
 import PartnerLink from '#models/partner_link'
+import db from '@adonisjs/lucid/services/db'
+import { emit } from '#services/partner/webhook_emitter'
 import { cursorPage, parseLimit } from '#services/partner/pagination'
-import { assertDestinationAllowed, createOrGetLink, linkUrl } from '#services/partner/link_service'
+import { assertDestinationAllowed, createOrGetLink } from '#services/partner/link_service'
+import { linkToApi } from '#services/partner/serialize'
 import { createLinkValidator, rejectUnknownFields } from '#validators/partner_api'
 
 const CREATE_FIELDS = ['affiliate', 'product_ref', 'campaign_ref', 'destination_url', 'update_destination', 'metadata']
 
-function linkToApi(link: PartnerLink) {
-  return {
-    object: 'link',
-    id: link.publicId,
-    affiliate: link.affiliate?.publicId ?? null,
-    code: link.code,
-    url: linkUrl(link),
-    product_ref: link.productRef,
-    campaign_ref: link.campaignRef,
-    destination_url: link.destinationUrl,
-    status: link.status,
-    metadata: link.metadata ?? {},
-    livemode: link.livemode,
-    created: Math.floor(link.createdAt.toSeconds()),
-  }
-}
 
 export default class LinksController {
   /** Loads a link in the caller's partner and mode. Anything else is a 404, never a 403. */
@@ -64,18 +51,23 @@ export default class LinksController {
       throw new PartnerApiException('The affiliate is not active.', 'invalid_request_error', 'affiliate_not_active', 422, 'affiliate')
     }
 
-    const { link, created } = await createOrGetLink({
-      partner,
-      livemode,
-      affiliate,
-      productRef: data.product_ref ?? null,
-      campaignRef: data.campaign_ref ?? null,
-      destinationUrl: data.destination_url,
-      updateDestination: data.update_destination ?? false,
-      metadata: data.metadata ?? {},
+    const link = await db.transaction(async (trx) => {
+      const result = await createOrGetLink({
+        trx,
+        partner,
+        livemode,
+        affiliate,
+        productRef: data.product_ref ?? null,
+        campaignRef: data.campaign_ref ?? null,
+        destinationUrl: data.destination_url,
+        updateDestination: data.update_destination ?? false,
+        metadata: data.metadata ?? {},
+      })
+      await result.link.useTransaction(trx).load('affiliate')
+      if (result.created) await emit(trx, partner.id, livemode, 'link.created', linkToApi(result.link))
+      return result
     })
-    await link.load('affiliate')
-    return response.status(created ? 201 : 200).json(linkToApi(link))
+    return response.status(link.created ? 201 : 200).json(linkToApi(link.link))
   }
 
   /** GET /v1/links */

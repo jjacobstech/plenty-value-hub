@@ -8,8 +8,11 @@ import PartnerClick from '#models/partner_click'
 import PartnerEvent from '#models/partner_event'
 import PartnerLink from '#models/partner_link'
 import type PartnerProgram from '#models/partner_program'
+import type PartnerCommission from '#models/partner_commission'
 import { publicId } from '#services/partner/public_id'
 import { createCommission, reverseForEvent } from '#services/partner/commission_service'
+import { commissionToApi, eventToApi } from '#services/partner/serialize'
+import { emit } from '#services/partner/webhook_emitter'
 
 // Fraud heuristics: small partner-local limits, not the marketplace FraudDetectionService.
 const MAX_AFFILIATE_EVENTS_PER_HOUR = 50
@@ -172,8 +175,22 @@ export async function recordEvent(partner: Partner, livemode: boolean, program: 
     event.currency = input.currency ?? null
     await event.useTransaction(trx).save()
     // Step 5: attributed events earn a pending commission when the program pays one.
+    let commission: PartnerCommission | null = null
     if (attribution.status === 'attributed' && attribution.affiliate) {
-      await createCommission(trx, event, attribution.affiliate, program, occurredAt)
+      commission = await createCommission(trx, event, attribution.affiliate, program, occurredAt)
+    }
+
+    // Step 6: the outbox gets the conversion, and the commission if there is one.
+    const local = event.useTransaction(trx)
+    await local.load('click')
+    await local.load('affiliate')
+    await local.load('link')
+    await local.load('commission')
+    await emit(trx, partner.id, livemode, `conversion.${event.status}`, eventToApi(event))
+    if (commission) {
+      await commission.useTransaction(trx).load('event')
+      await commission.load('affiliate')
+      await emit(trx, partner.id, livemode, 'commission.created', commissionToApi(commission))
     }
     return { event, created: true }
   })
@@ -190,7 +207,18 @@ export async function reverseEvent(event: PartnerEvent, reason: string | undefin
   if (reason) event.metadata = { ...event.metadata, reversal_reason: reason }
   return db.transaction(async (trx) => {
     await event.useTransaction(trx).save()
-    await reverseForEvent(event.id, 'reversed_by_partner', trx)
+    const { commission, changed } = await reverseForEvent(event.id, 'reversed_by_partner', trx)
+    const local = event.useTransaction(trx)
+    await local.load('click')
+    await local.load('affiliate')
+    await local.load('link')
+    await local.load('commission')
+    await emit(trx, event.partnerId, event.livemode, 'conversion.reversed', eventToApi(event))
+    if (changed && commission) {
+      await commission.useTransaction(trx).load('event')
+      await commission.load('affiliate')
+      await emit(trx, event.partnerId, event.livemode, 'commission.reversed', commissionToApi(commission))
+    }
     return event
   })
 }

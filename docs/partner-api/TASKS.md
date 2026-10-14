@@ -104,13 +104,21 @@ Notes:
 
 ## M6 — Webhooks
 
-- [ ] Migrations + models `partner_webhook_endpoints`, `partner_webhook_events`, `partner_webhook_deliveries`.
-- [ ] `webhook_emitter.ts`: `emit(trx, partner, livemode, type, object)` writes outbox + deliveries within the caller's transaction. Wire into M2–M5 at every state change listed in SPEC §9.
-- [ ] `webhook_signer.ts` and a `verifySignature` helper (exported for docs and tests).
-- [ ] Ace command `partner:deliver-webhooks` with retry schedule, 10s timeout, response excerpt, endpoint auto-disable after 3 days of failures + email owners.
-- [ ] Secret rotation with dual signing for 24h.
-- [ ] Ace command `partner:prune` (idempotency keys >24h, webhook deliveries >30 days).
-- [ ] Tests: signature round-trip, rollback writes no outbox, retry timing, event type filtering per endpoint.
+- [x] Migrations + models `partner_webhook_endpoints`, `partner_webhook_events`, `partner_webhook_deliveries`.
+- [x] `webhook_emitter.ts`: `emit(trx, partner, livemode, type, object)` writes outbox + deliveries within the caller's transaction. Wire into M2–M5 at every state change listed in SPEC §9.
+- [x] `webhook_signer.ts` and a `verifySignature` helper (exported for docs and tests).
+- [x] Ace command `partner:deliver-webhooks` with retry schedule, 10s timeout, response excerpt, endpoint auto-disable after 3 days of failures + email owners.
+- [x] Secret rotation with dual signing for 24h.
+- [x] Ace command `partner:prune` (idempotency keys >24h, webhook deliveries >30 days).
+- [x] Tests: signature round-trip, rollback writes no outbox, retry timing, event type filtering per endpoint.
+
+Notes:
+- Emission is wired into affiliate.created and affiliate.updated, link.created, the three conversion.* events, commission.created, commission.approved (manual and auto), commission.rejected, commission.reversed, commission.paid and conversion.reversed. Each write runs in the transaction of the change.
+- Retries: one first attempt, then retries after 1m, 5m, 30m, 2h, 5h, 10h, 24h and 24h. That is 9 attempts in total. The endpoint is disabled after 3 days of continuous failure, and its owners are emailed.
+- Delivery runs as a BullMQ job every minute, not right after commit. Latency is up to a minute.
+- Endpoint management (create, rotate, enable) is a service API for now. The portal in M8 is the UI for it.
+- Not built: the "trigger right after commit" optimisation.
+- Prune runs as a daily BullMQ job.
 
 ## M7 — Stats
 
