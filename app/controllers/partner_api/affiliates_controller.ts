@@ -5,6 +5,7 @@ import PartnerAffiliate from '#models/partner_affiliate'
 import { publicId } from '#services/partner/public_id'
 import { affiliateToApi } from '#services/partner/serialize'
 import { emit } from '#services/partner/webhook_emitter'
+import { parseGroupBy, parseWindow, statsResponse } from '#services/partner/stats_service'
 import { cursorPage, parseLimit } from '#services/partner/pagination'
 import { createAffiliateValidator, rejectUnknownFields, updateAffiliateValidator } from '#validators/partner_api'
 
@@ -101,5 +102,14 @@ export default class AffiliatesController {
     })
 
     return ctx.response.json(affiliateToApi(affiliate))
+  }
+
+  /** GET /v1/affiliates/:id/stats: one affiliate's totals, optionally grouped by day, product or campaign. */
+  async stats(ctx: HttpContext) {
+    const affiliate = await this.findOwn(ctx, ctx.params.id)
+    const { from, to } = parseWindow(ctx.request.input('from'), ctx.request.input('to'))
+    const groupBy = parseGroupBy(ctx.request.input('group_by'), ['none', 'day', 'product', 'campaign'])
+    const body = await statsResponse({ partnerId: ctx.partner.id, livemode: ctx.livemode, from, to, affiliateId: affiliate.id }, groupBy, false)
+    return ctx.response.json(body)
   }
 }

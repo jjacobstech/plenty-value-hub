@@ -699,6 +699,8 @@ router
     router.post('/events/:id/reverse', [controllers.partnerApi.Events, 'reverse']).use(middleware.partnerIdempotency())
     router.get('/commissions', [controllers.partnerApi.Commissions, 'index'])
     router.get('/commissions/:id', [controllers.partnerApi.Commissions, 'show'])
+    router.get('/stats/summary', [controllers.partnerApi.Stats, 'summary'])
+    router.get('/affiliates/:id/stats', [controllers.partnerApi.Affiliates, 'stats'])
     router.post('/commissions/:id/approve', [controllers.partnerApi.Commissions, 'approve']).use(middleware.partnerIdempotency())
     router.post('/commissions/:id/reject', [controllers.partnerApi.Commissions, 'reject']).use(middleware.partnerIdempotency())
     router.post('/commissions/:id/mark_paid', [controllers.partnerApi.Commissions, 'markPaid']).use(middleware.partnerIdempotency())

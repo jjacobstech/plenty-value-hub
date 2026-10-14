@@ -40,6 +40,7 @@ export const controllers = {
     Events: () => import('#controllers/partner_api/events_controller'),
     Links: () => import('#controllers/partner_api/links_controller'),
     Ping: () => import('#controllers/partner_api/ping_controller'),
+    Stats: () => import('#controllers/partner_api/stats_controller'),
   },
   PartnerRedirect: () => import('#controllers/partner_redirect_controller'),
   Payment: () => import('#controllers/payment_controller'),

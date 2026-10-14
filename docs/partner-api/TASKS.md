@@ -122,10 +122,20 @@ Notes:
 
 ## M7 — Stats
 
-- [ ] `stats_service.ts` with SQL aggregates for summary and per-affiliate, `group_by` support.
-- [ ] `GET /v1/stats/summary`, `GET /v1/affiliates/:id/stats`.
-- [ ] Indexes checked with `EXPLAIN` on a seeded 100k-click dataset; note timings in RECON.md.
-- [ ] Tests on a fixed seeded dataset with hand-computed expected numbers.
+- [x] `stats_service.ts` with SQL aggregates for summary and per-affiliate, `group_by` support.
+- [x] `GET /v1/stats/summary`, `GET /v1/affiliates/:id/stats`.
+- [x] Indexes checked with `EXPLAIN` on a seeded 100k-click dataset; note timings in RECON.md.
+- [x] Tests on a fixed seeded dataset with hand-computed expected numbers.
+
+Notes:
+- EXPLAIN ANALYZE on 100,000 seeded clicks (71,679 in a 42-day window), on the dev database, then removed:
+  - Summary totals, whole window: 55 ms, using the existing (partner_id, livemode, affiliate_id, clicked_at) index.
+  - Summary grouped by day: 56 ms, a sequential scan. The planner prefers it at this selectivity.
+  - One affiliate's totals: 0.03 ms, index-only scan.
+  - An extra (partner_id, livemode, clicked_at) index was tested and not kept. It gave no clear gain and the planner ignored it.
+- The SPEC threshold for a daily rollup is 300 ms at 1M clicks. Extrapolated, the whole-window query is near that at 1M, so re-measure at scale before adding a rollup.
+- Commission amounts: a bucket in mixed currencies returns amount null and currency null. Amounts are not converted, so they are never summed across currencies. Follow-up if the portal needs totals in one currency.
+- Money is never summed across currencies. Group totals follow the same rule.
 
 ## M8 — Developer portal and admin
 
