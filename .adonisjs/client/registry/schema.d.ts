@@ -643,6 +643,54 @@ export interface Registry {
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/pages_controller').default['adminFraudDetection']>>>
     }
   }
+  'admin.organisations': {
+    methods: ["GET","HEAD"]
+    pattern: '/admin/organisations'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['index']>>>
+    }
+  }
+  'admin.organisations.store': {
+    methods: ["POST"]
+    pattern: '/admin/organisations'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').organisationCreateValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').organisationCreateValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'admin_organisations.suspend': {
+    methods: ["POST"]
+    pattern: '/admin/organisations/:id/suspend'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['suspend']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['suspend']>>>
+    }
+  }
+  'admin_organisations.reactivate': {
+    methods: ["POST"]
+    pattern: '/admin/organisations/:id/reactivate'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['reactivate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/admin_organisations_controller').default['reactivate']>>>
+    }
+  }
   'vendor.dashboard': {
     methods: ["GET","HEAD"]
     pattern: '/vendor'
@@ -4721,6 +4769,642 @@ export interface Registry {
       query: {}
       response: ExtractResponse<Awaited<ReturnType<import('#controllers/kyc_controller').default['getAuditTrail']>>>
       errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/kyc_controller').default['getAuditTrail']>>>
+    }
+  }
+  'ping.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/ping'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/ping_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/ping_controller').default['show']>>>
+    }
+  }
+  'affiliates.create': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/affiliates'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').createAffiliateValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').createAffiliateValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['create']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'affiliates.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/affiliates'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['index']>>>
+    }
+  }
+  'affiliates.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/affiliates/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['show']>>>
+    }
+  }
+  'affiliates.update': {
+    methods: ["PATCH"]
+    pattern: '/api/v1/organisations/affiliates/:id'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').updateAffiliateValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').updateAffiliateValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['update']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['update']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'links.create': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/links'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').createLinkValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').createLinkValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['create']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'links.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/links'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['index']>>>
+    }
+  }
+  'links.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/links/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['show']>>>
+    }
+  }
+  'links.disable': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/links/:id/disable'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['disable']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/links_controller').default['disable']>>>
+    }
+  }
+  'events.create': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/events'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').createEventValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').createEventValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['create']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'events.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/events'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['index']>>>
+    }
+  }
+  'events.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/events/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['show']>>>
+    }
+  }
+  'events.reverse': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/events/:id/reverse'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').reverseEventValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').reverseEventValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['reverse']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/events_controller').default['reverse']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'commissions.index': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/commissions'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['index']>>>
+    }
+  }
+  'commissions.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/commissions/:id'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['show']>>>
+    }
+  }
+  'stats.summary': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/stats/summary'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/stats_controller').default['summary']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/stats_controller').default['summary']>>>
+    }
+  }
+  'dashboard_sessions.create': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/affiliates/:id/dashboard_sessions'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/dashboard_sessions_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/dashboard_sessions_controller').default['create']>>>
+    }
+  }
+  'affiliates.stats': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/v1/organisations/affiliates/:id/stats'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['stats']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/affiliates_controller').default['stats']>>>
+    }
+  }
+  'commissions.approve': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/commissions/:id/approve'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['approve']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['approve']>>>
+    }
+  }
+  'commissions.reject': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/commissions/:id/reject'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').rejectCommissionValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').rejectCommissionValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['reject']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['reject']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'commissions.mark_paid': {
+    methods: ["POST"]
+    pattern: '/api/v1/organisations/commissions/:id/mark_paid'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_api').markPaidValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_api').markPaidValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['markPaid']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_api/commissions_controller').default['markPaid']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'organisation_redirect.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/r/:code'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { code: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_redirect_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_redirect_controller').default['show']>>>
+    }
+  }
+  'organisation.new': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/new'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/onboarding_controller').default['create']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/onboarding_controller').default['create']>>>
+    }
+  }
+  'onboarding.store': {
+    methods: ["POST"]
+    pattern: '/organisation/new'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').organisationOnboardValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').organisationOnboardValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/onboarding_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/onboarding_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'organisation.overview': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/overview_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/overview_controller').default['show']>>>
+    }
+  }
+  'organisation.mode': {
+    methods: ["POST"]
+    pattern: '/organisation/mode'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/overview_controller').default['setMode']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/overview_controller').default['setMode']>>>
+    }
+  }
+  'organisation.keys': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/keys'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/keys_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/keys_controller').default['index']>>>
+    }
+  }
+  'keys.store': {
+    methods: ["POST"]
+    pattern: '/organisation/keys'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').keyValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').keyValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/keys_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/keys_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'keys.revoke': {
+    methods: ["POST"]
+    pattern: '/organisation/keys/:id/revoke'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/keys_controller').default['revoke']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/keys_controller').default['revoke']>>>
+    }
+  }
+  'organisation.webhooks': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/webhooks'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['index']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['index']>>>
+    }
+  }
+  'webhooks.store': {
+    methods: ["POST"]
+    pattern: '/organisation/webhooks'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').endpointValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').endpointValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['store']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['store']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'webhooks.test': {
+    methods: ["POST"]
+    pattern: '/organisation/webhooks/test'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['test']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['test']>>>
+    }
+  }
+  'webhooks.rotate': {
+    methods: ["POST"]
+    pattern: '/organisation/webhooks/:id/rotate'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['rotate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['rotate']>>>
+    }
+  }
+  'webhooks.enable': {
+    methods: ["POST"]
+    pattern: '/organisation/webhooks/:id/enable'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['enable']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['enable']>>>
+    }
+  }
+  'webhooks.disable': {
+    methods: ["POST"]
+    pattern: '/organisation/webhooks/:id/disable'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['disable']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['disable']>>>
+    }
+  }
+  'webhooks.resend': {
+    methods: ["POST"]
+    pattern: '/organisation/deliveries/:id/resend'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['resend']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/webhooks_controller').default['resend']>>>
+    }
+  }
+  'organisation.affiliates': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/affiliates'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['affiliates']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['affiliates']>>>
+    }
+  }
+  'activity.suspend_affiliate': {
+    methods: ["POST"]
+    pattern: '/organisation/affiliates/:id/suspend'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['suspendAffiliate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['suspendAffiliate']>>>
+    }
+  }
+  'activity.reactivate_affiliate': {
+    methods: ["POST"]
+    pattern: '/organisation/affiliates/:id/reactivate'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['reactivateAffiliate']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['reactivateAffiliate']>>>
+    }
+  }
+  'organisation.activity': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/activity'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['activity']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['activity']>>>
+    }
+  }
+  'activity.reverse_event': {
+    methods: ["POST"]
+    pattern: '/organisation/events/:id/reverse'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').reasonValidator)>>
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').reasonValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['reverseEvent']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['reverseEvent']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'activity.approve_commission': {
+    methods: ["POST"]
+    pattern: '/organisation/commissions/:id/approve'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['approveCommission']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['approveCommission']>>>
+    }
+  }
+  'activity.reject_commission': {
+    methods: ["POST"]
+    pattern: '/organisation/commissions/:id/reject'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['rejectCommission']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/activity_controller').default['rejectCommission']>>>
+    }
+  }
+  'organisation.program': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/program'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['program']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['program']>>>
+    }
+  }
+  'settings.update_program': {
+    methods: ["POST"]
+    pattern: '/organisation/program'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').programValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').programValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['updateProgram']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['updateProgram']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'organisation.team': {
+    methods: ["GET","HEAD"]
+    pattern: '/organisation/team'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['team']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['team']>>>
+    }
+  }
+  'settings.invite': {
+    methods: ["POST"]
+    pattern: '/organisation/team/invite'
+    types: {
+      body: ExtractBody<InferInput<(typeof import('#validators/organisation_portal').inviteValidator)>>
+      paramsTuple: []
+      params: {}
+      query: ExtractQuery<InferInput<(typeof import('#validators/organisation_portal').inviteValidator)>>
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['invite']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['invite']>>> | { status: 422; response: { errors: SimpleError[] } }
+    }
+  }
+  'settings.remove': {
+    methods: ["POST"]
+    pattern: '/organisation/team/:id/remove'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { id: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['remove']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_portal/settings_controller').default['remove']>>>
+    }
+  }
+  'organisation_affiliate_dashboard.redeem': {
+    methods: ["GET","HEAD"]
+    pattern: '/a/session/:token'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { token: ParamValue }
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_affiliate_dashboard_controller').default['redeem']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_affiliate_dashboard_controller').default['redeem']>>>
+    }
+  }
+  'organisation_affiliate_dashboard.show': {
+    methods: ["GET","HEAD"]
+    pattern: '/a'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_affiliate_dashboard_controller').default['show']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_affiliate_dashboard_controller').default['show']>>>
+    }
+  }
+  'organisation_docs.api': {
+    methods: ["GET","HEAD"]
+    pattern: '/docs/api'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_docs_controller').default['api']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_docs_controller').default['api']>>>
+    }
+  }
+  'organisation_docs.openapi': {
+    methods: ["GET","HEAD"]
+    pattern: '/docs/api/openapi.yaml'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_docs_controller').default['openapi']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_docs_controller').default['openapi']>>>
+    }
+  }
+  'organisation_docs.quickstart': {
+    methods: ["GET","HEAD"]
+    pattern: '/docs/quickstart'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: ExtractResponse<Awaited<ReturnType<import('#controllers/organisation_docs_controller').default['quickstart']>>>
+      errorResponse: ExtractErrorResponse<Awaited<ReturnType<import('#controllers/organisation_docs_controller').default['quickstart']>>>
     }
   }
 }

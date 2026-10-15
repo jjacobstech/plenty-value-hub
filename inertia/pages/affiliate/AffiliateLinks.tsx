@@ -1,6 +1,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState } from 'react'
+import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -9,23 +9,22 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { formatNGN } from '@/lib/currency'
-import { Copy, Check, ExternalLink, Link2, TrendingUp } from 'lucide-react'
+import { Copy, Check, Link2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { Link } from '@adonisjs/inertia/react'
+import type { AffiliateLinkRow } from '@/types'
 
 type AffiliateLinksProps = {
-  links: any[]
+  links: AffiliateLinkRow[]
 }
 
 export default function AffiliateLinks(props: AffiliateLinksProps) {
   const { links } = props
-  const [copiedId, setCopiedId] = useState(null)
+  const [copiedId, setCopiedId] = useState<number | null>(null)
 
-  const handleCopy = (link) => {
+  const handleCopy = (link: AffiliateLinkRow) => {
     const linkCode = link.linkCode || link.link_code
     const url = `${window.location.origin}/ref/${linkCode}`
     navigator.clipboard.writeText(url)

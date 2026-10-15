@@ -1,5 +1,4 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -206,7 +205,7 @@ export default function VendorDashboard(props: VendorDashboardProps) {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => formatNGN(v, true)} />
-                    <Tooltip formatter={(v) => formatNGN(v)} />
+                    <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                     <Area
                       type="monotone"
                       dataKey="revenue"
@@ -279,7 +278,7 @@ export default function VendorDashboard(props: VendorDashboardProps) {
                         tickFormatter={(v) => formatNGN(v, true)}
                       />
                       <YAxis type="category" dataKey="name" tick={{ fontSize: 10 }} width={80} />
-                      <Tooltip formatter={(v) => formatNGN(v)} />
+                      <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                       <Bar
                         dataKey="revenue"
                         fill="#001845"

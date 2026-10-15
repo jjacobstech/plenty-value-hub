@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -15,7 +15,7 @@ import { Label } from '@/components/ui/label'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { format } from 'date-fns'
-import { Wallet, Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
+import { Clock, CheckCircle2, Download, Banknote } from 'lucide-react'
 import { toast } from 'sonner'
 import jsPDF from 'jspdf'
 import autoTable from 'jspdf-autotable'
@@ -37,7 +37,7 @@ type PayoutRequest = {
 type VendorEarningsProps = {
   user: any
   orders: any[]
-  wallet?: WalletData
+  wallet?: WalletData | null
   transactions?: any[]
   payoutRequests?: PayoutRequest[]
 }
@@ -118,7 +118,6 @@ export default function VendorEarnings(props: VendorEarningsProps) {
   }
 
   const handleRequestPayout = async () => {
-    const curr = getActiveCurrency()
     setPayoutAmount('')
     setPayoutModalOpen(true)
   }

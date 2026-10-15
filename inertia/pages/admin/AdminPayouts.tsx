@@ -1,5 +1,6 @@
+import type { PayoutRow } from '@/types'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -25,18 +26,6 @@ import { format } from 'date-fns'
 import { formatUSD as formatNGN } from '@/lib/currency'
 import api from '@/api/http-client'
 import { Eye } from 'lucide-react'
-
-type PayoutRow = {
-  id: number
-  amount: string
-  payoutMethod: string
-  payoutDetails: string
-  status: string
-  adminNotes: string | null
-  createdAt: string
-  processedAt: string | null
-  user: { id: number; fullName: string; email: string; role: string } | null
-}
 
 type AdminPayoutsProps = {
   payouts: PayoutRow[]

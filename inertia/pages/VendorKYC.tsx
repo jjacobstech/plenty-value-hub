@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import { useState, type ReactNode, type FormEvent } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,7 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { CheckCircle, Building2, Globe, MapPin, Phone, Link, FileText, Users } from 'lucide-react'
+import { CheckCircle, Building2, Globe, MapPin, Phone, Link, Users } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 
 const BUSINESS_TYPES = [
@@ -41,7 +42,29 @@ const COUNTRIES = [
   'Other',
 ]
 
-function Field({ id, label, required = false, children, errors }) {
+export type KycField =
+  | 'businessName'
+  | 'businessType'
+  | 'country'
+  | 'state'
+  | 'socialMedia'
+  | 'website'
+  | 'description'
+  | 'contactPhone'
+  | 'contactEmail'
+
+export type KycForm = Record<KycField, string>
+export type KycErrors = Partial<Record<KycField, string>>
+
+type FieldProps = {
+  id: KycField
+  label: string
+  required?: boolean
+  children: ReactNode
+  errors: KycErrors
+}
+
+function Field({ id, label, required = false, children, errors }: FieldProps) {
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id} className="text-sm font-medium">
@@ -53,8 +76,8 @@ function Field({ id, label, required = false, children, errors }) {
   )
 }
 
-export default function VendorKYC({ onComplete }) {
-  const [form, setForm] = useState({
+export default function VendorKYC() {
+  const [form, setForm] = useState<KycForm>({
     businessName: '',
     businessType: '',
     country: '',
@@ -65,15 +88,15 @@ export default function VendorKYC({ onComplete }) {
     contactPhone: '',
     contactEmail: '',
   })
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState<KycErrors>({})
 
-  const update = (field, value) => {
+  const update = (field: KycField, value: string) => {
     setForm((f) => ({ ...f, [field]: value }))
     if (errors[field]) setErrors((e) => ({ ...e, [field]: '' }))
   }
 
   const validate = () => {
-    const required = [
+    const required: KycField[] = [
       'businessName',
       'businessType',
       'country',
@@ -82,7 +105,7 @@ export default function VendorKYC({ onComplete }) {
       'description',
       'contactPhone',
     ]
-    const newErrors = {}
+    const newErrors: KycErrors = {}
     required.forEach((f) => {
       if (!form[f]) newErrors[f] = 'This field is required'
     })
@@ -90,9 +113,9 @@ export default function VendorKYC({ onComplete }) {
     return Object.keys(newErrors).length === 0
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (validate()) onComplete(form)
+    if (validate()) toast.error('KYC submission is not connected to the server yet.')
   }
 
   return (

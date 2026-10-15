@@ -11,10 +11,7 @@ import {
   ArrowRight,
   TrendingUp,
   Users,
-  ChevronRight,
   Globe,
-  BookOpen,
-  CheckCircle,
   Zap,
   BarChart3,
   DollarSign,
@@ -113,18 +110,10 @@ const STATS = [
 ]
 
 type HomeProps = {
-  featuredProducts?: any[]
-  trendingProducts?: any[]
-  categoryProducts?: Record<string, any[]>
   heroBannerImage?: string
 }
 
-export default function Home({
-  featuredProducts = [],
-  trendingProducts = [],
-  categoryProducts = {},
-  heroBannerImage = '/hero-banner.png',
-}: HomeProps) {
+export default function Home({ heroBannerImage = '/hero-banner.png' }: HomeProps) {
   const [email, setEmail] = useState('')
 
   const handleSubscribe = async () => {

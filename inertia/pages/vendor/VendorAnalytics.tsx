@@ -1,5 +1,4 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatUSD as formatCurrency } from '@/lib/currency'
 import { format, subDays } from 'date-fns'
@@ -108,7 +107,6 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
 
   // --- Formatters ---
   const tickFmt = (v: number) => formatCurrency(v, true)
-  const revTooltipFmt = (v: number): [string, string] => [formatCurrency(v), 'Revenue']
 
   // --- Derived metrics ---
   const avgOrderValue = totalOrders > 0 ? Math.round((totalRevenue / totalOrders) * 100) / 100 : 0
@@ -177,7 +175,7 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="day" tick={{ fontSize: 10 }} interval={4} />
                     <YAxis tick={{ fontSize: 10 }} tickFormatter={tickFmt} width={60} />
-                    <Tooltip formatter={revTooltipFmt} />
+                    <Tooltip formatter={(v) => [formatCurrency(Number(v)), 'Revenue']} />
                     <Area
                       type="monotone"
                       dataKey="revenue"
@@ -215,13 +213,13 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
                         cx="50%"
                         cy="50%"
                         outerRadius={90}
-                        label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                        label={({ percent }) => `${((percent ?? 0) * 100).toFixed(0)}%`}
                       >
                         {pieData.map((_, i) => (
                           <Cell key={i} fill={COLORS[i % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip formatter={(v: number) => [formatCurrency(v), 'Revenue']} />
+                      <Tooltip formatter={(v) => [formatCurrency(Number(v)), 'Revenue']} />
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
@@ -247,8 +245,8 @@ export default function VendorAnalytics(props: VendorAnalyticsProps) {
                       <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
                       <Tooltip
-                        formatter={(v: number, name: string) =>
-                          name === 'revenue' ? [formatCurrency(v), 'Revenue'] : [v, 'Sales']
+                        formatter={(v, name) =>
+                          String(name) === 'revenue' ? [formatCurrency(Number(v)), 'Revenue'] : [v, 'Sales']
                         }
                       />
                       <Bar dataKey="sales" fill="#F4A300" radius={[4, 4, 0, 0]} name="Sales" />

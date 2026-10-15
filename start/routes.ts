@@ -142,10 +142,14 @@ router
     router.get('/payouts', [controllers.Pages, 'adminPayouts']).as('admin.payouts')
     router.get('/disputes', [controllers.Pages, 'adminDisputes']).as('admin.disputes')
     router.get('/fraud-detection', [controllers.Pages, 'adminFraudDetection']).as('admin.fraud')
-    router.get('/partners', [controllers.AdminPartners, 'index']).as('admin.partners')
-    router.post('/partners', [controllers.AdminPartners, 'store']).as('admin.partners.store')
-    router.post('/partners/:id/suspend', [controllers.AdminPartners, 'suspend'])
-    router.post('/partners/:id/reactivate', [controllers.AdminPartners, 'reactivate'])
+    router
+      .get('/organisations', [controllers.AdminOrganisations, 'index'])
+      .as('admin.organisations')
+    router
+      .post('/organisations', [controllers.AdminOrganisations, 'store'])
+      .as('admin.organisations.store')
+    router.post('/organisations/:id/suspend', [controllers.AdminOrganisations, 'suspend'])
+    router.post('/organisations/:id/reactivate', [controllers.AdminOrganisations, 'reactivate'])
   })
   .prefix('/admin')
   .use(middleware.adminAuth())
@@ -176,7 +180,9 @@ router
   .group(() => {
     router.get('/', [controllers.Pages, 'affiliateDashboard']).as('affiliate.dashboard')
     router.get('/products', [controllers.Pages, 'affiliateProducts']).as('affiliate.products')
-    router.get('/campaigns/discover', [controllers.Pages, 'campaignDiscovery']).as('affiliate.campaigns.discover')
+    router
+      .get('/campaigns/discover', [controllers.Pages, 'campaignDiscovery'])
+      .as('affiliate.campaigns.discover')
     router.get('/links', [controllers.Pages, 'affiliateLinks']).as('affiliate.links')
     router.get('/earnings', [controllers.Pages, 'affiliateEarnings']).as('affiliate.earnings')
     router
@@ -205,11 +211,17 @@ router
     router.get('/shopify/callback', [controllers.Shopify, 'handleCallback'])
 
     // Purchase destination redirects (public)
-    router.get('/purchase-destinations/:token/redirect', [controllers.PurchaseDestinations, 'handleRedirect'])
+    router.get('/purchase-destinations/:token/redirect', [
+      controllers.PurchaseDestinations,
+      'handleRedirect',
+    ])
 
     router.post('/newsletters/subscribe', [controllers.Newsletters, 'subscribe'])
     router.post('/newsletters/unsubscribe', [controllers.Newsletters, 'unsubscribe'])
-    router.post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick']).as('affiliate_links.track_click').use(trackingThrottle)
+    router
+      .post('/affiliate-links/track-click', [controllers.AffiliateLinks, 'trackClick'])
+      .as('affiliate_links.track_click')
+      .use(trackingThrottle)
     router.get('/reviews', [controllers.Reviews, 'index'])
 
     // Currency endpoints (public)
@@ -252,7 +264,9 @@ router
     router
       .post('/payments/webhook/paypal', [controllers.Webhook, 'paypalWebhook'])
       .use(webhookThrottle)
-    router.post('/payments/webhook/:provider', [controllers.Webhook, 'handleWebhook']).use(webhookThrottle)
+    router
+      .post('/payments/webhook/:provider', [controllers.Webhook, 'handleWebhook'])
+      .use(webhookThrottle)
 
     // ── Authenticated endpoints ───────────────────────────────────────
     router
@@ -275,26 +289,47 @@ router
         router.get('/affiliate-campaigns', [controllers.Campaigns, 'affiliateCampaigns'])
 
         // Purchase destinations (vendor configuration)
-        router.put('/campaigns/:campaignId/purchase-destination', [controllers.PurchaseDestinations, 'configureCampaignDestination'])
-        router.post('/campaigns/:campaignId/purchase-destination-link', [controllers.PurchaseDestinations, 'generateRedirectLink'])
-        router.get('/campaigns/:campaignId/purchase-destination-stats', [controllers.PurchaseDestinations, 'getStats'])
+        router.put('/campaigns/:campaignId/purchase-destination', [
+          controllers.PurchaseDestinations,
+          'configureCampaignDestination',
+        ])
+        router.post('/campaigns/:campaignId/purchase-destination-link', [
+          controllers.PurchaseDestinations,
+          'generateRedirectLink',
+        ])
+        router.get('/campaigns/:campaignId/purchase-destination-stats', [
+          controllers.PurchaseDestinations,
+          'getStats',
+        ])
 
         // External conversion reporting (vendor webhook endpoint)
-        router.post('/campaigns/:campaignId/report-conversion', [controllers.PurchaseDestinations, 'recordConversion'])
+        router.post('/campaigns/:campaignId/report-conversion', [
+          controllers.PurchaseDestinations,
+          'recordConversion',
+        ])
 
         // Vendor conversion reporting API
-        router.post('/campaigns/:campaignId/conversions', [controllers.VendorConversions, 'reportConversion'])
+        router.post('/campaigns/:campaignId/conversions', [
+          controllers.VendorConversions,
+          'reportConversion',
+        ])
         router.get('/campaigns/:campaignId/conversions', [controllers.VendorConversions, 'index'])
         router.get('/conversions/:id', [controllers.VendorConversions, 'show'])
         router.post('/conversions/:id/dispute', [controllers.VendorConversions, 'dispute'])
-        router.get('/campaigns/:campaignId/conversions/stats', [controllers.VendorConversions, 'getStats'])
+        router.get('/campaigns/:campaignId/conversions/stats', [
+          controllers.VendorConversions,
+          'getStats',
+        ])
 
         // Commission ledger (affiliate earnings tracking)
         router.get('/commissions', [controllers.CommissionLedger, 'index'])
         router.get('/commissions/:id', [controllers.CommissionLedger, 'show'])
         router.post('/commissions/:id/dispute', [controllers.CommissionLedger, 'dispute'])
         router.get('/commissions/stats', [controllers.CommissionLedger, 'getStats'])
-        router.get('/commissions/campaign/:campaignId/stats', [controllers.CommissionLedger, 'campaignStats'])
+        router.get('/commissions/campaign/:campaignId/stats', [
+          controllers.CommissionLedger,
+          'campaignStats',
+        ])
 
         // Refunds and chargebacks (vendor reporting)
         router.post('/refunds-chargebacks/report', [controllers.RefundsChargebacks, 'report'])
@@ -321,7 +356,9 @@ router
         router.get('/affiliate-links/:id/conversions', [controllers.AffiliateLinks, 'conversions'])
 
         // Click and Conversion Tracking
-        router.post('/clicks/track/:slug', [controllers.AffiliateLinks, 'trackClick']).as('affiliate_links.track_click_slug')
+        router
+          .post('/clicks/track/:slug', [controllers.AffiliateLinks, 'trackClick'])
+          .as('affiliate_links.track_click_slug')
         router.post('/conversions/report', [controllers.AffiliateLinks, 'reportConversion'])
 
         // Reviews
@@ -364,8 +401,14 @@ router
           .group(() => {
             // Admin dashboard
             router.get('/dashboard/overview', [controllers.AdminDashboard, 'overview'])
-            router.get('/dashboard/pending-campaigns', [controllers.AdminDashboard, 'pendingCampaigns'])
-            router.get('/dashboard/recent-conversions', [controllers.AdminDashboard, 'recentConversions'])
+            router.get('/dashboard/pending-campaigns', [
+              controllers.AdminDashboard,
+              'pendingCampaigns',
+            ])
+            router.get('/dashboard/recent-conversions', [
+              controllers.AdminDashboard,
+              'recentConversions',
+            ])
             router.get('/dashboard/users', [controllers.AdminDashboard, 'users'])
             router.get('/dashboard/commissions', [controllers.AdminDashboard, 'commissionStats'])
             router.get('/dashboard/payouts', [controllers.AdminDashboard, 'payoutStats'])
@@ -397,10 +440,22 @@ router
             router.post('/commissions/bulk-approve', [controllers.CommissionLedger, 'bulkApprove'])
 
             // Refund and chargeback management (admin)
-            router.post('/refunds-chargebacks/:id/verify', [controllers.RefundsChargebacks, 'verify'])
-            router.post('/refunds-chargebacks/:id/approve', [controllers.RefundsChargebacks, 'approve'])
-            router.post('/refunds-chargebacks/:id/reject', [controllers.RefundsChargebacks, 'reject'])
-            router.post('/refunds-chargebacks/:id/complete', [controllers.RefundsChargebacks, 'complete'])
+            router.post('/refunds-chargebacks/:id/verify', [
+              controllers.RefundsChargebacks,
+              'verify',
+            ])
+            router.post('/refunds-chargebacks/:id/approve', [
+              controllers.RefundsChargebacks,
+              'approve',
+            ])
+            router.post('/refunds-chargebacks/:id/reject', [
+              controllers.RefundsChargebacks,
+              'reject',
+            ])
+            router.post('/refunds-chargebacks/:id/complete', [
+              controllers.RefundsChargebacks,
+              'complete',
+            ])
 
             // Phase 3: Fraud Detection API (admin)
             router.get('/fraud-api/flagged', [controllers.AdminFraud, 'getFlagged'])
@@ -432,7 +487,10 @@ router
             router.get('/fraud/:id/details', [controllers.FraudAnalytics, 'getFraudDetails'])
             router.post('/fraud/:id/approve-flag', [controllers.FraudAnalytics, 'approveFraudFlag'])
             router.post('/fraud/:id/reject-flag', [controllers.FraudAnalytics, 'rejectFraudFlag'])
-            router.post('/fraud/auto-reject-high-risk', [controllers.FraudAnalytics, 'autoRejectHighRisk'])
+            router.post('/fraud/auto-reject-high-risk', [
+              controllers.FraudAnalytics,
+              'autoRejectHighRisk',
+            ])
             router.get('/fraud/trends', [controllers.FraudAnalytics, 'getTrends'])
             router.get('/fraud/top-flags', [controllers.FraudAnalytics, 'getTopFlags'])
 
@@ -444,9 +502,18 @@ router
             router.get('/analytics/affiliates', [controllers.Analytics, 'listAffiliates'])
             router.get('/analytics/affiliates/:id', [controllers.Analytics, 'getAffiliateMetrics'])
             router.get('/analytics/commissions', [controllers.Analytics, 'getCommissions'])
-            router.get('/analytics/commission-schedule', [controllers.Analytics, 'getCommissionSchedule'])
-            router.get('/analytics/export/conversions', [controllers.Analytics, 'exportConversions'])
-            router.get('/analytics/export/commissions', [controllers.Analytics, 'exportCommissions'])
+            router.get('/analytics/commission-schedule', [
+              controllers.Analytics,
+              'getCommissionSchedule',
+            ])
+            router.get('/analytics/export/conversions', [
+              controllers.Analytics,
+              'exportConversions',
+            ])
+            router.get('/analytics/export/commissions', [
+              controllers.Analytics,
+              'exportCommissions',
+            ])
 
             // Influencer profiles (affiliate)
             router.post('/influencers/profile', [controllers.Influencers, 'createProfile'])
@@ -455,22 +522,43 @@ router
             router.get('/influencers/stats', [controllers.Influencers, 'getStats'])
 
             // Collaborations (affiliate)
-            router.get('/influencers/collaborations', [controllers.Influencers, 'listCollaborations'])
-            router.get('/influencers/collaborations/:id', [controllers.Influencers, 'getCollaboration'])
-            router.post('/influencers/collaborations/:id/accept', [controllers.Influencers, 'acceptCollaboration'])
+            router.get('/influencers/collaborations', [
+              controllers.Influencers,
+              'listCollaborations',
+            ])
+            router.get('/influencers/collaborations/:id', [
+              controllers.Influencers,
+              'getCollaboration',
+            ])
+            router.post('/influencers/collaborations/:id/accept', [
+              controllers.Influencers,
+              'acceptCollaboration',
+            ])
 
             // Content (affiliate)
             router.post('/influencers/content', [controllers.Influencers, 'createContent'])
             router.get('/influencers/content', [controllers.Influencers, 'listContent'])
-            router.get('/influencers/content/:id/analytics', [controllers.Influencers, 'getContentAnalytics'])
-            router.get('/influencers/content/performance', [controllers.Influencers, 'getContentPerformance'])
+            router.get('/influencers/content/:id/analytics', [
+              controllers.Influencers,
+              'getContentAnalytics',
+            ])
+            router.get('/influencers/content/performance', [
+              controllers.Influencers,
+              'getContentPerformance',
+            ])
             router.put('/influencers/content/:id', [controllers.Influencers, 'updateContent'])
 
             // Admin: Influencer management
             router.get('/admin/influencers', [controllers.Influencers, 'listInfluencers'])
             router.get('/admin/influencers/:id', [controllers.Influencers, 'viewInfluencer'])
-            router.post('/admin/influencers/:id/verify', [controllers.Influencers, 'verifyInfluencer'])
-            router.post('/admin/influencers/:id/reject', [controllers.Influencers, 'rejectInfluencer'])
+            router.post('/admin/influencers/:id/verify', [
+              controllers.Influencers,
+              'verifyInfluencer',
+            ])
+            router.post('/admin/influencers/:id/reject', [
+              controllers.Influencers,
+              'rejectInfluencer',
+            ])
 
             // Shopify integration (vendor)
             router.get('/shopify/auth-url', [controllers.Shopify, 'getAuthUrl'])
@@ -482,7 +570,10 @@ router
             router.put('/shopify/products/:id', [controllers.Shopify, 'updateProduct'])
             router.get('/shopify/orders', [controllers.Shopify, 'listOrders'])
             router.get('/shopify/orders/:id', [controllers.Shopify, 'getOrder'])
-            router.post('/shopify/commissions/calculate', [controllers.Shopify, 'calculateCommissions'])
+            router.post('/shopify/commissions/calculate', [
+              controllers.Shopify,
+              'calculateCommissions',
+            ])
             router.get('/shopify/analytics', [controllers.Shopify, 'getAnalytics'])
 
             // WooCommerce integration (vendor)
@@ -494,7 +585,10 @@ router
             router.get('/woocommerce/products', [controllers.Woocommerce, 'listProducts'])
             router.put('/woocommerce/products/:id', [controllers.Woocommerce, 'updateProduct'])
             router.get('/woocommerce/orders', [controllers.Woocommerce, 'listOrders'])
-            router.post('/woocommerce/commissions/calculate', [controllers.Woocommerce, 'calculateCommissions'])
+            router.post('/woocommerce/commissions/calculate', [
+              controllers.Woocommerce,
+              'calculateCommissions',
+            ])
             router.get('/woocommerce/analytics', [controllers.Woocommerce, 'getAnalytics'])
 
             // Currency and regional pricing (vendor/affiliate)
@@ -573,7 +667,10 @@ router
             router.get('/kyc/admin/pending', [controllers.Kyc, 'listPendingSubmissions'])
             router.get('/kyc/admin/statistics', [controllers.Kyc, 'getStatistics'])
             router.get('/kyc/admin/search', [controllers.Kyc, 'searchSubmissions'])
-            router.post('/kyc/:submissionId/verify-document/:documentId', [controllers.Kyc, 'verifyDocument'])
+            router.post('/kyc/:submissionId/verify-document/:documentId', [
+              controllers.Kyc,
+              'verifyDocument',
+            ])
             router.post('/kyc/:submissionId/assess-risk', [controllers.Kyc, 'assessRisk'])
             router.post('/kyc/:submissionId/check-compliance', [controllers.Kyc, 'checkCompliance'])
             router.post('/kyc/:submissionId/approve', [controllers.Kyc, 'approveSubmission'])
@@ -606,14 +703,26 @@ router
             router.post('/disputes/:id/assign', [controllers.Disputes, 'assignDispute'])
             router.post('/disputes/:id/escalate', [controllers.Disputes, 'escalateDispute'])
             router.post('/disputes/:id/request-approval', [controllers.Disputes, 'requestApproval'])
-            router.post('/disputes/approvals/:approvalId/approve', [controllers.Disputes, 'approveDispute'])
-            router.post('/disputes/approvals/:approvalId/reject', [controllers.Disputes, 'rejectDispute'])
+            router.post('/disputes/approvals/:approvalId/approve', [
+              controllers.Disputes,
+              'approveDispute',
+            ])
+            router.post('/disputes/approvals/:approvalId/reject', [
+              controllers.Disputes,
+              'rejectDispute',
+            ])
 
             // Affiliate recruitment (admin)
             router.post('/recruitment/campaigns', [controllers.Affiliates, 'createCampaign'])
             router.get('/recruitment/campaigns', [controllers.Affiliates, 'listCampaigns'])
-            router.post('/recruitment/campaigns/:id/launch', [controllers.Affiliates, 'launchCampaign'])
-            router.post('/recruitment/campaigns/:id/complete', [controllers.Affiliates, 'completeCampaign'])
+            router.post('/recruitment/campaigns/:id/launch', [
+              controllers.Affiliates,
+              'launchCampaign',
+            ])
+            router.post('/recruitment/campaigns/:id/complete', [
+              controllers.Affiliates,
+              'completeCampaign',
+            ])
           })
           .use(middleware.role(['admin']))
           .use(adminThrottle)
@@ -644,7 +753,10 @@ router
         router.put('/affiliate/profile', [controllers.Affiliates, 'updateProfile'])
         router.post('/affiliate/referral-codes', [controllers.Affiliates, 'generateReferralCode'])
         router.get('/affiliate/referral-codes', [controllers.Affiliates, 'getReferralCodes'])
-        router.get('/affiliate/referral-codes/:id/performance', [controllers.Affiliates, 'getReferralCodePerformance'])
+        router.get('/affiliate/referral-codes/:id/performance', [
+          controllers.Affiliates,
+          'getReferralCodePerformance',
+        ])
         router.get('/affiliate/referrals', [controllers.Affiliates, 'getReferrals'])
         router.get('/affiliate/rewards', [controllers.Affiliates, 'getRewards'])
         router.post('/affiliate/rewards/:id/claim', [controllers.Affiliates, 'claimReward'])
@@ -656,10 +768,19 @@ router
         // Affiliate dashboard (affiliate)
         router.get('/affiliate-dashboard/overview', [controllers.AffiliateDashboard, 'overview'])
         router.get('/affiliate-dashboard/links', [controllers.AffiliateDashboard, 'links'])
-        router.get('/affiliate-dashboard/campaigns', [controllers.AffiliateDashboard, 'availableCampaigns'])
-        router.get('/affiliate-dashboard/commissions', [controllers.AffiliateDashboard, 'commissions'])
+        router.get('/affiliate-dashboard/campaigns', [
+          controllers.AffiliateDashboard,
+          'availableCampaigns',
+        ])
+        router.get('/affiliate-dashboard/commissions', [
+          controllers.AffiliateDashboard,
+          'commissions',
+        ])
         router.get('/affiliate-dashboard/payouts', [controllers.AffiliateDashboard, 'payouts'])
-        router.get('/affiliate-dashboard/earnings', [controllers.AffiliateDashboard, 'earningsBreakdown'])
+        router.get('/affiliate-dashboard/earnings', [
+          controllers.AffiliateDashboard,
+          'earningsBreakdown',
+        ])
         router.get('/affiliate-dashboard/trending', [controllers.AffiliateDashboard, 'trending'])
         router.get('/affiliate-dashboard/trends', [controllers.AffiliateDashboard, 'trends'])
 
@@ -669,7 +790,10 @@ router
         router.get('/vendor-dashboard/affiliates', [controllers.VendorDashboard, 'topAffiliates'])
         router.get('/vendor-dashboard/financials', [controllers.VendorDashboard, 'financials'])
         router.get('/vendor-dashboard/activity', [controllers.VendorDashboard, 'activity'])
-        router.get('/vendor-dashboard/campaign/:campaignId', [controllers.VendorDashboard, 'campaignDetails'])
+        router.get('/vendor-dashboard/campaign/:campaignId', [
+          controllers.VendorDashboard,
+          'campaignDetails',
+        ])
         router.get('/vendor-dashboard/earnings', [controllers.VendorDashboard, 'earningsBreakdown'])
         router.get('/vendor-dashboard/trends', [controllers.VendorDashboard, 'trends'])
 
@@ -684,80 +808,133 @@ router
   .prefix('/api')
 
 /**
- * Partner API (JSON, key-authenticated, CSRF-exempt; see docs/partner-api).
+ * Organisation API (JSON, key-authenticated, CSRF-exempt; see docs/organisation-api).
  */
 router
   .group(() => {
-    router.get('/ping', [controllers.partnerApi.Ping, 'show'])
-    router.post('/affiliates', [controllers.partnerApi.Affiliates, 'create']).use(middleware.partnerIdempotency())
-    router.get('/affiliates', [controllers.partnerApi.Affiliates, 'index'])
-    router.get('/affiliates/:id', [controllers.partnerApi.Affiliates, 'show'])
-    router.patch('/affiliates/:id', [controllers.partnerApi.Affiliates, 'update'])
-    router.post('/links', [controllers.partnerApi.Links, 'create']).use(middleware.partnerIdempotency())
-    router.get('/links', [controllers.partnerApi.Links, 'index'])
-    router.get('/links/:id', [controllers.partnerApi.Links, 'show'])
-    router.post('/links/:id/disable', [controllers.partnerApi.Links, 'disable']).use(middleware.partnerIdempotency())
-    router.post('/events', [controllers.partnerApi.Events, 'create']).use(middleware.partnerIdempotency())
-    router.get('/events', [controllers.partnerApi.Events, 'index'])
-    router.get('/events/:id', [controllers.partnerApi.Events, 'show'])
-    router.post('/events/:id/reverse', [controllers.partnerApi.Events, 'reverse']).use(middleware.partnerIdempotency())
-    router.get('/commissions', [controllers.partnerApi.Commissions, 'index'])
-    router.get('/commissions/:id', [controllers.partnerApi.Commissions, 'show'])
-    router.get('/stats/summary', [controllers.partnerApi.Stats, 'summary'])
-    router.post('/affiliates/:id/dashboard_sessions', [controllers.partnerApi.DashboardSessions, 'create']).use(middleware.partnerIdempotency())
-    router.get('/affiliates/:id/stats', [controllers.partnerApi.Affiliates, 'stats'])
-    router.post('/commissions/:id/approve', [controllers.partnerApi.Commissions, 'approve']).use(middleware.partnerIdempotency())
-    router.post('/commissions/:id/reject', [controllers.partnerApi.Commissions, 'reject']).use(middleware.partnerIdempotency())
-    router.post('/commissions/:id/mark_paid', [controllers.partnerApi.Commissions, 'markPaid']).use(middleware.partnerIdempotency())
+    router.get('/ping', [controllers.organisationApi.Ping, 'show'])
+    router
+      .post('/affiliates', [controllers.organisationApi.Affiliates, 'create'])
+      .use(middleware.organisationIdempotency())
+    router.get('/affiliates', [controllers.organisationApi.Affiliates, 'index'])
+    router.get('/affiliates/:id', [controllers.organisationApi.Affiliates, 'show'])
+    router.patch('/affiliates/:id', [controllers.organisationApi.Affiliates, 'update'])
+    router
+      .post('/links', [controllers.organisationApi.Links, 'create'])
+      .use(middleware.organisationIdempotency())
+    router.get('/links', [controllers.organisationApi.Links, 'index'])
+    router.get('/links/:id', [controllers.organisationApi.Links, 'show'])
+    router
+      .post('/links/:id/disable', [controllers.organisationApi.Links, 'disable'])
+      .use(middleware.organisationIdempotency())
+    router
+      .post('/events', [controllers.organisationApi.Events, 'create'])
+      .use(middleware.organisationIdempotency())
+    router.get('/events', [controllers.organisationApi.Events, 'index'])
+    router.get('/events/:id', [controllers.organisationApi.Events, 'show'])
+    router
+      .post('/events/:id/reverse', [controllers.organisationApi.Events, 'reverse'])
+      .use(middleware.organisationIdempotency())
+    router.get('/commissions', [controllers.organisationApi.Commissions, 'index'])
+    router.get('/commissions/:id', [controllers.organisationApi.Commissions, 'show'])
+    router.get('/stats/summary', [controllers.organisationApi.Stats, 'summary'])
+    router
+      .post('/affiliates/:id/dashboard_sessions', [
+        controllers.organisationApi.DashboardSessions,
+        'create',
+      ])
+      .use(middleware.organisationIdempotency())
+    router.get('/affiliates/:id/stats', [controllers.organisationApi.Affiliates, 'stats'])
+    router
+      .post('/commissions/:id/approve', [controllers.organisationApi.Commissions, 'approve'])
+      .use(middleware.organisationIdempotency())
+    router
+      .post('/commissions/:id/reject', [controllers.organisationApi.Commissions, 'reject'])
+      .use(middleware.organisationIdempotency())
+    router
+      .post('/commissions/:id/mark_paid', [controllers.organisationApi.Commissions, 'markPaid'])
+      .use(middleware.organisationIdempotency())
   })
-  .prefix('/v1')
-  .use([middleware.partnerRequestId(), middleware.partnerApiAuth()])
+  .prefix('/api/v1/organisations')
+  .use([middleware.organisationRequestId(), middleware.organisationApiAuth()])
 
-// Public redirect. No key, no session. Never a 500 (see PartnerRedirectController).
-router.get('/r/:code', [controllers.PartnerRedirect, 'show'])
+// Public redirect. No key, no session. Never a 500 (see OrganisationRedirectController).
+router.get('/r/:code', [controllers.OrganisationRedirect, 'show'])
 
 /**
- * Partner developer portal. Signed-in members only; non-members get a 404 (see PartnerPortalMiddleware).
+ * Self-serve organisation creation. Any signed-in user can open an organisation and becomes its owner.
  */
 router
   .group(() => {
-    router.get('/', [controllers.partnerPortal.Overview, 'show']).as('partner.overview')
-    router.post('/mode', [controllers.partnerPortal.Overview, 'setMode']).as('partner.mode')
-    router.get('/keys', [controllers.partnerPortal.Keys, 'index']).as('partner.keys')
-    router.post('/keys', [controllers.partnerPortal.Keys, 'store'])
-    router.post('/keys/:id/revoke', [controllers.partnerPortal.Keys, 'revoke'])
-    router.get('/webhooks', [controllers.partnerPortal.Webhooks, 'index']).as('partner.webhooks')
-    router.post('/webhooks', [controllers.partnerPortal.Webhooks, 'store'])
-    router.post('/webhooks/test', [controllers.partnerPortal.Webhooks, 'test'])
-    router.post('/webhooks/:id/rotate', [controllers.partnerPortal.Webhooks, 'rotate'])
-    router.post('/webhooks/:id/enable', [controllers.partnerPortal.Webhooks, 'enable'])
-    router.post('/webhooks/:id/disable', [controllers.partnerPortal.Webhooks, 'disable'])
-    router.post('/deliveries/:id/resend', [controllers.partnerPortal.Webhooks, 'resend'])
-    router.get('/affiliates', [controllers.partnerPortal.Activity, 'affiliates']).as('partner.affiliates')
-    router.post('/affiliates/:id/suspend', [controllers.partnerPortal.Activity, 'suspendAffiliate'])
-    router.post('/affiliates/:id/reactivate', [controllers.partnerPortal.Activity, 'reactivateAffiliate'])
-    router.get('/activity', [controllers.partnerPortal.Activity, 'activity']).as('partner.activity')
-    router.post('/events/:id/reverse', [controllers.partnerPortal.Activity, 'reverseEvent'])
-    router.post('/commissions/:id/approve', [controllers.partnerPortal.Activity, 'approveCommission'])
-    router.post('/commissions/:id/reject', [controllers.partnerPortal.Activity, 'rejectCommission'])
-    router.get('/program', [controllers.partnerPortal.Settings, 'program']).as('partner.program')
-    router.post('/program', [controllers.partnerPortal.Settings, 'updateProgram'])
-    router.get('/team', [controllers.partnerPortal.Settings, 'team']).as('partner.team')
-    router.post('/team/invite', [controllers.partnerPortal.Settings, 'invite'])
-    router.post('/team/:id/remove', [controllers.partnerPortal.Settings, 'remove'])
+    router.get('/organisation/new', [controllers.organisationPortal.Onboarding, 'create']).as('organisation.new')
+    router.post('/organisation/new', [controllers.organisationPortal.Onboarding, 'store']).use(signupThrottle)
   })
-  .prefix('/partner')
-  .use([middleware.auth(), middleware.partnerPortal()])
+  .use(middleware.auth())
+
+/**
+ * Organisation developer portal. Signed-in members only; non-members get a 404 (see OrganisationPortalMiddleware).
+ */
+router
+  .group(() => {
+    router.get('/', [controllers.organisationPortal.Overview, 'show']).as('organisation.overview')
+    router
+      .post('/mode', [controllers.organisationPortal.Overview, 'setMode'])
+      .as('organisation.mode')
+    router.get('/keys', [controllers.organisationPortal.Keys, 'index']).as('organisation.keys')
+    router.post('/keys', [controllers.organisationPortal.Keys, 'store'])
+    router.post('/keys/:id/revoke', [controllers.organisationPortal.Keys, 'revoke'])
+    router
+      .get('/webhooks', [controllers.organisationPortal.Webhooks, 'index'])
+      .as('organisation.webhooks')
+    router.post('/webhooks', [controllers.organisationPortal.Webhooks, 'store'])
+    router.post('/webhooks/test', [controllers.organisationPortal.Webhooks, 'test'])
+    router.post('/webhooks/:id/rotate', [controllers.organisationPortal.Webhooks, 'rotate'])
+    router.post('/webhooks/:id/enable', [controllers.organisationPortal.Webhooks, 'enable'])
+    router.post('/webhooks/:id/disable', [controllers.organisationPortal.Webhooks, 'disable'])
+    router.post('/deliveries/:id/resend', [controllers.organisationPortal.Webhooks, 'resend'])
+    router
+      .get('/affiliates', [controllers.organisationPortal.Activity, 'affiliates'])
+      .as('organisation.affiliates')
+    router.post('/affiliates/:id/suspend', [
+      controllers.organisationPortal.Activity,
+      'suspendAffiliate',
+    ])
+    router.post('/affiliates/:id/reactivate', [
+      controllers.organisationPortal.Activity,
+      'reactivateAffiliate',
+    ])
+    router
+      .get('/activity', [controllers.organisationPortal.Activity, 'activity'])
+      .as('organisation.activity')
+    router.post('/events/:id/reverse', [controllers.organisationPortal.Activity, 'reverseEvent'])
+    router.post('/commissions/:id/approve', [
+      controllers.organisationPortal.Activity,
+      'approveCommission',
+    ])
+    router.post('/commissions/:id/reject', [
+      controllers.organisationPortal.Activity,
+      'rejectCommission',
+    ])
+    router
+      .get('/program', [controllers.organisationPortal.Settings, 'program'])
+      .as('organisation.program')
+    router.post('/program', [controllers.organisationPortal.Settings, 'updateProgram'])
+    router.get('/team', [controllers.organisationPortal.Settings, 'team']).as('organisation.team')
+    router.post('/team/invite', [controllers.organisationPortal.Settings, 'invite'])
+    router.post('/team/:id/remove', [controllers.organisationPortal.Settings, 'remove'])
+  })
+  .prefix('/organisation')
+  .use([middleware.auth(), middleware.organisationPortal()])
 
 /**
  * Hosted affiliate dashboard. Public, but the single-use link and the cookie it sets are the only way in.
  */
-router.get('/a/session/:token', [controllers.PartnerAffiliateDashboard, 'redeem'])
-router.get('/a', [controllers.PartnerAffiliateDashboard, 'show'])
+router.get('/a/session/:token', [controllers.OrganisationAffiliateDashboard, 'redeem'])
+router.get('/a', [controllers.OrganisationAffiliateDashboard, 'show'])
 
 /**
- * Partner API documentation. Public. Served from docs/partner-api.
+ * Organisation API documentation. Public. Served from docs/organisation-api.
  */
-router.get('/docs/api', [controllers.PartnerDocs, 'api'])
-router.get('/docs/api/openapi.yaml', [controllers.PartnerDocs, 'openapi'])
-router.get('/docs/quickstart', [controllers.PartnerDocs, 'quickstart'])
+router.get('/docs/api', [controllers.OrganisationDocs, 'api'])
+router.get('/docs/api/openapi.yaml', [controllers.OrganisationDocs, 'openapi'])
+router.get('/docs/quickstart', [controllers.OrganisationDocs, 'quickstart'])

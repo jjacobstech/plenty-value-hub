@@ -1,6 +1,16 @@
-import React from 'react'
 
-export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }) {
+import type { ReactNode } from 'react'
+import type { LucideIcon } from 'lucide-react'
+
+interface AuthLayoutProps {
+  icon: LucideIcon
+  title: string
+  subtitle?: string
+  footer?: ReactNode
+  children: ReactNode
+}
+
+export default function AuthLayout({ icon: Icon, title, subtitle, footer, children }: AuthLayoutProps) {
   return (
     <div
       className="min-h-screen flex items-center justify-center px-4"

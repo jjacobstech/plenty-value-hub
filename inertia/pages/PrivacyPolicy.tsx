@@ -3,7 +3,24 @@ import SEO from '@/components/SEO'
 import { Link } from '@adonisjs/inertia/react'
 import PublicLayout from '@/components/layout/PublicLayout'
 
-const sections = [
+interface PolicySubsection {
+  title: string
+  body?: string
+  items?: string[]
+}
+
+interface PolicySection {
+  id?: string
+  number?: string
+  title: string
+  intro?: string
+  body?: string
+  items?: string[]
+  subsections?: PolicySubsection[]
+  footer?: string
+}
+
+const sections: PolicySection[] = [
   {
     number: '1',
     title: 'Information We Collect',

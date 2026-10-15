@@ -54,6 +54,7 @@ export const signupValidator = vine.create({
   }),
   passwordConfirmation: vine.string().minLength(8).maxLength(32),
   role: vine.enum(['vendor', 'affiliate', 'consumer'] as const).optional(),
+  organisation: vine.boolean().optional(),
 })
 
 export const affiliateProfileValidator = vine.create({

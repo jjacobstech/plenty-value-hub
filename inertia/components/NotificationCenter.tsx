@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import {
@@ -14,6 +13,16 @@ import api from '@/api/http-client'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 
+interface NotificationsResponse {
+  success: boolean
+  data: Notification[]
+}
+
+interface UnreadCountResponse {
+  success: boolean
+  unreadCount: number
+}
+
 interface Notification {
   id: number
   uuid: string
@@ -21,7 +30,7 @@ interface Notification {
   message: string | null
   type: 'sale' | 'review' | 'message' | 'system'
   icon: string | null
-  data: any | null
+  data: Record<string, string | number | boolean | null> | null
   isRead: boolean
   readAt: string | null
   actionUrl: string | null
@@ -39,10 +48,10 @@ export default function NotificationCenter() {
   const fetchNotifications = async () => {
     try {
       setLoading(true)
-      const response = await api.get('/api/notifications')
-      if (response.success) {
-        setNotifications(response.data)
-        const unread = response.data.filter((n: Notification) => !n.isRead).length
+      const response = await api.get<NotificationsResponse>('/api/notifications')
+      if (response.data.success) {
+        setNotifications(response.data.data)
+        const unread = response.data.data.filter((n) => !n.isRead).length
         setUnreadCount(unread)
       }
     } catch (error) {
@@ -55,9 +64,9 @@ export default function NotificationCenter() {
   // Fetch unread count
   const fetchUnreadCount = async () => {
     try {
-      const response = await api.get('/api/notifications/unread')
-      if (response.success) {
-        setUnreadCount(response.unreadCount)
+      const response = await api.get<UnreadCountResponse>('/api/notifications/unread')
+      if (response.data.success) {
+        setUnreadCount(response.data.unreadCount)
       }
     } catch (error) {
       console.error('Failed to fetch unread count:', error)

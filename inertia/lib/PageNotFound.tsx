@@ -1,10 +1,9 @@
-import { useRoute } from '@inertiajs/react'
 import { usePage } from '@inertiajs/react'
+import type { SharedPageProps } from '@/types'
 
 export default function PageNotFound() {
-  const route = useRoute()
-  const { auth } = usePage().props as any
-  const pageName = route.pathname?.substring(1) || 'unknown'
+  const { user } = usePage<SharedPageProps>().props
+  const pageName = window.location.pathname.substring(1) || 'unknown'
 
   return (
     <div className="min-h-screen flex items-center justify-center p-6 bg-slate-50">
@@ -26,7 +25,7 @@ export default function PageNotFound() {
           </div>
 
           {/* Admin Note */}
-          {auth?.user?.role === 'admin' && (
+          {user?.role === 'admin' && (
             <div className="mt-8 p-4 bg-slate-100 rounded-lg border border-slate-200">
               <div className="flex items-start space-x-3">
                 <div className="flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center mt-0.5">

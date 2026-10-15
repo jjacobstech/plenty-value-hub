@@ -1,11 +1,12 @@
-import React from 'react'
+import type { SharedPageProps } from '@/types'
+import React, { type ReactNode } from 'react'
 import { usePage, router } from '@inertiajs/react'
 import Navbar from './Navbar'
 import Footer from './Footer'
 import { CURRENCY_SYMBOLS } from '@/lib/currency'
 
-export default function PublicLayout({ children }: { children: any }) {
-  const { user, currencySymbol, systemCurrency } = usePage().props as any
+export default function PublicLayout({ children }: { children: ReactNode }) {
+  const { user, currencySymbol, systemCurrency } = usePage<SharedPageProps>().props
   const symbol = currencySymbol || (systemCurrency ? CURRENCY_SYMBOLS[systemCurrency] : '$') || '$'
 
   React.useEffect(() => {

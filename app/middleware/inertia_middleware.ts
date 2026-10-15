@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import type { NextFn } from '@adonisjs/core/types/http'
 import UserTransformer from '#transformers/user_transformer'
+import { isOrganisationUser } from '#services/organisation/landing'
 import BaseInertiaMiddleware from '@adonisjs/inertia/inertia_middleware'
 
 export default class InertiaMiddleware extends BaseInertiaMiddleware {
@@ -36,6 +37,8 @@ export default class InertiaMiddleware extends BaseInertiaMiddleware {
         success,
       }),
       user: ctx.inertia.always(auth?.user ? UserTransformer.transform(auth.user) : undefined),
+      // Organisations are consumers with a OrganisationMember row, not a user role
+      isOrganisation: ctx.inertia.always(auth?.user ? await isOrganisationUser(auth.user) : false),
       systemCurrency: ctx.inertia.always('USD'),
       currencySymbol: ctx.inertia.always('$'),
     }

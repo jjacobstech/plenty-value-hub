@@ -1,11 +1,15 @@
+import type { AuthUser } from '@/types'
 import { Head } from '@inertiajs/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { AlertCircle, Clock, CheckCircle2 } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 
-export default function AdminDisputes({ user }: { user: any }) {
+type AdminDisputesProps = {
+  user?: AuthUser | null
+}
+
+export default function AdminDisputes(_props: AdminDisputesProps) {
   const mockDisputes = [
     {
       id: 1,

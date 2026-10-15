@@ -1,6 +1,6 @@
 import { DateTime } from 'luxon'
 import User from '#models/user'
-import { BASE } from '#tests/helpers/partner_api'
+import { BASE } from '#tests/helpers/organisation_api'
 
 export const PASSWORD = 'Portal-test-pass-1'
 
@@ -9,7 +9,7 @@ function decodeHtml(value: string) {
 }
 
 /** Creates a verified, active account that can sign in. Delete the returned user to clean up. */
-export async function makeUser(role: 'vendor' | 'admin' = 'vendor') {
+export async function makeUser(role: 'vendor' | 'admin' | 'affiliate' = 'vendor') {
   const email = `portal_${crypto.randomUUID().slice(0, 8)}@example.com`
   return User.create({ email, password: PASSWORD, fullName: 'Portal Tester', role, status: 'active', emailVerifiedAt: DateTime.now() })
 }

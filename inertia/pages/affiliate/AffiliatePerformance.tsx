@@ -1,8 +1,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatUSD as formatNGN } from '@/lib/currency'
-import { format, subDays } from 'date-fns'
 import {
   BarChart,
   Bar,
@@ -11,14 +9,6 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  AreaChart,
-  Area,
-  LineChart,
-  Line,
-  PieChart,
-  Pie,
-  Cell,
-  Legend,
 } from 'recharts'
 import {
   Table,
@@ -28,11 +18,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { MousePointer2, ShoppingBag, TrendingUp, Wallet, ArrowUpRight } from 'lucide-react'
+import { MousePointer2, ShoppingBag, TrendingUp, Wallet, type LucideIcon } from 'lucide-react'
+import type { AffiliateLinkRow, AuthUser } from '@/types'
 
-const COLORS = ['#715AFF', '#F4A300', '#81C14B', '#001845', '#e11d48']
+type KpiCardProps = {
+  title: string
+  value: string | number
+  sub?: string
+  icon: LucideIcon
+  color?: string
+}
 
-function KpiCard({ title, value, sub, icon: Icon, color = '#715AFF' }) {
+function KpiCard({ title, value, sub, icon: Icon, color = '#715AFF' }: KpiCardProps) {
   return (
     <Card>
       <CardContent className="p-5">
@@ -52,13 +49,12 @@ function KpiCard({ title, value, sub, icon: Icon, color = '#715AFF' }) {
 }
 
 type AffiliatePerformanceProps = {
-  user: any
-  links: any[]
-  performance: any
+  user?: AuthUser | null
+  links: AffiliateLinkRow[]
 }
 
 export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
-  const { links, performance } = props
+  const { links } = props
 
   const totalClicks = links.reduce((sum, l) => sum + (l.clicks || 0), 0)
   const totalConversions = links.reduce((sum, l) => sum + (l.conversions || 0), 0)
@@ -77,27 +73,6 @@ export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
     clicks: l.clicks || 0,
     conversions: l.conversions || 0,
   }))
-
-  // 7-day clicks chart (placeholder data — random values stable across renders)
-  const last7 = useMemo(
-    () =>
-      Array.from({ length: 7 }, (_, i) => {
-        const day = subDays(new Date(), 6 - i)
-        const dayStr = format(day, 'MMM d')
-        return { day: dayStr, clicks: Math.floor(Math.random() * 20), earnings: 0 }
-      }),
-    []
-  )
-
-  // Category split from links
-  const catMap = {}
-  links.forEach((l) => {
-    const cat = l.product_name?.split(' ')[0] || 'Other'
-    catMap[cat] = (catMap[cat] || 0) + (l.commission_earned || 0)
-  })
-  const pieData = Object.entries(catMap)
-    .map(([name, value]) => ({ name, value }))
-    .slice(0, 5)
 
   return (
     <DashboardLayout role="affiliate">
@@ -180,7 +155,7 @@ export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatNGN(v, true)} />
-                      <Tooltip formatter={(v) => formatNGN(v)} />
+                      <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                       <Bar
                         dataKey="earnings"
                         fill="#715AFF"
@@ -256,8 +231,8 @@ export default function AffiliatePerformance(props: AffiliatePerformanceProps) {
                         {formatNGN(link.commission_earned)}
                       </TableCell>
                       <TableCell>
-                        {link.clicks > 0
-                          ? formatNGN((link.commission_earned || 0) / link.clicks)
+                        {(link.clicks ?? 0) > 0
+                          ? formatNGN((link.commission_earned || 0) / (link.clicks ?? 1))
                           : '—'}
                       </TableCell>
                     </TableRow>

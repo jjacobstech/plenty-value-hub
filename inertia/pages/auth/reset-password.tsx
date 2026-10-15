@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import type { FormEvent } from 'react'
+import { useState } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -19,7 +20,7 @@ export default function ResetPassword({ token }: ResetPasswordProps) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setError('')
     if (newPassword !== confirmPassword) {

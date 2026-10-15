@@ -24,6 +24,7 @@ declare module '@adonisjs/inertia/types' {
     'admin/AdminNewsletter': ExtractProps<(typeof import('../../inertia/pages/admin/AdminNewsletter.tsx'))['default']>
     'admin/AdminNewsletterList': ExtractProps<(typeof import('../../inertia/pages/admin/AdminNewsletterList.tsx'))['default']>
     'admin/AdminOrders': ExtractProps<(typeof import('../../inertia/pages/admin/AdminOrders.tsx'))['default']>
+    'admin/AdminOrganisations': ExtractProps<(typeof import('../../inertia/pages/admin/AdminOrganisations.tsx'))['default']>
     'admin/AdminPaymentSettings': ExtractProps<(typeof import('../../inertia/pages/admin/AdminPaymentSettings.tsx'))['default']>
     'admin/AdminPayouts': ExtractProps<(typeof import('../../inertia/pages/admin/AdminPayouts.tsx'))['default']>
     'admin/AdminProducts': ExtractProps<(typeof import('../../inertia/pages/admin/AdminProducts.tsx'))['default']>
@@ -50,6 +51,15 @@ declare module '@adonisjs/inertia/types' {
     'Login': ExtractProps<(typeof import('../../inertia/pages/Login.tsx'))['default']>
     'Marketplace': ExtractProps<(typeof import('../../inertia/pages/Marketplace.tsx'))['default']>
     'OrderTracking': ExtractProps<(typeof import('../../inertia/pages/OrderTracking.tsx'))['default']>
+    'organisation/Activity': ExtractProps<(typeof import('../../inertia/pages/organisation/Activity.tsx'))['default']>
+    'organisation/AffiliateDashboard': ExtractProps<(typeof import('../../inertia/pages/organisation/AffiliateDashboard.tsx'))['default']>
+    'organisation/Affiliates': ExtractProps<(typeof import('../../inertia/pages/organisation/Affiliates.tsx'))['default']>
+    'organisation/Keys': ExtractProps<(typeof import('../../inertia/pages/organisation/Keys.tsx'))['default']>
+    'organisation/New': ExtractProps<(typeof import('../../inertia/pages/organisation/New.tsx'))['default']>
+    'organisation/Overview': ExtractProps<(typeof import('../../inertia/pages/organisation/Overview.tsx'))['default']>
+    'organisation/Programs': ExtractProps<(typeof import('../../inertia/pages/organisation/Programs.tsx'))['default']>
+    'organisation/Team': ExtractProps<(typeof import('../../inertia/pages/organisation/Team.tsx'))['default']>
+    'organisation/Webhooks': ExtractProps<(typeof import('../../inertia/pages/organisation/Webhooks.tsx'))['default']>
     'PrivacyPolicy': ExtractProps<(typeof import('../../inertia/pages/PrivacyPolicy.tsx'))['default']>
     'ProductDetail': ExtractProps<(typeof import('../../inertia/pages/ProductDetail.tsx'))['default']>
     'Register': ExtractProps<(typeof import('../../inertia/pages/Register.tsx'))['default']>

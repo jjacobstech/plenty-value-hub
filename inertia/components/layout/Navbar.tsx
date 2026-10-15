@@ -1,10 +1,11 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { usePage } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, User, ChevronDown, ShoppingBag, TrendingUp } from 'lucide-react'
+import { Building2, Menu, User, ChevronDown, ShoppingBag, TrendingUp } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
+import type { AuthUser, SharedPageProps } from '@/types'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +14,15 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 
-export default function Navbar({ user, onLogout }) {
+interface NavbarProps {
+  user: AuthUser | null | undefined
+  onLogout: () => void
+}
+
+export default function Navbar({ user, onLogout }: NavbarProps) {
   const [open, setOpen] = useState(false)
-  const { url } = usePage()
+  const { url, props } = usePage<SharedPageProps>()
+  const isOrganisation = props.isOrganisation
 
   const navLinks = [
     { label: 'Marketplace', path: '/marketplace' },
@@ -23,15 +30,16 @@ export default function Navbar({ user, onLogout }) {
     { label: 'Track Order', path: '/track-order' },
   ]
 
-  const getDashboardLink = () => {
-    if (!user) return null
+  const getDashboardLink = (): string | undefined => {
+    if (!user) return undefined
     if (user.role === 'admin') return '/admin'
     if (user.role === 'vendor') return '/vendor'
     if (user.role === 'affiliate') return '/affiliate'
-    return null
+    if (isOrganisation) return '/organisation'
+    return undefined
   }
 
-  const isActive = (path) => url === path || url?.startsWith(path + '/')
+  const isActive = (path: string) => url === path || url?.startsWith(path + '/')
 
   return (
     <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-border/50">
@@ -100,6 +108,22 @@ export default function Navbar({ user, onLogout }) {
                       <p className="font-semibold text-sm">Become an Affiliate</p>
                       <p className="text-xs text-muted-foreground">
                         Promote products & earn commissions
+                      </p>
+                    </div>
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link href="/organisation/new" className="flex items-start gap-3 p-2 rounded-lg">
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5"
+                      style={{ backgroundColor: '#001845' }}
+                    >
+                      <Building2 className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm">Create an Organisation Account</p>
+                      <p className="text-xs text-muted-foreground">
+                        Manage API keys, webhooks & your team
                       </p>
                     </div>
                   </Link>
@@ -197,6 +221,16 @@ export default function Navbar({ user, onLogout }) {
                     >
                       <TrendingUp className="w-4 h-4" style={{ color: '#81C14B' }} /> Become an
                       Affiliate
+                    </Button>
+                  </Link>
+                  <Link href="/organisation/new" onClick={() => setOpen(false)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start text-sm gap-2"
+                    >
+                      <Building2 className="w-4 h-4" style={{ color: '#001845' }} /> Create an
+                      Organisation Account
                     </Button>
                   </Link>
                 </div>

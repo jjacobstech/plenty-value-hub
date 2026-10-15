@@ -1,9 +1,8 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   Select,
   SelectContent,
@@ -12,7 +11,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Search, Link2, TrendingUp, Star, Copy, Check, Zap, ShoppingBag } from 'lucide-react'
+import { Search, Link2, Star, Copy, Check, Zap, ShoppingBag } from 'lucide-react'
 import { formatUSD as formatNGN } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'

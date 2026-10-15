@@ -28,13 +28,18 @@ import {
   Shield,
   FileCheck,
   Compass,
+  KeyRound,
+  Webhook,
+  Percent,
+  UserPlus,
+  Activity,
 } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
 import NotificationCenter from '@/components/NotificationCenter'
 import { cn } from '@/lib/utils'
 import { CURRENCY_SYMBOLS } from '@/lib/currency'
 
-type Role = 'vendor' | 'affiliate' | 'admin'
+type Role = 'vendor' | 'affiliate' | 'admin' | 'organisation'
 
 type MenuItem = { icon: React.ElementType; label: string; path: string }
 
@@ -73,6 +78,16 @@ const menuItems: Record<Role, MenuItem[]> = {
     { icon: BarChart3, label: 'Performance', path: '/affiliate/performance' },
     { icon: DollarSign, label: 'Earnings', path: '/affiliate/earnings' },
     { icon: UserCircle, label: 'My Profile', path: '/affiliate/profile' },
+  ],
+
+  organisation: [
+    { icon: Home, label: 'Overview', path: '/organisation' },
+    { icon: KeyRound, label: 'API keys', path: '/organisation/keys' },
+    { icon: Webhook, label: 'Webhooks', path: '/organisation/webhooks' },
+    { icon: Users, label: 'Affiliates', path: '/organisation/affiliates' },
+    { icon: Activity, label: 'Events & commissions', path: '/organisation/activity' },
+    { icon: Percent, label: 'Program', path: '/organisation/program' },
+    { icon: UserPlus, label: 'Team', path: '/organisation/team' },
   ],
 
   admin: [

@@ -112,12 +112,19 @@ export interface ApiDefinition {
     payouts: typeof routes['admin.payouts']
     disputes: typeof routes['admin.disputes']
     fraud: typeof routes['admin.fraud']
+    organisations: typeof routes['admin.organisations'] & {
+      store: typeof routes['admin.organisations.store']
+    }
     getPlatformStats: typeof routes['admin.get_platform_stats']
     authStatus: typeof routes['admin.auth_status']
     debugPaystackBanks: typeof routes['admin.debug_paystack_banks']
     testEmail: typeof routes['admin.test_email']
     updateUser: typeof routes['admin.update_user']
     deleteUser: typeof routes['admin.delete_user']
+  }
+  adminOrganisations: {
+    suspend: typeof routes['admin_organisations.suspend']
+    reactivate: typeof routes['admin_organisations.reactivate']
   }
   vendor: {
     dashboard: typeof routes['vendor.dashboard']
@@ -238,6 +245,11 @@ export interface ApiDefinition {
     getReferrals: typeof routes['affiliates.get_referrals']
     getRewards: typeof routes['affiliates.get_rewards']
     claimReward: typeof routes['affiliates.claim_reward']
+    create: typeof routes['affiliates.create']
+    index: typeof routes['affiliates.index']
+    show: typeof routes['affiliates.show']
+    update: typeof routes['affiliates.update']
+    stats: typeof routes['affiliates.stats']
   }
   mobileApi: {
     getAppConfig: typeof routes['mobile_api.get_app_config']
@@ -523,5 +535,83 @@ export interface ApiDefinition {
     campaignDetails: typeof routes['vendor_dashboard.campaign_details']
     earningsBreakdown: typeof routes['vendor_dashboard.earnings_breakdown']
     trends: typeof routes['vendor_dashboard.trends']
+  }
+  ping: {
+    show: typeof routes['ping.show']
+  }
+  links: {
+    create: typeof routes['links.create']
+    index: typeof routes['links.index']
+    show: typeof routes['links.show']
+    disable: typeof routes['links.disable']
+  }
+  events: {
+    create: typeof routes['events.create']
+    index: typeof routes['events.index']
+    show: typeof routes['events.show']
+    reverse: typeof routes['events.reverse']
+  }
+  commissions: {
+    index: typeof routes['commissions.index']
+    show: typeof routes['commissions.show']
+    approve: typeof routes['commissions.approve']
+    reject: typeof routes['commissions.reject']
+    markPaid: typeof routes['commissions.mark_paid']
+  }
+  stats: {
+    summary: typeof routes['stats.summary']
+  }
+  dashboardSessions: {
+    create: typeof routes['dashboard_sessions.create']
+  }
+  organisationRedirect: {
+    show: typeof routes['organisation_redirect.show']
+  }
+  organisation: {
+    new: typeof routes['organisation.new']
+    overview: typeof routes['organisation.overview']
+    mode: typeof routes['organisation.mode']
+    keys: typeof routes['organisation.keys']
+    webhooks: typeof routes['organisation.webhooks']
+    affiliates: typeof routes['organisation.affiliates']
+    activity: typeof routes['organisation.activity']
+    program: typeof routes['organisation.program']
+    team: typeof routes['organisation.team']
+  }
+  onboarding: {
+    store: typeof routes['onboarding.store']
+  }
+  keys: {
+    store: typeof routes['keys.store']
+    revoke: typeof routes['keys.revoke']
+  }
+  webhooks: {
+    store: typeof routes['webhooks.store']
+    test: typeof routes['webhooks.test']
+    rotate: typeof routes['webhooks.rotate']
+    enable: typeof routes['webhooks.enable']
+    disable: typeof routes['webhooks.disable']
+    resend: typeof routes['webhooks.resend']
+  }
+  activity: {
+    suspendAffiliate: typeof routes['activity.suspend_affiliate']
+    reactivateAffiliate: typeof routes['activity.reactivate_affiliate']
+    reverseEvent: typeof routes['activity.reverse_event']
+    approveCommission: typeof routes['activity.approve_commission']
+    rejectCommission: typeof routes['activity.reject_commission']
+  }
+  settings: {
+    updateProgram: typeof routes['settings.update_program']
+    invite: typeof routes['settings.invite']
+    remove: typeof routes['settings.remove']
+  }
+  organisationAffiliateDashboard: {
+    redeem: typeof routes['organisation_affiliate_dashboard.redeem']
+    show: typeof routes['organisation_affiliate_dashboard.show']
+  }
+  organisationDocs: {
+    api: typeof routes['organisation_docs.api']
+    openapi: typeof routes['organisation_docs.openapi']
+    quickstart: typeof routes['organisation_docs.quickstart']
   }
 }

@@ -20,7 +20,7 @@ import { CheckCircle2 } from 'lucide-react'
  * @param label - Fieldset label (screen reader + UI)
  * @param description - Additional description text
  */
-interface ProviderSelectorProps {
+export interface ProviderSelectorProps {
   onSelect: (providerId: PaymentProviderId) => void
   value?: PaymentProviderId
   showCurrencies?: boolean

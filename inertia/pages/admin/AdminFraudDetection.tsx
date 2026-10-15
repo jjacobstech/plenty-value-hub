@@ -1,3 +1,4 @@
+import type { AuthUser } from '@/types'
 import { Head } from '@inertiajs/react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -5,7 +6,11 @@ import { Badge } from '@/components/ui/badge'
 import { AlertTriangle, CheckCircle2, XCircle } from 'lucide-react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 
-export default function AdminFraudDetection({ user }: { user: any }) {
+type AdminFraudDetectionProps = {
+  user?: AuthUser | null
+}
+
+export default function AdminFraudDetection(_props: AdminFraudDetectionProps) {
   const mockFraudCases = [
     {
       id: 1,

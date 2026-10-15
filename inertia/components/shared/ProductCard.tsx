@@ -1,12 +1,11 @@
-import React from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Star, TrendingUp } from 'lucide-react'
-import { formatCurrency, formatUSD } from '@/lib/currency'
-import { usePage } from '@adonisjs/inertia/react'
+import { formatUSD } from '@/lib/currency'
+import type { ProductSummary } from '@/types'
 
-const CATEGORY_LABELS = {
+const CATEGORY_LABELS: Record<string, string> = {
   health_fitness: 'Health & Fitness',
   business_investing: 'Business',
   software_saas: 'Software',
@@ -23,15 +22,29 @@ const CATEGORY_LABELS = {
   lifestyle: 'Lifestyle',
 }
 
-export default function ProductCard({ product, showCommission = false }) {
-  console.log(product)
+/** The API sends some numbers as strings (Postgres decimals), so read them through one helper. */
+function toNumber(value: number | string | null | undefined): number | null {
+  if (value === null || value === undefined || value === '') return null
+  const parsed = Number(value)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+export default function ProductCard({ product, showCommission = false }: { product: ProductSummary; showCommission?: boolean }) {
+  const imageUrl = product.imageUrl ?? product.image_url ?? null
+  const price = toNumber(product.price) ?? 0
+  const salePrice = toNumber(product.salePrice ?? product.sale_price)
+  const rating = toNumber(product.rating)
+  const commissionRate = toNumber(product.commissionRate ?? product.commission_rate ?? product.commission)
+  const isFeatured = Boolean(product.isFeatured ?? product.is_featured)
+  const onSale = salePrice !== null && salePrice < price
+
   return (
     <Link href={`/product/${product.uuid || product.id}`}>
       <Card className="group overflow-hidden border-border/50 hover:border-primary/30 hover:shadow-lg transition-all duration-300 h-full">
         <div className="aspect-[4/3] bg-muted relative overflow-hidden">
-          {product.imageUrl || product.image_url ? (
+          {imageUrl ? (
             <img
-              src={product.imageUrl || product.image_url}
+              src={imageUrl}
               alt={product.name}
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
             />
@@ -42,7 +55,7 @@ export default function ProductCard({ product, showCommission = false }) {
               </span>
             </div>
           )}
-          {(product.isFeatured || product.is_featured) && (
+          {isFeatured && (
             <Badge
               className="absolute top-3 left-3 text-xs text-white border-0"
               style={{ backgroundColor: '#81C14B' }}
@@ -50,8 +63,7 @@ export default function ProductCard({ product, showCommission = false }) {
               Featured
             </Badge>
           )}
-          {(product.salePrice || product.sale_price) &&
-          (product.salePrice || product.sale_price) < product.price ? (
+          {onSale ? (
             <Badge className="absolute top-3 right-3 bg-destructive text-destructive-foreground text-xs">
               Sale
             </Badge>
@@ -60,12 +72,12 @@ export default function ProductCard({ product, showCommission = false }) {
         <CardContent className="p-4 space-y-2">
           <div className="flex items-center justify-between">
             <Badge variant="outline" className="text-xs font-normal">
-              {(CATEGORY_LABELS as any)[product.category] || product.category}
+              {CATEGORY_LABELS[product.category as keyof typeof CATEGORY_LABELS] || product.category}
             </Badge>
-            {product.rating > 0 && (
+            {rating !== null && rating > 0 && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <Star className="w-3.5 h-3.5 fill-yellow-400 text-yellow-400" />
-                <span>{product.rating?.toFixed(1)}</span>
+                <span>{rating.toFixed(1)}</span>
               </div>
             )}
           </div>
@@ -74,33 +86,24 @@ export default function ProductCard({ product, showCommission = false }) {
           </h3>
           <div className="flex items-end justify-between pt-1">
             <div>
-              {(product.salePrice || product.sale_price) &&
-              (product.salePrice || product.sale_price) < product.price ? (
+              {onSale && salePrice !== null ? (
                 <div className="flex items-center gap-2">
-                  <span className="font-bold text-lg">
-                    {formatUSD(product.salePrice || product.sale_price)}
-                  </span>
-                  <span className="text-sm text-muted-foreground line-through">
-                    {formatUSD(product.price)}
-                  </span>
+                  <span className="font-bold text-lg">{formatUSD(salePrice)}</span>
+                  <span className="text-sm text-muted-foreground line-through">{formatUSD(price)}</span>
                 </div>
               ) : (
-                <span className="font-bold text-lg">{formatUSD(product.price)}</span>
+                <span className="font-bold text-lg">{formatUSD(price)}</span>
               )}
             </div>
-            {showCommission &&
-              (product.commissionRate ?? product.commission_rate ?? product.commission) !==
-                undefined && (
-                <div
-                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
-                  style={{ color: '#81C14B', background: 'rgba(129,193,75,0.12)' }}
-                >
-                  <TrendingUp className="w-3 h-3" />
-                  <span className="font-semibold">
-                    {product.commissionRate ?? product.commission_rate ?? product.commission}%
-                  </span>
-                </div>
-              )}
+            {showCommission && commissionRate !== null && (
+              <div
+                className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
+                style={{ color: '#81C14B', background: 'rgba(129,193,75,0.12)' }}
+              >
+                <TrendingUp className="w-3 h-3" />
+                <span className="font-semibold">{commissionRate}%</span>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

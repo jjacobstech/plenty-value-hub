@@ -25,7 +25,7 @@ import {
  * @param ariaLabel - Custom aria-label (defaults to provider name)
  * @param role - ARIA role (defaults to 'img' for logos)
  */
-interface ProviderLogoProps {
+export interface ProviderLogoProps {
   provider: PaymentProviderId
   variant?: 'full' | 'mark'
   size?: number
@@ -36,7 +36,6 @@ interface ProviderLogoProps {
 
 export const ProviderLogo: React.FC<ProviderLogoProps> = ({
   provider,
-  variant = 'full',
   size = 24,
   className = '',
   ariaLabel,
@@ -46,10 +45,6 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
     // Get provider config and clamp size
     const config = getProviderConfig(provider)
     const clampedHeight = getClampedLogoHeight(provider, size)
-
-    // Calculate clear space (25% of height)
-    const clearSpace = Math.ceil((clampedHeight * 0.25) / 8) * 8 // Round to 8px for Tailwind
-    const spacingClass = `p-${clearSpace / 4}` // Convert to Tailwind scale (4px units)
 
     // Default aria-label
     const label = ariaLabel || `${config.displayName} logo`
@@ -79,8 +74,8 @@ export const ProviderLogo: React.FC<ProviderLogoProps> = ({
           width="auto"
           viewBox="0 0 64 64"
           className="block"
+          preserveAspectRatio="xMidYMid meet"
           style={{
-            preserveAspectRatio: 'xMidYMid meet',
             display: 'block',
             height: `${clampedHeight}px`,
             width: 'auto',
@@ -135,8 +130,8 @@ export const ProviderLogoInline: React.FC<Omit<ProviderLogoProps, 'variant'>> = 
       width="auto"
       viewBox="0 0 64 64"
       className={`inline-block ${props.className || ''}`}
+      preserveAspectRatio="xMidYMid meet"
       style={{
-        preserveAspectRatio: 'xMidYMid meet',
         height: `${getClampedLogoHeight(props.provider, props.size || 24)}px`,
       }}
     >

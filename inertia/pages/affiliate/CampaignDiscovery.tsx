@@ -1,5 +1,6 @@
+import type { AuthUser } from '@/types'
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -28,7 +29,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import { Search, TrendingUp, Calendar, DollarSign, Target, AlertCircle, CheckCircle2, Zap } from 'lucide-react'
+import { Search, Calendar, DollarSign, AlertCircle, CheckCircle2, Zap } from 'lucide-react'
 import { formatUSD as formatNGN } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
@@ -87,11 +88,11 @@ type Campaign = {
 }
 
 type CampaignDiscoveryProps = {
-  user: any
+  user?: AuthUser | null
   initialCampaigns?: Campaign[]
 }
 
-export default function CampaignDiscovery({ user, initialCampaigns = [] }: CampaignDiscoveryProps) {
+export default function CampaignDiscovery({ initialCampaigns = [] }: CampaignDiscoveryProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns)
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -226,7 +227,7 @@ export default function CampaignDiscovery({ user, initialCampaigns = [] }: Campa
   }, [currentPage, totalPages])
 
   return (
-    <DashboardLayout user={user} title="Campaign Discovery">
+    <DashboardLayout role="affiliate">
       <div className="space-y-6">
         {/* Header */}
         <div>

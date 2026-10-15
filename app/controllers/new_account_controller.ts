@@ -14,6 +14,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import { createHash, randomBytes } from 'node:crypto'
 import { DateTime } from 'luxon'
 import mail from '@adonisjs/mail/services/main'
+import { postLoginPath } from '#services/organisation/landing'
 
 function dashboardForRole(role: string) {
   if (role === 'vendor') return '/vendor'
@@ -125,6 +126,7 @@ export default class NewAccountController {
         .htmlView('emails/welcome', { user, appUrl: process.env.APP_URL })
     })
 
+    if (session.pull('signup_organisation', false)) return response.redirect('/organisation/new')
     return response.redirect(dashboardForRole(user.role))
   }
 
@@ -195,7 +197,7 @@ export default class NewAccountController {
     }
 
     await auth.use('web').login(user)
-    return response.redirect(dashboardForRole(user.role))
+    return response.redirect(await postLoginPath(user, dashboardForRole(user.role)))
   }
 
   async forgotPassword({ request, response }: HttpContext) {
@@ -248,7 +250,7 @@ export default class NewAccountController {
     return response.json({
       success: true,
       message: 'Password reset successfully',
-      redirect: dashboardForRole(user.role),
+      redirect: await postLoginPath(user, dashboardForRole(user.role)),
     })
   }
 
@@ -257,6 +259,7 @@ export default class NewAccountController {
       role,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       passwordConfirmation: _passwordConfirmation,
+      organisation: wantsOrganisation,
       ...payload
     } = await request.validateUsing(signupValidator)
 
@@ -284,6 +287,7 @@ export default class NewAccountController {
     })
 
     session.put('pending_verification_email', user.email)
+    if (wantsOrganisation) session.put('signup_organisation', true)
     return response.redirect('/auth/verify-email')
   }
 }

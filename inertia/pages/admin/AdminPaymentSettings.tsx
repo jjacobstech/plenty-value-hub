@@ -13,7 +13,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { AlertCircle, Edit2, Trash2, Plus, Eye, EyeOff, Copy, Check } from 'lucide-react'
+import { AlertCircle, Edit2, Trash2, Plus, Eye, EyeOff } from 'lucide-react'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
 
@@ -60,12 +60,11 @@ type FormData = {
 
 export default function AdminPaymentSettings() {
   const [gateways, setGateways] = useState<GatewayConfig[]>([])
-  const [loading, setLoading] = useState(true)
+  const [, setLoading] = useState(true)
   const [showDialog, setShowDialog] = useState(false)
   const [editingId, setEditingId] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [showPassword, setShowPassword] = useState<Record<string, boolean>>({})
-  const [copiedField, setCopiedField] = useState<string | null>(null)
   const [platformCommission, setPlatformCommission] = useState<string>('10')
   const [savingCommission, setSavingCommission] = useState(false)
   const [affiliateCommission, setAffiliateCommission] = useState<string>('7')
@@ -215,7 +214,7 @@ export default function AdminPaymentSettings() {
           : '/api/payment-gateway-settings'
       const method = editingId && editingId > 0 ? 'put' : 'post'
 
-      const { data } = await api[method]<{ success: boolean; data: any }>(endpoint, {
+      const { data } = await api[method]<{ success: boolean; message?: string }>(endpoint, {
         gateway: form.gateway,
         publicKey: form.publicKey,
         secretKey: form.secretKey,
@@ -267,16 +266,6 @@ export default function AdminPaymentSettings() {
     } catch (err: any) {
       toast.error(err.response?.data?.error || 'Failed to toggle gateway status')
     }
-  }
-
-  const copyToClipboard = (text: string, fieldKey: string) => {
-    navigator.clipboard.writeText(text)
-    setCopiedField(fieldKey)
-    setTimeout(() => setCopiedField(null), 2000)
-  }
-
-  const getGatewayInfo = (gatewayId: string) => {
-    return SUPPORTED_GATEWAYS.find((g) => g.id === gatewayId)
   }
 
   const getConfiguredGateway = (gatewayId: string) => {

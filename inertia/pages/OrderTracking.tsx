@@ -27,7 +27,7 @@ import {
   Flag,
 } from 'lucide-react'
 
-interface OrderTrackingProps {
+type OrderTrackingProps = {
   supportEmail: string
 }
 

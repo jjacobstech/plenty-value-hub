@@ -1,5 +1,4 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
 import StatsCard from '@/components/shared/StatsCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
@@ -15,8 +14,6 @@ import {
 import {
   BarChart,
   Bar,
-  LineChart,
-  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -27,47 +24,52 @@ import { formatUSD as formatNGN } from '@/lib/currency'
 
 type Order = {
   id: number
-  status: string
+  status: string | null
   amount: string
-  platformFee?: string
-  commissionAmount?: string
-  productId?: number
-  productName?: string
-  buyerId?: number
-  vendorId?: number
-  affiliateId?: number
-  createdAt: any
+  platformFee: string | null
+  commissionAmount: string | null
+  productId: number | null
+  productName: string | null
+  buyerId: number | null
+  vendorId: number | null
+  affiliateId: number | null
+  createdAt: string
 }
+
+// claude --resume 92e68622-fd2f-4772-a7bb-c861e17d6c76
 
 type Product = {
   id: number
   name: string
-  status: string
-  category?: string
-  price?: string
-  commissionRate?: string
-  totalSales?: number
-  totalRevenue?: string
-  createdAt: any
+  status: string | null
+  category: string | null
+  price: string | null
+  commissionRate: string | null
+  totalSales: number | null
+  totalRevenue: string | null
+  vendorId: number | null
+  vendorName: string | null
+  createdAt: string
 }
 
 type User = {
   id: number
-  role?: string
-  email?: string
+  role: string
+  email: string
   fullName?: string
 }
 
 type AffiliateLink = {
   id: number
-  status?: string
-  clicks?: number
-  conversions?: number
-  commissionEarned?: string
-  revenue?: string
-  productName?: string
-  affiliateId?: number
-  createdAt: any
+  status: string | null
+  clicks: number
+  conversions: number
+  commissionEarned: string | null
+  revenue: string | null
+  productName: string | null
+  affiliateId: number
+  affiliateName: string | null
+  createdAt: string
 }
 
 type AdminAnalyticsProps = {
@@ -157,7 +159,7 @@ export default function AdminAnalytics({
             </CardHeader>
             <CardContent>
               {(() => {
-                const productRevenue = {}
+                const productRevenue: Record<string, number> = {}
                 completedOrders.forEach((o) => {
                   if (!o) return
 
@@ -182,7 +184,7 @@ export default function AdminAnalytics({
                         <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                         <XAxis dataKey="name" className="text-xs" />
                         <YAxis className="text-xs" />
-                        <Tooltip formatter={(v) => formatNGN(v)} />
+                        <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                         <Bar dataKey="revenue" fill="hsl(38,92%,50%)" radius={[4, 4, 0, 0]} />
                       </BarChart>
                     </ResponsiveContainer>

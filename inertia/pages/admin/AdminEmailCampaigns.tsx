@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import StatsCard from '@/components/shared/StatsCard'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -10,7 +10,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Send, Plus, Mail, Users, TrendingUp, Edit, Trash2 } from 'lucide-react'
 import axios from 'axios'
 import { toast } from 'sonner'
-import { router } from '@inertiajs/react'
 
 const CAMPAIGN_TYPES = ['product_promo', 'announcement', 'buying_guide', 'review', 'offer'] as const
 const TYPE_LABELS: Record<string, string> = {

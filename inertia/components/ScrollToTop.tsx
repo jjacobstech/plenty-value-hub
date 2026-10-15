@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { usePage } from '@inertiajs/react'
 
-const getHashId = (hash) => {
+const getHashId = (hash: string) => {
   const rawId = hash.slice(1)
 
   try {

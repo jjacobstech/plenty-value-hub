@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import SEO from '@/components/SEO'
 import { Card, CardContent } from '@/components/ui/card'
@@ -48,13 +48,13 @@ import { formatUSD as formatNGN } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
 
-interface Order {
+type Order = {
   id: number
   orderNumber: string
   buyerEmail: string
   amount: string
   vendorPayout: string
-  status: 'pending' | 'completed' | 'cancelled' | 'refunded'
+  status: string
   paymentMethod: string | null
   currency: string
   quantity?: number | null
@@ -68,12 +68,12 @@ interface Order {
   } | null
 }
 
-interface VendorOrdersProps {
+type VendorOrdersProps = {
   user: any
   orders: Order[]
 }
 
-export default function VendorOrders({ user, orders: initialOrders = [] }: VendorOrdersProps) {
+export default function VendorOrders({ orders: initialOrders = [] }: VendorOrdersProps) {
   const [orders, setOrders] = useState<Order[]>(initialOrders)
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
@@ -282,7 +282,6 @@ export default function VendorOrders({ user, orders: initialOrders = [] }: Vendo
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => {
                   const shipping = parseShipping(order.shippingDetails)
-                  const isDigital = order.product?.productType === 'digital'
                   const isUpdating = updatingId === order.id
 
                   return (

@@ -3,6 +3,24 @@ import PayoutRequest from '#models/payout_request'
 import PaymentService from '#services/payment_service'
 import WalletService from '#services/wallet_service'
 
+/** Maps a payout request to the row the admin page expects. */
+function toPayoutRow(payout: PayoutRequest) {
+  return {
+    id: payout.id,
+    amount: String(payout.amount),
+    payoutMethod: payout.payoutMethod,
+    payoutDetails: payout.payoutDetails,
+    status: payout.status,
+    adminNotes: payout.adminNotes,
+    transferStatus: payout.transferStatus,
+    createdAt: payout.createdAt.toISO() ?? '',
+    processedAt: payout.processedAt?.toISO() ?? null,
+    user: payout.user
+      ? { id: payout.user.id, fullName: payout.user.fullName ?? '', email: payout.user.email, role: payout.user.role }
+      : null,
+  }
+}
+
 export default class AdminPayoutController {
   /**
    * Get payouts dashboard
@@ -14,14 +32,9 @@ export default class AdminPayoutController {
       return null
     }
 
-    const payouts = await PayoutRequest.query().orderBy('created_at', 'desc').limit(20)
-    const stats = await PaymentService.getPayoutStats()
+    const payouts = await PayoutRequest.query().preload('user').orderBy('created_at', 'desc').limit(20)
 
-    return inertia.render('admin/AdminPayouts', {
-      user,
-      stats,
-      payouts,
-    })
+    return inertia.render('admin/AdminPayouts', { payouts: payouts.map(toPayoutRow) })
   }
 
   /**

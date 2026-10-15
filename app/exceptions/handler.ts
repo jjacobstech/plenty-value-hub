@@ -2,8 +2,8 @@ import app from '@adonisjs/core/services/app'
 import { type HttpContext, ExceptionHandler } from '@adonisjs/core/http'
 import type { StatusPageRange, StatusPageRenderer } from '@adonisjs/core/types/http'
 import { createJsonLogEntry, writeJsonLog, DEFAULT_LOG_FILE, logJsonError } from '#services/json_logger'
-import PartnerApiException from '#exceptions/partner_api_exception'
-import { publicId } from '#services/partner/public_id'
+import OrganisationApiException from '#exceptions/organisation_api_exception'
+import { publicId } from '#services/organisation/public_id'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -33,16 +33,16 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
-    if (ctx.request.url().startsWith('/v1/')) return this.renderPartnerError(error, ctx)
+    if (ctx.request.url().startsWith('/api/v1/organisations/')) return this.renderOrganisationError(error, ctx)
     return super.handle(error, ctx)
   }
 
-  /** Renders /v1 errors in the partner API shape (SPEC §6). */
-  private renderPartnerError(error: any, ctx: HttpContext) {
-    const requestId = ctx.partnerRequestId ?? publicId('req_')
+  /** Renders /api/v1/organisations errors in the organisation API shape (SPEC §6). */
+  private renderOrganisationError(error: any, ctx: HttpContext) {
+    const requestId = ctx.organisationRequestId ?? publicId('req_')
     ctx.response.header('Request-Id', requestId)
 
-    if (error instanceof PartnerApiException) {
+    if (error instanceof OrganisationApiException) {
       return ctx.response.status(error.status).json({
         error: { type: error.errorType, code: error.code, message: error.message, param: error.param ?? null, request_id: requestId },
       })
@@ -65,7 +65,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
 
     const status = error?.status ?? 500
     if (status >= 500) {
-      logJsonError({ event: 'partner_api_internal_error', message: 'Partner API request failed', error, context: { requestId, path: ctx.request.url() } })
+      logJsonError({ event: 'organisation_api_internal_error', message: 'Organisation API request failed', error, context: { requestId, path: ctx.request.url() } })
       return ctx.response.status(500).json({
         error: { type: 'api_error', code: 'internal_error', message: 'Something went wrong on our side.', param: null, request_id: requestId },
       })

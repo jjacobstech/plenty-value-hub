@@ -1,4 +1,3 @@
-import React from 'react'
 import { Link } from '@adonisjs/inertia/react'
 
 const LOGO_URL =

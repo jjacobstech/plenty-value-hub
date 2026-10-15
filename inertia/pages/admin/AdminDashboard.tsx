@@ -1,41 +1,42 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
 import StatsCard from '@/components/shared/StatsCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { DollarSign, Users, Package, ShoppingCart, TrendingUp, Mail } from 'lucide-react'
+import { DollarSign, Package, ShoppingCart, TrendingUp, Mail } from 'lucide-react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 
 type Order = {
   id: number
-  status: string
+  status: string | null
   amount: string
-  platformFee?: string
-  commissionAmount?: string
-  productId?: number
-  productName?: string
-  buyerId?: number
-  vendorId?: number
-  affiliateId?: number
-  createdAt: any
+  platformFee: string | null
+  commissionAmount: string | null
+  productId: number | null
+  productName: string | null
+  buyerId: number | null
+  vendorId: number | null
+  affiliateId: number | null
+  createdAt: string
 }
 
 type Product = {
   id: number
   name: string
-  status: string
-  category?: string
-  price?: string
-  commissionRate?: string
-  totalSales?: number
-  totalRevenue?: string
-  createdAt: any
+  status: string | null
+  category: string | null
+  price: string | null
+  commissionRate: string | null
+  totalSales: number | null
+  totalRevenue: string | null
+  vendorId: number | null
+  vendorName: string | null
+  createdAt: string
 }
 
 type User = {
   id: number
-  role?: string
-  email?: string
+  role: string
+  email: string
   fullName?: string
 }
 
@@ -73,7 +74,7 @@ export default function AdminDashboard({
   const vendors = users.filter((u) => u?.role === 'vendor')?.length || 0
 
   // Safe category data calculation
-  const categoryData = {}
+  const categoryData: Record<string, number> = {}
   completedOrders.forEach((o) => {
     if (!o) return
     
@@ -163,7 +164,7 @@ export default function AdminDashboard({
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis dataKey="name" className="text-xs" />
                       <YAxis className="text-xs" />
-                      <Tooltip formatter={(v) => formatNGN(v)} />
+                      <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                       <Bar dataKey="revenue" fill="hsl(38, 92%, 50%)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>

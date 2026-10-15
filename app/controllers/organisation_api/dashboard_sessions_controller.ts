@@ -1,0 +1,24 @@
+import type { HttpContext } from '@adonisjs/core/http'
+import OrganisationApiException from '#exceptions/organisation_api_exception'
+import OrganisationAffiliate from '#models/organisation_affiliate'
+import { assertReturnUrlAllowed, createDashboardSession } from '#services/organisation/dashboard_session_service'
+import { rejectUnknownFields } from '#validators/organisation_api'
+import vine from '@vinejs/vine'
+
+const returnValidator = vine.create(vine.object({ return_url: vine.string().url({ protocols: ['https', 'http'] }).maxLength(2048).optional() }))
+
+export default class DashboardSessionsController {
+  /** POST /api/v1/organisations/affiliates/:id/dashboard_sessions: a single-use link to the hosted affiliate dashboard. */
+  async create(ctx: HttpContext) {
+    rejectUnknownFields(ctx.request.body(), ['return_url'])
+    const data = await ctx.request.validateUsing(returnValidator)
+    const affiliate = ctx.params.id.startsWith('aff_')
+      ? await OrganisationAffiliate.query().where('public_id', ctx.params.id).where('organisation_id', ctx.organisation.id).where('livemode', ctx.livemode).first()
+      : null
+    if (!affiliate) throw new OrganisationApiException('No such affiliate.', 'invalid_request_error', 'resource_missing', 404, 'id')
+    if (data.return_url) assertReturnUrlAllowed(ctx.organisation, data.return_url)
+
+    const session = await createDashboardSession(ctx.organisation, ctx.livemode, affiliate, data.return_url)
+    return ctx.response.status(201).json({ object: 'dashboard_session', id: session.id, url: session.url, expires_at: Math.floor(session.expiresAt.toSeconds()) })
+  }
+}

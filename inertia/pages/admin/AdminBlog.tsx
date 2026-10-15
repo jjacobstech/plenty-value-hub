@@ -1,7 +1,7 @@
-import React, { useState, useRef } from 'react'
+import { useState } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import StatsCard from '@/components/shared/StatsCard'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,17 +16,10 @@ import {
   Clock,
   Search,
   ChevronLeft,
-  Bold,
-  Italic,
-  Link as LinkIcon,
-  Heading1,
-  Heading2,
   Calendar,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import axios from 'axios'
-import { router } from '@inertiajs/react'
-import { Textarea } from '~/components/ui/textarea'
 
 const BLOG_CATEGORIES = [
   'Product Reviews',
@@ -87,8 +80,6 @@ export default function AdminBlog({ posts: initialPosts = [] }: Props) {
   const [tagInput, setTagInput] = useState('')
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write')
   const [saving, setSaving] = useState(false)
-
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   const filtered = posts.filter(
     (p) =>
@@ -172,24 +163,6 @@ export default function AdminBlog({ posts: initialPosts = [] }: Props) {
 
   const removeTag = (t: string) => {
     setForm({ ...form, tags: form.tags.filter((x) => x !== t) })
-  }
-
-  const insertText = (before: string, after: string = '') => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const text = textarea.value
-    const selected = text.substring(start, end)
-    const replacement = before + selected + after
-    setForm({
-      ...form,
-      content: text.substring(0, start) + replacement + text.substring(end),
-    })
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + before.length, start + before.length + selected.length)
-    }, 0)
   }
 
   if (view === 'edit') {

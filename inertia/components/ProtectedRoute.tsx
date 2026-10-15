@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useAuth } from '@/lib/AuthContext'
 import UserNotRegisteredError from '@/components/UserNotRegisteredError'
 
@@ -8,11 +8,17 @@ const DefaultFallback = () => (
   </div>
 )
 
+interface ProtectedRouteProps {
+  children: ReactNode
+  fallback?: ReactNode
+  unauthenticatedElement?: ReactNode
+}
+
 export default function ProtectedRoute({
   children,
   fallback = <DefaultFallback />,
   unauthenticatedElement,
-}) {
+}: ProtectedRouteProps) {
   const { isAuthenticated, isLoadingAuth, authChecked, authError, checkUserAuth } = useAuth()
 
   useEffect(() => {

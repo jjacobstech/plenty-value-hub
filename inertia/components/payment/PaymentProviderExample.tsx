@@ -5,7 +5,7 @@
  * in different contexts. Use these as reference for your implementation.
  */
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { ProviderLogo, ProviderLogoInline, ProviderSelector } from './index'
 import { type PaymentProviderId } from '#config/paymentProviders'
 

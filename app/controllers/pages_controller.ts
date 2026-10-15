@@ -9,9 +9,212 @@ import Newsletter from '#models/newsletter'
 import EmailCampaign from '#models/email_campaign'
 import SiteSetting from '#models/site_setting'
 import { PaymentService } from '#services/payment_service'
-import db from '@adonisjs/lucid/services/db'
 import type { HttpContext } from '@adonisjs/core/http'
+import type { DateTime } from 'luxon'
 import env from '#start/env'
+
+/** ISO text for a Luxon date. Empty when there is no date. */
+const isoOf = (date: DateTime | null | undefined): string => date?.toISO() ?? ''
+
+/** The admin user row: never the password or tokens. */
+const toUserRow = (user: User) => ({
+  id: user.id,
+  role: user.role,
+  email: user.email,
+  fullName: user.fullName ?? undefined,
+})
+
+/** The admin order row. Money stays a string, as the database returns it. */
+const toAdminOrderRow = (order: Order) => ({
+  id: order.id,
+  status: order.status,
+  amount: String(order.amount),
+  platformFee: order.platformFee === null ? null : String(order.platformFee),
+  commissionAmount: order.commissionAmount === null ? null : String(order.commissionAmount),
+  productId: order.productId,
+  productName: order.productName || order.product?.name || null,
+  buyerId: order.buyerId,
+  vendorId: order.vendorId,
+  affiliateId: order.affiliateId,
+  createdAt: isoOf(order.createdAt),
+})
+
+/** The admin affiliate-link row. Counts come from the totals columns, not the relations. */
+const toAdminLinkRow = (link: AffiliateLink) => ({
+  id: link.id,
+  status: link.status,
+  clicks: link.totalClicks,
+  conversions: link.totalConversions,
+  commissionEarned: String(link.commissionEarned),
+  revenue: String(link.revenue),
+  productName: link.productName || link.product?.name || null,
+  affiliateId: link.affiliateId,
+  affiliateName: link.affiliate?.fullName || link.affiliate?.businessName || null,
+  createdAt: isoOf(link.createdAt),
+})
+
+/** ISO text for a Luxon date, or null when there is none. */
+const isoOrNull = (date: DateTime | null | undefined): string | null => date?.toISO() ?? null
+
+/** The affiliate's own link row (the affiliate pages read both casings). */
+const toAffiliateLinkRow = (link: AffiliateLink) => ({
+  id: link.id,
+  linkCode: link.linkCode,
+  link_code: link.linkCode,
+  product_name: link.productName,
+  status: link.status,
+  clicks: link.totalClicks,
+  conversions: link.totalConversions,
+  revenue: link.revenue,
+  commission_earned: link.commissionEarned,
+})
+
+const toSubscriberRow = (subscriber: NewsletterSubscriber) => ({
+  id: subscriber.id,
+  email: subscriber.email,
+  name: subscriber.name,
+  status: subscriber.status,
+  source: subscriber.source,
+  createdAt: isoOf(subscriber.createdAt),
+})
+
+const toBlogPostRow = (post: BlogPost) => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  excerpt: post.excerpt,
+  content: post.content,
+  featuredImageUrl: post.featuredImageUrl,
+  category: post.category,
+  tags: Array.isArray(post.tags) ? post.tags.filter((tag): tag is string => typeof tag === 'string') : null,
+  authorName: post.authorName,
+  status: post.status,
+  seoTitle: post.seoTitle,
+  seoDescription: post.seoDescription,
+  readTimeMinutes: post.readTimeMinutes,
+  viewCount: post.viewCount,
+  publishedAt: isoOrNull(post.publishedAt),
+  createdAt: isoOf(post.createdAt),
+})
+
+const toNewsletterRow = (newsletter: Newsletter) => ({
+  id: newsletter.id,
+  subject: newsletter.subject,
+  category: newsletter.category,
+  status: newsletter.status,
+  recipientsCount: newsletter.recipientsCount,
+  openCount: newsletter.openCount,
+  clickCount: newsletter.clickCount,
+  revenueGenerated: Number(newsletter.revenueGenerated),
+  sentAt: isoOrNull(newsletter.sentAt),
+  createdAt: isoOf(newsletter.createdAt),
+})
+
+const toCampaignRow = (campaign: EmailCampaign) => ({
+  id: campaign.id,
+  name: campaign.name,
+  subject: campaign.subject,
+  content: campaign.content,
+  campaignType: campaign.campaignType,
+  audienceSegment: campaign.audienceSegment,
+  status: campaign.status,
+  recipientsCount: campaign.recipientsCount,
+  openCount: campaign.openCount,
+  clickCount: campaign.clickCount,
+  conversionCount: campaign.conversionCount,
+  revenueGenerated: Number(campaign.revenueGenerated),
+  sentAt: isoOrNull(campaign.sentAt),
+})
+
+/** The conversions page's order row. */
+const toConversionOrderRow = (order: Order) => ({
+  id: order.id,
+  amount: String(order.amount),
+  status: order.status,
+  affiliateId: order.affiliateId,
+  createdAt: isoOf(order.createdAt),
+  productName: order.productName || order.product?.name || null,
+})
+
+/** The conversions page's link row. */
+const toConversionLinkRow = (link: AffiliateLink) => ({
+  id: link.id,
+  clicks: link.totalClicks,
+  conversions: link.totalConversions,
+  revenue: String(link.revenue),
+  campaignName: link.campaign?.name ?? null,
+  productName: link.productName || link.product?.name || null,
+  status: link.status,
+})
+
+/** The full product row for the admin products table. */
+const toProductDto = (product: Product) => ({
+  id: product.id,
+  uuid: product.uuid ?? null,
+  name: product.name,
+  slug: product.slug ?? null,
+  description: product.description ?? null,
+  shortDescription: product.shortDescription ?? null,
+  category: product.category,
+  productType: product.productType,
+  price: String(product.price),
+  salePrice: product.salePrice === null ? null : String(product.salePrice),
+  commissionRate: product.commissionRate === null ? null : String(product.commissionRate),
+  vendorId: product.vendorId,
+  vendorName: product.vendorName ?? null,
+  imageUrl: product.imageUrl,
+  galleryUrls: product.galleryUrls,
+  status: product.status,
+  gravityScore: product.gravityScore,
+  avgEarningsPerSale: product.avgEarningsPerSale === null ? null : String(product.avgEarningsPerSale),
+  conversionRate: product.conversionRate === null ? null : String(product.conversionRate),
+  refundRate: product.refundRate === null ? null : String(product.refundRate),
+  totalSales: product.totalSales,
+  totalRevenue: product.totalRevenue === null ? null : String(product.totalRevenue),
+  rating: product.rating === null ? null : String(product.rating),
+  reviewCount: product.reviewCount,
+  isFeatured: product.isFeatured,
+  tags: product.tags,
+  recurringBilling: product.recurringBilling,
+  billingCycle: product.billingCycle,
+  createdAt: isoOf(product.createdAt),
+  updatedAt: isoOrNull(product.updatedAt),
+  digitalAssetUrl: product.digitalAssetUrl,
+  digitalAssetName: product.digitalAssetName,
+})
+
+/** The vendor's order row. Money stays a string. */
+const toVendorOrderRow = (order: Order) => ({
+  id: order.id,
+  orderNumber: order.orderNumber,
+  buyerEmail: order.buyerEmail ?? '',
+  amount: String(order.amount),
+  vendorPayout: String(order.vendorPayout),
+  status: order.status ?? 'pending',
+  paymentMethod: order.paymentMethod,
+  currency: order.currency ?? '',
+  quantity: order.quantity,
+  shippingDetails: typeof order.shippingDetails === 'string' ? order.shippingDetails : null,
+  createdAt: isoOf(order.createdAt),
+  product: order.product
+    ? { id: order.product.id, name: order.product.name, productType: order.product.productType, imageUrl: order.product.imageUrl }
+    : null,
+})
+
+/** The admin product row. */
+const toAdminProductRow = (product: Product) => ({
+  id: product.id,
+  name: product.name,
+  status: product.status,
+  category: product.category,
+  price: product.price === null ? null : String(product.price),
+  commissionRate: product.commissionRate === null ? null : String(product.commissionRate),
+  totalSales: product.totalSales,
+  totalRevenue: product.totalRevenue === null ? null : String(product.totalRevenue),
+  vendorId: product.vendorId,
+  vendorName: product.vendor?.fullName || product.vendor?.businessName || null,
+  createdAt: isoOf(product.createdAt),
+})
 /**
  * Offline payment is being retired. Filter it here so the page can never
  * offer a provider that won't actually take money, even if a stale
@@ -83,29 +286,9 @@ function resolveAssetUrl(raw: unknown, origin: string): string | null {
 export default class PagesController {
   // Public pages - Home
   async home({ inertia }: HttpContext) {
-    const [featuredProducts, trendingProducts, categoryProducts, heroBanner] = await Promise.all([
-      Product.query()
-        .where('status', 'approved')
-        .where('is_featured', true)
-        .orderBy('created_at', 'desc')
-        .limit(8),
-      Product.query().where('status', 'approved').orderBy('gravity_score', 'desc').limit(4),
-      Product.query().where('status', 'approved').orderBy('created_at', 'desc').limit(100),
-      SiteSetting.findBy('key', 'hero_banner'),
-    ])
-
-    const productsByCategory: Record<string, any[]> = {}
-    for (const product of categoryProducts) {
-      if (!productsByCategory[product.category]) productsByCategory[product.category] = []
-      if (productsByCategory[product.category].length < 3) {
-        productsByCategory[product.category].push(product.serialize())
-      }
-    }
+    const heroBanner = await SiteSetting.findBy('key', 'hero_banner')
 
     return inertia.render('Home', {
-      featuredProducts,
-      trendingProducts,
-      categoryProducts: productsByCategory,
       heroBannerImage: heroBanner?.value || '/hero-banner.png',
     })
   }
@@ -207,6 +390,7 @@ export default class PagesController {
       vendorName: productRow.vendorName ?? null,
       billingCycle: productRow.billingCycle ?? 'one_time',
       recurringBilling: Boolean(productRow.recurringBilling),
+      unitCount: productRow.unitCount ?? null,
     }
 
     const reviews = reviewRows.map((row) => ({
@@ -459,7 +643,7 @@ export default class PagesController {
   }
 
   // Admin pages
-  async adminDashboard({ inertia, auth }: HttpContext) {
+  async adminDashboard({ inertia }: HttpContext) {
     const [users, products, orders, subscriberCount] = await Promise.all([
       User.all(),
       Product.query().preload('vendor').orderBy('created_at', 'desc'),
@@ -474,40 +658,15 @@ export default class PagesController {
     ])
 
     // Serialize data for Inertia to avoid issues with model instances
-    const serializedOrders = orders.map((order) => ({
-      id: order.id,
-      status: order.status,
-      amount: order.amount,
-      platformFee: order.platformFee,
-      commissionAmount: order.commissionAmount,
-      productId: order.productId,
-      productName: order.productName || order.product?.name,
-      buyerId: order.buyerId,
-      vendorId: order.vendorId,
-      affiliateId: order.affiliateId,
-      createdAt: order.createdAt,
-    }))
+    const serializedOrders = orders.map(toAdminOrderRow)
 
-    const serializedProducts = products.map((product) => ({
-      id: product.id,
-      name: product.name,
-      status: product.status,
-      category: product.category,
-      price: product.price,
-      commissionRate: product.commissionRate,
-      totalSales: product.totalSales,
-      totalRevenue: product.totalRevenue,
-      vendorId: product.vendorId,
-      vendorName: product.vendor?.fullName || product.vendor?.businessName,
-      createdAt: product.createdAt,
-    }))
+    const serializedProducts = products.map(toAdminProductRow)
 
     return inertia.render('admin/AdminDashboard', {
-      user: auth.user,
-      users,
+      users: users.map(toUserRow),
       products: serializedProducts,
       orders: serializedOrders,
-      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+      subscriberCount: Number(subscriberCount?.$extras.total ?? 0),
     })
   }
 
@@ -517,20 +676,20 @@ export default class PagesController {
       .orderBy('created_at', 'desc')
       .limit(200)
 
-    return inertia.render('admin/AdminUsers', { user: auth.user, users })
+    return inertia.render('admin/AdminUsers', { users })
   }
 
-  async adminProducts({ inertia, auth }: HttpContext) {
+  async adminProducts({ inertia }: HttpContext) {
     const products = await Product.query().orderBy('created_at', 'desc').limit(200)
-    return inertia.render('admin/AdminProducts', { user: auth.user, products })
+    return inertia.render('admin/AdminProducts', { products: products.map(toProductDto) })
   }
 
-  async adminOrders({ inertia, auth }: HttpContext) {
+  async adminOrders({ inertia }: HttpContext) {
     const orders = await Order.query().orderBy('created_at', 'desc').limit(200)
-    return inertia.render('admin/AdminOrders', { user: auth.user, orders })
+    return inertia.render('admin/AdminOrders', { orders })
   }
 
-  async adminAnalytics({ inertia, auth }: HttpContext) {
+  async adminAnalytics({ inertia }: HttpContext) {
     const [users, products, orders, links] = await Promise.all([
       User.all(),
       Product.query().preload('vendor').orderBy('created_at', 'desc'),
@@ -545,50 +704,14 @@ export default class PagesController {
     ])
 
     // Serialize data for consistent frontend access
-    const serializedOrders = orders.map((order) => ({
-      id: order.id,
-      status: order.status,
-      amount: order.amount,
-      platformFee: order.platformFee,
-      commissionAmount: order.commissionAmount,
-      productId: order.productId,
-      productName: order.productName || order.product?.name,
-      buyerId: order.buyerId,
-      vendorId: order.vendorId,
-      affiliateId: order.affiliateId,
-      createdAt: order.createdAt,
-    }))
+    const serializedOrders = orders.map(toAdminOrderRow)
 
-    const serializedProducts = products.map((product) => ({
-      id: product.id,
-      name: product.name,
-      status: product.status,
-      category: product.category,
-      price: product.price,
-      commissionRate: product.commissionRate,
-      totalSales: product.totalSales,
-      totalRevenue: product.totalRevenue,
-      vendorId: product.vendorId,
-      vendorName: product.vendor?.fullName || product.vendor?.businessName,
-      createdAt: product.createdAt,
-    }))
+    const serializedProducts = products.map(toAdminProductRow)
 
-    const serializedLinks = links.map((link) => ({
-      id: link.id,
-      status: link.status,
-      clicks: link.clicks || 0,
-      conversions: link.conversions || 0,
-      commissionEarned: link.commissionEarned,
-      revenue: link.revenue,
-      productName: link.productName || link.product?.name,
-      affiliateId: link.affiliateId,
-      affiliateName: link.affiliate?.fullName || link.affiliate?.businessName,
-      createdAt: link.createdAt,
-    }))
+    const serializedLinks = links.map(toAdminLinkRow)
 
     return inertia.render('admin/AdminAnalytics', {
-      user: auth.user,
-      users,
+      users: users.map(toUserRow),
       products: serializedProducts,
       orders: serializedOrders,
       links: serializedLinks,
@@ -612,13 +735,12 @@ export default class PagesController {
         ...raw,
         vendorPayout: Number(raw.vendorPayout || raw.vendor_payout || 0),
         amount: Number(raw.amount || 0),
-        productName: (o as any).$extras?.product_name || raw.productName || 'Product',
+        productName: o.$extras.product_name || raw.productName || 'Product',
         affiliateId: raw.affiliateId || raw.affiliate_id || null,
       }
     })
 
     return inertia.render('vendor/VendorDashboard', {
-      user: auth.user,
       products: vendorProducts,
       orders: serializedOrders,
       wallet: null,
@@ -635,7 +757,6 @@ export default class PagesController {
     const commission = Number(commissionSetting?.value)
     const affiliateCommission = Number(affiliateCommissionSetting?.value)
     return inertia.render('vendor/VendorProducts', {
-      user: auth.user,
       products,
       platformCommission:
         Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
@@ -655,14 +776,13 @@ export default class PagesController {
       .preload('product' as never)
       .orderBy('orders.created_at', 'desc')
 
-    return inertia.render('vendor/VendorOrders' as any, {
-      user: auth.user,
-      orders: orders.map((o) => o.serialize()),
+    return inertia.render('vendor/VendorOrders', {
+      orders: orders.map(toVendorOrderRow),
     })
   }
 
-  async vendorKYC({ inertia, auth }: HttpContext) {
-    return inertia.render('VendorKYC', { user: auth.user })
+  async vendorKYC({ inertia }: HttpContext) {
+    return inertia.render('VendorKYC', {})
   }
 
   async vendorEarnings({ inertia, auth }: HttpContext) {
@@ -674,7 +794,6 @@ export default class PagesController {
         .orderBy('orders.created_at', 'desc'),
     ])
     return inertia.render('vendor/VendorEarnings', {
-      user: auth.user,
       orders,
       wallet: null,
       transactions: [],
@@ -721,21 +840,18 @@ export default class PagesController {
       products: enrichedProducts,
     })
     return inertia.render('vendor/VendorAnalytics', {
-      user: auth.user,
       orders: serializedOrders,
       products: enrichedProducts,
     })
   }
 
   async vendorProfile({ inertia, auth }: HttpContext) {
-    const user = await User.query().where('id', auth.user!.id).firstOrFail()
-    return inertia.render('vendor/VendorProfile', { user: user.serialize(), paymentConfig: null })
+    await User.query().where('id', auth.user!.id).firstOrFail()
+    return inertia.render('vendor/VendorProfile', { paymentConfig: null })
   }
 
-  async vendorIntegrations({ inertia, auth }: HttpContext) {
-    return inertia.render('vendor/VendorIntegrations', {
-      user: auth.user,
-    })
+  async vendorIntegrations({ inertia }: HttpContext) {
+    return inertia.render('vendor/VendorIntegrations', {})
   }
 
   // Affiliate pages
@@ -745,21 +861,20 @@ export default class PagesController {
       .where('affiliate_id', auth.user!.id)
       .orderBy('created_at', 'desc')
     return inertia.render('affiliate/AffiliateDashboard', {
-      user: auth.user,
       links,
       orders,
       profileComplete: computeProfileComplete(auth.user!),
     })
   }
 
-  async affiliateProducts({ inertia, auth }: HttpContext) {
+  async affiliateProducts({ inertia }: HttpContext) {
     const products = await Product.query().where('status', 'approved').limit(50)
-    return inertia.render('affiliate/AffiliateProducts', { user: auth.user, products })
+    return inertia.render('affiliate/AffiliateProducts', { products })
   }
 
   async affiliateLinks({ inertia, auth }: HttpContext) {
     const links = await AffiliateLink.query().where('affiliate_id', auth.user!.id)
-    return inertia.render('affiliate/AffiliateLinks', { user: auth.user, links })
+    return inertia.render('affiliate/AffiliateLinks', { links: links.map(toAffiliateLinkRow) })
   }
 
   async affiliateEarnings({ inertia, auth }: HttpContext) {
@@ -768,7 +883,6 @@ export default class PagesController {
       AffiliateLink.query().where('affiliate_id', auth.user!.id),
     ])
     return inertia.render('affiliate/AffiliateEarnings', {
-      user: auth.user,
       orders,
       links,
       wallet: null,
@@ -779,114 +893,97 @@ export default class PagesController {
 
   async affiliatePerformance({ inertia, auth }: HttpContext) {
     const links = await AffiliateLink.query().where('affiliate_id', auth.user!.id)
-    const performance = await Order.query()
-      .where('affiliate_id', auth.user!.id)
-      .select(db.raw('DATE(created_at) as date'))
-      .count('* as count')
-      .groupByRaw('DATE(created_at)')
-      .orderBy('date', 'asc')
-    return inertia.render('affiliate/AffiliatePerformance', { user: auth.user, links, performance })
+    return inertia.render('affiliate/AffiliatePerformance', { links: links.map(toAffiliateLinkRow) })
   }
 
   async affiliateProfile({ inertia, auth }: HttpContext) {
-    const user = await User.query().where('id', auth.user!.id).firstOrFail()
-    return inertia.render('affiliate/AffiliateProfile', { user: user.serialize(), paymentConfig: null })
+    await User.query().where('id', auth.user!.id).firstOrFail()
+    return inertia.render('affiliate/AffiliateProfile', { paymentConfig: null })
   }
 
   // New admin pages
-  async adminSubscribers({ inertia, auth }: HttpContext) {
+  async adminSubscribers({ inertia }: HttpContext) {
     const subscribers = await NewsletterSubscriber.query().orderBy('created_at', 'desc').limit(500)
-    return inertia.render('admin/AdminSubscribers', { user: auth.user, subscribers })
+    return inertia.render('admin/AdminSubscribers', { subscribers: subscribers.map(toSubscriberRow) })
   }
 
-  async adminBlog({ inertia, auth }: HttpContext) {
+  async adminBlog({ inertia }: HttpContext) {
     const posts = await BlogPost.query().orderBy('created_at', 'desc').limit(100)
-    return inertia.render('admin/AdminBlog', { user: auth.user, posts })
+    return inertia.render('admin/AdminBlog', { posts: posts.map(toBlogPostRow) })
   }
 
-  async adminNewsletterList({ inertia, auth }: HttpContext) {
+  async adminNewsletterList({ inertia }: HttpContext) {
     const newsletters = await Newsletter.query().orderBy('created_at', 'desc').limit(100)
     const subscriberCount = await NewsletterSubscriber.query()
       .where('status', 'active')
       .count('* as total')
       .first()
     return inertia.render('admin/AdminNewsletterList', {
-      user: auth.user,
-      newsletters,
-      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+      newsletters: newsletters.map(toNewsletterRow),
+      subscriberCount: Number(subscriberCount?.$extras.total ?? 0),
     })
   }
 
-  async adminNewsletter({ inertia, auth }: HttpContext) {
+  async adminNewsletter({ inertia }: HttpContext) {
     const subscriberCount = await NewsletterSubscriber.query()
       .where('status', 'active')
       .count('* as total')
       .first()
     return inertia.render('admin/AdminNewsletter', {
-      user: auth.user,
-      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+      subscriberCount: Number(subscriberCount?.$extras.total ?? 0),
     })
   }
 
-  async adminEmailCampaigns({ inertia, auth }: HttpContext) {
+  async adminEmailCampaigns({ inertia }: HttpContext) {
     const campaigns = await EmailCampaign.query().orderBy('created_at', 'desc').limit(100)
     const subscriberCount = await NewsletterSubscriber.query()
       .where('status', 'active')
       .count('* as total')
       .first()
     return inertia.render('admin/AdminEmailCampaigns', {
-      user: auth.user,
-      campaigns,
-      subscriberCount: Number((subscriberCount as any)?.$extras?.total ?? 0),
+      campaigns: campaigns.map(toCampaignRow),
+      subscriberCount: Number(subscriberCount?.$extras.total ?? 0),
     })
   }
 
-  async adminConversions({ inertia, auth }: HttpContext) {
+  async adminConversions({ inertia }: HttpContext) {
     const [orders, links] = await Promise.all([
       Order.query().orderBy('created_at', 'desc').limit(500),
       AffiliateLink.query().orderBy('created_at', 'desc').limit(500),
     ])
-    return inertia.render('admin/AdminConversions', { user: auth.user, orders, links })
+    return inertia.render('admin/AdminConversions', { orders: orders.map(toConversionOrderRow), links: links.map(toConversionLinkRow) })
   }
 
-  async adminHeroBanner({ inertia, auth }: HttpContext) {
+  async adminHeroBanner({ inertia }: HttpContext) {
     const settings = await SiteSetting.all()
-    return inertia.render('admin/AdminHeroBanner', { user: auth.user, settings })
+    return inertia.render('admin/AdminHeroBanner', { settings })
   }
 
-  async adminPaymentSettings({ inertia, auth }: HttpContext) {
+  async adminPaymentSettings({ inertia }: HttpContext) {
     const commissionSetting = await SiteSetting.findBy('key', 'platform_commission')
     const commission = Number(commissionSetting?.value)
     return inertia.render('admin/AdminPaymentSettings', {
-      user: auth.user,
       paymentConfig: null,
       platformCommission:
         Number.isFinite(commission) && commission >= 0 && commission <= 100 ? commission : 10,
     })
   }
 
-  async adminPayouts({ inertia, auth }: HttpContext) {
+  async adminPayouts({ inertia }: HttpContext) {
     return inertia.render('admin/AdminPayouts', {
-      user: auth.user,
       payouts: [],
     })
   }
 
-  async adminDisputes({ inertia, auth }: HttpContext) {
-    return inertia.render('admin/AdminDisputes', {
-      user: auth.user,
-    })
+  async adminDisputes({ inertia }: HttpContext) {
+    return inertia.render('admin/AdminDisputes', {})
   }
 
-  async adminFraudDetection({ inertia, auth }: HttpContext) {
-    return inertia.render('admin/AdminFraudDetection', {
-      user: auth.user,
-    })
+  async adminFraudDetection({ inertia }: HttpContext) {
+    return inertia.render('admin/AdminFraudDetection', {})
   }
 
-  async campaignDiscovery({ inertia, auth }: HttpContext) {
-    return inertia.render('affiliate/CampaignDiscovery', {
-      user: auth.user,
-    })
+  async campaignDiscovery({ inertia }: HttpContext) {
+    return inertia.render('affiliate/CampaignDiscovery', {})
   }
 }

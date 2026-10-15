@@ -23,7 +23,7 @@ server.errorHandler(() => import('#exceptions/handler'))
  * the request URL.
  */
 server.use([
-  () => import('#middleware/partner_body_limit_middleware'),
+  () => import('#middleware/organisation_body_limit_middleware'),
   () => import('#middleware/container_bindings_middleware'),
   () => import('@adonisjs/static/static_middleware'),
   () => import('@adonisjs/cors/cors_middleware'),
@@ -54,8 +54,8 @@ export const middleware = router.named({
   adminAuth: () => import('#middleware/admin_auth_middleware'),
   role: () => import('#middleware/role_middleware'),
   singleAdmin: () => import('#middleware/single_admin_middleware'),
-  partnerRequestId: () => import('#middleware/partner_request_id_middleware'),
-  partnerApiAuth: () => import('#middleware/partner_api_auth_middleware'),
-  partnerIdempotency: () => import('#middleware/partner_idempotency_middleware'),
-  partnerPortal: () => import('#middleware/partner_portal_middleware'),
+  organisationRequestId: () => import('#middleware/organisation_request_id_middleware'),
+  organisationApiAuth: () => import('#middleware/organisation_api_auth_middleware'),
+  organisationIdempotency: () => import('#middleware/organisation_idempotency_middleware'),
+  organisationPortal: () => import('#middleware/organisation_portal_middleware'),
 })

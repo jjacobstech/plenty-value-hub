@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Link } from '@adonisjs/inertia/react'
 import { Mail } from 'lucide-react'
 import BrandLogo from '@/components/shared/BrandLogo'
@@ -10,7 +10,18 @@ import api from '@/api/http-client'
 const FOOTER_IMAGE =
   'https://media.base44.com/images/public/6a235579fdf4cce1a3f803a3/e59786943_generated_image.png'
 
-const FooterCol = ({ title, links }) => (
+interface FooterLink {
+  label: string
+  href?: string
+  to?: string
+}
+
+interface FooterColProps {
+  title: string
+  links: FooterLink[]
+}
+
+const FooterCol = ({ title, links }: FooterColProps) => (
   <div>
     <h4
       className="font-semibold text-xs uppercase tracking-widest mb-5"

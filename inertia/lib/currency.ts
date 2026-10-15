@@ -57,7 +57,7 @@ export const getActiveCurrency = (): string => {
   return 'USD'
 }
 
-export const formatCurrency = (amount: any, currencySymbol?: string, compact = false) => {
+export const formatCurrency = (amount: number | string | null | undefined, currencySymbol?: string, compact = false) => {
   const symbol = currencySymbol || getActiveCurrencySymbol()
   if (amount === null || amount === undefined) return `${symbol}0`
   const num = Number(amount)
@@ -71,10 +71,10 @@ export const formatCurrency = (amount: any, currencySymbol?: string, compact = f
   return `${symbol}${num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
 }
 
-export const formatUSD = (amount: any, compact = false, currencySymbol?: string) =>
+export const formatUSD = (amount: number | string | null | undefined, compact = false, currencySymbol?: string) =>
   formatCurrency(amount, currencySymbol, compact)
 
-export const formatUSDDecimal = (amount: any, currencySymbol?: string) => {
+export const formatUSDDecimal = (amount: number | string | null | undefined, currencySymbol?: string) => {
   const symbol = currencySymbol || getActiveCurrencySymbol()
   if (amount === null || amount === undefined) return `${symbol}0.00`
   const num = Number(amount)

@@ -1,6 +1,6 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import ImageUploadField from '@/components/ImageUploadField'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -27,7 +27,7 @@ type VendorProfileProps = {
   user: any
   paymentConfig?: {
     providers?: Array<{ key: string; label: string; enabled: boolean }>
-  }
+  } | null
 }
 
 export default function VendorProfile(props: VendorProfileProps) {

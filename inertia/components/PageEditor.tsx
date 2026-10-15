@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useRef } from 'react'
 import { Table } from 'lucide-react' // adjust import to match your icon library
 import QuillEditor, { type QuillEditorHandle } from './Editor'
 
@@ -8,7 +8,6 @@ interface PageEditorProps {
 }
 
 function PageEditor({ content, setContent }: PageEditorProps) {
-  const [errors, setErrors] = useState<{ content?: string }>({})
   const editorRef = useRef<QuillEditorHandle>(null)
 
   return (
@@ -105,7 +104,6 @@ function PageEditor({ content, setContent }: PageEditorProps) {
           className="rounded-md bg-gray-100 min-h-screen w-full"
           onUpdateModelValue={(value) => {
             setContent(value)
-            setErrors((prev) => ({ ...prev, content: '' }))
           }}
         />
       </div>

@@ -2,6 +2,7 @@ import User from '#models/user'
 import type { HttpContext } from '@adonisjs/core/http'
 import { DateTime } from 'luxon'
 import { randomBytes } from 'node:crypto'
+import { postLoginPath } from '#services/organisation/landing'
 
 function dashboardForRole(role: string) {
   if (role === 'admin') return '/admin'
@@ -82,7 +83,7 @@ export default class OauthController {
       session.forget('oauth_role')
 
       await auth.use('web').login(user)
-      return response.redirect(dashboardForRole(user.role))
+      return response.redirect(await postLoginPath(user, dashboardForRole(user.role)))
     } catch (error) {
       console.log('Oauth Failed:', error)
       session.flash('error', 'Failed to authenticate with Google')

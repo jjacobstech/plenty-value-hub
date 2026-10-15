@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -42,65 +42,37 @@ const CATEGORY_LABELS: Record<string, string> = {
   lifestyle: 'Lifestyle',
 }
 
-export interface Product {
+export type Product = {
   id: number
-  uuid: string | null // migration doesn't set notNullable — nullable until you add the create-hook we discussed
-
+  uuid: string | null
   name: string
   slug: string | null
   description: string | null
   shortDescription: string | null
-
-  category:
-    | 'health_fitness'
-    | 'business_investing'
-    | 'software_saas'
-    | 'ecommerce'
-    | 'education'
-    | 'fashion'
-    | 'beauty'
-    | 'home_garden'
-    | 'technology'
-    | 'finance'
-    | 'digital_services'
-    | 'ai_tools'
-    | 'productivity'
-    | 'lifestyle'
-  productType: 'digital' | 'physical' | 'service'
-
-  price: string // decimal — keep as string, see prior note
+  category: string
+  productType: string
+  price: string
   salePrice: string | null
-  commissionRate: string
-
-  vendorId: number | null // migration has no .notNullable()
-  vendorName: string | null // migration column is .nullable()
-
+  commissionRate: string | null
+  vendorId: number | null
+  vendorName: string | null
   imageUrl: string | null
   galleryUrls: string[] | null
-
-  status: 'pending' | 'approved' | 'rejected' | 'archived' | null // nullable in the model despite defaultTo('pending')
-
-  gravityScore: number | null // integer, but model shows nullable
-  avgEarningsPerSale: string | null // decimal
-  conversionRate: string | null // decimal — was wrongly typed as number
-  refundRate: string | null // decimal — was wrongly typed as number
-
+  status: string | null
+  gravityScore: number | null
+  avgEarningsPerSale: string | null
+  conversionRate: string | null
+  refundRate: string | null
   totalSales: number | null
-  totalRevenue: string // decimal, non-null in model
-
-  rating: string | null // decimal — was wrongly typed as number
+  totalRevenue: string | null
+  rating: string | null
   reviewCount: number | null
-
   isFeatured: boolean | null
   tags: string[] | null
-  affiliateResources: unknown | null // model has this as `any` — see note below
-
   recurringBilling: boolean | null
-  billingCycle: 'one_time' | 'monthly' | 'yearly' | null
-
+  billingCycle: string | null
   createdAt: string
-  updatedAt: string | null // DateTime | null in the model
-
+  updatedAt: string | null
   digitalAssetUrl: string | null
   digitalAssetName: string | null
 }

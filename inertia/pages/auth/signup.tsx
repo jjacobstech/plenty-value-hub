@@ -12,6 +12,7 @@ import {
   Eye,
   EyeOff,
   ShoppingBag,
+  Building2,
   TrendingUp,
   CheckCircle,
 } from 'lucide-react'
@@ -36,6 +37,15 @@ const ACCOUNT_TYPES = [
     perks: ['Generate referral links', 'Track commissions', 'Earn up to 50% commission'],
     color: '#81C14B',
     bg: '#81C14B',
+  },
+  {
+    value: 'organisation',
+    icon: Building2,
+    title: 'Organisation Account',
+    subtitle: 'Integrate & manage',
+    perks: ['Create API keys & webhooks', 'Invite your team', 'Track affiliate commissions'],
+    color: '#001845',
+    bg: '#001845',
   },
 ]
 
@@ -88,19 +98,22 @@ export default function Signup() {
     password: '',
     passwordConfirmation: '',
     role: '',
+    organisation: false,
   })
   const { flash } = usePage().props as unknown as { flash?: { error?: string; success?: string } }
 
+  // An organisation signs up as a consumer, then is sent to open their organisation account after verifying.
   const handleTypeSelect = (type: string) => {
     setAccountType(type)
-    setData('role', type)
+    setData('role', type === 'organisation' ? 'consumer' : type)
+    setData('organisation', type === 'organisation')
     setStep('form')
   }
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const account = params.get('account')
-    if (account === 'vendor' || account === 'affiliate') {
+    if (account === 'vendor' || account === 'affiliate' || account === 'organisation') {
       handleTypeSelect(account)
     }
   }, [])
@@ -244,7 +257,7 @@ export default function Signup() {
             </div>
           )}
 
-          <Link href={`/auth/google?role=${accountType}`}>
+          <Link href={`/auth/google?role=${accountType === 'organisation' ? 'consumer' : accountType}`}>
             <Button variant="outline" className="w-full h-12 text-sm font-medium mb-6">
               <GoogleIcon className="w-5 h-5 mr-2" />
               Continue with Google

@@ -18,8 +18,8 @@ const corsConfig = defineConfig({
    * In production, keep an explicit allowlist (empty by default, so no
    * cross-origin browser access is allowed until configured).
    */
-  // The partner API is server-to-server, so browsers never get CORS access to /v1.
-  origin: (_origin, ctx) => (ctx.request.url(false).startsWith('/v1/') ? false : app.inDev ? true : []),
+  // The organisation API is server-to-server, so browsers never get CORS access to /api/v1/organisations.
+  origin: (_origin, ctx) => (ctx.request.url(false).startsWith('/api/v1/organisations/') ? false : app.inDev ? true : []),
 
   /**
    * HTTP methods accepted for cross-origin requests.

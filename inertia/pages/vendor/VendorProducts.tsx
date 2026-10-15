@@ -26,7 +26,7 @@ import { Plus, Pencil, Trash2, Package, AlertCircle, Images, X, Loader2, Truck }
 import { formatUSD as formatNGN, getActiveCurrency } from '@/lib/currency'
 import { toast } from 'sonner'
 import api from '@/api/http-client'
-import { validateProduct, getFieldError, hasFieldError } from '@/validators/productValidator'
+import { validateProduct, getFieldError, hasFieldError, withoutField, type ValidationError } from '@/validators/productValidator'
 
 const MAX_GALLERY_IMAGES = 5
 
@@ -91,7 +91,7 @@ type VendorProductsProps = {
 // ---------------------------------------------------------------------------
 // GalleryDropZone – single upload zone that accepts multiple files at once
 // ---------------------------------------------------------------------------
-interface GalleryDropZoneProps {
+type GalleryDropZoneProps = {
   currentCount: number
   max: number
   onUploaded: (urls: string[]) => void
@@ -251,13 +251,13 @@ function GalleryDropZone({ currentCount, max, onUploaded }: GalleryDropZoneProps
 }
 
 export default function VendorProducts(props: VendorProductsProps) {
-  const { user, products: initialProducts, platformCommission = 10, affiliateCommission = 7, profileComplete = true } = props
+  const { products: initialProducts, platformCommission = 10, affiliateCommission = 7, profileComplete = true } = props
   const [products, setProducts] = useState(initialProducts)
   const [showForm, setShowForm] = useState(false)
   const [editId, setEditId] = useState<number | null>(null)
   const [form, setForm] = useState(defaultForm)
   const [saving, setSaving] = useState(false)
-  const [validationErrors, setValidationErrors] = useState<Record<string, string[]> | null>(null)
+  const [validationErrors, setValidationErrors] = useState<ValidationError | null>(null)
   const [serverErrors, setServerErrors] = useState<Record<string, string> | null>(null)
   const [showIncompleteDialog, setShowIncompleteDialog] = useState(false)
 
@@ -567,7 +567,7 @@ export default function VendorProducts(props: VendorProductsProps) {
                       setForm({ ...form, name: e.target.value })
                       // Clear error for this field when user starts typing
                       if (validationErrors?.name) {
-                        setValidationErrors({ ...validationErrors, name: undefined })
+                        setValidationErrors(withoutField(validationErrors, 'name'))
                       }
                     }}
                     required

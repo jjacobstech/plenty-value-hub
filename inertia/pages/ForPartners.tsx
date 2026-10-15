@@ -9,22 +9,32 @@ import {
   TrendingUp,
   CheckCircle,
   ArrowRight,
-  Star,
   BarChart3,
   Link2,
   Shield,
-  Zap,
   DollarSign,
   Package,
-  Users,
   Globe,
-  Award,
-  Target,
-  BookOpen,
 } from 'lucide-react'
 import PublicLayout from '@/components/layout/PublicLayout'
 
-const VENDOR_BENEFITS = [
+import type { LucideIcon } from 'lucide-react'
+
+interface Benefit {
+  icon: LucideIcon
+  title: string
+  desc: string
+  color?: string
+}
+
+interface Step {
+  num: string
+  title: string
+  desc: string
+  color?: string
+}
+
+const VENDOR_BENEFITS: Benefit[] = [
   {
     icon: Globe,
     title: 'Global Reach',
@@ -47,7 +57,7 @@ const VENDOR_BENEFITS = [
   },
 ]
 
-const VENDOR_STEPS = [
+const VENDOR_STEPS: Step[] = [
   {
     num: '01',
     title: 'Create Vendor Account',
@@ -71,7 +81,7 @@ const VENDOR_STEPS = [
   { num: '05', title: 'Manage & Earn', desc: 'Track sales, manage inventory, and get paid.' },
 ]
 
-const AFFILIATE_BENEFITS = [
+const AFFILIATE_BENEFITS: Benefit[] = [
   {
     icon: DollarSign,
     title: 'Up to 50% Commission',
@@ -94,7 +104,7 @@ const AFFILIATE_BENEFITS = [
   },
 ]
 
-const AFFILIATE_STEPS = [
+const AFFILIATE_STEPS: Step[] = [
   {
     num: '01',
     title: 'Create Affiliate Account',
@@ -122,7 +132,7 @@ const AFFILIATE_STEPS = [
   },
 ]
 
-function BenefitCard({ icon: Icon, title, desc, color }) {
+function BenefitCard({ icon: Icon, title, desc, color = '#81C14B' }: Benefit) {
   return (
     <Card className="border-border/50 hover:shadow-md transition-all duration-200">
       <CardContent className="p-6">
@@ -141,7 +151,7 @@ function BenefitCard({ icon: Icon, title, desc, color }) {
   )
 }
 
-function StepItem({ num, title, desc, color }) {
+function StepItem({ num, title, desc, color = '#81C14B' }: Step) {
   return (
     <div className="flex gap-4">
       <div

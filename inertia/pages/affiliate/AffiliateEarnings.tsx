@@ -1,5 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Table,
@@ -51,7 +51,7 @@ type AffiliateEarningsProps = {
   user: any
   orders: any[]
   links: any[]
-  wallet?: WalletData
+  wallet?: WalletData | null
   transactions?: any[]
   payoutRequests?: PayoutRequest[]
 }

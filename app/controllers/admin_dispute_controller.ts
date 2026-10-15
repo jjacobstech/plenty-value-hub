@@ -13,14 +13,7 @@ export default class AdminDisputeController {
       return null
     }
 
-    const paginated = await DisputeService.getOpenDisputes(1, 50)
-    const stats = await DisputeService.getDisputeStatistics()
-
-    return inertia.render('admin/AdminDisputes', {
-      user,
-      stats,
-      disputes: paginated.all?.() || [],
-    })
+    return inertia.render('admin/AdminDisputes', {})
   }
 
   /**

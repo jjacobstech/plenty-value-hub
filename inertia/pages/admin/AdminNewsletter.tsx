@@ -1,10 +1,8 @@
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Badge } from '@/components/ui/badge'
-import { Textarea } from '@/components/ui/textarea'
 import PageEditor from '@/components/PageEditor'
 import {
   LayoutTemplate,
@@ -13,13 +11,6 @@ import {
   Trash2,
   Upload,
   X,
-  FileText,
-  Bold,
-  Italic,
-  Link as LinkIcon,
-  Heading1,
-  Heading2,
-  Sparkles,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import axios from 'axios'
@@ -65,8 +56,6 @@ export default function AdminNewsletter({ subscriberCount = 0 }: Props) {
   const [showTemplates, setShowTemplates] = useState(false)
   const [activeTab, setActiveTab] = useState<'write' | 'preview'>('write')
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
-
   const handleThumbnailUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -85,21 +74,6 @@ export default function AdminNewsletter({ subscriberCount = 0 }: Props) {
 
   const handleRemoveThumbnail = () => {
     setThumbnailPreview(null)
-  }
-
-  const insertText = (before: string, after: string = '') => {
-    const textarea = textareaRef.current
-    if (!textarea) return
-    const start = textarea.selectionStart
-    const end = textarea.selectionEnd
-    const text = textarea.value
-    const selected = text.substring(start, end)
-    const replacement = before + selected + after
-    setContent(text.substring(0, start) + replacement + text.substring(end))
-    setTimeout(() => {
-      textarea.focus()
-      textarea.setSelectionRange(start + before.length, start + before.length + selected.length)
-    }, 0)
   }
 
   const handleSend = async () => {

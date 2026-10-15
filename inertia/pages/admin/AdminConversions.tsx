@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import DashboardLayout from '@/components/layout/DashboardLayout'
 import StatsCard from '@/components/shared/StatsCard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -14,16 +14,7 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  Cell,
 } from 'recharts'
-
-const SOURCE_COLORS: Record<string, string> = {
-  affiliate: '#81C14B',
-  direct: '#001845',
-  organic: '#f59e0b',
-  referral: '#6366f1',
-  other: '#9ca3af',
-}
 
 import { formatCurrency as formatUSD } from '@/lib/currency'
 
@@ -142,7 +133,7 @@ export default function AdminConversions({ orders = [], links = [] }: Props) {
                     <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                     <XAxis dataKey="name" tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip formatter={(v: number) => formatUSD(v)} />
+                    <Tooltip formatter={(v) => formatUSD(Number(v ?? 0))} />
                     <Bar dataKey="revenue" fill="#81C14B" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>

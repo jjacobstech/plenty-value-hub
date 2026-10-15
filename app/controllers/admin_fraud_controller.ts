@@ -12,18 +12,7 @@ export default class AdminFraudController {
       return null
     }
 
-    const flaggedConversions = await FraudDetectionService.getFlaggedConversions('pending')
-    const stats = {
-      pendingReview: flaggedConversions.length,
-      criticalRisk: flaggedConversions.filter((c) => (c as any).fraud_risk_level === 'critical').length,
-      highRisk: flaggedConversions.filter((c) => (c as any).fraud_risk_level === 'high').length,
-    }
-
-    return inertia.render('admin/AdminFraudDetection', {
-      user,
-      stats,
-      conversions: flaggedConversions,
-    })
+    return inertia.render('admin/AdminFraudDetection', {})
   }
 
   /**
@@ -31,15 +20,9 @@ export default class AdminFraudController {
    */
   async getFlagged({ request, response }: HttpContext) {
     const status = request.input('status', 'pending')
-    const riskLevel = request.input('riskLevel')
 
-    let query = FraudDetectionService.getFlaggedConversions(status)
-
-    if (riskLevel) {
-      query = query.where('fraud_risk_level', riskLevel)
-    }
-
-    const conversions = await query
+    // The conversions table has no risk-level column, so there is no riskLevel filter to apply.
+    const conversions = await FraudDetectionService.getFlaggedConversions(status)
 
     return response.json({
       success: true,
@@ -82,12 +65,6 @@ export default class AdminFraudController {
 
     const stats = {
       totalFlagged: flagged.length,
-      byRiskLevel: {
-        critical: flagged.filter((c) => (c as any).fraud_risk_level === 'critical').length,
-        high: flagged.filter((c) => (c as any).fraud_risk_level === 'high').length,
-        medium: flagged.filter((c) => (c as any).fraud_risk_level === 'medium').length,
-        low: flagged.filter((c) => (c as any).fraud_risk_level === 'low').length,
-      },
       flaggedValue: flagged.reduce((sum, c) => sum + (c.orderValue || 0), 0),
     }
 

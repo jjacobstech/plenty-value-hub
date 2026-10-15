@@ -25,65 +25,76 @@ const CATEGORIES = [
 const PRODUCT_TYPES = ['digital', 'physical', 'service'] as const
 const BILLING_CYCLES = ['one_time', 'monthly', 'yearly'] as const
 
+export type ProductCategory = (typeof CATEGORIES)[number]
+export type ProductType = (typeof PRODUCT_TYPES)[number]
+export type BillingCycle = (typeof BILLING_CYCLES)[number]
+
 export type CreateProductInput = {
   name: string
   description?: string
   shortDescription?: string
-  category: (typeof CATEGORIES)[number]
-  productType: (typeof PRODUCT_TYPES)[number]
+  category: ProductCategory
+  productType: ProductType
   price: number | string
   salePrice?: number | string
   commissionRate: number | string
   imageUrl?: string
   recurringBilling?: boolean
-  billingCycle?: (typeof BILLING_CYCLES)[number]
+  billingCycle?: BillingCycle
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>
 
-type ValidationError = { [field: string]: string[] }
+/** A raw form value. Form fields arrive as strings, numbers, booleans or nothing. */
+export type ProductFormValue = string | number | boolean | null | undefined
+
+/** The product form as the page keeps it. Every field is optional. */
+export type ProductFormInput = Partial<Record<keyof CreateProductInput, ProductFormValue>>
+
+/** Field name to the messages for that field. */
+export type ValidationError = Record<string, string[]>
+
+export type ProductValidationResult =
+  | { success: true; data: UpdateProductInput; errors?: undefined }
+  | { success: false; data?: undefined; errors: ValidationError }
+
+function isCategory(value: ProductFormValue): value is ProductCategory {
+  return typeof value === 'string' && (CATEGORIES as readonly string[]).includes(value)
+}
+
+function isProductType(value: ProductFormValue): value is ProductType {
+  return typeof value === 'string' && (PRODUCT_TYPES as readonly string[]).includes(value)
+}
+
+function isBillingCycle(value: ProductFormValue): value is BillingCycle {
+  return typeof value === 'string' && (BILLING_CYCLES as readonly string[]).includes(value)
+}
 
 /**
- * Validation helper - parse string to number safely
+ * Parses a number from a form value. Strings are parsed; anything else that is not a finite number fails.
  */
-function parseNumber(val: unknown): { success: boolean; value?: number } {
-  if (val === '' || val === null || val === undefined) {
+function parseNumber(value: ProductFormValue): { success: boolean; value?: number } {
+  if (value === '' || value === null || value === undefined) {
     return { success: false }
   }
-
-  const num = typeof val === 'string' ? parseFloat(val) : (val as number)
+  const num = typeof value === 'string' ? parseFloat(value) : Number(value)
   if (isNaN(num)) {
     return { success: false }
   }
-
   return { success: true, value: num }
 }
 
 /**
  * Validate product data
- * @param data - Data to validate
+ * @param data - Form values to validate
  * @param isUpdate - Whether this is an update (all fields optional) or create (required fields needed)
- * @returns { success, data, errors }
  */
-export function validateProduct(
-  data: unknown,
-  isUpdate: boolean = false
-): {
-  success: boolean
-  data?: CreateProductInput | UpdateProductInput
-  errors?: ValidationError
-} {
+export function validateProduct(data: ProductFormInput, isUpdate: boolean = false): ProductValidationResult {
   const errors: ValidationError = {}
-  const validatedData: any = {}
-
-  if (typeof data !== 'object' || data === null) {
-    return { success: false, errors: { global: ['Invalid data format'] } }
-  }
-
-  const d = data as Record<string, unknown>
+  const validatedData: UpdateProductInput = {}
 
   // Validate name
-  const name = d.name
+  const name = data.name
   if (!isUpdate || name !== undefined) {
     if (typeof name !== 'string') {
       errors.name = ['Product name is required']
@@ -100,11 +111,11 @@ export function validateProduct(
   }
 
   // Validate description
-  if (d.description !== undefined) {
-    if (d.description === '') {
+  if (data.description !== undefined) {
+    if (data.description === '') {
       validatedData.description = undefined
-    } else if (typeof d.description === 'string') {
-      const trimmed = d.description.trim()
+    } else if (typeof data.description === 'string') {
+      const trimmed = data.description.trim()
       if (trimmed.length < 10) {
         errors.description = ['Description must be at least 10 characters']
       } else {
@@ -116,11 +127,11 @@ export function validateProduct(
   }
 
   // Validate shortDescription
-  if (d.shortDescription !== undefined) {
-    if (d.shortDescription === '') {
+  if (data.shortDescription !== undefined) {
+    if (data.shortDescription === '') {
       validatedData.shortDescription = undefined
-    } else if (typeof d.shortDescription === 'string') {
-      const trimmed = d.shortDescription.trim()
+    } else if (typeof data.shortDescription === 'string') {
+      const trimmed = data.shortDescription.trim()
       if (trimmed.length > 500) {
         errors.shortDescription = ['Short description must not exceed 500 characters']
       } else {
@@ -132,27 +143,27 @@ export function validateProduct(
   }
 
   // Validate category
-  if (!isUpdate || d.category !== undefined) {
-    if (!CATEGORIES.includes(d.category as any)) {
+  if (!isUpdate || data.category !== undefined) {
+    if (!isCategory(data.category)) {
       errors.category = ['Invalid category selected']
     } else {
-      validatedData.category = d.category
+      validatedData.category = data.category
     }
   }
 
   // Validate productType
-  if (!isUpdate || d.productType !== undefined) {
-    if (!PRODUCT_TYPES.includes(d.productType as any)) {
+  if (!isUpdate || data.productType !== undefined) {
+    if (!isProductType(data.productType)) {
       errors.productType = ['Invalid product type selected']
     } else {
-      validatedData.productType = d.productType
+      validatedData.productType = data.productType
     }
   }
 
   // Validate price
-  if (!isUpdate || d.price !== undefined) {
-    const priceResult = parseNumber(d.price)
-    if (!priceResult.success || priceResult.value! < 0.01) {
+  if (!isUpdate || data.price !== undefined) {
+    const priceResult = parseNumber(data.price)
+    if (!priceResult.success || priceResult.value === undefined || priceResult.value < 0.01) {
       errors.price = ['Price must be a valid number greater than or equal to $0.01']
     } else {
       validatedData.price = priceResult.value
@@ -160,25 +171,25 @@ export function validateProduct(
   }
 
   // Validate salePrice (optional)
-  if (d.salePrice !== undefined && d.salePrice !== '') {
-    const saleResult = parseNumber(d.salePrice)
-    if (!saleResult.success || saleResult.value! < 0.01) {
+  if (data.salePrice !== undefined && data.salePrice !== '') {
+    const saleResult = parseNumber(data.salePrice)
+    if (!saleResult.success || saleResult.value === undefined || saleResult.value < 0.01) {
       errors.salePrice = ['Sale price must be a valid number greater than or equal to $0.01']
     } else {
       validatedData.salePrice = saleResult.value
     }
-  } else if (d.salePrice === '') {
+  } else if (data.salePrice === '') {
     validatedData.salePrice = undefined
   }
 
   // Validate commissionRate
-  if (!isUpdate || d.commissionRate !== undefined) {
-    const commResult = parseNumber(d.commissionRate)
-    if (!commResult.success) {
+  if (!isUpdate || data.commissionRate !== undefined) {
+    const commResult = parseNumber(data.commissionRate)
+    if (!commResult.success || commResult.value === undefined) {
       errors.commissionRate = ['Commission rate must be a valid number']
-    } else if (commResult.value! < 0) {
+    } else if (commResult.value < 0) {
       errors.commissionRate = ['Commission rate must be at least 0%']
-    } else if (commResult.value! > 100) {
+    } else if (commResult.value > 100) {
       errors.commissionRate = ['Commission rate must not exceed 100%']
     } else {
       validatedData.commissionRate = commResult.value
@@ -186,13 +197,13 @@ export function validateProduct(
   }
 
   // Validate imageUrl (optional)
-  if (d.imageUrl !== undefined && d.imageUrl !== '') {
-    if (typeof d.imageUrl !== 'string') {
+  if (data.imageUrl !== undefined && data.imageUrl !== '') {
+    if (typeof data.imageUrl !== 'string') {
       errors.imageUrl = ['Image URL must be a string']
     } else {
       try {
-        new URL(d.imageUrl)
-        validatedData.imageUrl = d.imageUrl
+        new URL(data.imageUrl)
+        validatedData.imageUrl = data.imageUrl
       } catch {
         errors.imageUrl = ['Image URL must be a valid URL']
       }
@@ -200,22 +211,22 @@ export function validateProduct(
   }
 
   // Validate recurringBilling
-  if (d.recurringBilling !== undefined) {
-    if (typeof d.recurringBilling === 'boolean') {
-      validatedData.recurringBilling = d.recurringBilling
-    } else if (d.recurringBilling === 'false' || d.recurringBilling === false) {
+  if (data.recurringBilling !== undefined) {
+    if (typeof data.recurringBilling === 'boolean') {
+      validatedData.recurringBilling = data.recurringBilling
+    } else if (data.recurringBilling === 'false') {
       validatedData.recurringBilling = false
-    } else if (d.recurringBilling === 'true' || d.recurringBilling === true) {
+    } else if (data.recurringBilling === 'true') {
       validatedData.recurringBilling = true
     }
   }
 
   // Validate billingCycle (optional, but dependent on recurringBilling)
-  if (d.billingCycle !== undefined && d.billingCycle !== '') {
-    if (!BILLING_CYCLES.includes(d.billingCycle as any)) {
+  if (data.billingCycle !== undefined && data.billingCycle !== '') {
+    if (!isBillingCycle(data.billingCycle)) {
       errors.billingCycle = ['Invalid billing cycle selected']
     } else {
-      validatedData.billingCycle = d.billingCycle
+      validatedData.billingCycle = data.billingCycle
     }
   }
 
@@ -231,26 +242,27 @@ export function validateProduct(
  * Get first error message for a field
  * Useful for displaying single error at a time
  */
-export function getFieldError(
-  errors: ValidationError | undefined,
-  fieldName: string
-): string | undefined {
+export function getFieldError(errors: ValidationError | null | undefined, fieldName: string): string | undefined {
   return errors?.[fieldName]?.[0]
 }
 
 /**
  * Check if a field has errors
  */
-export function hasFieldError(errors: ValidationError | undefined, fieldName: string): boolean {
+export function hasFieldError(errors: ValidationError | null | undefined, fieldName: string): boolean {
   return Boolean(errors?.[fieldName]?.length)
 }
 
 /**
  * Get all errors for a field as a comma-separated string
  */
-export function getFieldErrorMessage(
-  errors: ValidationError | undefined,
-  fieldName: string
-): string {
+export function getFieldErrorMessage(errors: ValidationError | null | undefined, fieldName: string): string {
   return errors?.[fieldName]?.join(', ') || ''
+}
+
+/** Returns the errors without one field, or null when none are left. */
+export function withoutField(errors: ValidationError | null | undefined, fieldName: string): ValidationError | null {
+  if (!errors) return null
+  const rest = Object.fromEntries(Object.entries(errors).filter(([key]) => key !== fieldName))
+  return Object.keys(rest).length > 0 ? rest : null
 }

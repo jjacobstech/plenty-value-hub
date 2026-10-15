@@ -1,7 +1,5 @@
 import DashboardLayout from '@/components/layout/DashboardLayout'
-import React from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import {
   Table,
   TableBody,
@@ -27,20 +25,28 @@ import {
   Wallet,
   MousePointer2,
   ShoppingBag,
-  TrendingUp,
   Clock,
   CheckCircle2,
-  ArrowUpRight,
   Zap,
   Link2,
-  Star,
   AlertCircle,
 } from 'lucide-react'
 import { Link } from '@adonisjs/inertia/react'
+import type { LucideIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
-function KpiCard({ title, value, sub, icon: Icon, color = 'primary' }) {
-  const colorMap = {
+type KpiColor = 'primary' | 'green' | 'navy' | 'purple' | 'blue'
+
+type KpiCardProps = {
+  title: string
+  value: string | number
+  sub?: string
+  icon: LucideIcon
+  color?: KpiColor
+}
+
+function KpiCard({ title, value, sub, icon: Icon, color = 'primary' }: KpiCardProps) {
+  const colorMap: Record<KpiColor, string> = {
     primary: 'bg-[#001845]/10 text-[#001845]',
     green: 'bg-[#81C14B]/10 text-[#81C14B]',
     navy: 'bg-[#001845]/10 text-[#001845]',
@@ -199,7 +205,7 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                     <XAxis dataKey="day" tick={{ fontSize: 11 }} />
                     <YAxis tick={{ fontSize: 11 }} tickFormatter={(v) => formatNGN(v, true)} />
-                    <Tooltip formatter={(v) => formatNGN(v)} />
+                    <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                     <Area
                       type="monotone"
                       dataKey="earnings"
@@ -274,7 +280,7 @@ export default function AffiliateDashboard(props: AffiliateDashboardProps) {
                       <CartesianGrid strokeDasharray="3 3" className="stroke-border" />
                       <XAxis dataKey="name" tick={{ fontSize: 10 }} />
                       <YAxis tick={{ fontSize: 10 }} tickFormatter={(v) => formatNGN(v, true)} />
-                      <Tooltip formatter={(v) => formatNGN(v)} />
+                      <Tooltip formatter={(v) => formatNGN(Number(v ?? 0))} />
                       <Bar
                         dataKey="earned"
                         fill="#001845"

@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Star, BookOpen, Target, Award, MailOpen, TrendingUp, Users, Shield } from 'lucide-react'
 import { Link } from '@adonisjs/inertia/react'
-import { Skeleton } from '@/components/ui/skeleton'
 import { Button } from '@/components/ui/button'
 import PublicLayout from '@/components/layout/PublicLayout'
 

@@ -57,6 +57,10 @@ export type ScannedRoutes = {
     'admin.payouts': { paramsTuple?: []; params?: {} }
     'admin.disputes': { paramsTuple?: []; params?: {} }
     'admin.fraud': { paramsTuple?: []; params?: {} }
+    'admin.organisations': { paramsTuple?: []; params?: {} }
+    'admin.organisations.store': { paramsTuple?: []; params?: {} }
+    'admin_organisations.suspend': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_organisations.reactivate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
     'vendor.orders': { paramsTuple?: []; params?: {} }
@@ -397,6 +401,59 @@ export type ScannedRoutes = {
     'kyc.upload_document': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
     'kyc.get_submission': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
     'kyc.get_audit_trail': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
+    'ping.show': { paramsTuple?: []; params?: {} }
+    'affiliates.create': { paramsTuple?: []; params?: {} }
+    'affiliates.index': { paramsTuple?: []; params?: {} }
+    'affiliates.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliates.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'links.create': { paramsTuple?: []; params?: {} }
+    'links.index': { paramsTuple?: []; params?: {} }
+    'links.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'links.disable': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'events.create': { paramsTuple?: []; params?: {} }
+    'events.index': { paramsTuple?: []; params?: {} }
+    'events.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'events.reverse': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.index': { paramsTuple?: []; params?: {} }
+    'commissions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stats.summary': { paramsTuple?: []; params?: {} }
+    'dashboard_sessions.create': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'affiliates.stats': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.mark_paid': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation_redirect.show': { paramsTuple: [ParamValue]; params: {'code': ParamValue} }
+    'organisation.new': { paramsTuple?: []; params?: {} }
+    'onboarding.store': { paramsTuple?: []; params?: {} }
+    'organisation.overview': { paramsTuple?: []; params?: {} }
+    'organisation.mode': { paramsTuple?: []; params?: {} }
+    'organisation.keys': { paramsTuple?: []; params?: {} }
+    'keys.store': { paramsTuple?: []; params?: {} }
+    'keys.revoke': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation.webhooks': { paramsTuple?: []; params?: {} }
+    'webhooks.store': { paramsTuple?: []; params?: {} }
+    'webhooks.test': { paramsTuple?: []; params?: {} }
+    'webhooks.rotate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.enable': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.disable': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.resend': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation.affiliates': { paramsTuple?: []; params?: {} }
+    'activity.suspend_affiliate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.reactivate_affiliate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation.activity': { paramsTuple?: []; params?: {} }
+    'activity.reverse_event': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.approve_commission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.reject_commission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation.program': { paramsTuple?: []; params?: {} }
+    'settings.update_program': { paramsTuple?: []; params?: {} }
+    'organisation.team': { paramsTuple?: []; params?: {} }
+    'settings.invite': { paramsTuple?: []; params?: {} }
+    'settings.remove': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation_affiliate_dashboard.redeem': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'organisation_affiliate_dashboard.show': { paramsTuple?: []; params?: {} }
+    'organisation_docs.api': { paramsTuple?: []; params?: {} }
+    'organisation_docs.openapi': { paramsTuple?: []; params?: {} }
+    'organisation_docs.quickstart': { paramsTuple?: []; params?: {} }
   }
   GET: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -442,6 +499,7 @@ export type ScannedRoutes = {
     'admin.payouts': { paramsTuple?: []; params?: {} }
     'admin.disputes': { paramsTuple?: []; params?: {} }
     'admin.fraud': { paramsTuple?: []; params?: {} }
+    'admin.organisations': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
     'vendor.orders': { paramsTuple?: []; params?: {} }
@@ -621,6 +679,31 @@ export type ScannedRoutes = {
     'vendor_dashboard.trends': { paramsTuple?: []; params?: {} }
     'kyc.get_submission': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
     'kyc.get_audit_trail': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
+    'ping.show': { paramsTuple?: []; params?: {} }
+    'affiliates.index': { paramsTuple?: []; params?: {} }
+    'affiliates.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'links.index': { paramsTuple?: []; params?: {} }
+    'links.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'events.index': { paramsTuple?: []; params?: {} }
+    'events.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.index': { paramsTuple?: []; params?: {} }
+    'commissions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stats.summary': { paramsTuple?: []; params?: {} }
+    'affiliates.stats': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation_redirect.show': { paramsTuple: [ParamValue]; params: {'code': ParamValue} }
+    'organisation.new': { paramsTuple?: []; params?: {} }
+    'organisation.overview': { paramsTuple?: []; params?: {} }
+    'organisation.keys': { paramsTuple?: []; params?: {} }
+    'organisation.webhooks': { paramsTuple?: []; params?: {} }
+    'organisation.affiliates': { paramsTuple?: []; params?: {} }
+    'organisation.activity': { paramsTuple?: []; params?: {} }
+    'organisation.program': { paramsTuple?: []; params?: {} }
+    'organisation.team': { paramsTuple?: []; params?: {} }
+    'organisation_affiliate_dashboard.redeem': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'organisation_affiliate_dashboard.show': { paramsTuple?: []; params?: {} }
+    'organisation_docs.api': { paramsTuple?: []; params?: {} }
+    'organisation_docs.openapi': { paramsTuple?: []; params?: {} }
+    'organisation_docs.quickstart': { paramsTuple?: []; params?: {} }
   }
   HEAD: {
     'drive.fs.serve': { paramsTuple: [...ParamValue[]]; params: {'*': ParamValue[]} }
@@ -666,6 +749,7 @@ export type ScannedRoutes = {
     'admin.payouts': { paramsTuple?: []; params?: {} }
     'admin.disputes': { paramsTuple?: []; params?: {} }
     'admin.fraud': { paramsTuple?: []; params?: {} }
+    'admin.organisations': { paramsTuple?: []; params?: {} }
     'vendor.dashboard': { paramsTuple?: []; params?: {} }
     'vendor.products': { paramsTuple?: []; params?: {} }
     'vendor.orders': { paramsTuple?: []; params?: {} }
@@ -845,6 +929,31 @@ export type ScannedRoutes = {
     'vendor_dashboard.trends': { paramsTuple?: []; params?: {} }
     'kyc.get_submission': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
     'kyc.get_audit_trail': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
+    'ping.show': { paramsTuple?: []; params?: {} }
+    'affiliates.index': { paramsTuple?: []; params?: {} }
+    'affiliates.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'links.index': { paramsTuple?: []; params?: {} }
+    'links.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'events.index': { paramsTuple?: []; params?: {} }
+    'events.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.index': { paramsTuple?: []; params?: {} }
+    'commissions.show': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'stats.summary': { paramsTuple?: []; params?: {} }
+    'affiliates.stats': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'organisation_redirect.show': { paramsTuple: [ParamValue]; params: {'code': ParamValue} }
+    'organisation.new': { paramsTuple?: []; params?: {} }
+    'organisation.overview': { paramsTuple?: []; params?: {} }
+    'organisation.keys': { paramsTuple?: []; params?: {} }
+    'organisation.webhooks': { paramsTuple?: []; params?: {} }
+    'organisation.affiliates': { paramsTuple?: []; params?: {} }
+    'organisation.activity': { paramsTuple?: []; params?: {} }
+    'organisation.program': { paramsTuple?: []; params?: {} }
+    'organisation.team': { paramsTuple?: []; params?: {} }
+    'organisation_affiliate_dashboard.redeem': { paramsTuple: [ParamValue]; params: {'token': ParamValue} }
+    'organisation_affiliate_dashboard.show': { paramsTuple?: []; params?: {} }
+    'organisation_docs.api': { paramsTuple?: []; params?: {} }
+    'organisation_docs.openapi': { paramsTuple?: []; params?: {} }
+    'organisation_docs.quickstart': { paramsTuple?: []; params?: {} }
   }
   POST: {
     'new_account.store': { paramsTuple?: []; params?: {} }
@@ -857,6 +966,9 @@ export type ScannedRoutes = {
     'new_account.forgot_password': { paramsTuple?: []; params?: {} }
     'new_account.reset_password': { paramsTuple?: []; params?: {} }
     'logout': { paramsTuple?: []; params?: {} }
+    'admin.organisations.store': { paramsTuple?: []; params?: {} }
+    'admin_organisations.suspend': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'admin_organisations.reactivate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'newsletters.subscribe': { paramsTuple?: []; params?: {} }
     'newsletters.unsubscribe': { paramsTuple?: []; params?: {} }
     'affiliate_links.track_click': { paramsTuple?: []; params?: {} }
@@ -982,6 +1094,33 @@ export type ScannedRoutes = {
     'mobile_api.validate_token': { paramsTuple?: []; params?: {} }
     'kyc.create_submission': { paramsTuple?: []; params?: {} }
     'kyc.upload_document': { paramsTuple: [ParamValue]; params: {'submissionId': ParamValue} }
+    'affiliates.create': { paramsTuple?: []; params?: {} }
+    'links.create': { paramsTuple?: []; params?: {} }
+    'links.disable': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'events.create': { paramsTuple?: []; params?: {} }
+    'events.reverse': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'dashboard_sessions.create': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.approve': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.reject': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'commissions.mark_paid': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'onboarding.store': { paramsTuple?: []; params?: {} }
+    'organisation.mode': { paramsTuple?: []; params?: {} }
+    'keys.store': { paramsTuple?: []; params?: {} }
+    'keys.revoke': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.store': { paramsTuple?: []; params?: {} }
+    'webhooks.test': { paramsTuple?: []; params?: {} }
+    'webhooks.rotate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.enable': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.disable': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'webhooks.resend': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.suspend_affiliate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.reactivate_affiliate': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.reverse_event': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.approve_commission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'activity.reject_commission': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
+    'settings.update_program': { paramsTuple?: []; params?: {} }
+    'settings.invite': { paramsTuple?: []; params?: {} }
+    'settings.remove': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
   PUT: {
     'products.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
@@ -1024,6 +1163,7 @@ export type ScannedRoutes = {
     'notifications.mark_as_read': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
     'notifications.mark_all_as_read': { paramsTuple?: []; params?: {} }
     'payment_settings.toggle': { paramsTuple: [ParamValue]; params: {'gateway': ParamValue} }
+    'affiliates.update': { paramsTuple: [ParamValue]; params: {'id': ParamValue} }
   }
 }
 declare module '@adonisjs/core/types/http' {
