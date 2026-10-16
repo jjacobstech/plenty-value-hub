@@ -29,3 +29,39 @@ INFO:     127.0.0.1:33896 - "GET /health HTTP/1.1" 200 OK
 [stderr] 2026-10-15 17:56:11 INFO     [codeboarding_pro.session:243] Session 1ce72352-7d7a-4b66-a133-29c592a0e491: LSP wiring complete
 [stderr] 2026-10-15 17:56:11 INFO     [codeboarding_pro.lsp.bootstrap:67] LSP clients started successfully (attempt 1)
 [stderr] 2026-10-15 22:18:03 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 01:47:48 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 01:47:48 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 01:47:48 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 01:53:14 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 01:53:14 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 01:53:15 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 01:53:15 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 01:55:12 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 01:55:13 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 01:55:13 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 01:58:54 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 01:58:57 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 01:58:59 INFO     [watchfiles.main:308] 3 changes detected
+[stderr] 2026-10-16 01:59:39 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 02:00:50 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 02:00:51 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 02:00:51 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 02:01:36 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 02:02:25 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 02:02:25 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 02:02:25 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 02:03:07 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 02:03:56 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 02:03:56 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 02:03:56 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 02:04:24 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 02:04:24 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 02:04:24 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 02:05:12 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 02:05:12 WARNING  [codeboarding_pro.analysis_controller:427] Skipping incremental update: full analysis artifacts not ready yet
+[stderr] 2026-10-16 02:05:12 INFO     [codeboarding_pro.analysis_controller:259] No cached analysis results; skipping health report
+[stderr] 2026-10-16 02:05:56 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 02:06:07 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 02:06:30 INFO     [watchfiles.main:308] 6 changes detected
+[stderr] 2026-10-16 02:06:32 INFO     [watchfiles.main:308] 1 change detected
+[stderr] 2026-10-16 02:06:34 INFO     [watchfiles.main:308] 3 changes detected

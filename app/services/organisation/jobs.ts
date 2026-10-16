@@ -9,7 +9,13 @@ export const ORGANISATION_QUEUE = 'organisation-jobs'
 const MINUTE_MS = 60 * 1000
 
 export function queueConnection() {
-  return { host: env.get('QUEUE_REDIS_HOST'), port: env.get('QUEUE_REDIS_PORT'), maxRetriesPerRequest: null }
+  return {
+    host: env.get('QUEUE_REDIS_HOST'),
+    port: env.get('QUEUE_REDIS_PORT'),
+    username: env.get('QUEUE_REDIS_USERNAME'),
+    password: env.get('QUEUE_REDIS_PASSWORD'),
+    maxRetriesPerRequest: null,
+  }
 }
 
 /** Runs one organisation job by name. Each job is idempotent, so a retry or an overlap is safe. */

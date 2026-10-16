@@ -11,6 +11,8 @@
 
 import { Env } from '@adonisjs/core/env'
 
+
+
 export default await Env.create(new URL('../', import.meta.url), {
   // Node
   NODE_ENV: Env.schema.enum(['development', 'production', 'test'] as const),
@@ -69,6 +71,8 @@ export default await Env.create(new URL('../', import.meta.url), {
   */
   QUEUE_REDIS_HOST: Env.schema.string({ format: 'host' }),
   QUEUE_REDIS_PORT: Env.schema.number(),
+  QUEUE_REDIS_USERNAME: Env.schema.string(),
+  QUEUE_REDIS_PASSWORD: Env.schema.string(),
 
   /*
   |----------------------------------------------------------
